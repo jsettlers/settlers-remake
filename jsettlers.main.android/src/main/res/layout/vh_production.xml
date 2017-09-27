@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="8dp">
 
     <ImageView
         android:id="@+id/imageView_material"
@@ -13,7 +13,7 @@
         android:layout_height="40dp" />
 
     <Space
-        android:layout_width="8dp"
+        android:layout_width="32dp"
         android:layout_height="1dp" />
 
     <SeekBar
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content" />
 
     <Space
-        android:layout_width="8dp"
+        android:layout_width="4dp"
         android:layout_height="1dp" />
 
     <TextView

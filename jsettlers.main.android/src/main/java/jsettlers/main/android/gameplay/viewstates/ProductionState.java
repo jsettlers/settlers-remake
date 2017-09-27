@@ -9,10 +9,12 @@ import jsettlers.common.material.EMaterialType;
 public class ProductionState {
     private final EMaterialType materialType;
     private final int quantity;
+    private final float ratio;
 
-    public ProductionState(EMaterialType materialType, int quantity) {
+    public ProductionState(EMaterialType materialType, int quantity, float ratio) {
         this.materialType = materialType;
         this.quantity = quantity;
+        this.ratio = ratio;
     }
 
     public EMaterialType getMaterialType() {
@@ -21,5 +23,9 @@ public class ProductionState {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public float getRatio() {
+        return ratio;
     }
 }

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.PositionControls;
 
 /**
  * Created by Tom Pratt on 25/09/2017.
@@ -20,7 +22,14 @@ public class ControlsViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass == ProductionViewModel.class) {
-            return (T)new ProductionViewModel(controlsResolver.getPositionControls());
+            PositionControls positionControls = controlsResolver.getPositionControls();
+            IMaterialProductionSettings materialProductionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getMaterialProductionSettings();
+
+            return (T)new ProductionViewModel(
+                    controlsResolver.getActionControls(),
+                    positionControls,
+                    controlsResolver.getDrawControls(),
+                    materialProductionSettings);
         }
 
         throw new RuntimeException("ControlsViewModelFactory doesn't know how to create a: " + modelClass.toString());
