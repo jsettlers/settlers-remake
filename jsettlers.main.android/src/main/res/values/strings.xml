@@ -148,4 +148,6 @@
     <string name="service_description">JSettlers Game Service running the current game.</string>
     <string name="goods_stock_title">Global storage</string>
     <string name="global_stock_message">Global storage settings must be set in one of your own settlements.</string>
+    <string name="goods_inventory_title">Inventory</string>
+
 </resources>

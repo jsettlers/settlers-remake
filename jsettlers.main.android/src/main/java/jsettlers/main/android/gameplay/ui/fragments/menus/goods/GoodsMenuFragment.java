@@ -67,7 +67,7 @@ public class GoodsMenuFragment extends Fragment {
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return GoodsQuantitiesFragment.newInstance();
+				return GoodsInventoryFragment.newInstance();
 			case 1:
 				return GoodsProductionFragment.newInstance();
 			case 2:

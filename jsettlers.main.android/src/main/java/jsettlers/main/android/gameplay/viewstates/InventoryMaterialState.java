@@ -13,20 +13,28 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.ui.fragments.menus.goods;
+package jsettlers.main.android.gameplay.viewstates;
 
-import org.androidannotations.annotations.EFragment;
-
-import jsettlers.main.android.R;
-
-import android.support.v4.app.Fragment;
+import jsettlers.common.material.EMaterialType;
 
 /**
- * Created by tompr on 24/11/2016.
+ * Created by tompr on 28/09/2017.
  */
-@EFragment(R.layout.menu_goods_quantities)
-public class GoodsQuantitiesFragment extends Fragment {
-	public static GoodsQuantitiesFragment newInstance() {
-		return new GoodsQuantitiesFragment_();
-	}
+
+public class InventoryMaterialState {
+    private final EMaterialType materialType;
+    private int count;
+
+    public InventoryMaterialState(EMaterialType materialType, int count) {
+        this.materialType = materialType;
+        this.count = count;
+    }
+
+    public EMaterialType getMaterialType() {
+        return materialType;
+    }
+
+    public int getCount() {
+        return count;
+    }
 }

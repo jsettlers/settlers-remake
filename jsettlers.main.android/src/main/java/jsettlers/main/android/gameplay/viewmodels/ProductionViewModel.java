@@ -39,22 +39,15 @@ public class ProductionViewModel extends ViewModel {
     private final ActionControls actionControls;
     private final PositionControls positionControls;
     private final DrawControls drawControls;
-    private final IMaterialProductionSettings materialProductionSettings;
 
     private final ProductionStatesData productionStates;
 
-    public ProductionViewModel(ActionControls actionControls, PositionControls positionControls, DrawControls drawControls, IMaterialProductionSettings materialProductionSettings) {
+    public ProductionViewModel(ActionControls actionControls, PositionControls positionControls, DrawControls drawControls) {
         this.actionControls = actionControls;
         this.positionControls = positionControls;
         this.drawControls = drawControls;
-        this.materialProductionSettings = materialProductionSettings;
 
         this.productionStates  = new ProductionStatesData();
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
     }
 
     public LiveData<ProductionState[]> getProductionStates() {
@@ -113,12 +106,14 @@ public class ProductionViewModel extends ViewModel {
         }
 
         private ProductionState[] productionStates() {
+            IMaterialProductionSettings materialProductionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getMaterialProductionSettings();
+
             return stream(productionMaterials)
-                    .map(this::productionState)
+                    .map(materialType -> productionState(materialType, materialProductionSettings))
                     .toArray(ProductionState[]::new);
         }
 
-        private ProductionState productionState(EMaterialType materialType) {
+        private ProductionState productionState(EMaterialType materialType, IMaterialProductionSettings materialProductionSettings) {
             int quantity = materialProductionSettings.getAbsoluteProductionRequest(materialType);
             float ratio = materialProductionSettings.getUserConfiguredRelativeRequestValue(materialType);
 
