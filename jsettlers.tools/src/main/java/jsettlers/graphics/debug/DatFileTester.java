@@ -96,7 +96,7 @@ public class DatFileTester {
 
 		private static final int SETTLERS = 1;
 		private static final int GUI = 2;
-		private static final int LANDSCAPE = 2;
+		private static final int LANDSCAPE = 3;
 		private int offsetY = 400;
 		private int offsetX = 200;
 		private int mode = SETTLERS;
@@ -132,8 +132,8 @@ public class DatFileTester {
 						e.printStackTrace();
 					}
 				}
-				region.requestRedraw();
 			}
+			region.requestRedraw();
 		}
 
 		@Override

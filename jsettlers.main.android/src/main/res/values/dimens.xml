@@ -18,6 +18,7 @@
 
     <!-- In Game dimens -->
     <dimen name="menu_button_size">40dp</dimen>
+    <dimen name="menu_button_size_padded">56dp</dimen>
 
     <dimen name="menu_tile_waiting_height">28dp</dimen>
     <dimen name="menu_tile_occupied_height">52dp</dimen>

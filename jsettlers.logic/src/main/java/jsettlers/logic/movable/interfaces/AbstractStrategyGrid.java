@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.movable.interfaces;
 
+import java.io.Serializable;
+
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -27,8 +29,6 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.player.Player;
-
-import java.io.Serializable;
 
 /**
  * Defines methods needed by the {@link MovableStrategy}.
@@ -238,7 +238,11 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 */
 	public abstract boolean isFreePosition(ShortPoint2D position);
 
+	public abstract boolean isFreeShipPosition(ShortPoint2D position);
+
 	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
 
 	public abstract ILogicMovable getMovableAt(int x, int y);
+
+	public abstract ShortPoint2D getFerryUnloadPosition(ShortPoint2D position);
 }

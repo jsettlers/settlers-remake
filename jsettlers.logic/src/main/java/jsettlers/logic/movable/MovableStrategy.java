@@ -14,29 +14,31 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
+import java.io.Serializable;
+import java.util.LinkedList;
+
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
 import jsettlers.logic.movable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.movable.strategies.DiggerStrategy;
+import jsettlers.logic.movable.strategies.ferries.FerryStrategy;
 import jsettlers.logic.movable.strategies.soldiers.BowmanStrategy;
 import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
+import jsettlers.logic.movable.strategies.trading.CargoBoatStrategy;
 import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
-
-import java.io.Serializable;
-import java.util.LinkedList;
 
 /**
  * Abstract super class of all movable strategies.
@@ -87,6 +89,7 @@ public abstract class MovableStrategy implements Serializable {
 		case WATERWORKER:
 		case WINEGROWER:
 		case HEALER:
+		case DOCKWORKER:
 			return new BuildingWorkerStrategy(movable);
 
 		case DIGGER:
@@ -105,6 +108,12 @@ public abstract class MovableStrategy implements Serializable {
 
 		case DONKEY:
 			return new DonkeyStrategy(movable);
+
+		case FERRY:
+			return new FerryStrategy(movable);
+
+		case CARGO_BOAT:
+			return new CargoBoatStrategy(movable);
 
 		default:
 			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
@@ -196,8 +205,8 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.grid.isValidPosition(movable, x, y);
 	}
 
-	public final ShortPoint2D getPos() {
-		return movable.getPos();
+	public final ShortPoint2D getPosition() {
+		return movable.getPosition();
 	}
 
 	protected final void abortPath() {

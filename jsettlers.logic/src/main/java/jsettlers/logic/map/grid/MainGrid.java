@@ -72,6 +72,8 @@ import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.DockPosition;
+import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
@@ -249,7 +251,7 @@ public final class MainGrid implements Serializable {
 				if (object != null && isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
 					addMapObject(x, y, object);
 				}
-				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
+				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isSurroundedByWater(x, y)) {
 					mapObjectsManager.addWaves(x, y);
 					if (landscapeGrid.getResourceAmountAt(x, y) > 50) {
 						mapObjectsManager.addFish(x, y);
@@ -281,16 +283,20 @@ public final class MainGrid implements Serializable {
 		return object instanceof BuildingMapDataObject && ((BuildingMapDataObject) object).getType().isMilitaryBuilding();
 	}
 
-	private boolean isInsideWater(short x, short y) {
-		return isWaterSafe(x - 1, y) && isWaterSafe(x, y) && isWaterSafe(x + 1, y) && isWaterSafe(x - 1, y + 1) && isWaterSafe(x, y + 1)
-				&& isWaterSafe(x + 1, y + 1) && isWaterSafe(x, y + 2) && isWaterSafe(x + 1, y + 2) && isWaterSafe(x + 2, y + 2);
+	private boolean isSurroundedByWater(int x, int y) {
+		for (EDirection direction : EDirection.VALUES) {
+			if (!isWaterSafe(direction.getNextTileX(x), direction.getNextTileY(y))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private boolean isWaterSafe(int x, int y) {
-		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
+		return isInBounds(x, y) && landscapeGrid.getLandscapeTypeAt(x, y).isWater();
 	}
 
-	private void addMapObject(short x, short y, MapDataObject object) {
+	private void addMapObject(int x, int y, MapDataObject object) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
 
 		if (object instanceof MapTreeObject) {
@@ -359,7 +365,7 @@ public final class MainGrid implements Serializable {
 	private UIState calculateUiStateByTower(byte currPlayerId) {
 		for (Building building : Building.getAllBuildings()) {
 			if (building.getPlayer().playerId == currPlayerId && building instanceof OccupyingBuilding) {
-				return new UIState(building.getPos());
+				return new UIState(((OccupyingBuilding) building).getPosition());
 			}
 		}
 		return null;
@@ -486,6 +492,9 @@ public final class MainGrid implements Serializable {
 	}
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
+		if (pathCalculatable.isShip()) {
+			return isSurroundedByWater((short) x, (short) y);
+		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
 				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
 	}
@@ -503,6 +512,9 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
+			if (requester.isShip()) {
+				return !isSurroundedByWater((short) x, (short) y);
+			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
 
@@ -706,10 +718,8 @@ public final class MainGrid implements Serializable {
 					ShortPoint2D inDirPos = direction.getNextHexPoint(x, y);
 					ShortPoint2D invDirPos = direction.getInverseDirection().getNextHexPoint(x, y);
 
-					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
-							EMapObjectType.WINE_DEAD)
-							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
-									EMapObjectType.WINE_DEAD);
+					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
+							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD);
 				}
 			}
 			return false;
@@ -1308,6 +1318,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public boolean isFreeShipPosition(ShortPoint2D position) {
+			return isSurroundedByWater(position.x, position.y) && movableGrid.hasNoMovableAt(position.x, position.y);
+		}
+
+		@Override
 		public void leavePosition(ShortPoint2D position, ILogicMovable movable) {
 			movableGrid.movableLeft(position, movable);
 		}
@@ -1358,6 +1373,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
+		}
+
+		@Override
+		public boolean isWaterSafe(int x, int y) {
+			return MainGrid.this.isWaterSafe(x, y);
 		}
 
 		@Override
@@ -1456,6 +1476,14 @@ public final class MainGrid implements Serializable {
 		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
 			return landscapeGrid.tryTakingResource(position, resource);
 		}
+
+		@Override
+		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
+			return HexGridArea.stream(position.x, position.y, 1, 5)
+					.filterBounds(width, height)
+					.filter((x, y) -> !isBlocked(x, y))
+					.getFirst().orElse(null);
+		}
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
@@ -1495,6 +1523,67 @@ public final class MainGrid implements Serializable {
 			for (int i = 0; i < numberOf; i++) {
 				movablePathfinderGrid.dropMaterial(position, type, true, true);
 			}
+		}
+
+		@Override
+		public DockPosition findValidDockPosition(ShortPoint2D requestedPosition, ShortPoint2D buildingPosition, int maximumDistance) {
+			if (!isWaterSafe(requestedPosition.x, requestedPosition.y)) {
+				return null; // requested position is not in water
+			}
+
+			short buildingPartition = partitionsGrid.getPartitionIdAt(buildingPosition.x, buildingPosition.y);
+
+			Optional<ShortPoint2D> coastPosition = HexGridArea.stream(requestedPosition.x, requestedPosition.y, 0, 12)
+					.filterBounds(width, height)
+					.filter((x, y) -> ShortPoint2D.getOnGridDist(buildingPosition.x, buildingPosition.y, x, y) <= maximumDistance)
+					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
+					.filter((x, y) -> partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) // ensure the dock is the same partition (accessible by worker of building)
+					.filter((x, y) -> { // check that the dock goes from land to water
+						EDirection direction = EDirection.getApproxDirection(x, y, requestedPosition.x, requestedPosition.y);
+						ShortPoint2D firstDockWaterPosition = direction.getNextHexPoint(x, y);
+						ShortPoint2D secondDockWaterPosition = direction.getNextHexPoint(x, y);
+
+						return isWaterSafe(firstDockWaterPosition.x, firstDockWaterPosition.y) && isWaterSafe(secondDockWaterPosition.x, secondDockWaterPosition.y);
+					})
+					.getFirst();
+
+			if (!coastPosition.isPresent()) {
+				return null;
+			}
+
+			EDirection direction = EDirection.getApproxDirection(coastPosition.get(), requestedPosition);
+			return new DockPosition(coastPosition.get(), direction);
+		}
+
+		@Override
+		public void setDock(DockPosition dockPosition, Player player) {
+			ShortPoint2D point = dockPosition.getDirection().rotateRight(3).getNextHexPoint(dockPosition.getPosition());
+			short partition = landscapeGrid.getBlockedPartitionAt(point.x, point.y);
+			for (int i = 0; i < 3; i++) {
+				point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
+				mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, player);
+				flagsGrid.setBlockedAndProtected(point.x, point.y, false);
+				partitionsGrid.changePlayerAt(point, player.getPlayerId());
+				landscapeGrid.setBlockedPartition(point.x, point.y, partition);
+			}
+		}
+
+		@Override
+		public void removeDock(DockPosition dockPosition) {
+			for (int i = 0; i < 3; i++) {
+				ShortPoint2D point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
+				mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
+				flagsGrid.setBlockedAndProtected(point.x, point.y, true);
+				landscapeGrid.setBlockedPartition(point.x, point.y, LandscapeGrid.SEA_BLOCKED_PARTITION);
+			}
+		}
+
+		@Override
+		public boolean isCoastReachable(ShortPoint2D position) {
+			return !HexGridArea.stream(position.x, position.y, 0, 2)
+					.filterBounds(width, height)
+					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater)
+					.isEmpty();
 		}
 
 		@Override
@@ -1751,12 +1840,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround, final IPlayer player, short targetRadius) {
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround, final boolean isShip, final IPlayer player,
+				short targetRadius) {
 			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public ShortPoint2D getPos() {
+				public ShortPoint2D getPosition() {
 					return start;
 				}
 
@@ -1768,6 +1858,11 @@ public final class MainGrid implements Serializable {
 				@Override
 				public boolean needsPlayersGround() {
 					return needsPlayersGround;
+				}
+
+				@Override
+				public boolean isShip() {
+					return isShip;
 				}
 			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
 
@@ -1799,6 +1894,35 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean isInBounds(ShortPoint2D position) {
 			return MainGrid.this.isInBounds(position.x, position.y);
+		}
+
+		public FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId) {
+			if (!isWaterSafe(position.x, position.y)) {
+				return null;
+			}
+			ShortPoint2D ferryPosition = position;
+			ShortPoint2D entrance = position;
+			boolean searching = true;
+			ILogicMovable ship = null;
+			EDirection direction = EDirection.getDirection(0, 1);
+			for (int r1 = -1; r1 < EDirection.NUMBER_OF_DIRECTIONS && searching; r1++) { // search ferry
+				if (r1 >= 0) {
+					ferryPosition = direction.rotateRight(r1).getNextHexPoint(position);
+				}
+				ship = getMovableGrid().getMovableAt(ferryPosition.x, ferryPosition.y);
+				if (ship != null && ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
+					for (int r2 = 0; r2 < EDirection.NUMBER_OF_DIRECTIONS && searching; r2++) { // search ferry entrance
+						entrance = direction.rotateRight(r2).getNextHexPoint(ferryPosition, 3);
+						if (!this.isBlocked(entrance.x, entrance.y)) {
+							searching = false;
+						}
+					}
+				}
+			}
+			if (searching) {
+				return null;
+			}
+			return new FerryEntrance((Movable) ship, entrance);
 		}
 
 		@Override

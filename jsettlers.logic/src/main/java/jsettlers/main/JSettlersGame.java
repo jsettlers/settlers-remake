@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
@@ -42,6 +43,7 @@ import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.trading.HarborBuilding;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
@@ -64,6 +66,7 @@ import jsettlers.network.client.interfaces.INetworkConnector;
  * @author Andreas Eberle
  */
 public class JSettlersGame {
+	private static final SimpleDateFormat LOG_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US);
 	private final Object stopMutex = new Object();
 
 	private final IGameCreator mapCreator;
@@ -423,7 +426,7 @@ public class JSettlersGame {
 	}
 
 	private static DateFormat getLogDateFormatter() {
-		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		return LOG_DATE_FORMATTER;
 	}
 
 	public static void clearState() {
@@ -431,6 +434,7 @@ public class JSettlersGame {
 		Movable.resetState();
 		Building.clearState();
 		MarketBuilding.clearState();
+		HarborBuilding.clearState();
 		MatchConstants.clearState();
 	}
 }

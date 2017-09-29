@@ -45,6 +45,7 @@ public enum EMovableType {
 	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	WINEGROWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	HEALER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	DOCKWORKER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
 
 	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
 	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true),
@@ -68,7 +69,10 @@ public enum EMovableType {
 	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6, 150f, 7f),
 
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
-	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
+	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
+
+	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false),
+	CARGO_BOAT(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false);
 
 	/**
 	 * All step durations will be multiplied with this speedup factor.
@@ -94,6 +98,8 @@ public enum EMovableType {
 	public static final Set<EMovableType> INFANTRY = EnumSet.of(
 			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
+
+	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_BOAT);
 
 	private final EMaterialType tool;
 	private final ESelectionType selectionType;
@@ -167,6 +173,10 @@ public enum EMovableType {
 
 	public boolean isInfantry() {
 		return INFANTRY.contains(this);
+	}
+
+	public boolean isShip() {
+		return SHIPS.contains(this);
 	}
 
 	public ESoldierType getSoldierType() {

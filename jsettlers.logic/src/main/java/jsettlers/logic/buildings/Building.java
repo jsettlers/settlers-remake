@@ -48,8 +48,9 @@ import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
+import jsettlers.logic.buildings.trading.HarborBuilding;
 import jsettlers.logic.buildings.trading.MarketBuilding;
-import jsettlers.logic.buildings.trading.TradingBuilding;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
@@ -408,7 +409,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return pos;
 	}
 
@@ -551,8 +552,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return this.heightAvg;
 	}
 
-	public final boolean isNotDestroyed() {
-		return state != EBuildingState.DESTROYED;
+	public final boolean isDestroyed() {
+		return state == EBuildingState.DESTROYED;
 	}
 
 	protected List<? extends IRequestStack> getStacks() {
@@ -590,9 +591,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		ArrayList<IBuildingMaterial> materials = new ArrayList<>();
 
 		for (IRequestStack stack : stacks) {
-			if (state == EBuildingState.CONSTRUCTED) {
+			if (stack.getStillRequired() == Short.MAX_VALUE) {
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
-			} else { // during construction
+			} else { // stacks with a maximum required amount should show the required amount
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillRequired()));
 			}
 		}
@@ -673,8 +674,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case WINEGROWER:
 			return new WorkerBuilding(type, player, position, buildingsGrid);
 
+		case DOCKYARD:
+			return new DockyardBuilding(player, position, buildingsGrid);
+
 		case MILL:
-			return new MillBuilding(type, player, position, buildingsGrid);
+			return new MillBuilding(player, position, buildingsGrid);
 
 		case TOWER:
 		case BIG_TOWER:
@@ -690,7 +694,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new MineBuilding(type, player, position, buildingsGrid);
 
 		case FISHER:
-			return new ResourceBuilding(EBuildingType.FISHER, player, position, buildingsGrid);
+			return new ResourceBuilding(type, player, position, buildingsGrid);
 
 		case STOCK:
 			return new StockBuilding(player, position, buildingsGrid);
@@ -700,15 +704,15 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case MARKET_PLACE:
 			return new MarketBuilding(type, player, position, buildingsGrid);
+
 		case HARBOR:
-			return new TradingBuilding(type, player, position, buildingsGrid, true);
+			return new HarborBuilding(type, player, position, buildingsGrid);
 
 		case BIG_TEMPLE:
 			return new BigTemple(player, position, buildingsGrid);
 
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
-		case DOCKYARD:
 			return new DefaultBuilding(type, player, position, buildingsGrid);
 
 		default:

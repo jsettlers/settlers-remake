@@ -23,11 +23,11 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
 /**
@@ -82,7 +82,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 
 	@Override
 	public final void occupyBuilding(IManageableWorker worker) {
-		if (super.isNotDestroyed()) {
+		if (!super.isDestroyed()) {
 			this.worker = worker;
 			super.showFlag(true);
 			super.initWorkStacks();
@@ -107,7 +107,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	protected final void killedEvent() {
+	protected void killedEvent() {
 		if (worker != null) {
 			this.worker.buildingDestroyed();
 			this.worker = null;
@@ -132,7 +132,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
+	public boolean tryTakingFood(EMaterialType[] foodOrder) {
 		return false;
 	}
 

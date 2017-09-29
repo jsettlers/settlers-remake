@@ -16,16 +16,20 @@ package jsettlers.logic.movable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -48,7 +52,6 @@ import jsettlers.logic.timer.RescheduleTimer;
  *
  */
 public final class Movable implements ILogicMovable {
-	private static final long serialVersionUID = 2472076796407425256L;
 	private static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<>();
 	private static int nextID = Integer.MIN_VALUE;
@@ -87,6 +90,17 @@ public final class Movable implements ILogicMovable {
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
 
+	// the following block of data only for ships
+	private ImageLink[] images = null;
+	private ArrayList<IMovable> passengers = new ArrayList<>();
+	private ShortPoint2D unloadingPosition = null;
+	private final int cargoStacks = 3;
+	private EMaterialType cargoType[] = new EMaterialType[cargoStacks];
+	private int cargoCount[] = new int[cargoStacks];
+
+	// the following data only for ship passengers
+	private Movable ferryToEnter = null;
+
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
 		this.position = position;
@@ -103,6 +117,15 @@ public final class Movable implements ILogicMovable {
 		movablesByID.put(this.id, this);
 		allMovables.offer(this);
 
+		if (isShip()) {
+			BuildingFile file = new BuildingFile(this.movableType.toString());
+			this.images = file.getImages();
+			for (int i = 0; i < this.cargoStacks; i++) {
+				this.cargoType[i] = null;
+				this.cargoCount[i] = 0;
+			}
+		}
+
 		grid.enterPosition(position, this, true);
 	}
 
@@ -110,10 +133,13 @@ public final class Movable implements ILogicMovable {
 	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
 	 *
 	 * @param ois
+	 *            ObjectInputStream
 	 * @throws IOException
+	 *             Exception regarding IO
 	 * @throws ClassNotFoundException
+	 *             Class not found exception
 	 */
-	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		movablesByID.put(this.id, this);
 		allMovables.add(this);
@@ -124,6 +150,7 @@ public final class Movable implements ILogicMovable {
 	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
 	 *
 	 * @param targetPosition
+	 *            Desired position the movable should move to
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
@@ -187,13 +214,28 @@ public final class Movable implements ILogicMovable {
 		case WAITING:
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
+			setState(EMovableState.DOING_NOTHING); // the action is finished, as the time passed
 			movableAction = EMovableAction.NO_ACTION;
 
 		case PATHING:
 		case DOING_NOTHING:
 			if (visible) {
 				checkPlayerOfCurrentPosition();
+			}
+			break;
+
+		case UNLOADING:
+			int numberOfPassengers = passengers.size();
+			if (numberOfPassengers > 0) {
+				Movable movable = (Movable) grid.getMovableAt(this.unloadingPosition.x, this.unloadingPosition.y);
+				if (movable != null) {
+					movable.leavePosition(); // passengers need free space to leave the ferry
+				} else {
+					((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
+					passengers.remove(numberOfPassengers - 1);
+				}
+			} else {
+				setState(EMovableState.DOING_NOTHING);
 			}
 			break;
 
@@ -262,9 +304,13 @@ public final class Movable implements ILogicMovable {
 		}
 
 		if (state == EMovableState.DOING_NOTHING) { // if movable is currently doing nothing
-			strategy.action(); // let the strategy work
-
+			if (strategy != null) {
+				strategy.action(); // let the strategy work
+			}
 			if (state == EMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
+				if (this.isShip()) {
+					pushShips();
+				}
 				if (visible && enableNothingToDo) {
 					return doingNothingAction();
 				} else {
@@ -282,6 +328,16 @@ public final class Movable implements ILogicMovable {
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
 			path = null;
+			if (ferryToEnter != null) {
+				int distanceToFerry = this.getPosition().getOnGridDistTo(ferryToEnter.getPosition());
+				if (distanceToFerry < 4) {
+					if (ferryToEnter.addPassenger(this)) {
+						grid.leavePosition(this.getPosition(), this);
+						setState(EMovableState.ON_FERRY);
+					}
+				}
+				ferryToEnter = null;
+			}
 			return;
 		}
 
@@ -318,6 +374,36 @@ public final class Movable implements ILogicMovable {
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} // else: push initiated our next step
 		}
+		if (this.isShip()) { // ships need more space
+			pushShips();
+		}
+	}
+
+	void pushShips() {
+		final int SHIP_PUSH_DISTANCE = 10;
+		ILogicMovable blockingMovable;
+		final byte[] xDeltaArray = EDirection.getXDeltaArray();
+		final byte[] yDeltaArray = EDirection.getYDeltaArray();
+		int x, y;
+		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+			for (int distance = 1; distance < SHIP_PUSH_DISTANCE; distance++) {
+				int xBegin = distance * xDeltaArray[direction];
+				int yBegin = distance * yDeltaArray[direction];
+				int nextDirection = (direction + 1) % EDirection.NUMBER_OF_DIRECTIONS;
+				int xEnd = distance * xDeltaArray[nextDirection];
+				int yEnd = distance * yDeltaArray[nextDirection];
+				for (int i = 0; i < distance; i++) {
+					x = this.getPosition().x + xBegin + (xEnd - xBegin) / distance * i;
+					y = this.getPosition().y + yBegin + (yEnd - yBegin) / distance * i;
+					if (grid.isInBounds(x, y)) {
+						blockingMovable = grid.getMovableAt(x, y);
+						if (blockingMovable != null && blockingMovable.isShip()) {
+							blockingMovable.push(this);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -328,7 +414,13 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public ShortPoint2D getPosition() {
-		return position;
+		return this.position;
+	}
+
+	public void leaveFerryAtPosition(ShortPoint2D position) {
+		this.position = position;
+		this.setState(EMovableState.DOING_NOTHING);
+		grid.enterPosition(position, this, true);
 	}
 
 	@Override
@@ -346,6 +438,9 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private int doingNothingAction() {
+		if (this.isShip()) {
+			return flockDelay;
+		}
 		if (grid.isBlockedOrProtected(position.x, position.y)) {
 			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
 			if (newPath == null) {
@@ -418,8 +513,8 @@ public final class Movable implements ILogicMovable {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 
 				} else if (pushingMovable.getMovableType().isPlayerControllable()
-						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
-					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
+						|| strategy.isValidPosition(pushingMovable.getPosition())) { // exchange positions
+					EDirection directionToPushing = EDirection.getApproxDirection(this.position, pushingMovable.getPosition());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
 					return true;
@@ -495,11 +590,16 @@ public final class Movable implements ILogicMovable {
 
 	private boolean goToRandomDirection(ILogicMovable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+		EDirection pushedFromDir = EDirection.getApproxDirection(this.getPosition(), pushingMovable.getPosition());
+		if (pushedFromDir == null) {
+			return false;
+		}
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (currDir != pushedFromDir && goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
+			if (currDir != pushedFromDir && currDir != pushedFromDir.rotateRight(1)
+					&& currDir != pushedFromDir.rotateRight(EDirection.NUMBER_OF_DIRECTIONS - 1)
+					&& goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				return true;
 			}
 		}
@@ -732,11 +832,11 @@ public final class Movable implements ILogicMovable {
 	 * @return returns the movable with the given ID<br>
 	 *         or null if the id can not be found
 	 */
-	public final static ILogicMovable getMovableByID(int id) {
+	public static ILogicMovable getMovableByID(int id) {
 		return movablesByID.get(id);
 	}
 
-	public final static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
+	public static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
 		return allMovables;
 	}
 
@@ -832,13 +932,13 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
-	public final ShortPoint2D getPos() {
-		return position;
+	public final float getHealth() {
+		return health;
 	}
 
 	@Override
-	public final float getHealth() {
-		return health;
+	public final boolean isAlive() {
+		return health > 0;
 	}
 
 	@Override
@@ -908,7 +1008,11 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public final boolean isAttackable() {
-		return strategy.isAttackable();
+		return strategy != null && strategy.isAttackable();
+	}
+
+	public void aimAtFerry(Movable ferry) {
+		this.ferryToEnter = ferry;
 	}
 
 	/**
@@ -961,9 +1065,11 @@ public final class Movable implements ILogicMovable {
 		DOING_NOTHING,
 		GOING_SINGLE_STEP,
 		WAITING,
+		ON_FERRY,
 
 		TAKE,
 		DROP,
+		UNLOADING,
 
 		DEAD,
 
@@ -973,4 +1079,81 @@ public final class Movable implements ILogicMovable {
 		DEBUG_STATE
 	}
 
+	public boolean isShip() {
+		return movableType.isShip();
+	}
+
+	public final ImageLink[] getImages() {
+		return images;
+	}
+
+	public final void setDirection(EDirection direction) {
+		this.direction = direction;
+	}
+
+	public boolean addPassenger(Movable movable) {
+		if (passengers.size() < 7) {
+			this.passengers.add(movable);
+			return true;
+		}
+		return false;
+	}
+
+	public ArrayList<IMovable> getPassengers() {
+		return this.passengers;
+	}
+
+	public void unloadFerry() {
+		if (this.getMovableType() != EMovableType.FERRY || position == null) {
+			return;
+		}
+
+		this.unloadingPosition = grid.getFerryUnloadPosition(position);
+		if (this.passengers.size() > 0 && this.state == EMovableState.DOING_NOTHING) {
+			setState(EMovableState.UNLOADING);
+		}
+	}
+
+	private boolean checkStackNumber(int stack) {
+		return stack >= 0 && stack < this.cargoStacks;
+	}
+
+	public void setCargoType(EMaterialType cargo, int stack) {
+		if (checkStackNumber(stack)) {
+			this.cargoType[stack] = cargo;
+		} else {
+			throw new IllegalArgumentException("Empty stack cannot be used as ship cargo");
+		}
+	}
+
+	public EMaterialType getCargoType(int stack) {
+		if (checkStackNumber(stack)) {
+			return this.cargoType[stack];
+		} else {
+			return null;
+		}
+	}
+
+	public void setCargoCount(int count, int stack) {
+		if (checkStackNumber(stack)) {
+			this.cargoCount[stack] = count;
+			if (this.cargoCount[stack] < 0) {
+				this.cargoCount[stack] = 0;
+			} else if (this.cargoCount[stack] > 8) {
+				this.cargoCount[stack] = 8;
+			}
+		}
+	}
+
+	public int getCargoCount(int stack) {
+		if (checkStackNumber(stack) && this.cargoType[stack] != null) {
+			return this.cargoCount[stack];
+		} else {
+			return 0;
+		}
+	}
+
+	public int getNumberOfStacks() {
+		return this.cargoStacks;
+	}
 }

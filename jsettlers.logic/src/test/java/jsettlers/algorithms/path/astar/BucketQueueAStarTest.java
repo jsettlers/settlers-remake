@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.algorithms.path.astar;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
+
+import static org.junit.Assert.assertEquals;
 
 public class BucketQueueAStarTest {
 
@@ -77,6 +77,11 @@ public class BucketQueueAStarTest {
 
 			@Override
 			public boolean needsPlayersGround() {
+				return false;
+			}
+
+			@Override
+			public boolean isShip() {
 				return false;
 			}
 		};

@@ -22,30 +22,36 @@ import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.OrderShipGuiTask;
 import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetDockGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
+import jsettlers.input.tasks.SimpleBuildingGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
+import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
@@ -53,20 +59,19 @@ import jsettlers.network.synchronic.timer.ITaskExecutor;
 
 import java8.util.Objects;
 import java8.util.Optional;
+import java8.util.function.Consumer;
 import java8.util.stream.Collectors;
 
 /**
- *
  * @author Andreas Eberle
- *
  */
-public class GuiTaskExecutor implements ITaskExecutor {
+class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
 	private final IGuiInputGrid grid;
 	private final ITaskExecutorGuiInterface guiInterface;
 	private final byte playerId;
 
-	public GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface, byte playerId) {
+	GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface, byte playerId) {
 		this.grid = grid;
 		this.guiInterface = guiInterface;
 		this.playerId = playerId;
@@ -87,8 +92,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		System.out.println("executeTask(GuiTask): " + guiTask.getGuiAction());
 		switch (guiTask.getGuiAction()) {
 		case SET_WORK_AREA: {
-			WorkAreaGuiTask task = (WorkAreaGuiTask) guiTask;
-			setWorkArea(task.getPosition(), task.getBuildingPos().x, task.getBuildingPos().y);
+			setWorkArea((WorkAreaGuiTask) guiTask);
 			break;
 		}
 
@@ -109,11 +113,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 
 		case DESTROY_BUILDING: {
-			ShortPoint2D buildingPos = ((DestroyBuildingGuiTask) guiTask).getPosition();
-			Building building = ((Building) grid.getBuildingAt(buildingPos.x, buildingPos.y));
-			if (building != null) {
-				building.kill();
-			}
+			destroyBuilding((SimpleBuildingGuiTask) guiTask);
 			break;
 		}
 
@@ -201,10 +201,26 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			setAcceptedStockMaterial((SetAcceptedStockMaterialGuiTask) guiTask);
 			break;
 
+		case SET_DOCK:
+			setDock((SetDockGuiTask) guiTask);
+			break;
+
+		case ORDER_SHIP:
+			orderShip((OrderShipGuiTask) guiTask);
+			break;
+
+		case UNLOAD_FERRY:
+			unloadFerry((MovableGuiTask) guiTask);
+			break;
+
 		default:
 			break;
 
 		}
+	}
+
+	private void destroyBuilding(SimpleBuildingGuiTask task) {
+		this.forBuilding(task, Building::kill);
 	}
 
 	private void setAcceptedStockMaterial(SetAcceptedStockMaterialGuiTask guiTask) {
@@ -250,12 +266,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		}
 	}
 
-	private void setBuildingPriority(SetBuildingPriorityGuiTask guiTask) {
-		ShortPoint2D pos = guiTask.getBuildingPosition();
-		Building building = ((Building) grid.getBuildingAt(pos.x, pos.y));
-		if (building != null) {
-			building.setPriority(guiTask.getNewPriority());
-		}
+	private void setBuildingPriority(SetBuildingPriorityGuiTask task) {
+		this.<Building> forBuilding(task, building -> building.setPriority(task.getNewPriority()));
 	}
 
 	private void convertMovables(ConvertGuiTask guiTask) {
@@ -295,13 +307,28 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 *            A list of the id's of the movables.
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
-		if (movableIds.size() == 1) {
-			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
-			if (currMovable != null) {
-				currMovable.moveTo(targetPosition);
+		if (movableIds.isEmpty()) {
+			return;
+		}
+		FerryEntrance ferryEntrance = null;
+		if (!Movable.getMovableByID(movableIds.get(0)).isShip() && grid.isBlocked(targetPosition.x, targetPosition.y)) {
+			ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
+		}
+		if (ferryEntrance != null) { // enter a ferry
+			for (int movableId : movableIds) {
+				Movable movable = (Movable) (Movable.getMovableByID(movableId));
+				movable.moveTo(ferryEntrance.getEntrance());
+				movable.aimAtFerry(ferryEntrance.getFerry());
 			}
-		} else if (!movableIds.isEmpty()) {
-			sendMovablesNew(targetPosition, movableIds);
+		} else {
+			if (movableIds.size() == 1) {
+				ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
+				if (currMovable != null) {
+					currMovable.moveTo(targetPosition);
+				}
+			} else {
+				sendMovablesNew(targetPosition, movableIds);
+			}
 		}
 	}
 
@@ -347,14 +374,40 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private boolean canMoveTo(ILogicMovable movable, int x, int y) {
-		return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPos().x, movable.getPos().y) == grid.getBlockedPartition(x, y);
+		return movable.isShip() || !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPosition().x, movable.getPosition().y) == grid.getBlockedPartition(x, y);
 	}
 
-	private void setWorkArea(ShortPoint2D pos, short buildingX, short buildingY) {
-		Building building = (Building) grid.getBuildingAt(buildingX, buildingY);
+	private void setWorkArea(WorkAreaGuiTask task) {
+		this.<Building> forBuilding(task, building -> building.setWorkAreaCenter(task.getPosition()));
+	}
+
+	public void setDock(SetDockGuiTask task) {
+		this.<IDockBuilding> forBuilding(task, building -> building.setDock(task.getRequestedDockPosition()));
+	}
+
+	private void orderShip(OrderShipGuiTask task) {
+		this.<DockyardBuilding> forBuilding(task, building -> building.orderShipType(task.getShipType()));
+	}
+
+	private void unloadFerry(MovableGuiTask task) {
+		forMovables(task, ILogicMovable::unloadFerry);
+	}
+
+	private void forMovables(MovableGuiTask task, Consumer<ILogicMovable> movableConsumer) {
+		stream(task.getSelection())
+				.map(Movable::getMovableByID)
+				.filter(ILogicMovable::isAlive)
+				.filter(movable -> movable.getMovableType() == EMovableType.FERRY)
+				.forEach(movableConsumer);
+	}
+
+	private <T> void forBuilding(SimpleBuildingGuiTask buildingTask, Consumer<T> buildingConsumer) {
+		ShortPoint2D buildingPos = buildingTask.getBuildingPos();
+		// noinspection unchecked
+		T building = (T) grid.getBuildingAt(buildingPos.x, buildingPos.y);
 
 		if (building != null) {
-			building.setWorkAreaCenter(pos);
+			buildingConsumer.accept(building);
 		}
 	}
 }

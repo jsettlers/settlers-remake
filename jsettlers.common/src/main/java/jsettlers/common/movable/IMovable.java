@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.common.movable;
 
+import java.util.ArrayList;
+
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
@@ -32,6 +35,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 
 	/**
 	 * Get the current action that the movable is doing.
+	 * 
 	 * @return The action
 	 * @see #getMoveProgress()
 	 */
@@ -52,8 +56,8 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	/**
 	 * This method returns the material the IMovable is currently carrying.
 	 * <p />
-	 * If the movable is just dropping the material ({@link #getAction()} == EAction.DROP) this method has to return the old EMaterialType until
-	 * {@link #getAction()} changes to another EAction again (dropping is done)<br>
+	 * If the movable is just dropping the material ({@link #getAction()} == EAction.DROP) this method has to return the old EMaterialType until {@link #getAction()} changes to another EAction again
+	 * (dropping is done)<br>
 	 * If the movable is currently taking something, this method already returns the EMaterialType, that the movable want's to take.
 	 * 
 	 * @return
@@ -61,18 +65,18 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	EMaterialType getMaterial();
 
 	/**
-	 * Get Position of a movable
-	 * 
-	 * @return position on grid
-	 */
-	@Override ShortPoint2D getPos();
-
-	/**
 	 * Used to get health of a movable.
 	 * 
 	 * @return health of a movable
 	 */
 	float getHealth();
+
+	/**
+	 * Used to check if the movable is still alive
+	 * 
+	 * @return true if the movable is still alive, false otherwise.
+	 */
+	boolean isAlive();
 
 	/**
 	 * Returns alternating true and false on every step.
@@ -89,4 +93,16 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 *            if false, it should stop working.
 	 */
 	void stopOrStartWorking(boolean stop);
+
+	ImageLink[] getImages();
+
+	boolean isShip();
+
+	ArrayList<IMovable> getPassengers();
+
+	int getNumberOfStacks();
+
+	EMaterialType getCargoType(int stack);
+
+	int getCargoCount(int stack);
 }

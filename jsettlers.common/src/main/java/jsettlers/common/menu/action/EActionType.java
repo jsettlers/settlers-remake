@@ -326,16 +326,39 @@ public enum EActionType {
 	SET_TRADING_WAYPOINT,
 
 	/**
-	 * Ask the user to set the dock position.
+	 * Set the dock position.
+	 *
+	 * @see PointAction
+	 */
+	SET_DOCK,
+
+	/**
+	 * Ask to set the dock position.
+	 *
+	 * @see PointAction
 	 */
 	ASK_SET_DOCK,
 
 	/**
-	 * Set the dock position.
-	 * 
+	 * Order a ferry.
+	 *
 	 * @see PointAction
 	 */
-	SET_DOCK,
+	MAKE_FERRY,
+
+	/**
+	 * Order a cargo boat.
+	 *
+	 * @see PointAction
+	 */
+	MAKE_CARGO_BOAT,
+
+	/**
+	 * Passengers should leave the ferry.
+	 *
+	 * @see PointAction
+	 */
+	UNLOAD_FERRIES,
 
 	/**
 	 * Changes the amount of materials that should be traded from the current trading building.

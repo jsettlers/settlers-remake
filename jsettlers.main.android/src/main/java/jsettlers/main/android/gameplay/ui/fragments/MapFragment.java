@@ -15,8 +15,15 @@
 
 package jsettlers.main.android.gameplay.ui.fragments;
 
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -26,10 +33,12 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.Receiver;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.LinkedList;
+
+import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
@@ -52,21 +61,14 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.buildings.BuildingsMen
 import jsettlers.main.android.gameplay.ui.fragments.menus.goods.GoodsMenuFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.BuildingSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.CarriersSelectionFragment;
+import jsettlers.main.android.gameplay.ui.fragments.menus.selection.ShipsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SoldiersSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.mainmenu.ui.activities.MainActivity_;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
-import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
 
 @EFragment(R.layout.fragment_map)
 @OptionsMenu(R.menu.game)
@@ -84,6 +86,8 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	private TaskControls taskControls;
 	private GameMenu gameMenu;
 	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
+
+	private final LinkedList<BackPressedListener> backPressedListeners = new LinkedList<>();
 
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
@@ -185,18 +189,25 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	 */
 	@Override
 	public boolean onBackPressed() {
+		for (BackPressedListener backPressedListener : backPressedListeners) {
+			boolean handled = backPressedListener.onBackPressed();
+			if (handled) {
+				return true;
+			}
+		}
+
 		if (taskControls.isTaskActive()) {
 			taskControls.endTask();
 			return true;
 		}
 
-		if (selectionControls.getCurrentSelection() != null) {
-			selectionControls.deselect();
+		if (isMenuOpen()) {
+			dismissMenu();
 			return true;
 		}
 
-		if (isMenuOpen()) {
-			dismissMenu();
+		if (selectionControls.getCurrentSelection() != null) {
+			selectionControls.deselect();
 			return true;
 		}
 
@@ -259,6 +270,16 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void addBackPressedListener(BackPressedListener backPressedListener) {
+		backPressedListeners.add(backPressedListener);
+	}
+
+	@Override
+	public void removeBackPressedListener(BackPressedListener backPressedListener) {
+		backPressedListeners.remove(backPressedListener);
 	}
 
 	private void showMenu() {
@@ -328,7 +349,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 					.commit();
 			break;
 		case SPECIALISTS:
-			showMenu();
 			getChildFragmentManager().beginTransaction()
 					.replace(R.id.container_menu, SpecialistsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
 					.commit();
@@ -337,6 +357,11 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 			showMenu();
 			getChildFragmentManager().beginTransaction()
 					.replace(R.id.container_menu, CarriersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+					.commit();
+			break;
+		case SHIPS:
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, ShipsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
 					.commit();
 			break;
 		default:

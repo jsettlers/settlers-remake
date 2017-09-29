@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -93,8 +93,7 @@ public enum EBuildingJobType {
 	/**
 	 * Lets the settler drop the given material to the stack at the position.
 	 * <p>
-	 * The given material that is dropped is independent from the material the settler is having, and the material property is not changed by this
-	 * call.
+	 * The given material that is dropped is independent from the material the settler is having, and the material property is not changed by this call.
 	 * <p>
 	 * Parameter: material
 	 * <p>
@@ -118,7 +117,7 @@ public enum EBuildingJobType {
 	 * Fail: If the searched thing was not found.
 	 * <p>
 	 * XXX: what if an error occurs during walking there? (e.g. land ownership changed, object removed, ...)
-	 * 
+	 *
 	 * @see ESearchType
 	 * @see EBuildingType#getWorkRadius()
 	 */
@@ -155,6 +154,24 @@ public enum EBuildingJobType {
 	 * Fail: The position is unreachable.
 	 */
 	GO_TO,
+
+	/**
+	 * Goes to the dock.
+	 * <p>
+	 * Success: The settler is at the position
+	 * <p>
+	 * Fail: The position is unreachable.
+	 */
+	GO_TO_DOCK,
+
+	/**
+	 * Build a ship.
+	 * <p>
+	 * Success: always
+	 * <p>
+	 * Fail: never
+	 */
+	BUILD_SHIP,
 
 	/**
 	 * Look at
@@ -295,8 +312,8 @@ public enum EBuildingJobType {
 	DROP_POPPED,
 
 	/**
-	 * Let a donkey at the given position grow. This fails if the donkey cannot grow yet. A donkey can grow at a specific interval. After several
-	 * grows, it will be converted to a movable. If there is no donkey yet, one will appear.
+	 * Let a donkey at the given position grow. This fails if the donkey cannot grow yet. A donkey can grow at a specific interval. After several grows, it will be converted to a movable. If there is
+	 * no donkey yet, one will appear.
 	 */
 	GROW_DONKEY,
 }

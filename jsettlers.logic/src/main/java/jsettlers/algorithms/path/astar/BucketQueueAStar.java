@@ -64,7 +64,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 
 	@Override
 	public final Path findPath(IPathCalculatable requester, ShortPoint2D target) {
-		ShortPoint2D pos = requester.getPos();
+		ShortPoint2D pos = requester.getPosition();
 		return findPath(requester, pos.x, pos.y, target.x, target.y);
 	}
 
@@ -73,7 +73,8 @@ public final class BucketQueueAStar extends AbstractAStar {
 		final short blockedAtStartPartition;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
-		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
+		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)
+				|| map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
 			return null; // target can not be reached
 		} else if (sx == tx && sy == ty) {
 			return null;

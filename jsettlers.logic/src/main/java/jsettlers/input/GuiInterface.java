@@ -32,6 +32,7 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.EShipType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
@@ -47,6 +48,7 @@ import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SetDockAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.action.SetMaterialProductionAction;
@@ -58,21 +60,25 @@ import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskT
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.OrderShipGuiTask;
 import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetDockGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
+import jsettlers.input.tasks.SimpleBuildingGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
@@ -219,9 +225,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		case MOVE_TO: {
 			final PointAction moveToAction = (PointAction) action;
 
-			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
-				setBuildingWorkArea(moveToAction.getPosition());
+			if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+				Building building = (Building) currentSelection.getSingle();
+				if (building == null) {
+					return;
+				}
 
+				if (building instanceof IDockBuilding) {
+					setDock(moveToAction.getPosition());
+				} else {
+					setBuildingWorkArea(moveToAction.getPosition());
+				}
 			} else {
 				moveTo(moveToAction.getPosition());
 			}
@@ -317,7 +331,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			final ISelectable selected = currentSelection.getSingle();
 			if (selected instanceof Building) {
 				final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
-				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPos(), a.getMaterial(),
+				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
 						a.getAmount(), a.isRelative()));
 			}
 			break;
@@ -327,9 +341,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			final ISelectable selected = currentSelection.getSingle();
 			if (selected instanceof Building) {
 				final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
-				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
+				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
 						a.getWaypointType(), a.getPosition()));
 			}
+			break;
+		}
+
+		case SET_DOCK: {
+			setDock(((SetDockAction) action).getPosition());
+			break;
 		}
 
 		case SOLDIERS_ALL:
@@ -352,6 +372,18 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			gameStoppable.stopGame();
 			break;
 
+		case MAKE_FERRY:
+			orderShip(EShipType.FERRY);
+			break;
+
+		case MAKE_CARGO_BOAT:
+			orderShip(EShipType.CARGO_SHIP);
+			break;
+
+		case UNLOAD_FERRIES:
+			unloadFerries();
+			break;
+
 		default:
 			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
@@ -370,7 +402,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		ISelectable selectable = currentSelection.getSingle();
 		if (selectable instanceof OccupyingBuilding) {
 			OccupyingBuilding building = ((OccupyingBuilding) selectable);
-			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPos(), taskType, soldierType));
+			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPosition(), taskType, soldierType));
 		}
 	}
 
@@ -410,10 +442,25 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
+	public void setDock(ShortPoint2D requestedDockPosition) {
+		final ISelectable selected = currentSelection.getSingle();
+		if (!(selected instanceof IDockBuilding)) {
+			return;
+		}
+
+		IDockBuilding building = (IDockBuilding) selected;
+
+		if (building.canDockBePlaced(requestedDockPosition)) {
+			taskScheduler.scheduleTask(new SetDockGuiTask(playerId, building, requestedDockPosition));
+		} else {
+			connector.playSound(116, 1); // this dock position is not at the coast
+		}
+	}
+
 	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
 		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
-			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPos()));
+			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPosition()));
 		}
 	}
 
@@ -462,7 +509,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
 		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPos()));
+			taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, ((Building) currentSelection.iterator().next()).getPosition()));
 		} else {
 			taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, playerId, getIDsOfSelected()));
 		}
@@ -472,7 +519,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setBuildingPriority(EPriority newPriority) {
 		if (currentSelection != null && currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
 			taskScheduler
-					.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPos(), newPriority));
+					.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPosition(), newPriority));
 		}
 	}
 
@@ -482,8 +529,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		int count = 0;
 		for (final ISelectable member : currentSelection) {
 			if (member instanceof ILocatable) {
-				x += ((ILocatable) member).getPos().x;
-				y += ((ILocatable) member).getPos().y;
+				x += ((ILocatable) member).getPosition().x;
+				y += ((ILocatable) member).getPosition().y;
 				count++;
 			}
 		}
@@ -506,6 +553,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void moveTo(ShortPoint2D pos) {
 		final List<Integer> selectedIds = getIDsOfSelected();
 		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
+	}
+
+	private void orderShip(EShipType shipType) {
+		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
+		taskScheduler.scheduleTask(new OrderShipGuiTask(playerId, dockyard, shipType));
+	}
+
+	private void unloadFerries() {
+		taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.UNLOAD_FERRY, playerId, getIDsOfSelected()));
 	}
 
 	private List<Integer> getIDsOfSelected() {

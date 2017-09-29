@@ -134,7 +134,7 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
 	}
 
 	private void update() {
-		if (getBuildingState().isOccupied()) {
+		if (!getBuildingState().isConstruction()) {
 			controlsLayout.setVisibility(View.VISIBLE);
 			infantryLayout.removeAllViews();
 			bowmenLayout.removeAllViews();

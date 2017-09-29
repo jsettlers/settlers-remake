@@ -87,6 +87,8 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 
 	public abstract boolean isInBounds(int x, int y);
 
+	public abstract boolean isWaterSafe(int x, int y);
+
 	public abstract ShortPoint2D calcDecentralizeVector(short x, short y);
 
 	public abstract Player getPlayerAt(ShortPoint2D position);

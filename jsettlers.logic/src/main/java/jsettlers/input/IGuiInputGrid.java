@@ -22,6 +22,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
@@ -132,4 +133,6 @@ public interface IGuiInputGrid {
 	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
 
 	void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted);
+
+	FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
 }
