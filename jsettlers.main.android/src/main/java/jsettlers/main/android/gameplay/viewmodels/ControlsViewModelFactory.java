@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.gameplay.viewmodels.goods.InventoryViewModel;
+import jsettlers.main.android.gameplay.viewmodels.goods.ProductionViewModel;
 
 /**
  * Created by Tom Pratt on 25/09/2017.
@@ -24,8 +26,8 @@ public class ControlsViewModelFactory implements ViewModelProvider.Factory {
                     controlsResolver.getActionControls(),
                     controlsResolver.getPositionControls(),
                     controlsResolver.getDrawControls());
-        } else if(modelClass == GoodsInventoryViewModel.class) {
-            return (T)new GoodsInventoryViewModel(
+        } else if(modelClass == InventoryViewModel.class) {
+            return (T)new InventoryViewModel(
                     controlsResolver.getDrawControls(),
                     controlsResolver.getPositionControls());
         }

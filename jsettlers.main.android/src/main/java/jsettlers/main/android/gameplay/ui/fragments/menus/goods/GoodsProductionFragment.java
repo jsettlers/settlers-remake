@@ -37,7 +37,7 @@ import java.util.List;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.viewmodels.ControlsViewModelFactory;
-import jsettlers.main.android.gameplay.viewmodels.ProductionViewModel;
+import jsettlers.main.android.gameplay.viewmodels.goods.ProductionViewModel;
 import jsettlers.main.android.gameplay.viewstates.ProductionState;
 import jsettlers.main.android.utils.OriginalImageProvider;
 

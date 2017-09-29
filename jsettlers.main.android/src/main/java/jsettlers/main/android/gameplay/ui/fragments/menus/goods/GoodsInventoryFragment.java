@@ -35,7 +35,7 @@ import java.util.List;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.viewmodels.ControlsViewModelFactory;
-import jsettlers.main.android.gameplay.viewmodels.GoodsInventoryViewModel;
+import jsettlers.main.android.gameplay.viewmodels.goods.InventoryViewModel;
 import jsettlers.main.android.gameplay.viewstates.InventoryMaterialState;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
@@ -48,7 +48,7 @@ public class GoodsInventoryFragment extends Fragment {
 		return new GoodsInventoryFragment_();
 	}
 
-	private GoodsInventoryViewModel viewModel;
+	private InventoryViewModel viewModel;
 
 	@ViewById(R.id.recyclerView)
 	RecyclerView recyclerView;
@@ -56,7 +56,7 @@ public class GoodsInventoryFragment extends Fragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		viewModel = ViewModelProviders.of(this, new ControlsViewModelFactory(getActivity())).get(GoodsInventoryViewModel.class);
+		viewModel = ViewModelProviders.of(this, new ControlsViewModelFactory(getActivity())).get(InventoryViewModel.class);
 
 		InventoryMaterialsAdapter inventoryMaterialsAdapter = new InventoryMaterialsAdapter(getActivity());
 		recyclerView.setHasFixedSize(true);

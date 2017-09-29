@@ -13,7 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.viewmodels;
+package jsettlers.main.android.gameplay.viewmodels.goods;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -31,13 +31,13 @@ import static java8.util.J8Arrays.stream;
  * Created by Tom Pratt on 27/09/2017.
  */
 
-public class GoodsInventoryViewModel extends ViewModel {
+public class InventoryViewModel extends ViewModel {
     private final DrawControls drawControls;
     private final PositionControls positionControls;
 
     private final InventoryMaterialStatesData inventoryMaterialStatesData;
 
-    public GoodsInventoryViewModel(DrawControls drawControls, PositionControls positionControls) {
+    public InventoryViewModel(DrawControls drawControls, PositionControls positionControls) {
         this.drawControls = drawControls;
         this.positionControls = positionControls;
 

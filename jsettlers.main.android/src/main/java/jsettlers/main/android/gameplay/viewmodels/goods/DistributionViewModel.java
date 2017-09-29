@@ -13,35 +13,37 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.ui.fragments.menus.goods;
+package jsettlers.main.android.gameplay.viewmodels.goods;
 
-import org.androidannotations.annotations.EFragment;
+import android.app.Activity;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 
-import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.viewmodels.goods.DistributionViewModel;
-
-import android.arch.lifecycle.ViewModelProviders;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import jsettlers.main.android.core.controls.ControlsResolver;
 
 /**
- * Created by tompr on 24/11/2016.
+ * Created by Tom Pratt on 29/09/2017.
  */
 
-@EFragment(R.layout.menu_goods_distribution)
-public class GoodsDistributionFragment extends Fragment {
-	public static GoodsDistributionFragment newInstance() {
-		return new GoodsDistributionFragment_();
-	}
-
-	private DistributionViewModel viewModel;
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		viewModel = ViewModelProviders.of(this, new DistributionViewModel.Factory(getActivity())).get(DistributionViewModel.class);
+public class DistributionViewModel extends ViewModel {
 
 
-	}
+    /**
+     * ViewModel factory
+     */
+    public static class Factory implements ViewModelProvider.Factory {
+        private final ControlsResolver controlsResolver;
+
+        public Factory(Activity activity) {
+            this.controlsResolver = new ControlsResolver(activity);
+        }
+
+        @Override
+        public <T extends ViewModel> T create(Class<T> modelClass) {
+            if (modelClass == DistributionViewModel.class) {
+                return (T) new DistributionViewModel();
+            }
+            throw new RuntimeException("DistributionViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+        }
+    }
 }

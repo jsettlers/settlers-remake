@@ -13,7 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.viewmodels;
+package jsettlers.main.android.gameplay.viewmodels.goods;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
