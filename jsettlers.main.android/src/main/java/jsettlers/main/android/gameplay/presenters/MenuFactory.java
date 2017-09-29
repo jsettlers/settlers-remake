@@ -20,8 +20,6 @@ import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.utils.Dispatcher;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
-import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
-import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
 
 import android.app.Activity;
@@ -36,10 +34,6 @@ public class MenuFactory {
 	public MenuFactory(Activity activity) {
 		this.controlsAdapter = ((GameManager) activity.getApplication()).getControlsAdapter();
 		this.menuNavigator = ((MenuNavigatorProvider) activity).getMenuNavigator();
-	}
-
-	public BuildingsCategoryMenu buildingsMenu(BuildingsCategoryView view, EBuildingsCategory buildingsCategory) {
-		return new BuildingsCategoryMenu(view, controlsAdapter, controlsAdapter, controlsAdapter, menuNavigator, buildingsCategory);
 	}
 
 	public SettlersSoldiersMenu settlersSoldiersMenu(SettlersSoldiersView view) {

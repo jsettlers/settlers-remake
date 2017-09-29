@@ -15,10 +15,11 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +27,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
@@ -37,82 +36,61 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.presenters.BuildingTile;
-import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
-import jsettlers.main.android.gameplay.presenters.MenuFactory;
-import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+import jsettlers.main.android.gameplay.viewmodels.BuildingsCategoryViewModel;
+import jsettlers.main.android.gameplay.viewstates.BuildingViewState;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
- * Created by tompr on 24/11/2016.
+ * Created by Tom Pratt on 24/11/2016.
  */
 @EFragment(R.layout.menu_buildings_category)
-public class BuildingsCategoryFragment extends Fragment implements BuildingsCategoryView {
+public class BuildingsCategoryFragment extends Fragment {
 	private static final String ARG_BUILDINGS_CATEGORY = "arg_buildings_category";
 
 	public static BuildingsCategoryFragment newInstance(EBuildingsCategory buildingsCategory) {
 		return BuildingsCategoryFragment_.builder().buildingsCategory(buildingsCategory).build();
 	}
 
+	private BuildingsCategoryViewModel viewModel;
+
 	@ViewById(R.id.recycler_view)
 	RecyclerView recyclerView;
 	@FragmentArg(ARG_BUILDINGS_CATEGORY)
 	EBuildingsCategory buildingsCategory;
 
-	private BuildingsCategoryMenu buildingsMenu;
-	private BuildingsAdapter adapter;
-
-	@AfterViews
-	void afterViews() {
-		buildingsMenu = new MenuFactory(getActivity()).buildingsMenu(this, buildingsCategory);
-		buildingsMenu.start();
-	}
-
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		buildingsMenu.finish();
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		viewModel = ViewModelProviders.of(this, new BuildingsCategoryViewModel.Factory(getActivity(), buildingsCategory)).get(BuildingsCategoryViewModel.class);
+
+		BuildingsAdapter adapter = new BuildingsAdapter();
+		recyclerView.setHasFixedSize(true);
+		recyclerView.setAdapter(adapter);
+
+		viewModel.getBuildingStates().observe(this, adapter::setBuildingViewStates);
 	}
 
-	/**
-	 * BuildingsCategoryView implementation
-	 */
-	@UiThread
-	@Override
-	public void setBuildings(List<BuildingTile> buildingTiles) {
-		if (adapter == null) {
-			adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingTiles);
-		} else {
-			adapter.setBuildingTiles(buildingTiles);
-		}
-
-		if (recyclerView.getAdapter() == null) {
-			recyclerView.setHasFixedSize(true);
-			recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-			recyclerView.setAdapter(adapter);
-		}
-	}
 
 	private void buildingSelected(EBuildingType buildingType) {
-		buildingsMenu.buildingSelected(buildingType);
+		viewModel.showConstructionMarkers(buildingType);
 	}
 
 	/**
 	 * Adapter
 	 */
 	private class BuildingsAdapter extends RecyclerView.Adapter<BuildingsCategoryFragment.BuildingViewHolder> {
-		private List<BuildingTile> buildingTiles;
+		private final LayoutInflater layoutInflater;
 
-		private LayoutInflater layoutInflater;
+		private BuildingViewState[] buildingViewStates;
 
-		BuildingsAdapter(List<BuildingTile> buildingTiles) {
-			this.buildingTiles = buildingTiles;
-			layoutInflater = getActivity().getLayoutInflater();
+		BuildingsAdapter() {
+			this.layoutInflater = getActivity().getLayoutInflater();
+			this.buildingViewStates = new BuildingViewState[0];
 		}
 
 		@Override
 		public int getItemCount() {
-			return buildingTiles.size();
+			return buildingViewStates.length;
 		}
 
 		@Override
@@ -122,7 +100,7 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 			itemView.setOnClickListener(view -> {
 				int position = buildingViewHolder.getLayoutPosition();
-				buildingSelected(buildingTiles.get(position).getBuildingType());
+				buildingSelected(buildingViewStates[position].getBuildingType());
 			});
 
 			return buildingViewHolder;
@@ -130,7 +108,7 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 		@Override
 		public void onBindViewHolder(BuildingsCategoryFragment.BuildingViewHolder holder, int position) {
-			holder.setBuilding(buildingTiles.get(position));
+			holder.setBuilding(buildingViewStates[position]);
 		}
 
 		@Override
@@ -138,15 +116,15 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 			if (payloads == null || payloads.size() == 0) {
 				onBindViewHolder(holder, position);
 			} else {
-				holder.updateCounts(buildingTiles.get(position));
+				holder.updateCounts(buildingViewStates[position]);
 			}
 		}
 
-		public void setBuildingTiles(List<BuildingTile> buildingTiles) {
-			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new BuildingsDiffCallback(this.buildingTiles, buildingTiles));
+		void setBuildingViewStates(BuildingViewState[] buildingViewStates) {
+			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new BuildingsDiffCallback(this.buildingViewStates, buildingViewStates));
 			diffResult.dispatchUpdatesTo(this);
 
-			this.buildingTiles = buildingTiles;
+			this.buildingViewStates = buildingViewStates;
 		}
 	}
 
@@ -158,22 +136,22 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 		BuildingViewHolder(View itemView) {
 			super(itemView);
-			imageView = (ImageView) itemView.findViewById(R.id.image_view);
-			nameTextView = (TextView) itemView.findViewById(R.id.text_view_building_name);
-			buildingCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_count);
-			buildingConstructionCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_construction_count);
+			imageView = itemView.findViewById(R.id.image_view);
+			nameTextView = itemView.findViewById(R.id.text_view_building_name);
+			buildingCountTextView = itemView.findViewById(R.id.text_view_building_count);
+			buildingConstructionCountTextView = itemView.findViewById(R.id.text_view_building_construction_count);
 		}
 
-		void setBuilding(BuildingTile buildingTile) {
-			OriginalImageProvider.get(buildingTile.getBuildingType()).setAsImage(imageView);
-			nameTextView.setText(buildingTile.getName());
-			buildingCountTextView.setText(buildingTile.getCount());
-			buildingConstructionCountTextView.setText(buildingTile.getConstructionCount());
+		void setBuilding(BuildingViewState buildingViewState) {
+			OriginalImageProvider.get(buildingViewState.getBuildingType()).setAsImage(imageView);
+			nameTextView.setText(buildingViewState.getName());
+			buildingCountTextView.setText(buildingViewState.getCount());
+			buildingConstructionCountTextView.setText(buildingViewState.getConstructionCount());
 		}
 
-		void updateCounts(BuildingTile buildingTile) {
-			buildingCountTextView.setText(buildingTile.getCount());
-			buildingConstructionCountTextView.setText(buildingTile.getConstructionCount());
+		void updateCounts(BuildingViewState buildingViewState) {
+			buildingCountTextView.setText(buildingViewState.getCount());
+			buildingConstructionCountTextView.setText(buildingViewState.getConstructionCount());
 		}
 	}
 
@@ -182,33 +160,35 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	 */
 	private class BuildingsDiffCallback extends DiffUtil.Callback  {
 
-		private final List<BuildingTile> oldBuildingTiles;
-		private final List<BuildingTile> newBuildingTiles;
+		private final BuildingViewState[] oldBuildingViewStates;
+		private final BuildingViewState[] newBuildingViewStates;
 
-		BuildingsDiffCallback(List<BuildingTile> oldBuildingTiles, List<BuildingTile> newBuildingTiles) {
-			this.oldBuildingTiles = oldBuildingTiles;
-			this.newBuildingTiles = newBuildingTiles;
+		BuildingsDiffCallback(BuildingViewState[] oldBuildingViewStates, BuildingViewState[] newBuildingViewStates) {
+			this.oldBuildingViewStates = oldBuildingViewStates;
+			this.newBuildingViewStates = newBuildingViewStates;
 		}
 
 		@Override
 		public int getOldListSize() {
-			return oldBuildingTiles.size();
+			return oldBuildingViewStates.length;
 		}
 
 		@Override
 		public int getNewListSize() {
-			return newBuildingTiles.size();
+			return newBuildingViewStates.length;
 		}
 
 		@Override
 		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-			return oldBuildingTiles.get(oldItemPosition).equals(newBuildingTiles.get(newItemPosition));
+			return oldBuildingViewStates[oldItemPosition].equals(newBuildingViewStates[newItemPosition]);
 		}
 
 		@Override
 		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-			boolean constructedCountsEqual = oldBuildingTiles.get(oldItemPosition).getCount().equals(newBuildingTiles.get(newItemPosition).getCount());
-			boolean constructingCountsEqual = oldBuildingTiles.get(oldItemPosition).getConstructionCount().equals(newBuildingTiles.get(newItemPosition).getConstructionCount());
+			BuildingViewState oldState = oldBuildingViewStates[oldItemPosition];
+			BuildingViewState newState = newBuildingViewStates[newItemPosition];
+			boolean constructedCountsEqual = oldState.getCount().equals(newState.getCount());
+			boolean constructingCountsEqual = oldState.getConstructionCount().equals(newState.getConstructionCount());
 			return constructedCountsEqual && constructingCountsEqual;
 		}
 
