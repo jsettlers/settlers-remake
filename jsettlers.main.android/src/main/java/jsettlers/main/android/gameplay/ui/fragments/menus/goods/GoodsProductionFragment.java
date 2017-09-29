@@ -89,7 +89,7 @@ public class GoodsProductionFragment extends Fragment {
 
         @Override
         public ProductionItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = layoutInflater.inflate(R.layout.vh_production, parent, false);
+            View view = layoutInflater.inflate(R.layout.vh_production_material, parent, false);
             return new ProductionItemViewHolder(view);
         }
 

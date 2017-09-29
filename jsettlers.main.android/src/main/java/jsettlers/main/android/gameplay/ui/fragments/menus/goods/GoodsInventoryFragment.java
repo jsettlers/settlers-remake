@@ -86,7 +86,7 @@ public class GoodsInventoryFragment extends Fragment {
 
 		@Override
 		public InventoryMaterialViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			View view = inflater.inflate(R.layout.vh_material, parent, false);
+			View view = inflater.inflate(R.layout.vh_inventory_material, parent, false);
 			return new InventoryMaterialViewHolder(view);
 		}
 
