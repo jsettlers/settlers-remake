@@ -2,6 +2,7 @@ package jsettlers.main.android.gameplay.viewmodels;
 
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
@@ -13,8 +14,8 @@ import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildin
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
-import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
+import jsettlers.main.android.core.events.DrawEvents;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
 import jsettlers.main.android.gameplay.viewstates.BuildingViewState;
@@ -27,25 +28,24 @@ import static java8.util.stream.StreamSupport.stream;
 
 public class BuildingsCategoryViewModel extends ViewModel {
     private final ActionControls actionControls;
-    private final DrawControls drawControls;
     private final PositionControls positionControls;
     private final MenuNavigator menuNavigator;
     private final EBuildingsCategory buildingsCategory;
 
-    private final BuildingStatesData buildingStatesData;
+    private final LiveData<BuildingViewState[]> buildingStates;
 
     public BuildingsCategoryViewModel(ActionControls actionControls, DrawControls drawControls, PositionControls positionControls, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
         this.actionControls = actionControls;
-        this.drawControls = drawControls;
         this.positionControls = positionControls;
         this.menuNavigator = menuNavigator;
         this.buildingsCategory = buildingsCategory;
 
-        this.buildingStatesData = new BuildingStatesData();
+        DrawEvents drawEvents = new DrawEvents(drawControls);
+        buildingStates = Transformations.map(drawEvents, x -> buildingStates());
     }
 
     public LiveData<BuildingViewState[]> getBuildingStates() {
-        return buildingStatesData;
+        return buildingStates;
     }
 
     public void showConstructionMarkers(EBuildingType buildingType) {
@@ -54,45 +54,18 @@ public class BuildingsCategoryViewModel extends ViewModel {
         menuNavigator.dismissMenu();
     }
 
-    /**
-     * LiveData class for building states
-     */
-    private class BuildingStatesData extends LiveData<BuildingViewState[]> implements DrawListener {
+    private BuildingViewState[] buildingStates() {
+        final IBuildingCounts buildingCounts;
 
-        public BuildingStatesData() {
-            setValue(buildingStates());
+        if (positionControls.isInPlayerPartition()) {
+            buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
+        } else {
+            buildingCounts = null;
         }
 
-        @Override
-        protected void onActive() {
-            super.onActive();
-            drawControls.addInfrequentDrawListener(this);
-        }
-
-        @Override
-        protected void onInactive() {
-            super.onInactive();
-            drawControls.removeInfrequentDrawListener(this);
-        }
-
-        @Override
-        public void draw() {
-            postValue(buildingStates());
-        }
-
-        private BuildingViewState[] buildingStates() {
-            final IBuildingCounts buildingCounts;
-
-            if (positionControls.isInPlayerPartition()) {
-                buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
-            } else {
-                buildingCounts = null;
-            }
-
-            return stream(buildingsCategory.buildingTypes)
-                    .map(buildingType -> new BuildingViewState(buildingType, buildingCounts))
-                    .toArray(BuildingViewState[]::new);
-        }
+        return stream(buildingsCategory.buildingTypes)
+                .map(buildingType -> new BuildingViewState(buildingType, buildingCounts))
+                .toArray(BuildingViewState[]::new);
     }
 
 

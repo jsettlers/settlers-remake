@@ -36,7 +36,6 @@ import java.util.List;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.viewmodels.ControlsViewModelFactory;
 import jsettlers.main.android.gameplay.viewmodels.goods.ProductionViewModel;
 import jsettlers.main.android.gameplay.viewstates.ProductionState;
 import jsettlers.main.android.utils.OriginalImageProvider;
@@ -58,7 +57,7 @@ public class GoodsProductionFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        viewModel = ViewModelProviders.of(this, new ControlsViewModelFactory(getActivity())).get(ProductionViewModel.class);
+        viewModel = ViewModelProviders.of(this, new ProductionViewModel.Factory(getActivity())).get(ProductionViewModel.class);
 
         ProductionAdapter productionAdapter = new ProductionAdapter(getActivity());
         recyclerView.setHasFixedSize(true);

@@ -15,16 +15,21 @@
 
 package jsettlers.main.android.gameplay.viewmodels.goods;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.SetMaterialProductionAction;
 import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
+import jsettlers.main.android.core.events.DrawEvents;
 import jsettlers.main.android.gameplay.viewstates.ProductionState;
 
 import static java8.util.J8Arrays.stream;
@@ -34,20 +39,30 @@ import static java8.util.J8Arrays.stream;
  */
 
 public class ProductionViewModel extends ViewModel {
-
+    private final EMaterialType[] productionMaterials = {
+            EMaterialType.SWORD,
+            EMaterialType.BOW,
+            EMaterialType.SPEAR,
+            EMaterialType.HAMMER,
+            EMaterialType.BLADE,
+            EMaterialType.PICK,
+            EMaterialType.AXE,
+            EMaterialType.SAW,
+            EMaterialType.SCYTHE,
+            EMaterialType.FISHINGROD
+    };
 
     private final ActionControls actionControls;
     private final PositionControls positionControls;
-    private final DrawControls drawControls;
 
-    private final ProductionStatesData productionStates;
+    private final LiveData<ProductionState[]> productionStates;
 
     public ProductionViewModel(ActionControls actionControls, PositionControls positionControls, DrawControls drawControls) {
         this.actionControls = actionControls;
         this.positionControls = positionControls;
-        this.drawControls = drawControls;
 
-        this.productionStates  = new ProductionStatesData();
+        DrawEvents drawEvents = new DrawEvents(drawControls);
+        productionStates = Transformations.map(drawEvents, x -> productionStates());
     }
 
     public LiveData<ProductionState[]> getProductionStates() {
@@ -66,58 +81,33 @@ public class ProductionViewModel extends ViewModel {
         actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, ratio));
     }
 
+    private ProductionState[] productionStates() {
+        IMaterialProductionSettings materialProductionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getMaterialProductionSettings();
+
+        return stream(productionMaterials)
+                .map(materialType -> new ProductionState(materialType, materialProductionSettings))
+                .toArray(ProductionState[]::new);
+    }
 
     /**
-     * LiveData class for production states
+     * ViewModel factory
      */
-    private class ProductionStatesData extends LiveData<ProductionState[]> implements DrawListener {
-        private final EMaterialType[] productionMaterials = {
-                EMaterialType.SWORD,
-                EMaterialType.BOW,
-                EMaterialType.SPEAR,
-                EMaterialType.HAMMER,
-                EMaterialType.BLADE,
-                EMaterialType.PICK,
-                EMaterialType.AXE,
-                EMaterialType.SAW,
-                EMaterialType.SCYTHE,
-                EMaterialType.FISHINGROD
-        };
+    public static class Factory implements ViewModelProvider.Factory {
+        private final ControlsResolver controlsResolver;
 
-        public ProductionStatesData() {
-            setValue(productionStates());
+        public Factory(Activity activity) {
+            this.controlsResolver = new ControlsResolver(activity);
         }
 
         @Override
-        protected void onActive() {
-            super.onActive();
-            drawControls.addInfrequentDrawListener(this);
-        }
-
-        @Override
-        protected void onInactive() {
-            super.onInactive();
-            drawControls.removeInfrequentDrawListener(this);
-        }
-
-        @Override
-        public void draw() {
-            postValue(productionStates());
-        }
-
-        private ProductionState[] productionStates() {
-            IMaterialProductionSettings materialProductionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getMaterialProductionSettings();
-
-            return stream(productionMaterials)
-                    .map(materialType -> productionState(materialType, materialProductionSettings))
-                    .toArray(ProductionState[]::new);
-        }
-
-        private ProductionState productionState(EMaterialType materialType, IMaterialProductionSettings materialProductionSettings) {
-            int quantity = materialProductionSettings.getAbsoluteProductionRequest(materialType);
-            float ratio = materialProductionSettings.getUserConfiguredRelativeRequestValue(materialType);
-
-            return new ProductionState(materialType, quantity, ratio);
+        public <T extends ViewModel> T create(Class<T> modelClass) {
+            if (modelClass == ProductionViewModel.class) {
+                return (T) new ProductionViewModel(
+                        controlsResolver.getActionControls(),
+                        controlsResolver.getPositionControls(),
+                        controlsResolver.getDrawControls());
+            }
+            throw new RuntimeException("ProductionViewModel.Factory doesn't know how to create a: " + modelClass.toString());
         }
     }
 }

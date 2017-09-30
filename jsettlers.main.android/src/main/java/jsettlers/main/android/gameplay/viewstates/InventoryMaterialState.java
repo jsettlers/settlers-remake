@@ -15,6 +15,7 @@
 
 package jsettlers.main.android.gameplay.viewstates;
 
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 
 /**
@@ -25,9 +26,9 @@ public class InventoryMaterialState {
     private final EMaterialType materialType;
     private int count;
 
-    public InventoryMaterialState(EMaterialType materialType, int count) {
+    public InventoryMaterialState(EMaterialType materialType, IPartitionData partitionData) {
         this.materialType = materialType;
-        this.count = count;
+        this.count = partitionData.getAmountOf(materialType);
     }
 
     public EMaterialType getMaterialType() {

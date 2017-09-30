@@ -1,5 +1,6 @@
 package jsettlers.main.android.gameplay.viewstates;
 
+import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
 
 /**
@@ -11,10 +12,10 @@ public class ProductionState {
     private final int quantity;
     private final float ratio;
 
-    public ProductionState(EMaterialType materialType, int quantity, float ratio) {
+    public ProductionState(EMaterialType materialType, IMaterialProductionSettings materialProductionSettings) {
         this.materialType = materialType;
-        this.quantity = quantity;
-        this.ratio = ratio;
+        this.quantity = materialProductionSettings.getAbsoluteProductionRequest(materialType);
+        this.ratio = materialProductionSettings.getUserConfiguredRelativeRequestValue(materialType);
     }
 
     public EMaterialType getMaterialType() {

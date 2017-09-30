@@ -6,7 +6,6 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
-import java8.util.function.Supplier;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -18,7 +17,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
-import jsettlers.main.android.core.controls.DrawListener;
+import jsettlers.main.android.core.events.DrawEvents;
 
 /**
  * Created by Tom Pratt on 30/09/2017.
@@ -39,28 +38,28 @@ public class SoldiersViewModel extends ViewModel {
             new OriginalImageLink(EImageLinkType.GUI, 3, 429, 0), null };
 
     private final ActionControls actionControls;
-    private final DrawControls drawControls;
     private final IInGamePlayer player;
 
-    private final DrawLiveData<String> strengthText;
-    private final DrawLiveData<String> promotionText;
-    private final DrawLiveData<Boolean> swordsmenPromotionEnabled;
-    private final DrawLiveData<Boolean> bowmenPromotionEnabled;
-    private final DrawLiveData<Boolean> pikemenPromotionEnabled;
+    private final LiveData<String> strengthText;
+    private final LiveData<String> promotionText;
+    private final LiveData<Boolean> swordsmenPromotionEnabled;
+    private final LiveData<Boolean> bowmenPromotionEnabled;
+    private final LiveData<Boolean> pikemenPromotionEnabled;
     private final LiveData<ImageLink> swordsmenImageLink;
     private final LiveData<ImageLink> bowmenImageLink;
     private final LiveData<ImageLink> pikemenImageLink;
 
     public SoldiersViewModel(ActionControls actionControls, DrawControls drawControls, IInGamePlayer player) {
         this.actionControls = actionControls;
-        this.drawControls = drawControls;
         this.player = player;
 
-        strengthText = new DrawLiveData<>(this.drawControls, this::strengthText);
-        promotionText = new DrawLiveData<>(this.drawControls, this::promotionText);
-        swordsmenPromotionEnabled = new DrawLiveData<>(drawControls, () -> isPromotionPossible(ESoldierType.SWORDSMAN));
-        bowmenPromotionEnabled = new DrawLiveData<>(drawControls, () -> isPromotionPossible(ESoldierType.BOWMAN));
-        pikemenPromotionEnabled = new DrawLiveData<>(drawControls, () -> isPromotionPossible(ESoldierType.PIKEMAN));
+        DrawEvents drawEvents = new DrawEvents(drawControls);
+
+        strengthText = Transformations.map(drawEvents, x -> strengthText());
+        promotionText = Transformations.map(drawEvents, x -> promotionText());
+        swordsmenPromotionEnabled = Transformations.map(drawEvents, x -> isPromotionPossible(ESoldierType.SWORDSMAN));
+        bowmenPromotionEnabled = Transformations.map(drawEvents, x -> isPromotionPossible(ESoldierType.BOWMAN));
+        pikemenPromotionEnabled = Transformations.map(drawEvents, x -> isPromotionPossible(ESoldierType.PIKEMAN));
         swordsmenImageLink = Transformations.map(swordsmenPromotionEnabled, isPromotionPossible -> getPromotionImageLink(isPromotionPossible, swordsmenPromotionPossibleImages, swordsmenPromotionNotPossibleImages, ESoldierType.SWORDSMAN));
         bowmenImageLink = Transformations.map(bowmenPromotionEnabled, isPromotionPossible -> getPromotionImageLink(isPromotionPossible, bowmenPromotionPossibleImages, bowmenPromotionNotPossibleImages, ESoldierType.BOWMAN));
         pikemenImageLink = Transformations.map(pikemenPromotionEnabled, isPromotionPossible -> getPromotionImageLink(isPromotionPossible, pikemenPromotionPossibleImages, pikemenPromotionNotPossibleImages, ESoldierType.PIKEMAN));
@@ -134,37 +133,6 @@ public class SoldiersViewModel extends ViewModel {
             return possibleImages[player.getMannaInformation().getLevel(soldierType)];
         } else {
             return notPossibleImages[player.getMannaInformation().getLevel(soldierType)];
-        }
-    }
-
-    /**
-     * LiveData class for production states
-     */
-    private static class DrawLiveData<T> extends LiveData<T> implements DrawListener {
-        private final DrawControls drawControls;
-        private final Supplier<T> supplier;
-
-        public DrawLiveData(DrawControls drawControls, Supplier<T> supplier) {
-            this.drawControls = drawControls;
-            this.supplier = supplier;
-            setValue(supplier.get());
-        }
-
-        @Override
-        protected void onActive() {
-            super.onActive();
-            drawControls.addInfrequentDrawListener(this);
-        }
-
-        @Override
-        protected void onInactive() {
-            super.onInactive();
-            drawControls.removeInfrequentDrawListener(this);
-        }
-
-        @Override
-        public void draw() {
-            postValue(supplier.get());
         }
     }
 

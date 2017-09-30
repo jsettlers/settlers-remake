@@ -15,14 +15,18 @@
 
 package jsettlers.main.android.gameplay.viewmodels.goods;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
-import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
+import jsettlers.main.android.core.events.DrawEvents;
 import jsettlers.main.android.gameplay.viewstates.InventoryMaterialState;
 
 import static java8.util.J8Arrays.stream;
@@ -32,60 +36,49 @@ import static java8.util.J8Arrays.stream;
  */
 
 public class InventoryViewModel extends ViewModel {
-    private final DrawControls drawControls;
+    private final EMaterialType[] inventoryMaterials = EMaterialType.STOCK_MATERIALS;
+
     private final PositionControls positionControls;
 
-    private final InventoryMaterialStatesData inventoryMaterialStatesData;
+    private final LiveData<InventoryMaterialState[]> inventoryMaterialStatesData;
 
     public InventoryViewModel(DrawControls drawControls, PositionControls positionControls) {
-        this.drawControls = drawControls;
         this.positionControls = positionControls;
 
-        inventoryMaterialStatesData = new InventoryMaterialStatesData();
+        DrawEvents drawEvents = new DrawEvents(drawControls);
+        inventoryMaterialStatesData = Transformations.map(drawEvents, x -> productionStates());
     }
 
     public LiveData<InventoryMaterialState[]> getMaterialStates() {
         return inventoryMaterialStatesData;
     }
 
+    private InventoryMaterialState[] productionStates() {
+        IPartitionData partitionData = positionControls.getCurrentPartitionData();
+
+        return stream(inventoryMaterials)
+                .map(materialType -> new InventoryMaterialState(materialType, partitionData))
+                .toArray(InventoryMaterialState[]::new);
+    }
+
     /**
-     * LiveData class for production states
+     * ViewModel factory
      */
-    private class InventoryMaterialStatesData extends LiveData<InventoryMaterialState[]> implements DrawListener {
-        private final EMaterialType[] inventoryMaterials = EMaterialType.STOCK_MATERIALS;
+    public static class Factory implements ViewModelProvider.Factory {
+        private final ControlsResolver controlsResolver;
 
-        public InventoryMaterialStatesData() {
-            setValue(productionStates());
+        public Factory(Activity activity) {
+            this.controlsResolver = new ControlsResolver(activity);
         }
 
         @Override
-        protected void onActive() {
-            super.onActive();
-            drawControls.addInfrequentDrawListener(this);
-        }
-
-        @Override
-        protected void onInactive() {
-            super.onInactive();
-            drawControls.removeInfrequentDrawListener(this);
-        }
-
-        @Override
-        public void draw() {
-            postValue(productionStates());
-        }
-
-        private InventoryMaterialState[] productionStates() {
-            IPartitionData partitionData = positionControls.getCurrentPartitionData();
-
-            return stream(inventoryMaterials)
-                    .map(materialType -> materialState(materialType, partitionData))
-                    .toArray(InventoryMaterialState[]::new);
-        }
-
-        private InventoryMaterialState materialState(EMaterialType materialType, IPartitionData partitionData) {
-            int quantity = partitionData.getAmountOf(materialType);
-            return new InventoryMaterialState(materialType, quantity);
+        public <T extends ViewModel> T create(Class<T> modelClass) {
+            if (modelClass == InventoryViewModel.class) {
+                return (T) new InventoryViewModel(
+                        controlsResolver.getDrawControls(),
+                        controlsResolver.getPositionControls());
+            }
+            throw new RuntimeException("InventoryViewModel.Factory doesn't know how to create a: " + modelClass.toString());
         }
     }
 }
