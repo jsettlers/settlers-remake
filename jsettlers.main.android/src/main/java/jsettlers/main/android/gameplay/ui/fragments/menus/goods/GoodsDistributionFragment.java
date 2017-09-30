@@ -15,15 +15,6 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.goods;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.common.material.EMaterialType;
-import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.viewmodels.goods.DistributionViewModel;
-import jsettlers.main.android.gameplay.viewstates.DistributionState;
-import jsettlers.main.android.utils.OriginalImageProvider;
-
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -37,19 +28,33 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
-import android.widget.TextView;
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import jsettlers.common.material.EMaterialType;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.navigation.BackPressedListener;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
+import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
+import jsettlers.main.android.gameplay.viewmodels.goods.DistributionViewModel;
+import jsettlers.main.android.gameplay.viewstates.DistributionState;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 24/11/2016.
  */
 
 @EFragment(R.layout.menu_goods_distribution)
-public class GoodsDistributionFragment extends Fragment {
+public class GoodsDistributionFragment extends Fragment implements BackPressedListener {
 	public static GoodsDistributionFragment newInstance() {
 		return new GoodsDistributionFragment_();
 	}
 
 	private DistributionViewModel viewModel;
+	private MenuNavigator menuNavigator;
+
+	private PopupWindow popupWindow;
 
 	@ViewById(R.id.recyclerView)
 	RecyclerView recyclerView;
@@ -58,10 +63,32 @@ public class GoodsDistributionFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		viewModel = ViewModelProviders.of(this, new DistributionViewModel.Factory(getActivity())).get(DistributionViewModel.class);
+		menuNavigator = ((MenuNavigatorProvider) getActivity()).getMenuNavigator();
 
 		MaterialsAdapter materialsAdapter = new MaterialsAdapter(getActivity(), viewModel.getDistributionMaterials());
 		recyclerView.setHasFixedSize(true);
 		recyclerView.setAdapter(materialsAdapter);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		menuNavigator.addBackPressedListener(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		menuNavigator.removeBackPressedListener(this);
+	}
+
+	@Override
+	public boolean onBackPressed() {
+		if (popupWindow.isShowing()) {
+			popupWindow.dismiss();
+			return true;
+		}
+		return false;
 	}
 
 	void showDistributionPopup(View anchor, EMaterialType materialType) {
@@ -99,7 +126,7 @@ public class GoodsDistributionFragment extends Fragment {
 		int xOffset = -((popupView.getMeasuredWidth() - anchor.getWidth()) / 2);
 		int yOffset = -(popupView.getMeasuredHeight() + anchor.getHeight());
 
-		PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, false);
+		popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, false);
 		popupWindow.setOutsideTouchable(true);
 		popupWindow.showAsDropDown(anchor, xOffset, yOffset);
 	}

@@ -5,7 +5,10 @@
     app:contentPadding="12dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginTop="@dimen/card_view_margin_vertical"
+    android:layout_marginBottom="@dimen/card_view_margin_vertical"
+    android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
+    android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
     android:background="@color/primary"
     android:theme="@style/CardTheme">
 

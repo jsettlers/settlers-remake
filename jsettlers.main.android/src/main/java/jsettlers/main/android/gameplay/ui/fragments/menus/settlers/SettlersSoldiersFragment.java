@@ -15,33 +15,32 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.settlers;
 
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.common.images.ImageLink;
-import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.presenters.MenuFactory;
-import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
-import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
-import jsettlers.main.android.utils.OriginalImageProvider;
-
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import jsettlers.common.images.ImageLink;
+import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.viewmodels.settlers.SoldiersViewModel;
+import jsettlers.main.android.utils.OriginalImageProvider;
+
 /**
  * Created by tompr on 13/01/2017.
  */
 @EFragment(R.layout.menu_settlers_soldiers)
-public class SettlersSoldiersFragment extends Fragment implements SettlersSoldiersView {
+public class SettlersSoldiersFragment extends Fragment {
 	public static SettlersSoldiersFragment newInstance() {
 		return new SettlersSoldiersFragment_();
 	}
 
-	SettlersSoldiersMenu settlersSoldiersMenu;
+	private SoldiersViewModel viewModel;
 
 	@ViewById(R.id.text_view_soldier_strength)
 	TextView soldierStrengthTextView;
@@ -57,89 +56,34 @@ public class SettlersSoldiersFragment extends Fragment implements SettlersSoldie
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		settlersSoldiersMenu = new MenuFactory(getActivity()).settlersSoldiersMenu(this);
-		settlersSoldiersMenu.start();
-	}
+		viewModel = ViewModelProviders.of(this, new SoldiersViewModel.Factory(getActivity())).get(SoldiersViewModel.class);
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		settlersSoldiersMenu.finish();
+		viewModel.getStrengthText().observe(this, s -> soldierStrengthTextView.setText(s));
+		viewModel.getPromotionText().observe(this, s -> soldierPromotionTextView.setText(s));
+		viewModel.getSwordsmenPromotionEnabled().observe(this, enabled -> bowmenPromotionImageView.setEnabled(enabled));
+		viewModel.getBowmenPromotionEnabled().observe(this, enabled -> bowmenPromotionImageView.setEnabled(enabled));
+		viewModel.getPikemenPromotionEnabled().observe(this, enabled -> pikemenPromotionImageView.setEnabled(enabled));
+		viewModel.getSwordsmenImageLink().observe(this, imageLink -> setPromotionButtonImage(swordsmenPromotionImageView, imageLink));
+		viewModel.getBowmenImageLink().observe(this, imageLink -> setPromotionButtonImage(bowmenPromotionImageView, imageLink));
+		viewModel.getPikemenImageLink().observe(this, imageLink -> setPromotionButtonImage(pikemenPromotionImageView, imageLink));
 	}
 
 	@Click(R.id.image_view_promotion_swordsmen)
 	void promoteSwordsmenClicked() {
-		settlersSoldiersMenu.swordsmenPromotionClicked();
+		viewModel.swordsmenPromotionClicked();
 	}
 
 	@Click(R.id.image_view_promotion_pikemen)
 	void promotePikemenClicked() {
-		settlersSoldiersMenu.pikemenPromotionClicked();
+		viewModel.pikemenPromotionClicked();
 	}
 
 	@Click(R.id.image_view_promotion_bowmen)
 	void promoteBowmenClicked() {
-		settlersSoldiersMenu.bowmenPromotionClicked();
-	}
-
-	/**
-	 * SettlersSoldiersView implementation
-	 */
-	@Override
-	public void setStrengthText(String strengthText) {
-		if (soldierStrengthTextView != null) {
-			soldierStrengthTextView.setText(strengthText);
-		}
-	}
-
-	@Override
-	public void setPromotionText(String promotionText) {
-		if (soldierPromotionTextView != null) {
-			soldierPromotionTextView.setText(promotionText);
-		}
-	}
-
-	@Override
-	public void setSwordsmenPromotionEnabled(boolean enabled) {
-		if (swordsmenPromotionImageView != null) {
-			swordsmenPromotionImageView.setEnabled(enabled);
-		}
-	}
-
-	@Override
-	public void setBowmenPromotionEnabled(boolean enabled) {
-		if (bowmenPromotionImageView != null) {
-			bowmenPromotionImageView.setEnabled(enabled);
-		}
-	}
-
-	@Override
-	public void setPikemenPromotionEnabled(boolean enabled) {
-		if (pikemenPromotionImageView != null) {
-			pikemenPromotionImageView.setEnabled(enabled);
-		}
-	}
-
-	@Override
-	public void setSwordsmenImage(ImageLink imageLink) {
-		setPromotionButtonImage(swordsmenPromotionImageView, imageLink);
-	}
-
-	@Override
-	public void setBowmenImage(ImageLink imageLink) {
-		setPromotionButtonImage(bowmenPromotionImageView, imageLink);
-	}
-
-	@Override
-	public void setPikemenImage(ImageLink imageLink) {
-		setPromotionButtonImage(pikemenPromotionImageView, imageLink);
+		viewModel.bowmenPromotionClicked();
 	}
 
 	private void setPromotionButtonImage(ImageView imageView, ImageLink imageLink) {
-		if (imageView == null) {
-			return;
-		}
-
 		if (imageLink == null) {
 			imageView.setImageDrawable(null);
 		} else {
