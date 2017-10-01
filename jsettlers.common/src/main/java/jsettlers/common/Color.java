@@ -247,12 +247,12 @@ public final class Color {
 		return Color.getARGB(red, green, blue, alpha);
 	}
 
-	public static int convert565to444(int rgb565) {
+	public static int convert565to4444(int rgb565) {
 		return (rgb565 & 0xf000) | ((rgb565 & 0x780) << 1) | ((rgb565 & 0x1e) << 3) | 0xf;
 	}
 
-	public static int convert555to444(int rgb555) {
-		return (rgb555 & 0xf000) | ((rgb555 & 0x780) << 1) | ((rgb555 & 0x3c) << 2) | 0xf;
+	public static int convert555to4444(int argb555) {
+		return ((argb555 & 0x7800) << 1) | ((argb555 & 0x3c0) << 2) | ((argb555 & 0x1e) << 3) | 0xf;
 	}
 
 	/**

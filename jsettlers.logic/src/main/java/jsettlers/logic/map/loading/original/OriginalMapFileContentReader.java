@@ -416,7 +416,7 @@ class OriginalMapFileContentReader {
 				int colorValue = (mapContent[inIndex] & 0xFF) | ((mapContent[inIndex + 1] & 0xFF) << 8);
 
 				// - the Settlers Remake uses rgba4444 colors
-				outImg[outIndex] = (short) Color.convert565to444(colorValue);
+				outImg[outIndex] = (short) Color.convert565to4444(colorValue);
 				outIndex++;
 			}
 		}

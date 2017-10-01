@@ -40,10 +40,10 @@ public enum DatFileType {
 	 */
 	public short convertTo4444(int color) {
 		if (this == RGB555) {
-			color = (short) Color.convert555to444(color);
+			color = (short) Color.convert555to4444(color);
 		} else if (this == RGB565) {
-			color = (short) Color.convert565to444(color);
+			color = (short) Color.convert565to4444(color);
 		}
-		return (short) ((color << 1) | 0x01);
+		return (short) color;
 	}
 }
