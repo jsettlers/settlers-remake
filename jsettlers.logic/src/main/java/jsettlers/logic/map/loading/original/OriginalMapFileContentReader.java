@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 
+import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -414,8 +415,8 @@ class OriginalMapFileContentReader {
 
 				int colorValue = (mapContent[inIndex] & 0xFF) | ((mapContent[inIndex + 1] & 0xFF) << 8);
 
-				// - the Settlers Remake uses Short-Colors like argb_1555 (alpha, r, g, b)
-				outImg[outIndex] = (short) (1 | colorValue << 1);
+				// - the Settlers Remake uses rgba4444 colors
+				outImg[outIndex] = (short) Color.convert565to444(colorValue);
 				outIndex++;
 			}
 		}
