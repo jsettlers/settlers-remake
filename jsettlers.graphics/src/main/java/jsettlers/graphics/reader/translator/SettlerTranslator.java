@@ -48,7 +48,7 @@ public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	@Override
 	public short getTransparentColor() {
-		return 0x00;
+		return 0;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return type.convertTo5551(reader.read16());
+		return type.convertTo4444(reader.read16());
 	}
 
 }

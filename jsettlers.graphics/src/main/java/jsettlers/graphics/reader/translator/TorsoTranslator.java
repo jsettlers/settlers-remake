@@ -31,13 +31,13 @@ public class TorsoTranslator implements DatBitmapTranslator<TorsoImage> {
 
 	@Override
 	public short getTransparentColor() {
-		return 0x00;
+		return 0;
 	}
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		int read = reader.read8() & TORSO_BITS; // only 5 bit.
-		return (short) (read << 11 | read << 6 | read << 1 | 0x01);
+		int read = (reader.read8() & TORSO_BITS) >> 1; // only 5 bits, 4 used
+		return (short) (read << 12 | read << 8 | read << 4 | 0xf); // convert to 4444
 	}
 
 	@Override

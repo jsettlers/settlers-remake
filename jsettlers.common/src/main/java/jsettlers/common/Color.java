@@ -65,11 +65,11 @@ public final class Color {
 	private static final int SHIFT_ARGB_B = 0;
 	private static final int ARGB_FIELD_MAX = 0xff;
 	private static final float VALUE_CONSIDERED_TRANSPARENT_BELOW = .1f;
-	private static final int SHORT_SHIFT_RED = 11;
-	private static final int SHORT_SHIFT_GREEN = 6;
-	private static final int SHORT_SHIFT_BLUE = 1;
-	private static final int SHORT_FIELD_MAX = 0x1f;
-	private static final int SHORT_MASK_ALPHA = 1;
+	private static final int SHORT_SHIFT_RED = 12;
+	private static final int SHORT_SHIFT_GREEN = 8;
+	private static final int SHORT_SHIFT_BLUE = 4;
+	private static final int SHORT_FIELD_MAX = 0xf;
+	private static final int SHORT_MASK_ALPHA = 0xf;
 
 	private final float blue;
 	private final float red;
@@ -240,44 +240,19 @@ public final class Color {
 	 */
 	public static int convertTo32Bit(int color16bit) {
 		// TODO: Make faster
-		float red = (float) ((color16bit >> 11) & 0x1f) / 0x1f;
-		float green = (float) ((color16bit >> 6) & 0x1f) / 0x1f;
-		float blue = (float) ((color16bit >> 1) & 0x1f) / 0x1f;
-		float alpha = color16bit & 0x1;
+		float red = (float) ((color16bit >> SHORT_SHIFT_RED) & SHORT_FIELD_MAX) / SHORT_FIELD_MAX;
+		float green = (float) ((color16bit >> SHORT_SHIFT_GREEN) & SHORT_FIELD_MAX) / SHORT_FIELD_MAX;
+		float blue = (float) ((color16bit >> SHORT_SHIFT_BLUE) & SHORT_FIELD_MAX) / SHORT_FIELD_MAX;
+		float alpha = (float) (color16bit & SHORT_MASK_ALPHA) / SHORT_FIELD_MAX;
 		return Color.getARGB(red, green, blue, alpha);
 	}
 
-	private static final int[] table6to5 = new int[64];
-	private static final int[] table5to8 = new int[2 << 5];
-
-	static {
-		// Generate table6to5
-		for (int i = 0; i < 64; i++) {
-			table6to5[i] = Math.round(i / 63.0f * 31.0f);
-		}
-		for (int i = 0; i < table5to8.length; i++) {
-			table5to8[i] = Math.round(i / (table5to8.length - 1f) * 255.0f);
-		}
+	public static int convert565to444(int rgb565) {
+		return (rgb565 & 0xf000) | ((rgb565 & 0x780) << 1) | ((rgb565 & 0x1e) << 3) | 0xf;
 	}
 
-	private static int convertColorChannel6to5(int c) {
-		return table6to5[c];
-	}
-
-	public static int convert565to555(int rgb565) {
-		int r5 = (rgb565 & 0xf800) >> 11;
-		int g6 = (rgb565 & 0x07e0) >> 5;
-		int b5 = rgb565 & 0x001f;
-
-		int g5 = convertColorChannel6to5(g6);
-
-		int rgb555 = r5;
-		rgb555 = rgb555 << 5;
-		rgb555 |= g5;
-		rgb555 = rgb555 << 5;
-		rgb555 |= b5;
-
-		return rgb555;
+	public static int convert555to444(int rgb555) {
+		return (rgb555 & 0xf000) | ((rgb555 & 0x780) << 1) | ((rgb555 & 0x3c) << 2) | 0xf;
 	}
 
 	/**
@@ -288,9 +263,9 @@ public final class Color {
 	 * @return The short color.
 	 */
 	public short toShortColor(float multiply) {
-		if (multiply == 1) {
+		if (multiply >= 1) {
 			return shortColor;
-		} else if (multiply < 0) {
+		} else if (multiply <= 0) {
 			return BLACK.toShortColor(1);
 		} else {
 			return toShortColorForced(multiply);
@@ -303,7 +278,8 @@ public final class Color {
 		} else {
 			return (short) (convertToShortField(red, multiply) << SHORT_SHIFT_RED
 					| convertToShortField(green, multiply) << SHORT_SHIFT_GREEN
-					| convertToShortField(blue, multiply) << SHORT_SHIFT_BLUE | SHORT_MASK_ALPHA);
+					| convertToShortField(blue, multiply) << SHORT_SHIFT_BLUE
+					| (short)(alpha * SHORT_MASK_ALPHA));
 		}
 	}
 

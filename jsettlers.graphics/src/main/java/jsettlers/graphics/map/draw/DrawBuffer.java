@@ -14,12 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
-import go.graphics.IllegalBufferException;
-import go.graphics.TextureHandle;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 import jsettlers.graphics.map.IGLProvider;
 
 /**

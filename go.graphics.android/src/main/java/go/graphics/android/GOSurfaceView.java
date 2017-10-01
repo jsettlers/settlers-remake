@@ -14,6 +14,15 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import android.content.Context;
+import android.opengl.GLES10;
+import android.opengl.GLSurfaceView;
+import android.os.Vibrator;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+
 import java.lang.reflect.Method;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -29,15 +38,6 @@ import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
-
-import android.content.Context;
-import android.opengl.GLES10;
-import android.opengl.GLSurfaceView;
-import android.os.Vibrator;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEventHandlerProvider {
 
@@ -218,6 +218,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		private Renderer(Context aContext) {
 			drawcontext = new AndroidDrawContext(aContext);
+
+			GLES10.glBlendFunc(GLES10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+			GLES10.glEnable(GLES10.GL_BLEND);
 		}
 
 		@Override

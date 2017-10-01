@@ -283,7 +283,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		settlersequences = new Sequence[settlerstarts.length];
 
 		int torsodifference = settlerstarts.length - torsostarts.length;
-		if (torsodifference != 0) {
+		if (torsodifference > 0) {
 			int[] oldtorsos = torsostarts;
 			torsostarts = new int[settlerstarts.length];
 			for (int i = 0; i < oldtorsos.length; i++) {
@@ -295,14 +295,27 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 
 		int shadowdifference = settlerstarts.length - shadowstarts.length;
-		if (shadowstarts.length < settlerstarts.length) {
+		if (shadowdifference > 0) {
 			int[] oldshadows = shadowstarts;
 			shadowstarts = new int[settlerstarts.length];
-			for (int i = 0; i < oldshadows.length; i++) {
-				shadowstarts[i + shadowdifference] = oldshadows[i];
-			}
-			for (int i = 0; i < shadowdifference; i++) {
-				torsostarts[i] = -1;
+			int i;
+			if (shadowdifference == 8 || shadowdifference == 7) {
+				// push shadows to end of settler images
+				// TODO remove hardcoding
+				for (i = 0; i < shadowdifference; i++) {
+					shadowstarts[i] = -1;
+				}
+				for (; i < settlerstarts.length; i++) {
+					shadowstarts[i] = oldshadows[i - shadowdifference];
+				}
+			} else {
+				// push shadows to beginning of settler images
+				for (i = 0; i < oldshadows.length; i++) {
+					shadowstarts[i] = oldshadows[i];
+				}
+				for (; i < settlerstarts.length; i++) {
+					shadowstarts[i] = -1;
+				}
 			}
 		}
 	}
@@ -477,6 +490,18 @@ public class AdvancedDatFileReader implements DatFileSet {
 				TorsoImage torso =
 						DatBitmapReader.getImage(torsoTranslator, reader);
 				images[i].setTorso(torso);
+			}
+		}
+
+		int shadowposition = shadowstarts[index];
+		if (shadowposition >= 0) {
+			long[] shadowPositions = readSequenceHeader(shadowposition);
+			for (int i = 0; i < shadowPositions.length
+					&& i < framePositions.length; i++) {
+				reader.skipTo(shadowPositions[i]);
+				ShadowImage shadow =
+						DatBitmapReader.getImage(shadowTranslator, reader);
+				images[i].setShadow(shadow);
 			}
 		}
 

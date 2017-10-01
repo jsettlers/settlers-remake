@@ -47,7 +47,7 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return type.convertTo5551(reader.read16());
+		return type.convertTo4444(reader.read16());
 	}
 
 	@Override

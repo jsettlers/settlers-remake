@@ -14,14 +14,15 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import android.content.Context;
+import android.opengl.GLES10;
+import android.opengl.GLES11;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-import android.content.Context;
-import android.opengl.GLES10;
-import android.opengl.GLES11;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
@@ -264,8 +265,7 @@ public class AndroidDrawContext implements GLDrawContext {
 
 		glBindTexture(texture);
 		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_RGBA, width,
-				height, 0, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1,
-				data);
+				height, 0, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_4_4_4_4, data);
 
 		setTextureParameters();
 		return texture;
@@ -296,7 +296,7 @@ public class AndroidDrawContext implements GLDrawContext {
 			int width, int height, ShortBuffer data) {
 		glBindTexture(textureIndex);
 		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width,
-				height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
+				height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
 	public TextureHandle generateTextureAlpha(int width, int height) {

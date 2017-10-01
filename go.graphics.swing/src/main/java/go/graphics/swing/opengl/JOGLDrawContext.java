@@ -14,6 +14,16 @@
  *******************************************************************************/
 package go.graphics.swing.opengl;
 
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -23,16 +33,6 @@ import go.graphics.swing.opengl.JOGLBufferHandle.JOGLTextureHandle;
 import go.graphics.swing.text.JOGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
-
-import com.jogamp.common.nio.Buffers;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
 
 /**
  * This is the draw context implementation for JOGL. OpenGL draw calles are mapped to the corresponding JOGL calls.
@@ -54,7 +54,8 @@ public class JOGLDrawContext implements GLDrawContext {
 		gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 
-		gl2.glAlphaFunc(GL2.GL_GREATER, 0.1f);
+		gl2.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+		gl2.glEnable(GL2.GL_BLEND);
 		gl2.glEnable(GL2.GL_ALPHA_TEST);
 		gl2.glDepthFunc(GL2.GL_LEQUAL);
 		gl2.glEnable(GL2.GL_DEPTH_TEST);
@@ -185,8 +186,8 @@ public class JOGLDrawContext implements GLDrawContext {
 		}
 
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, texture);
-		gl2.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB5_A1, width, height, 0,
-				GL.GL_RGBA, GL.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		gl2.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0,
+				GL.GL_RGBA, GL.GL_UNSIGNED_SHORT_4_4_4_4, data);
 		setTextureParameters();
 
 		return new JOGLTextureHandle(this, texture);
@@ -211,7 +212,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			int width, int height, ShortBuffer data) throws IllegalBufferException {
 		bindTexture(texture);
 		gl2.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, left, bottom, width, height,
-				GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_5_5_5_1, data);
+				GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
 	private void bindTexture(TextureHandle texture) throws IllegalBufferException {
