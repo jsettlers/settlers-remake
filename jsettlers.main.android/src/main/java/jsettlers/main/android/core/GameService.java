@@ -15,24 +15,58 @@
 
 package jsettlers.main.android.core;
 
-import static jsettlers.main.android.core.controls.GameMenu.NOTIFICATION_ID;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CONFIRM;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.Service;
+import android.arch.lifecycle.Observer;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.IBinder;
 
 import org.androidannotations.annotations.EService;
-import org.androidannotations.annotations.Receiver;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import jsettlers.main.android.core.controls.GameMenu;
+import jsettlers.main.android.core.controls.NotificationBuilder;
+import jsettlers.main.android.core.controls.NotificationBuilder_;
 
 @EService
 public class GameService extends Service {
+	public static final String ACTION_PAUSE = "com.jsettlers.pause";
+	public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
+	public static final String ACTION_SAVE = "com.jsettlers.save";
+	public static final String ACTION_QUIT = "com.jsettlers.quit";
+	public static final String ACTION_QUIT_CONFIRM = "com.jsettlers.quitconfirm";
+	public static final String ACTION_QUIT_CANCELLED = "com.jsettlers.quitcancelled";
+
+	public static final int NOTIFICATION_ID = 100;
+
+	private final Observer<Boolean> pauseObserver = paused -> postNotification();
+	private final Observer<GameMenu.GameState> gameStateObserver = gameState -> postNotification();
+
+	private GameMenu gameMenu;
+	private NotificationManager notificationManager;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		GameManager gameManager = (GameManager) getApplication();
-		startForeground(NOTIFICATION_ID, gameManager.getGameMenu().createNotification());
+		gameMenu = gameManager.getGameMenu();
+		notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(ACTION_PAUSE);
+		intentFilter.addAction(ACTION_UNPAUSE);
+		intentFilter.addAction(ACTION_SAVE);
+		intentFilter.addAction(ACTION_QUIT);
+		intentFilter.addAction(ACTION_QUIT_CONFIRM);
+		registerReceiver(broadcastReceiver, intentFilter);
+
+		startForeground(NOTIFICATION_ID, createNotification());
+
+		gameMenu.isPausedState().observeForever(pauseObserver);
+		gameMenu.getGameState().observeForever(gameStateObserver);
 	}
 
 	@Override
@@ -41,13 +75,68 @@ public class GameService extends Service {
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(broadcastReceiver);
+		gameMenu.isPausedState().removeObserver(pauseObserver);
+		gameMenu.getGameState().observeForever(gameStateObserver);
+	}
+
+	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
 
-	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
-	void quitConfirmReceived() {
-		stopForeground(true);
-		stopSelf();
+	private void postNotification() {
+		if (gameMenu.getGameState().getValue() == GameMenu.GameState.QUITTED) {
+			notificationManager.cancel(NOTIFICATION_ID);
+			stopForeground(true);
+			stopSelf();
+		} else {
+			notificationManager.notify(NOTIFICATION_ID, createNotification());
+		}
 	}
+
+	private Notification createNotification() {
+		NotificationBuilder notificationBuilder = NotificationBuilder_.getInstance_(getApplicationContext());
+
+		if (gameMenu.getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
+			notificationBuilder.addQuitConfirmButton();
+		} else {
+			notificationBuilder.addQuitButton();
+		}
+
+		notificationBuilder.addSaveButton();
+
+		if (gameMenu.isPausedState().getValue() == Boolean.TRUE) {
+			notificationBuilder.addUnPauseButton();
+		} else {
+			notificationBuilder.addPauseButton();
+		}
+
+		return notificationBuilder.build();
+	}
+
+	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			switch (intent.getAction()) {
+				case ACTION_PAUSE:
+					gameMenu.pause();
+					break;
+				case ACTION_UNPAUSE:
+					gameMenu.unPause();
+					break;
+				case ACTION_SAVE:
+					gameMenu.save();
+					break;
+				case ACTION_QUIT:
+					gameMenu.quit();
+					break;
+				case ACTION_QUIT_CONFIRM:
+					gameMenu.quitConfirm();
+					break;
+			}
+		}
+	};
 }

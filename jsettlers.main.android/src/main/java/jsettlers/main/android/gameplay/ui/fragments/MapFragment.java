@@ -15,6 +15,7 @@
 
 package jsettlers.main.android.gameplay.ui.fragments;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -30,7 +31,6 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.Receiver;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.LinkedList;
@@ -66,9 +66,6 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SoldiersSele
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.mainmenu.ui.activities.MainActivity_;
-
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
 
 @EFragment(R.layout.fragment_map)
 @OptionsMenu(R.menu.game)
@@ -119,6 +116,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		addMapViews(controlsResolver.getMapContent());
 	}
 
+	@AfterViews
+	void registerObservers() {
+		gameMenu.isPausedState().observe(this, pauseObserver);
+		gameMenu.getGameState().observeForever(gameStateObserver);
+	}
+
 	private void addMapViews(MapContent mapContent) {
 		Region goRegion = new Region(Region.POSITION_CENTER);
 		goRegion.setContent(mapContent);
@@ -143,10 +146,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (gameMenu.isPaused()) {
-			showPausedMenu();
-		} else {
-			dismissPausedMenu();
+		if (gameMenu.isPausedState().getValue() == Boolean.FALSE) {
 			gameMenu.unMute();
 		}
 	}
@@ -167,6 +167,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	public void onStop() {
 		super.onStop();
 		selectionControls.removeSelectionListener(this);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		gameMenu.getGameState().removeObserver(gameStateObserver);
 	}
 
 	@Override
@@ -415,14 +421,19 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
 	}
 
-	@Receiver(actions = ACTION_PAUSE, local = true, registerAt = Receiver.RegisterAt.OnResumeOnPause)
-	void pauseGameReceived() {
-		showPausedMenu();
-	}
 
-	@Receiver(actions = ACTION_UNPAUSE, local = true, registerAt = Receiver.RegisterAt.OnStartOnStop)
-	void unPauseGameReceived() {
-		gameMenu.unMute();
-		dismissPausedMenu();
-	}
+	private Observer<Boolean> pauseObserver = paused -> {
+		if (paused) {
+			showPausedMenu();
+		} else {
+			dismissPausedMenu();
+			gameMenu.unMute();
+		}
+	};
+
+	private Observer<GameMenu.GameState> gameStateObserver = gameState -> {
+		if (gameState == GameMenu.GameState.QUITTED) {
+			getActivity().finish();
+		}
+	};
 }

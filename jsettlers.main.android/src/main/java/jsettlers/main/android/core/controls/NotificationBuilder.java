@@ -20,6 +20,7 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.res.StringRes;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.GameService;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
@@ -33,7 +34,7 @@ import android.support.v4.app.NotificationCompat;
  * Created by Andreas Eberle on 13.05.2017.
  */
 @EBean
-class NotificationBuilder {
+public class NotificationBuilder {
 	private final Context context;
 	private NotificationCompat.Builder builder;
 
@@ -66,31 +67,31 @@ class NotificationBuilder {
 	}
 
 	public NotificationBuilder addQuitButton() {
-		PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(Actions.ACTION_QUIT), 0);
+		PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(GameService.ACTION_QUIT), 0);
 		builder.addAction(R.drawable.ic_stop, quit, quitPendingIntent);
 		return this;
 	}
 
 	public NotificationBuilder addQuitConfirmButton() {
-		PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(Actions.ACTION_QUIT_CONFIRM), 0);
+		PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(GameService.ACTION_QUIT_CONFIRM), 0);
 		builder.addAction(R.drawable.ic_stop, quitConfirmString, quitPendingIntent);
 		return this;
 	}
 
 	public NotificationBuilder addSaveButton() {
-		PendingIntent savePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(Actions.ACTION_SAVE), 0);
+		PendingIntent savePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(GameService.ACTION_SAVE), 0);
 		builder.addAction(R.drawable.ic_save, saveString, savePendingIntent);
 		return this;
 	}
 
 	public NotificationBuilder addPauseButton() {
-		PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(Actions.ACTION_PAUSE), 0);
+		PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(GameService.ACTION_PAUSE), 0);
 		builder.addAction(R.drawable.ic_pause, pauseString, pausePendingIntent);
 		return this;
 	}
 
 	public NotificationBuilder addUnPauseButton() {
-		PendingIntent unPausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(Actions.ACTION_UNPAUSE), 0);
+		PendingIntent unPausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(GameService.ACTION_UNPAUSE), 0);
 		builder.addAction(R.drawable.ic_play, unpauseString, unPausePendingIntent);
 		return this;
 	}

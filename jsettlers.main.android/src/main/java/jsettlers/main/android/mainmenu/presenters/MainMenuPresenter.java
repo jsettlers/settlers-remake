@@ -82,7 +82,7 @@ public class MainMenuPresenter {
 	}
 
 	public void pauseSelected() {
-		if (gameManager.getGameMenu().isPaused()) {
+		if (gameManager.getGameMenu().isPausedState().getValue()) {
 			gameManager.getGameMenu().unPause();
 		} else {
 			gameManager.getGameMenu().pause();
@@ -91,13 +91,13 @@ public class MainMenuPresenter {
 	}
 
 	public void updateResumeGameView() {
-		if (gameManager.isGameInProgress()) {
-			view.updatePauseButton(gameManager.getGameMenu().isPaused());
-			view.updateQuitButton(gameManager.getGameMenu().canQuitConfirm());
-			view.showResumeGameView();
-		} else {
-			view.hideResumeGameView();
-		}
+//		if (gameManager.isGameInProgress()) {
+//			view.updatePauseButton(gameManager.getGameMenu().isPausedState().getValue());
+//			view.updateQuitButton(gameManager.getGameMenu().canQuitConfirm());
+//			view.showResumeGameView();
+//		} else {
+//			view.hideResumeGameView();
+//		}
 	}
 
 	public void resourceDirectoryChosen() {

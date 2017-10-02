@@ -15,28 +15,8 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments;
 
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.Receiver;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
-import jsettlers.main.android.mainmenu.ui.activities.SettingsActivity_;
-import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
-import jsettlers.main.android.mainmenu.views.MainMenuView;
-
 import android.Manifest;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,6 +29,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.ViewById;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
+import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
+import jsettlers.main.android.mainmenu.ui.activities.SettingsActivity_;
+import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
+import jsettlers.main.android.mainmenu.viewmodels.MainMenuViewModel;
+import jsettlers.main.android.mainmenu.views.MainMenuView;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -58,6 +53,7 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private MainMenuPresenter presenter;
+	private MainMenuViewModel viewModel;
 
 	@ViewById(R.id.linear_layout_main)
 	LinearLayout mainLinearLayout;
@@ -82,6 +78,17 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		presenter = PresenterFactory.createMainMenuPresenter(getActivity(), this);
+		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity())).get(MainMenuViewModel.class);
+
+		viewModel.getResumeState().observe(this, resumeViewState -> {
+			if (resumeViewState == null){
+				hideResumeGameView();
+			} else {
+				updatePauseButton(resumeViewState.isPaused());
+				updateQuitButton(resumeViewState.isConfirmQuit());
+				showResumeGameView();
+			}
+		});
 	}
 
 	@AfterViews
@@ -221,28 +228,28 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		presenter.joinMultiPlayerSelected();
 	}
 
-	@Receiver(actions = ACTION_QUIT, local = true)
-	void quitReceived() {
-		presenter.updateResumeGameView();
-	}
-
-	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
-	void quitConfirmReceived() {
-		presenter.updateResumeGameView();
-	}
-
-	@Receiver(actions = ACTION_QUIT_CANCELLED, local = true)
-	void quitCancelled() {
-		presenter.updateResumeGameView();
-	}
-
-	@Receiver(actions = ACTION_PAUSE, local = true)
-	void pauseReceived() {
-		presenter.updateResumeGameView();
-	}
-
-	@Receiver(actions = ACTION_UNPAUSE, local = true)
-	void unpauseReceived() {
-		presenter.updateResumeGameView();
-	}
+//	@Receiver(actions = ACTION_QUIT, local = true)
+//	void quitReceived() {
+//		presenter.updateResumeGameView();
+//	}
+//
+//	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
+//	void quitConfirmReceived() {
+//		presenter.updateResumeGameView();
+//	}
+//
+//	@Receiver(actions = ACTION_QUIT_CANCELLED, local = true)
+//	void quitCancelled() {
+//		presenter.updateResumeGameView();
+//	}
+//
+//	@Receiver(actions = ACTION_PAUSE, local = true)
+//	void pauseReceived() {
+//		presenter.updateResumeGameView();
+//	}
+//
+//	@Receiver(actions = ACTION_UNPAUSE, local = true)
+//	void unpauseReceived() {
+//		presenter.updateResumeGameView();
+//	}
 }

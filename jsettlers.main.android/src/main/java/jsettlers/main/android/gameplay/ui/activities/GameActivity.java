@@ -15,12 +15,12 @@
 
 package jsettlers.main.android.gameplay.ui.activities;
 
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CONFIRM;
-
-import java.util.List;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Receiver;
+
+import java.util.List;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
@@ -31,9 +31,6 @@ import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
 import jsettlers.main.android.gameplay.ui.fragments.LoadingFragment;
 import jsettlers.main.android.gameplay.ui.fragments.MapFragment_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
-
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 @EActivity(R.layout.activity_game)
 public class GameActivity extends FullScreenAppCompatActivity implements GameNavigator, MenuNavigatorProvider {
@@ -103,10 +100,5 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.frame_layout, LoadingFragment.newInstance(), TAG_FRAGMENT_LOADING)
 				.commitNow();
-	}
-
-	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
-	void onActionQuitConfirm() {
-		finish();
 	}
 }
