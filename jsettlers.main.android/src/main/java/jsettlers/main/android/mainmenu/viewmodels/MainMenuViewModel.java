@@ -3,11 +3,14 @@ package jsettlers.main.android.mainmenu.viewmodels;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.controls.GameMenu;
+import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
+import jsettlers.main.android.utils.SingleLiveEvent;
 
 /**
  * Created by Tom Pratt on 02/10/2017.
@@ -16,15 +19,92 @@ import jsettlers.main.android.core.controls.GameMenu;
 public class MainMenuViewModel extends ViewModel {
 
     private final GameManager gameManager;
+    private final AndroidResourcesLoader androidResourcesLoader;
 
     private final ResumeStateData resumeStateData = new ResumeStateData();
+    private final MutableLiveData<Boolean> areResourcesLoaded = new MutableLiveData<>();
+    private final SingleLiveEvent<Void> showSinglePlayer = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Void> showLoadSinglePlayer = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Void> showMultiplayerPlayer = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Void> showJoinMultiplayerPlayer = new SingleLiveEvent<>();
 
-    public MainMenuViewModel(GameManager gameManager) {
+    public MainMenuViewModel(GameManager gameManager, AndroidResourcesLoader androidResourcesLoader) {
         this.gameManager = gameManager;
+        this.androidResourcesLoader = androidResourcesLoader;
+
+        areResourcesLoaded.setValue(androidResourcesLoader.setup());
     }
 
     public LiveData<ResumeViewState> getResumeState() {
         return resumeStateData;
+    }
+
+    public MutableLiveData<Boolean> getAreResourcesLoaded() {
+        return areResourcesLoaded;
+    }
+
+    public LiveData<Void> getShowSinglePlayer() {
+        return showSinglePlayer;
+    }
+
+    public LiveData<Void> getShowLoadSinglePlayer() {
+        return showLoadSinglePlayer;
+    }
+
+    public LiveData<Void> getShowMultiplayerPlayer() {
+        return showMultiplayerPlayer;
+    }
+
+    public LiveData<Void> getShowJoinMultiplayerPlayer() {
+        return showJoinMultiplayerPlayer;
+    }
+
+    public void resourceDirectoryChosen() {
+        boolean resourcesLoaded = androidResourcesLoader.setup();
+        if (resourcesLoaded) {
+            areResourcesLoaded.setValue(true);
+        } else {
+            throw new RuntimeException("Resources not found or not valid after directory chosen by user");
+        }
+    }
+    public void quitSelected() {
+        if (gameManager.getGameMenu().getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
+            gameManager.getGameMenu().quitConfirm();
+        } else {
+            gameManager.getGameMenu().quit();
+        }
+    }
+
+    public void pauseSelected() {
+        if (gameManager.getGameMenu().isPausedState().getValue()) {
+            gameManager.getGameMenu().unPause();
+        } else {
+            gameManager.getGameMenu().pause();
+        }
+    }
+
+    public void newSinglePlayerSelected() {
+        if (areResourcesLoaded.getValue() == Boolean.TRUE) {
+            showSinglePlayer.call();
+        }
+    }
+
+    public void loadSinglePlayerSelected() {
+        if (areResourcesLoaded.getValue() == Boolean.TRUE) {
+            showLoadSinglePlayer.call();
+        }
+    }
+
+    public void newMultiPlayerSelected() {
+        if (areResourcesLoaded.getValue() == Boolean.TRUE) {
+            showMultiplayerPlayer.call();
+        }
+    }
+
+    public void joinMultiPlayerSelected() {
+        if (areResourcesLoaded.getValue() == Boolean.TRUE) {
+            showJoinMultiplayerPlayer.call();
+        }
     }
 
 
@@ -52,6 +132,7 @@ public class MainMenuViewModel extends ViewModel {
 
     /**
      * LiveData for resume state
+     * It monitors the current GameManager and relays state changes
      */
     private class ResumeStateData extends MediatorLiveData<ResumeViewState> {
         private GameMenu gameMenu;
@@ -80,6 +161,7 @@ public class MainMenuViewModel extends ViewModel {
                 }
             } else {
                 setValue(null);
+                gameMenu = null;
             }
         }
 
@@ -99,16 +181,20 @@ public class MainMenuViewModel extends ViewModel {
      */
     public static class Factory implements ViewModelProvider.Factory {
 
+        private final Activity activity;
         private final GameManager gameManager;
 
         public Factory(Activity activity) {
+            this.activity = activity;
             gameManager = (GameManager)activity.getApplication();
         }
 
         @Override
         public <T extends ViewModel> T create(Class<T> modelClass) {
             if (modelClass == MainMenuViewModel.class) {
-                return (T) new MainMenuViewModel(gameManager);
+                return (T) new MainMenuViewModel(
+                        gameManager,
+                        new AndroidResourcesLoader(activity));
             }
             throw new RuntimeException("MainMenuViewModel.Factory doesn't know how to create a: " + modelClass.toString());
         }

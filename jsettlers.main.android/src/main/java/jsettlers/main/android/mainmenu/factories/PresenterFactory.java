@@ -27,7 +27,6 @@ import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
 import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.LoadSinglePlayerPickerPresenter;
@@ -57,13 +56,6 @@ import android.content.Context;
  * Created by tompr on 03/02/2017.
  */
 public class PresenterFactory {
-
-	public static MainMenuPresenter createMainMenuPresenter(Activity activity, MainMenuView view) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameManager gameManager = (GameManager) activity.getApplication();
-
-		return new MainMenuPresenter(view, navigator, gameManager, new AndroidResourcesLoader(activity));
-	}
 
 	public static SettingsPresenter createSettingsPresenter(Context context, SettingsView view) {
 		return new SettingsPresenter(view, new AndroidPreferences(context));

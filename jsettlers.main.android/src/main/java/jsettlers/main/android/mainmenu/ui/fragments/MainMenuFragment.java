@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -37,28 +36,27 @@ import org.androidannotations.annotations.ViewById;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.ui.activities.SettingsActivity_;
 import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.mainmenu.viewmodels.MainMenuViewModel;
-import jsettlers.main.android.mainmenu.views.MainMenuView;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 @EFragment(R.layout.fragment_main_menu)
 @OptionsMenu(R.menu.fragment_mainmenu)
-public class MainMenuFragment extends Fragment implements MainMenuView, DirectoryPickerDialog.Listener {
+public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
-	private MainMenuPresenter presenter;
 	private MainMenuViewModel viewModel;
 
-	@ViewById(R.id.linear_layout_main)
+	@ViewById(R.id.linearLayout_main)
 	LinearLayout mainLinearLayout;
-	@ViewById(R.id.card_view_resume)
+	@ViewById(R.id.cardView_resume)
 	View resumeView;
+	@ViewById(R.id.cardView_resourcePicker)
+	View resourcePickerView;
 	@ViewById(R.id.button_pause)
 	Button pauseButton;
 	@ViewById(R.id.button_quit)
@@ -66,9 +64,7 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
 
-	View resourcesView;
-
-	private boolean showDirectoryPicker = false;
+	private MainMenuNavigator mainMenuNavigator;
 
 	public static MainMenuFragment create() {
 		return new MainMenuFragment_();
@@ -77,43 +73,21 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		presenter = PresenterFactory.createMainMenuPresenter(getActivity(), this);
+		mainMenuNavigator = (MainMenuNavigator)getActivity();
 		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity())).get(MainMenuViewModel.class);
 
-		viewModel.getResumeState().observe(this, resumeViewState -> {
-			if (resumeViewState == null){
-				hideResumeGameView();
-			} else {
-				updatePauseButton(resumeViewState.isPaused());
-				updateQuitButton(resumeViewState.isConfirmQuit());
-				showResumeGameView();
-			}
-		});
+		viewModel.getResumeState().observe(this, this::updateResumeView);
+        viewModel.getAreResourcesLoaded().observe(this, this::updateResourceView);
+		viewModel.getShowSinglePlayer().observe(this, z -> mainMenuNavigator.showNewSinglePlayerPicker());
+		viewModel.getShowLoadSinglePlayer().observe(this, z -> mainMenuNavigator.showLoadSinglePlayerPicker());
+		viewModel.getShowMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showNewMultiPlayerPicker());
+		viewModel.getShowJoinMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showJoinMultiPlayerPicker());
 	}
 
 	@AfterViews
 	public void afterViews() {
 		FragmentUtil.setActionBar(this, toolbar);
-		presenter.initView();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		getActivity().setTitle(R.string.app_name);
-
-		// Work around for IllegalStateException when trying to show dialog from onPermissionResult which is too soon in the lifecycle.
-		if (showDirectoryPicker) {
-			showDirectoryPicker();
-			showDirectoryPicker = false;
-		}
-
-		presenter.updateResumeGameView();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
+		toolbar.setTitle(R.string.app_name);
 	}
 
 	@Override
@@ -133,59 +107,24 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		switch (requestCode) {
 		case REQUEST_CODE_PERMISSION_STORAGE:
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				showDirectoryPicker = true;
+				showDirectoryPicker();
 			}
 			break;
 		}
 	}
 
-	/**
-	 * MainMenuView implementation
-	 */
-	@Override
-	public void showResourcePicker() {
-		LayoutInflater inflater = LayoutInflater.from(getActivity());
-		resourcesView = inflater.inflate(R.layout.include_resources_card, mainLinearLayout, false);
-		mainLinearLayout.addView(resourcesView, 0);
-
-		Button button = (Button) resourcesView.findViewById(R.id.button_resources);
-		button.setOnClickListener(v -> showDirectoryPicker());
-	}
-
-	@Override
-	public void hideResourcePicker() {
-		mainLinearLayout.removeView(resourcesView);
-	}
-
-	@Override
-	public void updatePauseButton(boolean paused) {
-		pauseButton.setText(paused ? R.string.game_menu_unpause : R.string.game_menu_pause);
-	}
-
-	@Override
-	public void updateQuitButton(boolean canQuitConfirm) {
-		quitButton.setText(canQuitConfirm ? R.string.game_menu_quit_confirm : R.string.game_menu_quit);
-	}
-
-	@Override
-	public void showResumeGameView() {
-		resumeView.setVisibility(View.VISIBLE);
-	}
-
-	@Override
-	public void hideResumeGameView() {
-		resumeView.setVisibility(View.GONE);
-	}
 
 	/**
 	 * DirectoryPickerDialog.Listener implementation
 	 */
 	@Override
 	public void onDirectorySelected() {
-		presenter.resourceDirectoryChosen();
+		viewModel.resourceDirectoryChosen();
 	}
 
-	private void showDirectoryPicker() {
+
+	@Click(R.id.button_resources)
+	void showDirectoryPicker() {
 		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
 		} else {
@@ -193,63 +132,58 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		}
 	}
 
-	@Click(R.id.card_view_resume)
+	@Click(R.id.cardView_resume)
 	void resumeView() {
-		presenter.resumeSelected();
+		mainMenuNavigator.resumeGame();
 	}
 
 	@Click(R.id.button_quit)
 	void quitClicked() {
-		presenter.quitSelected();
+		viewModel.quitSelected();
 	}
 
 	@Click(R.id.button_pause)
 	void pauseClicked() {
-		presenter.pauseSelected();
+		viewModel.pauseSelected();
 	}
 
 	@Click(R.id.button_new_single_player_game)
 	void newSinglePlayerGameClicked() {
-		presenter.newSinglePlayerSelected();
+		viewModel.newSinglePlayerSelected();
 	}
 
 	@Click(R.id.button_load_single_player_game)
 	void loadSinglePlayerGameClicked() {
-		presenter.loadSinglePlayerSelected();
+		viewModel.loadSinglePlayerSelected();
 	}
 
 	@Click(R.id.button_new_multi_player_game)
 	void newMultiPlayerGameClicked() {
-		presenter.newMultiPlayerSelected();
+		viewModel.newMultiPlayerSelected();
 	}
 
 	@Click(R.id.button_join_multi_player_game)
 	void joinMultiplayerGameClicked() {
-		presenter.joinMultiPlayerSelected();
+		viewModel.joinMultiPlayerSelected();
 	}
 
-//	@Receiver(actions = ACTION_QUIT, local = true)
-//	void quitReceived() {
-//		presenter.updateResumeGameView();
-//	}
-//
-//	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
-//	void quitConfirmReceived() {
-//		presenter.updateResumeGameView();
-//	}
-//
-//	@Receiver(actions = ACTION_QUIT_CANCELLED, local = true)
-//	void quitCancelled() {
-//		presenter.updateResumeGameView();
-//	}
-//
-//	@Receiver(actions = ACTION_PAUSE, local = true)
-//	void pauseReceived() {
-//		presenter.updateResumeGameView();
-//	}
-//
-//	@Receiver(actions = ACTION_UNPAUSE, local = true)
-//	void unpauseReceived() {
-//		presenter.updateResumeGameView();
-//	}
+
+
+	private void updateResumeView(MainMenuViewModel.ResumeViewState resumeViewState) {
+		if (resumeViewState == null){
+			resumeView.setVisibility(View.GONE);
+		} else {
+			pauseButton.setText(resumeViewState.isPaused() ? R.string.game_menu_unpause : R.string.game_menu_pause);
+			quitButton.setText(resumeViewState.isConfirmQuit() ? R.string.game_menu_quit_confirm : R.string.game_menu_quit);
+			resumeView.setVisibility(View.VISIBLE);
+		}
+	}
+
+	private void updateResourceView(boolean areResourcesLoaded) {
+		if (areResourcesLoaded) {
+			resourcePickerView.setVisibility(View.GONE);
+		} else  {
+			resourcePickerView.setVisibility(View.VISIBLE);
+		}
+	}
 }

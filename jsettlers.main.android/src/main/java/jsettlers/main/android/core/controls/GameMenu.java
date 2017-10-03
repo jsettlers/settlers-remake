@@ -82,7 +82,7 @@ public class GameMenu implements IGameExitListener {
 		pausedState.postValue(true);
 	}
 
-	// don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visible.
+	// don't unmute here, MapFragment will unmute if its visible.
 	public void unPause() {
 		actionControls.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
 
@@ -110,10 +110,6 @@ public class GameMenu implements IGameExitListener {
 		// Trigger quit from here and callback in MainApplication broadcasts after quit is complete
 		quitConfirmTimer = null;
 		actionControls.fireAction(new Action(EActionType.EXIT));
-	}
-
-	public boolean canQuitConfirm() {
-		return quitConfirmTimer != null;
 	}
 
 	public void mute() {
