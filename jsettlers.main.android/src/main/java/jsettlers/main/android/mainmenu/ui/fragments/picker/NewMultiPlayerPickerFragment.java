@@ -19,38 +19,66 @@ import org.androidannotations.annotations.EFragment;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.NewMultiPlayerPickerViewModel;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 @EFragment(R.layout.fragment_map_picker)
-public class NewMultiPlayerPickerFragment extends MapPickerFragment implements NewMultiPlayerPickerView {
+public class NewMultiPlayerPickerFragment extends MapPickerFragment {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
 	public static Fragment newInstance() {
 		return new NewMultiPlayerPickerFragment_();
 	}
 
+	private NewMultiPlayerPickerViewModel viewModel;
+
 	@Override
 	protected MapPickerPresenter createPresenter() {
-		return PresenterFactory.createNewMultiPlayerPickerPresenter(getActivity(), this);
+		return null;// PresenterFactory.createNewMultiPlayerPickerPresenter(getActivity(), this);
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		getActivity().setTitle(R.string.new_multi_player_game);
+	protected MapPickerViewModel createViewModel() {
+		viewModel = ViewModelProviders.of(this, new NewMultiPlayerPickerViewModel.Factory(getActivity())).get(NewMultiPlayerPickerViewModel.class);
+		return viewModel;
 	}
 
-	/**
-	 * NewMultiPlayerPickerView implementation
-	 */
 	@Override
+	void setupToolbar() {
+		super.setupToolbar();
+		toolbar.setTitle(R.string.new_multi_player_game);
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		viewModel.getMapSelectedEvent().observe(this, mapId -> {
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator)getActivity();
+			mainMenuNavigator.showNewMultiPlayerSetup(mapId);
+		});
+
+		viewModel.getJoiningState().observe(this, joiningViewState -> {
+			if (joiningViewState == null) {
+				dismissJoiningProgress();
+			} else {
+				setJoiningProgress(joiningViewState.getState(), joiningViewState.getProgress());
+			}
+		});
+	}
+
 	public void setJoiningProgress(String stateString, int progressPercentage) {
 		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog == null) {
@@ -60,7 +88,6 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment implements N
 		}
 	}
 
-	@Override
 	public void dismissJoiningProgress() {
 		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog != null) {

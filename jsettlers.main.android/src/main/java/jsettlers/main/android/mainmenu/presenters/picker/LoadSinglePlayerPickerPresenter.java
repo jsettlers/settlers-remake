@@ -47,12 +47,6 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
 
 	@Override
 	public void itemSelected(MapLoader mapLoader) {
-		MapFileHeader mapFileHeader = mapLoader.getFileHeader();
-		PlayerSetting[] playerSettings = mapFileHeader.getPlayerSettings();
-		byte playerId = mapFileHeader.getPlayerId();
-		JSettlersGame game = new JSettlersGame(mapLoader, 4711L, playerId, playerSettings);
-		gameStarter.setStartingGame(game.start());
-		navigator.showGame();
 	}
 
 	@Override

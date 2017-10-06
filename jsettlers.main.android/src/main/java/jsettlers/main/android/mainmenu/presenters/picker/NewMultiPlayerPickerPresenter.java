@@ -32,7 +32,7 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 /**
  * Created by tompr on 22/01/2017.
  */
-public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements IJoiningGameListener {
+public class NewMultiPlayerPickerPresenter extends MapPickerPresenter {
 	private final NewMultiPlayerPickerView view;
 	private final GameStarter gameStarter;
 	private final AndroidPreferences androidPreferences;
@@ -53,35 +53,12 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
 
 	@Override
 	public void itemSelected(MapLoader mapLoader) {
-		cancelJoining();
-		tempMapDefinition = mapLoader;
-
-		joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
-			@Override
-			public String getMatchName() {
-				return androidPreferences.getPlayerName();
-			}
-
-			@Override
-			public IMapDefinition getMapDefinition() {
-				return mapLoader;
-			}
-
-			@Override
-			public int getMaxPlayers() {
-				return mapLoader.getMaxPlayers();
-			}
-		});
-
-		joiningGame.setListener(this);
-
-		gameStarter.setJoiningGame(joiningGame);
 	}
 
 	@Override
 	protected void abort() {
 		super.abort();
-		cancelJoining();
+	//	cancelJoining();
 	}
 
 	public void dispose() {
@@ -89,35 +66,5 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
 		if (joiningGame != null) {
 			joiningGame.setListener(null);
 		}
-	}
-
-	private void cancelJoining() {
-		if (joiningGame != null) {
-			joiningGame.abort();
-		}
-
-		gameStarter.setJoiningGame(null);
-		gameStarter.closeMultiPlayerConnector();
-	}
-
-	/**
-	 * IJoiningGameListener imeplementation
-	 */
-	@Override
-	public void joinProgressChanged(EProgressState state, float progress) {
-		String stateString = Labels.getProgress(state);
-		int progressPercentage = (int) (progress * 100);
-
-		view.setJoiningProgress(stateString, progressPercentage);
-	}
-
-	@Override
-	public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-		joiningGame.setListener(null);
-		gameStarter.setJoiningGame(null);
-		view.dismissJoiningProgress();
-
-		gameStarter.setJoinPhaseMultiPlayerConnector(connector);
-		navigator.showNewMultiPlayerSetup(tempMapDefinition);
 	}
 }

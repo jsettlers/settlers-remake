@@ -34,9 +34,13 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,6 +48,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -57,7 +62,7 @@ import io.reactivex.schedulers.Schedulers;
  * A simple {@link Fragment} subclass.
  */
 @EFragment(R.layout.fragment_map_picker)
-public abstract class MapPickerFragment extends Fragment implements MapPickerView {
+public abstract class MapPickerFragment extends Fragment {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
 
 	@ViewById(R.id.recycler_view)
@@ -65,67 +70,49 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
 
-	MapPickerPresenter presenter;
-	MapAdapter adapter;
+	private MapPickerViewModel viewModel;
+	private MapAdapter adapter;
 
-	boolean isSaving = false;
+
+	protected MapPickerViewModel createViewModel() {
+		throw new RuntimeException("Need to override createViewModel");
+	}
+
+
+	public void setItems(List<? extends MapLoader> items) {
+
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		presenter = createPresenter();
+		viewModel = createViewModel();
 	}
 
 	@AfterViews
 	void setupToolbar() {
 		FragmentUtil.setActionBar(this, toolbar);
-		presenter.initView();
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-	}
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		isSaving = true;
-	}
+		viewModel.getMaps().observe(this, maps -> {
+			if (adapter == null) {
+				adapter = new MapAdapter(maps);
+			}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		presenter.dispose();
-	}
+			if (recyclerView.getAdapter() == null) {
+				recyclerView.setHasFixedSize(true);
+				recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+				recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+				recyclerView.setItemAnimator(new NoChangeItemAnimator());
+				recyclerView.setAdapter(adapter);
+			}
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		if (isRemoving() && !isSaving) {
-			presenter.viewFinished();
-		}
-	}
-
-	/**
-	 * MapPickerView implementation
-	 */
-	@Override
-	@UiThread
-	public void setItems(List<? extends MapLoader> items) {
-		if (adapter == null) {
-			adapter = new MapAdapter(items);
-		}
-
-		if (recyclerView.getAdapter() == null) {
-			recyclerView.setHasFixedSize(true);
-			recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-			recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-			recyclerView.setItemAnimator(new NoChangeItemAnimator());
-			recyclerView.setAdapter(adapter);
-		}
-
-		adapter.setItems(items);
+			adapter.setItems(maps);
+		});
 	}
 
 	/**
@@ -141,7 +128,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	 * RecyclerView Adapter for displaying list of maps
 	 */
 	private class MapAdapter extends RecyclerView.Adapter<MapAdapter.MapHolder> {
-		private List<? extends MapLoader> maps;
+		private MapLoader[] maps;
 		private final Semaphore limitImageLoadingSemaphore = new Semaphore(3, true);
 
 		private View.OnClickListener itemClickListener = new View.OnClickListener() {
@@ -150,19 +137,19 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 				RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(v);
 				if (viewHolder != null) {
 					int position = viewHolder.getAdapterPosition();
-					MapLoader map = maps.get(position);
-					presenter.itemSelected(map);
+					MapLoader map = maps[position];
+					viewModel.selectMap(map);
 				}
 			}
 		};
 
-		public MapAdapter(List<? extends MapLoader> maps) {
+		public MapAdapter(MapLoader[] maps) {
 			this.maps = maps;
 		}
 
 		@Override
 		public int getItemCount() {
-			return maps.size();
+			return maps.length;
 		}
 
 		@Override
@@ -175,11 +162,11 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 
 		@Override
 		public void onBindViewHolder(MapHolder holder, int position) {
-			IMapDefinition map = maps.get(position);
+			IMapDefinition map = maps[position];
 			holder.bind(map);
 		}
 
-		void setItems(List<? extends MapLoader> maps) {
+		void setItems(MapLoader[] maps) {
 			this.maps = maps;
 			notifyDataSetChanged();
 		}
@@ -194,10 +181,10 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 
 			public MapHolder(View itemView) {
 				super(itemView);
-				nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
-				dateTextView = (TextView) itemView.findViewById(R.id.text_view_date);
-				playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
-				mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
+				nameTextView = itemView.findViewById(R.id.text_view_name);
+				dateTextView = itemView.findViewById(R.id.text_view_date);
+				playerCountTextView = itemView.findViewById(R.id.text_view_player_count);
+				mapPreviewImageView = itemView.findViewById(R.id.image_view_map_preview);
 
 				if (showMapDates()) {
 					dateTextView.setVisibility(View.VISIBLE);

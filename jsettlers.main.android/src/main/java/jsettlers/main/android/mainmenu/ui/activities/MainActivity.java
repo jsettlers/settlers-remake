@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewSinglePlayerSetup(IMapDefinition mapDefinition) {
+	public void showNewSinglePlayerSetup(String mapId) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create(mapDefinition))
+				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create(mapId))
 				.addToBackStack(null)
 				.commit();
 	}
@@ -108,17 +108,17 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showJoinMultiPlayerSetup(IMapDefinition mapDefinition) {
+	public void showJoinMultiPlayerSetup(String mapId) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create(mapDefinition))
+				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create(mapId))
 				.addToBackStack(null)
 				.commit();
 	}
 
 	@Override
-	public void showNewMultiPlayerSetup(IMapDefinition mapDefinition) {
+	public void showNewMultiPlayerSetup(String mapId) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create(mapDefinition))
+				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create(mapId))
 				.addToBackStack(null)
 				.commit();
 	}

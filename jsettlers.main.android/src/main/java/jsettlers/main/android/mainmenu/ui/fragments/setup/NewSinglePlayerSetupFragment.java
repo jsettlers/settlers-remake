@@ -27,8 +27,8 @@ import android.support.v4.app.Fragment;
 
 @EFragment(R.layout.fragment_new_single_player_setup)
 public class NewSinglePlayerSetupFragment extends MapSetupFragment<NewSinglePlayerSetupPresenter> implements NewSinglePlayerSetupView {
-	public static Fragment create(IMapDefinition mapDefinition) {
-		return NewSinglePlayerSetupFragment_.builder().mapId(mapDefinition.getMapId()).build();
+	public static Fragment create(String mapId) {
+		return NewSinglePlayerSetupFragment_.builder().mapId(mapId).build();
 	}
 
 	@Override

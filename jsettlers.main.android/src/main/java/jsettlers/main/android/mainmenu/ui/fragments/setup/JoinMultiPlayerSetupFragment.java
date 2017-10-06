@@ -31,8 +31,8 @@ import android.support.v4.app.Fragment;
 @EFragment(R.layout.fragment_new_single_player_setup)
 public class JoinMultiPlayerSetupFragment extends MapSetupFragment<JoinMultiPlayerSetupPresenter> implements JoinMultiPlayerSetupView {
 
-	public static Fragment create(IMapDefinition mapDefinition) {
-		return JoinMultiPlayerSetupFragment_.builder().mapId(mapDefinition.getMapId()).build();
+	public static Fragment create(String mapId) {
+		return JoinMultiPlayerSetupFragment_.builder().mapId(mapId).build();
 	}
 
 	@Override

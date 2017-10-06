@@ -19,10 +19,14 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
-import jsettlers.main.android.mainmenu.views.LoadSinglePlayerPickerView;
+import jsettlers.main.android.mainmenu.viewmodels.LoadSinglePlayerPickerViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -30,38 +34,47 @@ import android.view.View;
  * Created by tompr on 19/01/2017.
  */
 @EFragment(R.layout.fragment_map_picker_load_singleplayer)
-public class LoadSinglePlayerPickerFragment extends MapPickerFragment implements LoadSinglePlayerPickerView {
-
-	@ViewById(R.id.layout_no_saved_games)
-	View noSavedGamesView;
-
+public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 	public static Fragment newInstance() {
 		return new LoadSinglePlayerPickerFragment_();
 	}
 
+	private LoadSinglePlayerPickerViewModel viewModel;
+
+	@ViewById(R.id.layout_no_saved_games)
+	View noSavedGamesView;
+
 	@Override
 	protected MapPickerPresenter createPresenter() {
-		return PresenterFactory.createLoadSinglePlayerPickerPresenter(getActivity(), this);
+		return null;// PresenterFactory.createLoadSinglePlayerPickerPresenter(getActivity(), this);
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		getActivity().setTitle(R.string.load_single_player_game);
+	protected MapPickerViewModel createViewModel() {
+		viewModel = ViewModelProviders.of(this, new LoadSinglePlayerPickerViewModel.Factory(getActivity())).get(LoadSinglePlayerPickerViewModel.class);
+		return viewModel;
+	}
+
+	@Override
+	void setupToolbar() {
+		super.setupToolbar();
+		toolbar.setTitle(R.string.new_single_player_game);
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		viewModel.getShowNoMapsMessage().observe(this, showMessage -> noSavedGamesView.setVisibility(showMessage ? View.VISIBLE : View.GONE));
+
+		viewModel.getMapSelectedEvent().observe(this, mapId -> {
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator)getActivity();
+			mainMenuNavigator.showGame();
+		});
 	}
 
 	@Override
 	protected boolean showMapDates() {
 		return true;
-	}
-
-	@Override
-	public void hideNoGamesView() {
-		noSavedGamesView.setVisibility(View.GONE);
-	}
-
-	@Override
-	public void showNoGamesView() {
-		noSavedGamesView.setVisibility(View.VISIBLE);
 	}
 }

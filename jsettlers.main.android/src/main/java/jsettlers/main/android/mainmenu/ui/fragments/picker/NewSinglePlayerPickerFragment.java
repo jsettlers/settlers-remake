@@ -15,30 +15,53 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
-import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
-
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+
 import org.androidannotations.annotations.EFragment;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.NewSinglePlayerPickerViewModel;
 
 /**
  * Created by tompr on 19/01/2017.
  */
 @EFragment(R.layout.fragment_map_picker)
 public class NewSinglePlayerPickerFragment extends MapPickerFragment {
+	private NewSinglePlayerPickerViewModel viewModel;
+
 	public static Fragment newInstance() {
 		return new NewSinglePlayerPickerFragment_();
 	}
 
 	@Override
-	protected MapPickerPresenter createPresenter() {
-		return PresenterFactory.createNewSinglePlayerPickerPresenter(getActivity(), this);
+	protected MapPickerViewModel createViewModel() {
+		viewModel = ViewModelProviders.of(this, new NewSinglePlayerPickerViewModel.Factory(getActivity())).get(NewSinglePlayerPickerViewModel.class);
+		return viewModel;
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		getActivity().setTitle(R.string.new_single_player_game);
+	protected MapPickerPresenter createPresenter() {
+		return null;// PresenterFactory.createNewSinglePlayerPickerPresenter(getActivity(), this);
+	}
+
+	@Override
+	void setupToolbar() {
+		super.setupToolbar();
+		toolbar.setTitle(R.string.new_single_player_game);
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		viewModel.getMapSelectedEvent().observe(this, mapId -> {
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator)getActivity();
+			mainMenuNavigator.showNewSinglePlayerSetup(mapId);
+		});
 	}
 }

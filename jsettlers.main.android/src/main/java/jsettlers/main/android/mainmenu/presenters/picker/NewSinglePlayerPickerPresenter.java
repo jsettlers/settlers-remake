@@ -34,6 +34,6 @@ public class NewSinglePlayerPickerPresenter extends MapPickerPresenter {
 
 	@Override
 	public void itemSelected(MapLoader mapLoader) {
-		navigator.showNewSinglePlayerSetup(mapLoader);
+		navigator.showNewSinglePlayerSetup("");
 	}
 }

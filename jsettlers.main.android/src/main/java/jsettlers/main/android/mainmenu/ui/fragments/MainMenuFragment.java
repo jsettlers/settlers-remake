@@ -20,6 +20,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -96,7 +97,11 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		FragmentUtil.setActionBar(this, toolbar);
 		toolbar.setTitle(R.string.app_name);
 		binding.setViewmodel(viewModel);
+	}
 
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		viewModel.getResumeState().observe(this, this::updateResumeView);
 		viewModel.getAreResourcesLoaded().observe(this, this::updateResourceView);
 		viewModel.getAreResourcesLoaded().observe(this, newSinglePlayerButton::setEnabled);

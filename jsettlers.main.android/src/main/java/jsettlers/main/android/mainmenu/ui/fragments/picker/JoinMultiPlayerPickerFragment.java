@@ -32,10 +32,13 @@ import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.mainmenu.viewmodels.JoinMultiPlayerPickerViewModel;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -70,7 +73,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
 
-	JoinMultiPlayerPickerPresenter presenter;
+	JoinMultiPlayerPickerViewModel viewModel;
 	JoinableGamesAdapter adapter;
 
 	boolean isSaving = false;
@@ -78,39 +81,48 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		presenter = PresenterFactory.createJoinMultiPlayerPickerPresenter(getActivity(), this);
+		viewModel = ViewModelProviders.of(this, new JoinMultiPlayerPickerViewModel.Factory(getActivity())).get(JoinMultiPlayerPickerViewModel.class);
 	}
 
 	@AfterViews
 	void setupToolbar() {
 		FragmentUtil.setActionBar(this, toolbar);
-		presenter.initView(); // will need to remove this if this class ends up using the general Picker base class, because its already called there
+		toolbar.setTitle(R.string.join_multi_player_game);
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		getActivity().setTitle(R.string.join_multi_player_game);
-	}
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		viewModel.getShowNoGamesMessage().observe(this, showMessage -> searchingForGamesView.setVisibility(showMessage ? View.VISIBLE : View.GONE));
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		isSaving = true;
-	}
+		viewModel.getMapSelectedEvent().observe(this, mapId -> {
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
+			mainMenuNavigator.showJoinMultiPlayerSetup(mapId);
+		});
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		presenter.dispose();
-	}
+		viewModel.getJoinableGames().observe(this, joinableGames -> {
+			if (adapter == null) {
+				adapter = new JoinableGamesAdapter(joinableGames);
+			}
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		if (isRemoving() && !isSaving) {
-			presenter.viewFinished();
-		}
+			if (recyclerView.getAdapter() == null) {
+				recyclerView.setHasFixedSize(true);
+				recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+				recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+				recyclerView.setItemAnimator(new NoChangeItemAnimator());
+				recyclerView.setAdapter(adapter);
+			}
+
+			adapter.setItems(joinableGames);
+		});
+
+		viewModel.getJoiningState().observe(this, joiningViewState -> {
+			if (joiningViewState == null) {
+				dismissJoiningProgress();
+			} else {
+				setJoiningProgress(joiningViewState.getState(), joiningViewState.getProgress());
+			}
+		});
 	}
 
 	/**
@@ -121,19 +133,6 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	@Override
 	@UiThread
 	public void updateJoinableGames(List<? extends IJoinableGame> joinableGames) {
-		if (adapter == null) {
-			adapter = new JoinableGamesAdapter(joinableGames);
-		}
-
-		if (recyclerView.getAdapter() == null) {
-			recyclerView.setHasFixedSize(true);
-			recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-			recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-			recyclerView.setItemAnimator(new NoChangeItemAnimator());
-			recyclerView.setAdapter(adapter);
-		}
-
-		adapter.setItems(joinableGames);
 	}
 
 	@Override
@@ -157,33 +156,31 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	@Override
 	@UiThread
 	public void showSearchingForGamesView() {
-		searchingForGamesView.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	@UiThread
 	public void hideSearchingForGamesView() {
-		searchingForGamesView.setVisibility(View.GONE);
 	}
 
 	private void joinableGameSelected(IJoinableGame joinableGame) {
-		presenter.joinableGameSelected(joinableGame);
+		viewModel.joinableGameSelected(joinableGame);
 	}
 
 	/**
 	 * RecyclerView Adapter for displaying list of maps
 	 */
 	private class JoinableGamesAdapter extends RecyclerView.Adapter<JoinableGamesAdapter.JoinableGameHolder> {
-		private List<? extends IJoinableGame> joinableGames;
+		private IJoinableGame[] joinableGames;
 		private final Semaphore limitImageLoadingSemaphore = new Semaphore(3, true);
 
-		public JoinableGamesAdapter(List<? extends IJoinableGame> joinableGames) {
+		public JoinableGamesAdapter(IJoinableGame[] joinableGames) {
 			this.joinableGames = joinableGames;
 		}
 
 		@Override
 		public int getItemCount() {
-			return joinableGames.size();
+			return joinableGames.length;
 		}
 
 		@Override
@@ -193,7 +190,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 			itemView.setOnClickListener(view -> {
 				int position = mapHolder.getAdapterPosition();
-				joinableGameSelected(joinableGames.get(position));
+				joinableGameSelected(joinableGames[position]);
 			});
 
 			return mapHolder;
@@ -201,11 +198,11 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 		@Override
 		public void onBindViewHolder(JoinableGameHolder holder, int position) {
-			IJoinableGame joinableGame = joinableGames.get(position);
+			IJoinableGame joinableGame = joinableGames[position];
 			holder.bind(joinableGame);
 		}
 
-		void setItems(List<? extends IJoinableGame> joinableGames) {
+		void setItems(IJoinableGame[] joinableGames) {
 			this.joinableGames = joinableGames;
 			notifyDataSetChanged();
 		}
@@ -220,10 +217,10 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 			public JoinableGameHolder(View itemView) {
 				super(itemView);
-				hostNameTextView = (TextView) itemView.findViewById(R.id.text_view_host_name);
-				mapNameTextView = (TextView) itemView.findViewById(R.id.text_view_map_name);
-				playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
-				mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
+				hostNameTextView = itemView.findViewById(R.id.text_view_host_name);
+				mapNameTextView = itemView.findViewById(R.id.text_view_map_name);
+				playerCountTextView = itemView.findViewById(R.id.text_view_player_count);
+				mapPreviewImageView = itemView.findViewById(R.id.image_view_map_preview);
 			}
 
 			public void bind(IJoinableGame joinableGame) {
