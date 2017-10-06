@@ -1,234 +1,248 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".mainmenu.ui.fragments.MainMenuFragment_">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include layout="@layout/include_app_bar" />
+    <data>
+        <variable
+            name="viewmodel"
+            type="jsettlers.main.android.mainmenu.viewmodels.MainMenuViewModel" />
+    </data>
 
-    <ScrollView
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".mainmenu.ui.fragments.MainMenuFragment_">
 
-        <LinearLayout
-            android:id="@+id/linearLayout_main"
+        <include layout="@layout/include_app_bar" />
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/cardView_resourcePicker"
-                app:cardBackgroundColor="@color/primary"
-                app:contentPadding="12dp"
+            <LinearLayout
+                android:id="@+id/linearLayout_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_view_margin_vertical"
-                android:layout_marginBottom="@dimen/card_view_margin_vertical"
-                android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
-                android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
-                android:background="@color/primary"
-                android:theme="@style/CardTheme"
-                android:visibility="gone">
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
 
-                <LinearLayout
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardView_resourcePicker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/resource_directory_title" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/resource_directory_info" />
-
-                    <Button
-                        android:id="@+id/button_resources"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/resource_directory_button" />
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                app:cardBackgroundColor="@color/primary"
-                app:contentPadding="12dp"
-                android:id="@+id/cardView_resume"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_view_margin_vertical"
-                android:layout_marginBottom="@dimen/card_view_margin_vertical"
-                android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
-                android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
-                android:visibility="gone"
-                android:background="@color/primary"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:theme="@style/CardTheme">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/menu_game_in_progress" />
+                    android:layout_marginBottom="@dimen/card_view_margin_vertical"
+                    android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginTop="@dimen/card_view_margin_vertical"
+                    android:background="@color/primary"
+                    android:theme="@style/CardTheme"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/primary"
+                    app:contentPadding="12dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_gravity="end"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
-                        <Button
-                            android:id="@+id/button_quit"
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/game_menu_quit" />
+                            android:text="@string/resource_directory_title" />
 
-                        <Button
-                            android:id="@+id/button_pause"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/game_menu_pause" />
+                            android:layout_marginTop="8dp"
+                            android:text="@string/resource_directory_info" />
+
+                        <Button
+                            android:id="@+id/button_resources"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/resource_directory_button" />
                     </LinearLayout>
 
-                </LinearLayout>
+                </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_view_margin_vertical"
-                android:layout_marginBottom="@dimen/card_view_margin_vertical"
-                android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
-                android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
-                app:contentPaddingTop="12dp"
-                app:contentPaddingBottom="8dp"
-                app:contentPaddingLeft="12dp"
-                app:contentPaddingRight="12dp">
-
-                <LinearLayout
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardView_resume"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/menu_single_player_title" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/menu_single_player_info" />
+                    android:layout_marginBottom="@dimen/card_view_margin_vertical"
+                    android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginTop="@dimen/card_view_margin_vertical"
+                    android:background="@color/primary"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:theme="@style/CardTheme"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/primary"
+                    app:contentPadding="12dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
-                        <Button
-                            style="?attr/buttonBarButtonStyle"
-                            android:id="@+id/button_load_single_player_game"
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/menu_load" />
+                            android:text="@string/menu_game_in_progress" />
 
-                        <Button
-                            style="?attr/buttonBarButtonStyle"
-                            android:id="@+id/button_new_single_player_game"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/menu_new" />
+                            android:layout_gravity="end"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/button_quit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/game_menu_quit"
+                                android:onClick="@{() -> viewmodel.quitSelected()}" />
+
+                            <Button
+                                android:id="@+id/button_pause"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/game_menu_pause"
+                                android:onClick="@{() -> viewmodel.pauseSelected()}" />
+                        </LinearLayout>
+
                     </LinearLayout>
 
-                </LinearLayout>
+                </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
-
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_view_margin_vertical"
-                android:layout_marginBottom="@dimen/card_view_margin_vertical"
-                android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
-                android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
-                app:contentPaddingTop="12dp"
-                app:contentPaddingBottom="8dp"
-                app:contentPaddingLeft="12dp"
-                app:contentPaddingRight="12dp">
-
-                <LinearLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/menu_multi_player_title" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/menu_multi_player_info" />
+                    android:layout_marginBottom="@dimen/card_view_margin_vertical"
+                    android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginTop="@dimen/card_view_margin_vertical"
+                    app:contentPaddingBottom="8dp"
+                    app:contentPaddingLeft="12dp"
+                    app:contentPaddingRight="12dp"
+                    app:contentPaddingTop="12dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
-                        <Button
-                            style="?attr/buttonBarButtonStyle"
-                            android:id="@+id/button_join_multi_player_game"
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/menu_join" />
+                            android:text="@string/menu_single_player_title" />
 
-                        <Button
-                            style="?attr/buttonBarButtonStyle"
-                            android:id="@+id/button_load_multi_player_game"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:enabled="false"
-                            android:text="@string/menu_load" />
+                            android:layout_marginTop="8dp"
+                            android:text="@string/menu_single_player_info" />
 
-                        <Button
-                            style="?attr/buttonBarButtonStyle"
-                            android:id="@+id/button_new_multi_player_game"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/menu_new" />
+                            android:layout_gravity="end"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/button_load_single_player_game"
+                                style="?attr/buttonBarButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/menu_load"
+                                android:onClick="@{() -> viewmodel.loadSinglePlayerSelected()}" />
+
+                            <Button
+                                android:id="@+id/button_new_single_player_game"
+                                style="?attr/buttonBarButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/menu_new"
+                                android:onClick="@{() -> viewmodel.newSinglePlayerSelected()}" />
+                        </LinearLayout>
+
                     </LinearLayout>
 
-                </LinearLayout>
+                </android.support.v7.widget.CardView>
 
-            </android.support.v7.widget.CardView>
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/card_view_margin_vertical"
+                    android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
+                    android:layout_marginTop="@dimen/card_view_margin_vertical"
+                    app:contentPaddingBottom="8dp"
+                    app:contentPaddingLeft="12dp"
+                    app:contentPaddingRight="12dp"
+                    app:contentPaddingTop="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/menu_multi_player_title" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/menu_multi_player_info" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/button_join_multi_player_game"
+                                style="?attr/buttonBarButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/menu_join"
+                                android:onClick="@{() -> viewmodel.joinMultiPlayerSelected()}" />
+
+                            <Button
+                                android:id="@+id/button_load_multi_player_game"
+                                style="?attr/buttonBarButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"
+                                android:text="@string/menu_load" />
+
+                            <Button
+                                android:id="@+id/button_new_multi_player_game"
+                                style="?attr/buttonBarButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/menu_new"
+                                android:onClick="@{() -> viewmodel.newMultiPlayerSelected()}" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

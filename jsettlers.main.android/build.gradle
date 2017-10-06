@@ -47,6 +47,10 @@ android {
     packagingOptions {
         pickFirst '**'
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {

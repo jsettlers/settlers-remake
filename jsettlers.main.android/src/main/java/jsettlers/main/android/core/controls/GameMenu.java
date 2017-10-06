@@ -15,24 +15,20 @@
 
 package jsettlers.main.android.core.controls;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
+import android.widget.Toast;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
 import go.graphics.android.AndroidSoundPlayer;
-
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
 import jsettlers.main.android.R;
-
-import android.app.NotificationManager;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 /**
  * GameMenu is a singleton within the scope of a started game

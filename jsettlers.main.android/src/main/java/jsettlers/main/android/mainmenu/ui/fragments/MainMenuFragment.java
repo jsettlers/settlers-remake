@@ -29,13 +29,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.BindingObject;
 import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.DataBound;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.databinding.FragmentMainMenuBinding;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.ui.activities.SettingsActivity_;
 import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
@@ -44,12 +47,14 @@ import jsettlers.main.android.mainmenu.viewmodels.MainMenuViewModel;
 /**
  * A simple {@link Fragment} subclass.
  */
+@DataBound
 @EFragment(R.layout.fragment_main_menu)
 @OptionsMenu(R.menu.fragment_mainmenu)
 public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private MainMenuViewModel viewModel;
+    private MainMenuNavigator mainMenuNavigator;
 
 	@ViewById(R.id.linearLayout_main)
 	LinearLayout mainLinearLayout;
@@ -61,10 +66,19 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	Button pauseButton;
 	@ViewById(R.id.button_quit)
 	Button quitButton;
+    @ViewById(R.id.button_new_single_player_game)
+    Button newSinglePlayerButton;
+    @ViewById(R.id.button_load_single_player_game)
+    Button loadSinglePlayerButton;
+    @ViewById(R.id.button_new_multi_player_game)
+    Button newMultiPlayerButton;
+    @ViewById(R.id.button_join_multi_player_game)
+    Button joinMultiPlayerButton;
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
 
-	private MainMenuNavigator mainMenuNavigator;
+	@BindingObject
+	FragmentMainMenuBinding binding;
 
 	public static MainMenuFragment create() {
 		return new MainMenuFragment_();
@@ -75,19 +89,24 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		super.onCreate(savedInstanceState);
 		mainMenuNavigator = (MainMenuNavigator)getActivity();
 		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity())).get(MainMenuViewModel.class);
-
-		viewModel.getResumeState().observe(this, this::updateResumeView);
-        viewModel.getAreResourcesLoaded().observe(this, this::updateResourceView);
-		viewModel.getShowSinglePlayer().observe(this, z -> mainMenuNavigator.showNewSinglePlayerPicker());
-		viewModel.getShowLoadSinglePlayer().observe(this, z -> mainMenuNavigator.showLoadSinglePlayerPicker());
-		viewModel.getShowMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showNewMultiPlayerPicker());
-		viewModel.getShowJoinMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showJoinMultiPlayerPicker());
 	}
 
 	@AfterViews
 	public void afterViews() {
 		FragmentUtil.setActionBar(this, toolbar);
 		toolbar.setTitle(R.string.app_name);
+		binding.setViewmodel(viewModel);
+
+		viewModel.getResumeState().observe(this, this::updateResumeView);
+		viewModel.getAreResourcesLoaded().observe(this, this::updateResourceView);
+		viewModel.getAreResourcesLoaded().observe(this, newSinglePlayerButton::setEnabled);
+		viewModel.getAreResourcesLoaded().observe(this, loadSinglePlayerButton::setEnabled);
+		viewModel.getAreResourcesLoaded().observe(this, newMultiPlayerButton::setEnabled);
+		viewModel.getAreResourcesLoaded().observe(this, joinMultiPlayerButton::setEnabled);
+		viewModel.getShowSinglePlayer().observe(this, z -> mainMenuNavigator.showNewSinglePlayerPicker());
+		viewModel.getShowLoadSinglePlayer().observe(this, z -> mainMenuNavigator.showLoadSinglePlayerPicker());
+		viewModel.getShowMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showNewMultiPlayerPicker());
+		viewModel.getShowJoinMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showJoinMultiPlayerPicker());
 	}
 
 	@Override
@@ -135,36 +154,6 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	@Click(R.id.cardView_resume)
 	void resumeView() {
 		mainMenuNavigator.resumeGame();
-	}
-
-	@Click(R.id.button_quit)
-	void quitClicked() {
-		viewModel.quitSelected();
-	}
-
-	@Click(R.id.button_pause)
-	void pauseClicked() {
-		viewModel.pauseSelected();
-	}
-
-	@Click(R.id.button_new_single_player_game)
-	void newSinglePlayerGameClicked() {
-		viewModel.newSinglePlayerSelected();
-	}
-
-	@Click(R.id.button_load_single_player_game)
-	void loadSinglePlayerGameClicked() {
-		viewModel.loadSinglePlayerSelected();
-	}
-
-	@Click(R.id.button_new_multi_player_game)
-	void newMultiPlayerGameClicked() {
-		viewModel.newMultiPlayerSelected();
-	}
-
-	@Click(R.id.button_join_multi_player_game)
-	void joinMultiplayerGameClicked() {
-		viewModel.joinMultiPlayerSelected();
 	}
 
 
