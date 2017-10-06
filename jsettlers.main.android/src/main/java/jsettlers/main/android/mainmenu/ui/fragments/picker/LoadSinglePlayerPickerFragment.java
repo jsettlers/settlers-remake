@@ -15,20 +15,19 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
-import jsettlers.main.android.mainmenu.viewmodels.LoadSinglePlayerPickerViewModel;
-import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.viewmodels.LoadSinglePlayerPickerViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
 
 /**
  * Created by tompr on 19/01/2017.
@@ -43,11 +42,6 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 
 	@ViewById(R.id.layout_no_saved_games)
 	View noSavedGamesView;
-
-	@Override
-	protected MapPickerPresenter createPresenter() {
-		return null;// PresenterFactory.createLoadSinglePlayerPickerPresenter(getActivity(), this);
-	}
 
 	@Override
 	protected MapPickerViewModel createViewModel() {

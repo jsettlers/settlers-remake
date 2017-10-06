@@ -15,32 +15,6 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Semaphore;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
-
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.core.ui.NoChangeItemAnimator;
-import jsettlers.main.android.core.ui.PreviewImageConverter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
-import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
-import jsettlers.main.android.mainmenu.views.MapPickerView;
-
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -48,15 +22,33 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.concurrent.Semaphore;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.NoChangeItemAnimator;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -74,14 +66,7 @@ public abstract class MapPickerFragment extends Fragment {
 	private MapAdapter adapter;
 
 
-	protected MapPickerViewModel createViewModel() {
-		throw new RuntimeException("Need to override createViewModel");
-	}
-
-
-	public void setItems(List<? extends MapLoader> items) {
-
-	}
+	protected abstract MapPickerViewModel createViewModel();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -122,7 +107,6 @@ public abstract class MapPickerFragment extends Fragment {
 		return false;
 	}
 
-	protected abstract MapPickerPresenter createPresenter();
 
 	/**
 	 * RecyclerView Adapter for displaying list of maps

@@ -24,7 +24,6 @@ import org.androidannotations.annotations.EFragment;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
 import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
 import jsettlers.main.android.mainmenu.viewmodels.NewSinglePlayerPickerViewModel;
 
@@ -43,11 +42,6 @@ public class NewSinglePlayerPickerFragment extends MapPickerFragment {
 	protected MapPickerViewModel createViewModel() {
 		viewModel = ViewModelProviders.of(this, new NewSinglePlayerPickerViewModel.Factory(getActivity())).get(NewSinglePlayerPickerViewModel.class);
 		return viewModel;
-	}
-
-	@Override
-	protected MapPickerPresenter createPresenter() {
-		return null;// PresenterFactory.createNewSinglePlayerPickerPresenter(getActivity(), this);
 	}
 
 	@Override

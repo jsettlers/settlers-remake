@@ -15,29 +15,6 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
-import java.util.List;
-import java.util.concurrent.Semaphore;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
-
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import jsettlers.common.menu.IJoinableGame;
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.core.ui.NoChangeItemAnimator;
-import jsettlers.main.android.core.ui.PreviewImageConverter;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
-import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
-import jsettlers.main.android.mainmenu.viewmodels.JoinMultiPlayerPickerViewModel;
-import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -50,16 +27,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import java.util.concurrent.Semaphore;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.NoChangeItemAnimator;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.mainmenu.viewmodels.JoinMultiPlayerPickerViewModel;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 @EFragment(R.layout.fragment_map_picker_join_multiplayer)
-public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
+public class JoinMultiPlayerPickerFragment extends Fragment{
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
 	public static JoinMultiPlayerPickerFragment create() {
@@ -75,8 +70,6 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 	JoinMultiPlayerPickerViewModel viewModel;
 	JoinableGamesAdapter adapter;
-
-	boolean isSaving = false;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,18 +118,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 		});
 	}
 
-	/**
-	 * JoinMultiPlayerPickerView implementation
-	 * 
-	 * @param joinableGames
-	 */
-	@Override
-	@UiThread
-	public void updateJoinableGames(List<? extends IJoinableGame> joinableGames) {
-	}
-
-	@Override
-	public void setJoiningProgress(String stateString, int progressPercentage) {
+	private void setJoiningProgress(String stateString, int progressPercentage) {
 		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog == null) {
 			JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
@@ -145,26 +127,11 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 		}
 	}
 
-	@Override
-	public void dismissJoiningProgress() {
+	private void dismissJoiningProgress() {
 		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog != null) {
 			joiningProgressDialog.dismiss();
 		}
-	}
-
-	@Override
-	@UiThread
-	public void showSearchingForGamesView() {
-	}
-
-	@Override
-	@UiThread
-	public void hideSearchingForGamesView() {
-	}
-
-	private void joinableGameSelected(IJoinableGame joinableGame) {
-		viewModel.joinableGameSelected(joinableGame);
 	}
 
 	/**
@@ -190,7 +157,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 			itemView.setOnClickListener(view -> {
 				int position = mapHolder.getAdapterPosition();
-				joinableGameSelected(joinableGames[position]);
+				viewModel.joinableGameSelected(joinableGames[position]);
 			});
 
 			return mapHolder;

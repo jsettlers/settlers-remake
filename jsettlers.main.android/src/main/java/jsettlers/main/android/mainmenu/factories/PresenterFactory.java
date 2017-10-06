@@ -15,23 +15,17 @@
 
 package jsettlers.main.android.mainmenu.factories;
 
-import static java8.util.stream.StreamSupport.stream;
+import android.app.Activity;
+import android.content.Context;
 
 import java.util.List;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.AndroidPreferences;
-import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
-import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
-import jsettlers.main.android.mainmenu.presenters.picker.LoadSinglePlayerPickerPresenter;
-import jsettlers.main.android.mainmenu.presenters.picker.NewMultiPlayerPickerPresenter;
-import jsettlers.main.android.mainmenu.presenters.picker.NewSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenterPop;
@@ -39,18 +33,12 @@ import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPrese
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterPop;
 import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
-import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
-import jsettlers.main.android.mainmenu.views.LoadSinglePlayerPickerView;
-import jsettlers.main.android.mainmenu.views.MainMenuView;
-import jsettlers.main.android.mainmenu.views.MapPickerView;
-import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 import jsettlers.main.android.mainmenu.views.SettingsView;
 
-import android.app.Activity;
-import android.content.Context;
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 03/02/2017.
@@ -61,39 +49,6 @@ public class PresenterFactory {
 		return new SettingsPresenter(view, new AndroidPreferences(context));
 	}
 
-	/**
-	 * Picker screen presenters
-	 */
-	public static NewSinglePlayerPickerPresenter createNewSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-		ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
-
-		return new NewSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
-	}
-
-	public static LoadSinglePlayerPickerPresenter createLoadSinglePlayerPickerPresenter(Activity activity, LoadSinglePlayerPickerView view) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-		ChangingList<? extends MapLoader> changingMaps = gameStarter.getMapList().getSavedMaps();
-
-		return new LoadSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
-	}
-
-	public static NewMultiPlayerPickerPresenter createNewMultiPlayerPickerPresenter(Activity activity, NewMultiPlayerPickerView view) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-		ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
-
-		return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, new AndroidPreferences(activity), changingMaps);
-	}
-
-	public static JoinMultiPlayerPickerPresenter createJoinMultiPlayerPickerPresenter(Activity activity, JoinMultiPlayerPickerView view) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-
-		return new JoinMultiPlayerPickerPresenter(view, navigator, gameStarter);
-	}
 
 	/**
 	 * Setup screen presenters

@@ -15,21 +15,18 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
-import org.androidannotations.annotations.EFragment;
-
-import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
-import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
-import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
-import jsettlers.main.android.mainmenu.viewmodels.NewMultiPlayerPickerViewModel;
-import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+
+import org.androidannotations.annotations.EFragment;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.mainmenu.viewmodels.MapPickerViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.NewMultiPlayerPickerViewModel;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -43,11 +40,6 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment {
 	}
 
 	private NewMultiPlayerPickerViewModel viewModel;
-
-	@Override
-	protected MapPickerPresenter createPresenter() {
-		return null;// PresenterFactory.createNewMultiPlayerPickerPresenter(getActivity(), this);
-	}
 
 	@Override
 	protected MapPickerViewModel createViewModel() {
@@ -79,7 +71,7 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment {
 		});
 	}
 
-	public void setJoiningProgress(String stateString, int progressPercentage) {
+	private void setJoiningProgress(String stateString, int progressPercentage) {
 		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog == null) {
 			JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
@@ -88,7 +80,7 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment {
 		}
 	}
 
-	public void dismissJoiningProgress() {
+	private void dismissJoiningProgress() {
 		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog != null) {
 			joiningProgressDialog.dismiss();
