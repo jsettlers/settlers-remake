@@ -57,14 +57,14 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
 
 	@Override
 	public void initView() {
-		view.setNumberOfPlayersOptions(allowedPlayerCounts());
-		view.setPlayerCount(playerCount);
+//		view.setNumberOfPlayersOptions(allowedPlayerCounts());
+//		view.setPlayerCount(playerCount);
 
-		view.setStartResourcesOptions(startResourcesOptions());
-		view.setStartResources(new StartResources(EMapStartResources.MEDIUM_GOODS));
+//		view.setStartResourcesOptions(startResourcesOptions());
+//		view.setStartResources(new StartResources(EMapStartResources.MEDIUM_GOODS));
 
-		view.setPeaceTimeOptions(peaceTimeOptions());
-		view.setMapImage(mapLoader.getImage());
+//		view.setPeaceTimeOptions(peaceTimeOptions());
+//		view.setMapImage(mapLoader.getImage());
 	}
 
 	@Override
@@ -88,17 +88,17 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
 
 	@Override
 	public void playerCountSelected(PlayerCount item) {
-		playerCount = item;
-		updateViewItems();
+//		playerCount = item;
+//		updateViewItems();
 	}
 
 	@Override
 	public void startResourcesSelected(StartResources item) {
-		startResources = item;
+//		startResources = item;
 	}
 
 	protected void updateViewItems() {
-		view.setItems(getPlayerSlotPresenters(), playerCount.getNumberOfPlayers());
+	//	view.setItems(getPlayerSlotPresenters(), playerCount.getNumberOfPlayers());
 	}
 
 	protected List<PlayerSlotPresenter> getPlayerSlotPresenters() {
@@ -112,96 +112,95 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
 	/**
 	 * Get items for the main map options
 	 */
-	private PlayerCount[] allowedPlayerCounts() {
-		int maxPlayers = mapLoader.getMaxPlayers();
-		int minPlayers = mapLoader.getMinPlayers();
-		int numberOfOptions = maxPlayers - minPlayers + 1;
-
-		PlayerCount[] allowedPlayerCounts = new PlayerCount[numberOfOptions];
-
-		for (int i = 0; i < numberOfOptions; i++) {
-			allowedPlayerCounts[i] = new PlayerCount(minPlayers + i);
-		}
-
-		return allowedPlayerCounts;
-	}
-
-	private StartResources[] startResourcesOptions() {
-		return J8Arrays.stream(EMapStartResources.values())
-				.map(StartResources::new)
-				.toArray(StartResources[]::new);
-	}
-
-	private Peacetime[] peaceTimeOptions() {
-		return new Peacetime[] { new Peacetime("Without") };
-	}
+//	private PlayerCount[] allowedPlayerCounts() {
+//		int maxPlayers = mapLoader.getMaxPlayers();
+//		int minPlayers = mapLoader.getMinPlayers();
+//		int numberOfOptions = maxPlayers - minPlayers + 1;
+//
+//		PlayerCount[] allowedPlayerCounts = new PlayerCount[numberOfOptions];
+//
+//		for (int i = 0; i < numberOfOptions; i++) {
+//			allowedPlayerCounts[i] = new PlayerCount(minPlayers + i);
+//		}
+//
+//		return allowedPlayerCounts;
+//	}
+//
+//	private StartResources[] startResourcesOptions() {
+//		return J8Arrays.stream(EMapStartResources.values())
+//				.map(StartResources::new)
+//				.toArray(StartResources[]::new);
+//	}
+//
+//	private Peacetime[] peaceTimeOptions() {
+//		return new Peacetime[] { new Peacetime("Without") };
+//	}
 
 	/**
 	 * Player slots setup Sets up the player slots as computer players. Subclasses can then modify the slots for any single or multi player human players.
 	 */
 	private void createComputerPlayerSlots() {
-		playerCount = new PlayerCount(mapLoader.getMaxPlayers());
-		PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
-
-		for (byte i = 0; i < playerCount.getNumberOfPlayers(); i++) {
-			PlayerSlotPresenter playerSlotPresenter = new PlayerSlotPresenter(this);
-			PlayerSetting playerSetting = playerSettings[i];
-
-			playerSlotPresenter.setName("Computer " + i);
-			playerSlotPresenter.setShowReadyControl(false);
-
-			setComputerSlotPlayerTypes(playerSlotPresenter);
-			setSlotCivilisations(playerSlotPresenter, playerSetting);
-			setSlotStartPositions(playerSlotPresenter, playerCount.getNumberOfPlayers(), i);
-			setSlotTeams(playerSlotPresenter, playerSetting, playerCount.getNumberOfPlayers(), i);
-
-			playerSlotPresenters.add(playerSlotPresenter);
-		}
+//		PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
+//
+//		for (byte i = 0; i < playerCount.getNumberOfPlayers(); i++) {
+//			PlayerSlotPresenter playerSlotPresenter = new PlayerSlotPresenter(this);
+//			PlayerSetting playerSetting = playerSettings[i];
+//
+//			playerSlotPresenter.setName("Computer " + i);
+//			playerSlotPresenter.setShowReadyControl(false);
+//
+//			setComputerSlotPlayerTypes(playerSlotPresenter);
+//			setSlotCivilisations(playerSlotPresenter, playerSetting);
+//			setSlotStartPositions(playerSlotPresenter, playerCount.getNumberOfPlayers(), i);
+//			setSlotTeams(playerSlotPresenter, playerSetting, playerCount.getNumberOfPlayers(), i);
+//
+//			playerSlotPresenters.add(playerSlotPresenter);
+//		}
 	}
 
 	protected static void setComputerSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
-		playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
-				new PlayerType(EPlayerType.AI_VERY_HARD),
-				new PlayerType(EPlayerType.AI_HARD),
-				new PlayerType(EPlayerType.AI_EASY),
-				new PlayerType(EPlayerType.AI_VERY_EASY)
-		});
-		playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.AI_VERY_HARD));
+//		playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
+//				new PlayerType(EPlayerType.AI_VERY_HARD),
+//				new PlayerType(EPlayerType.AI_HARD),
+//				new PlayerType(EPlayerType.AI_EASY),
+//				new PlayerType(EPlayerType.AI_VERY_EASY)
+//		});
+//		playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.AI_VERY_HARD));
 	}
-
-	private static void setSlotCivilisations(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting) {
-		playerSlotPresenter.setPossibleCivilisations(new Civilisation[] { new Civilisation(ECivilisation.ROMAN) });
-
-		if (playerSetting.getCivilisation() != null) {
-			playerSlotPresenter.setCivilisation(new Civilisation(playerSetting.getCivilisation()));
-		} else {
-			playerSlotPresenter.setCivilisation(new Civilisation(ECivilisation.ROMAN));
-		}
-	}
-
-	private static void setSlotStartPositions(PlayerSlotPresenter playerSlotPresenter, int numberOfPlayers, byte orderNumber) {
-		playerSlotPresenter.setPossibleStartPositions(numberOfPlayers);
-		playerSlotPresenter.setStartPosition(new StartPosition(orderNumber));
-	}
-
-	private static void setSlotTeams(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting, int numberOfPlayers, byte orderNumber) {
-		playerSlotPresenter.setPossibleTeams(numberOfPlayers);
-		if (playerSetting.getTeamId() != null) {
-			playerSlotPresenter.setTeam(new Team(playerSetting.getTeamId()));
-		} else {
-			playerSlotPresenter.setTeam(new Team(orderNumber));
-		}
-	}
+//
+//	private static void setSlotCivilisations(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting) {
+//		playerSlotPresenter.setPossibleCivilisations(new Civilisation[] { new Civilisation(ECivilisation.ROMAN) });
+//
+//		if (playerSetting.getCivilisation() != null) {
+//			playerSlotPresenter.setCivilisation(new Civilisation(playerSetting.getCivilisation()));
+//		} else {
+//			playerSlotPresenter.setCivilisation(new Civilisation(ECivilisation.ROMAN));
+//		}
+//	}
+//
+//	private static void setSlotStartPositions(PlayerSlotPresenter playerSlotPresenter, int numberOfPlayers, byte orderNumber) {
+//		playerSlotPresenter.setPossibleStartPositions(numberOfPlayers);
+//		playerSlotPresenter.setStartPosition(new StartPosition(orderNumber));
+//	}
+//
+//	private static void setSlotTeams(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting, int numberOfPlayers, byte orderNumber) {
+//		playerSlotPresenter.setPossibleTeams(numberOfPlayers);
+//		if (playerSetting.getTeamId() != null) {
+//			playerSlotPresenter.setTeam(new Team(playerSetting.getTeamId()));
+//		} else {
+//			playerSlotPresenter.setTeam(new Team(orderNumber));
+//		}
+//	}
 
 	/**
 	 * PositionChangedListener implementation
 	 */
 	@Override
 	public void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, StartPosition oldPosition, StartPosition newPosition) {
-		for (PlayerSlotPresenter playerSlotPresenter : playerSlotPresenters) {
-			if (playerSlotPresenter != updatedPlayerSlotPresenter && playerSlotPresenter.getStartPosition().equals(newPosition)) {
-				playerSlotPresenter.setStartPosition(oldPosition);
-			}
-		}
+//		for (PlayerSlotPresenter playerSlotPresenter : playerSlotPresenters) {
+//			if (playerSlotPresenter != updatedPlayerSlotPresenter && playerSlotPresenter.getStartPosition().equals(newPosition)) {
+//				playerSlotPresenter.setStartPosition(oldPosition);
+//			}
+//		}
 	}
 }

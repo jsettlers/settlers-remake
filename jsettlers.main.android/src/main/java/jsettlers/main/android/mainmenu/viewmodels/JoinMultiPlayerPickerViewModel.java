@@ -46,13 +46,6 @@ public class JoinMultiPlayerPickerViewModel extends ViewModel implements IJoinin
         this.changingJoinableGames = changingJoinableGames;
 
         showNoGamesMessage = Transformations.map(joinableGames, joinableGames -> joinableGames.length == 0);
-
-        joiningGame = gameStarter.getJoiningGame();
-        if (joiningGame == null) {
-            // pop
-        } else {
-            joiningGame.setListener(this);
-        }
     }
 
     @Override

@@ -15,15 +15,17 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v4.app.Fragment;
+
 import org.androidannotations.annotations.EFragment;
 
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.viewmodels.setup.JoinMultiPlayerSetupViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
-
-import android.support.v4.app.Fragment;
 
 /**
  * Created by tompr on 22/01/2017.
@@ -38,6 +40,11 @@ public class JoinMultiPlayerSetupFragment extends MapSetupFragment<JoinMultiPlay
 	@Override
 	protected JoinMultiPlayerSetupPresenter createPresenter() {
 		return PresenterFactory.createJoinMultiPlayerSetupPresenter(getActivity(), this, mapId);
+	}
+
+	@Override
+	protected MapSetupViewModel createViewModel() {
+		return ViewModelProviders.of(this, new JoinMultiPlayerSetupViewModel.Factory(getActivity(), mapId)).get(JoinMultiPlayerSetupViewModel.class);
 	}
 
 	@Override

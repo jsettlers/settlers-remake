@@ -29,6 +29,7 @@ import org.androidannotations.annotations.ViewById;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.Peacetime;
 import jsettlers.main.android.mainmenu.presenters.setup.PlayerCount;
@@ -38,6 +39,7 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPre
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
+import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 import jsettlers.main.android.mainmenu.views.PlayerSlotView;
 
@@ -82,18 +84,23 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 	protected String mapId;
 
 	protected Presenter presenter;
+	private MapSetupViewModel viewModel;
+
 	PlayersAdapter adapter;
 	ArrayAdapter<PlayerCount> playerCountsAdapter;
 	ArrayAdapter<StartResources> startResourcesAdapter;
+	ArrayAdapter<Peacetime> peaceTimesAdapter;
 
 	boolean isSaving = false;
 
 	protected abstract Presenter createPresenter();
+	protected MapSetupViewModel createViewModel() {return  null;}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		presenter = createPresenter();
+		viewModel = createViewModel();
 	}
 
 	@AfterViews
@@ -109,9 +116,51 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 	}
 
 	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		viewModel.getPlayerCountOptions().observe(this, playerCounts -> {
+			playerCountsAdapter = getSpinnerAdapter(playerCounts);
+			numberOfPlayersSpinner.setAdapter(playerCountsAdapter);
+		});
+		viewModel.getPlayerCount().observe(this, playerCount -> numberOfPlayersSpinner.setSelection(playerCountsAdapter.getPosition(playerCount)));
+
+		viewModel.getStartResourcesOptions().observe(this, startResources -> {
+			startResourcesAdapter = getSpinnerAdapter(startResources);
+			startResourcesSpinner.setAdapter(startResourcesAdapter);
+		});
+		viewModel.getStartResources().observe(this, startResources -> startResourcesSpinner.setSelection(startResourcesAdapter.getPosition(startResources)));
+
+		viewModel.getPeaceTimeOptions().observe(this, peacetimes -> {
+			peaceTimesAdapter = getSpinnerAdapter(peacetimes);
+			peacetimeSpinner.setAdapter(peaceTimesAdapter);
+		});
+		viewModel.getPeaceTime().observe(this, peacetime -> peacetimeSpinner.setSelection(peaceTimesAdapter.getPosition(peacetime)));
+
+		viewModel.getImage().observe(this, image -> mapPreviewImageView.setImageBitmap(PreviewImageConverter.convert(image)));
+		viewModel.getTitle().observe(this, title -> toolbar.setTitle(title));
+		viewModel.getPlayerSlots().observe(this, playerSlotPresenters -> {
+			if (adapter == null) {
+				adapter = new PlayersAdapter();
+			}
+
+			if (recyclerView.getAdapter() == null) {
+				recyclerView.setAdapter(adapter);
+			}
+
+			adapter.setItems(playerSlotPresenters);
+		});
+
+		viewModel.getShowMapEvent().observe(this, z -> {
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
+			mainMenuNavigator.showGame();
+		});
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
-		presenter.updateViewTitle();
+	//	presenter.updateViewTitle();
 	}
 
 	@Override
@@ -136,19 +185,25 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 
 	@Click(R.id.button_start_game)
 	protected void onStartGameClicked() {
-		if (!presenter.startGame()) {
-			Toast.makeText(this.getContext(), R.string.multiplayer_not_all_players_ready, Toast.LENGTH_LONG).show();
-		}
+		viewModel.startGame();
+//		if (!presenter.startGame()) {
+//			Toast.makeText(this.getContext(), R.string.multiplayer_not_all_players_ready, Toast.LENGTH_LONG).show();
+//		}
 	}
 
 	@ItemSelect(R.id.spinner_number_of_players)
 	void playerSelected(boolean selected, int position) {
-		presenter.playerCountSelected(playerCountsAdapter.getItem(position));
+		viewModel.playerCountSelected(playerCountsAdapter.getItem(position));
 	}
 
 	@ItemSelect(R.id.spinner_start_resources)
 	void startResourcesSelected(boolean selected, int position) {
-		presenter.startResourcesSelected(startResourcesAdapter.getItem(position));
+		viewModel.startResourcesSelected(startResourcesAdapter.getItem(position));
+	}
+
+	@ItemSelect(R.id.spinner_peacetime)
+	void peacetimeSelected(boolean selected, int position) {
+		viewModel.peaceTimeSelected(peaceTimesAdapter.getItem(position));
 	}
 
 	/**
@@ -156,47 +211,32 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 	 */
 	@Override
 	public void setNumberOfPlayersOptions(PlayerCount[] numberOfPlayersOptions) {
-		playerCountsAdapter = getSpinnerAdapter(numberOfPlayersOptions);
-		numberOfPlayersSpinner.setAdapter(playerCountsAdapter);
 	}
 
 	@Override
 	public void setPlayerCount(PlayerCount playerCount) {
-		numberOfPlayersSpinner.setSelection(playerCountsAdapter.getPosition(playerCount));
 	}
 
 	@Override
 	public void setStartResourcesOptions(StartResources[] startResources) {
-		startResourcesAdapter = getSpinnerAdapter(startResources);
-		startResourcesSpinner.setAdapter(startResourcesAdapter);
 	}
 
 	@Override
 	public void setStartResources(StartResources startResources) {
-		startResourcesSpinner.setSelection(startResourcesAdapter.getPosition(startResources));
+
 	}
 
 	@Override
 	public void setPeaceTimeOptions(Peacetime[] peaceTimeOptions) {
-		peacetimeSpinner.setAdapter(getSpinnerAdapter(peaceTimeOptions));
 	}
 
 	@Override
 	public void setMapName(String mapName) {
-		getActivity().setTitle(mapName);
 	}
 
 	@Override
 	@Background
 	public void setMapImage(short[] image) {
-		setMapImage(PreviewImageConverter.convert(image));
-	}
-
-	@UiThread
-	public void setMapImage(Bitmap bitmap) {
-		if (mapPreviewImageView != null) {
-			mapPreviewImageView.setImageBitmap(bitmap);
-		}
 	}
 
 	private <T> ArrayAdapter<T> getSpinnerAdapter(T[] items) {
@@ -208,35 +248,27 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 	@Override
 	@UiThread
 	public void setItems(List<PlayerSlotPresenter> items, int playerCount) {
-		if (adapter == null) {
-			adapter = new PlayersAdapter(items);
-		}
 
-		if (recyclerView.getAdapter() == null) {
-			recyclerView.setAdapter(adapter);
-		}
-
-		adapter.setItems(items, playerCount);
 	}
 
 	protected int getListItemLayoutId() {
 		return R.layout.item_playerslot;
 	}
 
+
+
 	class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {
 		private final LayoutInflater layoutInflater;
 
-		private List<PlayerSlotPresenter> players;
-		private int playerCount;
+		private PlayerSlotPresenter[] players = new PlayerSlotPresenter[0];
 
-		PlayersAdapter(List<PlayerSlotPresenter> players) {
+		PlayersAdapter() {
 			this.layoutInflater = LayoutInflater.from(getActivity());
-			this.players = players;
 		}
 
 		@Override
 		public int getItemCount() {
-			return playerCount;
+			return players.length;
 		}
 
 		@Override
@@ -247,13 +279,12 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 
 		@Override
 		public void onBindViewHolder(PlayerHolder holder, int position) {
-			holder.bind(players.get(position));
+			holder.bind(players[position]);
 		}
 
-		void setItems(List<PlayerSlotPresenter> items, int playerCount) {
+		void setItems(PlayerSlotPresenter[] items) {
 			// TODO use diffutil
 			this.players = items;
-			this.playerCount = playerCount;
 			notifyDataSetChanged();
 		}
 	}
