@@ -114,6 +114,9 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 	}
 
 	private int getRandomStartIndex() {
+		if (settings.drawRandomBuilding() == null){
+			return 0;
+		}
 		return buildingTypesToIndex[settings.drawRandomBuilding().ordinal];
 	}
 
