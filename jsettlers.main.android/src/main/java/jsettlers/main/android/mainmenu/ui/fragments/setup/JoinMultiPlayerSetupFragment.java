@@ -18,28 +18,21 @@ package jsettlers.main.android.mainmenu.ui.fragments.setup;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.v4.app.Fragment;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.viewmodels.setup.JoinMultiPlayerSetupViewModel;
 import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
-import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 
 /**
  * Created by tompr on 22/01/2017.
  */
 @EFragment(R.layout.fragment_new_single_player_setup)
-public class JoinMultiPlayerSetupFragment extends MapSetupFragment<JoinMultiPlayerSetupPresenter> implements JoinMultiPlayerSetupView {
+public class JoinMultiPlayerSetupFragment extends MapSetupFragment {
 
 	public static Fragment create(String mapId) {
 		return JoinMultiPlayerSetupFragment_.builder().mapId(mapId).build();
-	}
-
-	@Override
-	protected JoinMultiPlayerSetupPresenter createPresenter() {
-		return PresenterFactory.createJoinMultiPlayerSetupPresenter(getActivity(), this, mapId);
 	}
 
 	@Override
@@ -47,18 +40,15 @@ public class JoinMultiPlayerSetupFragment extends MapSetupFragment<JoinMultiPlay
 		return ViewModelProviders.of(this, new JoinMultiPlayerSetupViewModel.Factory(getActivity(), mapId)).get(JoinMultiPlayerSetupViewModel.class);
 	}
 
-	@Override
-	protected int getListItemLayoutId() {
-		return R.layout.item_multiplayer_playerslot;
-	}
-
-	/**
-	 * JoinMultiPlayerSetupView implementation
-	 */
-	@Override
-	public void disableHostOnlyControls() {
+	@AfterViews
+	void disableUnavailableSpinners() {
 		numberOfPlayersSpinner.setEnabled(false);
 		startResourcesSpinner.setEnabled(false);
 		peacetimeSpinner.setEnabled(false);
+	}
+
+	@Override
+	protected int getListItemLayoutId() {
+		return R.layout.item_multiplayer_playerslot;
 	}
 }

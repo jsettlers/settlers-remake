@@ -15,24 +15,17 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
-import org.androidannotations.annotations.EFragment;
-
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
-import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
-import jsettlers.main.android.mainmenu.viewmodels.setup.NewSinglePlayerSetupViewModel;
-import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
-
 import android.arch.lifecycle.ViewModelProviders;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import org.androidannotations.annotations.EFragment;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
+import jsettlers.main.android.mainmenu.viewmodels.setup.NewSinglePlayerSetupViewModel;
+
 @EFragment(R.layout.fragment_new_single_player_setup)
-public class NewSinglePlayerSetupFragment extends MapSetupFragment<NewSinglePlayerSetupPresenter> implements NewSinglePlayerSetupView {
+public class NewSinglePlayerSetupFragment extends MapSetupFragment {
 
 	private NewSinglePlayerSetupViewModel viewModel;
 
@@ -41,18 +34,8 @@ public class NewSinglePlayerSetupFragment extends MapSetupFragment<NewSinglePlay
 	}
 
 	@Override
-	protected NewSinglePlayerSetupPresenter createPresenter() {
-		return PresenterFactory.createNewSinglePlayerSetupPresenter(getActivity(), this, mapId);
-	}
-
-	@Override
 	protected MapSetupViewModel createViewModel() {
 		viewModel = ViewModelProviders.of(this, new NewSinglePlayerSetupViewModel.Factory(getActivity(), mapId)).get(NewSinglePlayerSetupViewModel.class);
 		return viewModel;
-	}
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
 	}
 }

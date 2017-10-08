@@ -15,39 +15,26 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v4.app.Fragment;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
 import jsettlers.main.android.mainmenu.viewmodels.setup.NewMultiPlayerSetupViewModel;
-import jsettlers.main.android.mainmenu.viewmodels.setup.NewSinglePlayerSetupViewModel;
-import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
-
-import android.arch.lifecycle.ViewModelProviders;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 @EFragment(R.layout.fragment_new_single_player_setup)
-public class NewMultiPlayerSetupFragment extends MapSetupFragment<NewMultiPlayerSetupPresenter> implements NewMultiPlayerSetupView {
+public class NewMultiPlayerSetupFragment extends MapSetupFragment {
 
 	private NewMultiPlayerSetupViewModel viewModel;
 
 	public static Fragment create(String mapId) {
 		return NewMultiPlayerSetupFragment_.builder().mapId(mapId).build();
-	}
-
-	@Override
-	protected NewMultiPlayerSetupPresenter createPresenter() {
-		return PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this, mapId);
 	}
 
 	@Override

@@ -15,30 +15,11 @@
 
 package jsettlers.main.android.mainmenu.factories;
 
-import android.app.Activity;
 import android.content.Context;
 
-import java.util.List;
-
-import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.AndroidPreferences;
-import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenterImpl;
-import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenterPop;
-import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterImpl;
-import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterPop;
-import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
-import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
-import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
-import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 import jsettlers.main.android.mainmenu.views.SettingsView;
-
-import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 03/02/2017.
@@ -49,53 +30,4 @@ public class PresenterFactory {
 		return new SettingsPresenter(view, new AndroidPreferences(context));
 	}
 
-
-	/**
-	 * Setup screen presenters
-	 */
-	public static NewSinglePlayerSetupPresenter createNewSinglePlayerSetupPresenter(Activity activity, NewSinglePlayerSetupView view, String mapId) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-
-		MapLoader mapDefinition = getMapById(mapId, gameStarter);
-
-		return new NewSinglePlayerSetupPresenter(view, navigator, gameStarter, new AndroidPreferences(activity), mapDefinition);
-	}
-
-	public static NewMultiPlayerSetupPresenter createNewMultiPlayerSetupPresenter(Activity activity, NewMultiPlayerSetupView view, String mapId) {
-		MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-		IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
-
-		MapLoader mapDefinition = getMapById(mapId, gameStarter);
-
-		if (joinPhaseMultiplayerGameConnector == null || mapDefinition == null) {
-			return new NewMultiPlayerSetupPresenterPop(mainMenuNavigator);
-		} else {
-			return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector,
-					new AndroidPreferences(activity), mapDefinition);
-		}
-	}
-
-	public static JoinMultiPlayerSetupPresenter createJoinMultiPlayerSetupPresenter(Activity activity, JoinMultiPlayerSetupView view, String mapId) {
-		MainMenuNavigator navigator = (MainMenuNavigator) activity;
-		GameStarter gameStarter = (GameStarter) activity.getApplication();
-		IJoinPhaseMultiplayerGameConnector connector = gameStarter.getJoinPhaseMultiplayerConnector();
-
-		MapLoader mapDefinition = getMapById(mapId, gameStarter);
-
-		if (connector == null/* || mapDefinition == null */) {
-			return new JoinMultiPlayerSetupPresenterPop(navigator);
-		} else {
-			return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, new AndroidPreferences(activity), mapDefinition);
-		}
-	}
-
-	private static MapLoader getMapById(String mapId, GameStarter gameStarter) {
-		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		return stream(maps)
-				.filter(x -> mapId.equals(x.getMapId()))
-				.findFirst()
-				.get();
-	}
 }

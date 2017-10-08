@@ -15,35 +15,6 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
-import java.util.List;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ItemSelect;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.core.ui.PreviewImageConverter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.Peacetime;
-import jsettlers.main.android.mainmenu.presenters.setup.PlayerCount;
-import jsettlers.main.android.mainmenu.presenters.setup.StartResources;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
-import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
-import jsettlers.main.android.mainmenu.views.MapSetupView;
-import jsettlers.main.android.mainmenu.views.PlayerSlotView;
-
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -58,13 +29,34 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ItemSelect;
+import org.androidannotations.annotations.ViewById;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.setup.Peacetime;
+import jsettlers.main.android.mainmenu.presenters.setup.PlayerCount;
+import jsettlers.main.android.mainmenu.presenters.setup.StartResources;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
+import jsettlers.main.android.mainmenu.viewmodels.setup.MapSetupViewModel;
+import jsettlers.main.android.mainmenu.views.PlayerSlotView;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 @EFragment(R.layout.fragment_new_single_player_setup)
-public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> extends Fragment implements MapSetupView {
+public abstract class MapSetupFragment extends Fragment {
 
 	@ViewById(R.id.recycler_view)
 	RecyclerView recyclerView;
@@ -83,7 +75,6 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 	@FragmentArg("mapid")
 	protected String mapId;
 
-	protected Presenter presenter;
 	private MapSetupViewModel viewModel;
 
 	PlayersAdapter adapter;
@@ -91,15 +82,11 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 	ArrayAdapter<StartResources> startResourcesAdapter;
 	ArrayAdapter<Peacetime> peaceTimesAdapter;
 
-	boolean isSaving = false;
-
-	protected abstract Presenter createPresenter();
 	protected MapSetupViewModel createViewModel() {return  null;}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		presenter = createPresenter();
 		viewModel = createViewModel();
 	}
 
@@ -111,8 +98,6 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 		// Disable these for now, as these features are not implemented yet.
 		startResourcesSpinner.setEnabled(false);
 		peacetimeSpinner.setEnabled(false);
-
-		presenter.initView();
 	}
 
 	@Override
@@ -157,32 +142,6 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 		});
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-	//	presenter.updateViewTitle();
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		isSaving = true;
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		presenter.dispose();
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		if (isRemoving() && !isSaving) {
-			presenter.viewFinished();
-		}
-	}
-
 	@Click(R.id.button_start_game)
 	protected void onStartGameClicked() {
 		viewModel.startGame();
@@ -206,49 +165,10 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 		viewModel.peaceTimeSelected(peaceTimesAdapter.getItem(position));
 	}
 
-	/**
-	 * MapSetupView implementation
-	 */
-	@Override
-	public void setNumberOfPlayersOptions(PlayerCount[] numberOfPlayersOptions) {
-	}
-
-	@Override
-	public void setPlayerCount(PlayerCount playerCount) {
-	}
-
-	@Override
-	public void setStartResourcesOptions(StartResources[] startResources) {
-	}
-
-	@Override
-	public void setStartResources(StartResources startResources) {
-
-	}
-
-	@Override
-	public void setPeaceTimeOptions(Peacetime[] peaceTimeOptions) {
-	}
-
-	@Override
-	public void setMapName(String mapName) {
-	}
-
-	@Override
-	@Background
-	public void setMapImage(short[] image) {
-	}
-
 	private <T> ArrayAdapter<T> getSpinnerAdapter(T[] items) {
 		ArrayAdapter<T> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, items);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		return adapter;
-	}
-
-	@Override
-	@UiThread
-	public void setItems(List<PlayerSlotPresenter> items, int playerCount) {
-
 	}
 
 	protected int getListItemLayoutId() {
@@ -257,6 +177,10 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 
 
 
+
+	/**
+	 * Recyclerview adapter
+	 */
 	class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {
 		private final LayoutInflater layoutInflater;
 
@@ -306,12 +230,12 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 
 		PlayerHolder(View itemView) {
 			super(itemView);
-			this.playerNameTextView = (TextView) itemView.findViewById(R.id.text_view_player_name);
-			this.readySwitch = (SwitchCompat) itemView.findViewById(R.id.switch_ready);
-			this.civilisationSpinner = (Spinner) itemView.findViewById(R.id.spinner_civilisation);
-			this.playerTypeSpinner = (Spinner) itemView.findViewById(R.id.spinner_type);
-			this.startPositionSpinner = (Spinner) itemView.findViewById(R.id.spinner_slot);
-			this.teamSpinner = (Spinner) itemView.findViewById(R.id.spinner_team);
+			this.playerNameTextView = itemView.findViewById(R.id.text_view_player_name);
+			this.readySwitch = itemView.findViewById(R.id.switch_ready);
+			this.civilisationSpinner = itemView.findViewById(R.id.spinner_civilisation);
+			this.playerTypeSpinner = itemView.findViewById(R.id.spinner_type);
+			this.startPositionSpinner = itemView.findViewById(R.id.spinner_slot);
+			this.teamSpinner = itemView.findViewById(R.id.spinner_team);
 
 			readySwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
 				presenter.readyChanged(checked);
