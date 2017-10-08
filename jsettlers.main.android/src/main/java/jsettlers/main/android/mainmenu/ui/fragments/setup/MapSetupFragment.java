@@ -40,6 +40,7 @@ import org.androidannotations.annotations.ViewById;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.MultiPlayerConnectorUnavailableException;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.Peacetime;
 import jsettlers.main.android.mainmenu.presenters.setup.PlayerCount;
@@ -82,12 +83,17 @@ public abstract class MapSetupFragment extends Fragment {
 	ArrayAdapter<StartResources> startResourcesAdapter;
 	ArrayAdapter<Peacetime> peaceTimesAdapter;
 
-	protected MapSetupViewModel createViewModel() {return  null;}
+	protected abstract MapSetupViewModel createViewModel();
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		viewModel = createViewModel();
+		try {
+			viewModel = createViewModel();
+		} catch (MultiPlayerConnectorUnavailableException e) {
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
+			mainMenuNavigator.popToMenuRoot();
+		}
 	}
 
 	@AfterViews
@@ -103,6 +109,9 @@ public abstract class MapSetupFragment extends Fragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		if (viewModel == null) {
+			return;
+		}
 
 		viewModel.getPlayerCountOptions().observe(this, playerCounts -> {
 			playerCountsAdapter = getSpinnerAdapter(playerCounts);

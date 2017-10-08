@@ -15,6 +15,7 @@ import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.MultiPlayerConnectorUnavailableException;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.ReadyListener;
 
@@ -75,7 +76,9 @@ public class NewMultiPlayerSetupViewModel extends MapSetupViewModel implements I
     @Override
     public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
         updateSlots();
-        playerSlots.postValue(playerSlots.getValue());
+        if (playerSlots.getValue() != null) {
+            playerSlots.postValue(playerSlots.getValue());
+        }
     //    updateViewItems(); // trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
     }
 
@@ -145,6 +148,10 @@ public class NewMultiPlayerSetupViewModel extends MapSetupViewModel implements I
             GameStarter gameStarter = (GameStarter) activity.getApplication();
             MapLoader mapLoader = gameStarter.getMapList().getMapById(mapId);
             IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
+
+            if (joinPhaseMultiplayerGameConnector == null) {
+                throw new MultiPlayerConnectorUnavailableException();
+            }
 
             if (modelClass == NewMultiPlayerSetupViewModel.class) {
                 return (T) new NewMultiPlayerSetupViewModel(gameStarter, new AndroidPreferences(activity), joinPhaseMultiplayerGameConnector, mapLoader);

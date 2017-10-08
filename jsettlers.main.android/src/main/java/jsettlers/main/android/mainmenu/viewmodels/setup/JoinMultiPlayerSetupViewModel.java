@@ -15,6 +15,7 @@ import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.MultiPlayerConnectorUnavailableException;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.ReadyListener;
 
@@ -140,6 +141,10 @@ public class JoinMultiPlayerSetupViewModel extends MapSetupViewModel implements 
             GameStarter gameStarter = (GameStarter) activity.getApplication();
             MapLoader mapLoader = gameStarter.getMapList().getMapById(mapId);
             IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
+
+            if (joinPhaseMultiplayerGameConnector == null) {
+                throw new MultiPlayerConnectorUnavailableException();
+            }
 
             if (modelClass == JoinMultiPlayerSetupViewModel.class) {
                 return (T) new JoinMultiPlayerSetupViewModel(gameStarter, new AndroidPreferences(activity), joinPhaseMultiplayerGameConnector, mapLoader);

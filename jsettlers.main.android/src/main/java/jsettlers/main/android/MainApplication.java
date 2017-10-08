@@ -35,6 +35,7 @@ import jsettlers.main.android.core.GameService_;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.controls.GameMenu;
+import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 
 @EApplication
 public class MainApplication extends Application implements GameStarter, GameManager {
@@ -54,6 +55,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public void onCreate() {
 		super.onCreate();
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
+		new AndroidResourcesLoader(this).setup();
 	}
 
 	/**
