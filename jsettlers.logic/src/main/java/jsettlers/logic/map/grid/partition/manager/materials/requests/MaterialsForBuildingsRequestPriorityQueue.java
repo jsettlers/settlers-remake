@@ -94,15 +94,16 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 	protected MaterialRequestObject getRequestForPriority(int priority) {
 		DoubleLinkedList<MaterialRequestObject>[] queues = this.queues[priority];
 
-		int startIndex = getRandomStartIndex();
+		EBuildingType randomStartBuilding = settings.drawRandomBuilding();
+		if (randomStartBuilding == null) {
+			return null;
+		}
+		int randomStartIndex = buildingTypesToIndex[randomStartBuilding.ordinal];
 
 		for (int i = 0; i < numberOfAllBuildings; i++) {
-			int buildingIdx = (i + startIndex) % numberOfAllBuildings;
+			int buildingIdx = (i + randomStartIndex) % numberOfAllBuildings;
 
 			// if this building type should not receive any materials, skip it; if it is additional building, always check it
-			if (buildingIdx < 0) {
-				continue;
-			}
 			if (buildingIdx < numberOfConfigurableBuildings && settings.getDistributionProbability(buildingTypes[buildingIdx]) <= 0.0f) {
 				continue;
 			}
@@ -114,17 +115,6 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 		}
 
 		return null;
-	}
-
-	private int getRandomStartIndex() {
-		EBuildingType randomBuildingType = settings.drawRandomBuilding();
-		int i;
-		if (randomBuildingType != null) {
-			i = randomBuildingType.ordinal;
-		} else {
-			i = 0;
-		}
-		return buildingTypesToIndex[i];
 	}
 
 	@Override
