@@ -22,91 +22,91 @@ import java.awt.GridBagLayout;
  */
 public class GLSurface extends JPanel implements GOEventHandlerProvider {
 
-    private GLJPanel canvas;
-    private JOGLDrawContext context;
+	private GLJPanel canvas;
+	private JOGLDrawContext context;
 
-    public GLSurface() {
-        this.setLayout(new GridBagLayout());
+	public GLSurface() {
+		this.setLayout(new GridBagLayout());
 
-        GLProfile profile = GLProfile.getDefault();
-        GLCapabilities cap = new GLCapabilities(profile);
-        cap.setStencilBits(1);
+		GLProfile profile = GLProfile.getDefault();
+		GLCapabilities cap = new GLCapabilities(profile);
+		cap.setStencilBits(1);
 
-        GLEventListener glEventListener = new GLEventListener() {
+		GLEventListener glEventListener = new GLEventListener() {
 
-            @Override
-            public void reshape(GLAutoDrawable gl, int x, int y, int width, int height) {
-                GL2 gl2 = gl.getGL().getGL2();
-                gl2.glMatrixMode(GL2.GL_PROJECTION);
-                gl2.glLoadIdentity();
+			@Override
+			public void reshape(GLAutoDrawable gl, int x, int y, int width, int height) {
+				GL2 gl2 = gl.getGL().getGL2();
+				gl2.glMatrixMode(GL2.GL_PROJECTION);
+				gl2.glLoadIdentity();
 
-                GLU glu = new GLU();
-                glu.gluOrtho2D(0.0f, width, 0.0f, height);
+				GLU glu = new GLU();
+				glu.gluOrtho2D(0.0f, width, 0.0f, height);
 
-                gl2.glMatrixMode(GL2.GL_MODELVIEW);
-                gl2.glLoadIdentity();
+				gl2.glMatrixMode(GL2.GL_MODELVIEW);
+				gl2.glLoadIdentity();
 
-                gl2.glViewport(0, 0, width, height);
-            }
+				gl2.glViewport(0, 0, width, height);
+			}
 
-            @Override
-            public void init(GLAutoDrawable arg0) {
-                arg0.getGL().setSwapInterval(0);
-            }
+			@Override
+			public void init(GLAutoDrawable arg0) {
+				arg0.getGL().setSwapInterval(0);
+			}
 
-            @Override
-            public void dispose(GLAutoDrawable arg0) {
-                if (context != null) {
-                    context.disposeAll();
-                }
-                context = null;
-            }
+			@Override
+			public void dispose(GLAutoDrawable arg0) {
+				if (context != null) {
+					context.disposeAll();
+				}
+				context = null;
+			}
 
-            @Override
-            public void display(GLAutoDrawable glDrawable) {
-                GL2 gl2 = glDrawable.getGL().getGL2();
-                gl2.glClear(GL2.GL_COLOR_BUFFER_BIT);
-                gl2.glLoadIdentity();
+			@Override
+			public void display(GLAutoDrawable glDrawable) {
+				GL2 gl2 = glDrawable.getGL().getGL2();
+				gl2.glClear(GL2.GL_COLOR_BUFFER_BIT);
+				gl2.glLoadIdentity();
 
-                if (context == null || context.getGl2() != gl2) {
-                    context = new JOGLDrawContext(gl2);
-                }
-                context.startFrame();
+				if (context == null || context.getGl2() != gl2) {
+					context = new JOGLDrawContext(gl2);
+				}
+				context.startFrame();
 
-                redraw(context, getWidth(), getHeight());
-            }
-        };
+				redraw(context, getWidth(), getHeight());
+			}
+		};
 
-        GLJPanel panel = new GLJPanel(cap);
-        panel.addGLEventListener(glEventListener);
-        canvas = panel;
+		GLJPanel panel = new GLJPanel(cap);
+		panel.addGLEventListener(glEventListener);
+		canvas = panel;
 
-        new GOSwingEventConverter(canvas, this);
+		new GOSwingEventConverter(canvas, this);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.weightx = gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.weightx = gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
 
-        this.add(canvas, gbc);
-    }
+		this.add(canvas, gbc);
+	}
 
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        canvas.repaint();
-    }
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		canvas.repaint();
+	}
 
-    @Override
-    public final void requestFocus() {
-        canvas.requestFocus();
-    }
+	@Override
+	public final void requestFocus() {
+		canvas.requestFocus();
+	}
 
-    @Override
-    public void handleEvent(GOEvent event) {
+	@Override
+	public void handleEvent(GOEvent event) {
 
-    }
+	}
 
-    protected void redraw(GLDrawContext gl2, int width, int height) {
+	protected void redraw(GLDrawContext gl2, int width, int height) {
 
-    }
+	}
 }
