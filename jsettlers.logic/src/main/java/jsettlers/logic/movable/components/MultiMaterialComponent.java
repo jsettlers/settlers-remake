@@ -46,6 +46,7 @@ public class MultiMaterialComponent extends MaterialComponent {
                 materials.put(material, amount-1);
                 sum--;
                 result = material;
+                break;
             }
         }
         if (isEmpty()) super.setMaterial(EMaterialType.NO_MATERIAL);

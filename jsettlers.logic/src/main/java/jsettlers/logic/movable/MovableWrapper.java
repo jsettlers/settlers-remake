@@ -191,7 +191,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public boolean isProbablyPushable(ILogicMovable pushingMovable) {
-        assert false: "not implemented";
+        //assert false: "not implemented";
         return false;
     }
 
