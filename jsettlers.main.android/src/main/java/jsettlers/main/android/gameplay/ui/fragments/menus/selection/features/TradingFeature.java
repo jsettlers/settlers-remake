@@ -140,7 +140,7 @@ public class TradingFeature extends SelectionFeature implements DrawListener, Ba
 
     @Override
     public boolean onBackPressed() {
-        if (popupWindow.isShowing()) {
+        if (popupWindow != null && popupWindow.isShowing()) {
             popupWindow.dismiss();
             return true;
         }
