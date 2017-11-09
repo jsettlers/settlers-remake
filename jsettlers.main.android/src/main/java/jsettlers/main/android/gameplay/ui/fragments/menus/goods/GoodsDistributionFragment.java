@@ -84,7 +84,7 @@ public class GoodsDistributionFragment extends Fragment implements BackPressedLi
 
 	@Override
 	public boolean onBackPressed() {
-		if (popupWindow.isShowing()) {
+		if (popupWindow != null && popupWindow.isShowing()) {
 			popupWindow.dismiss();
 			return true;
 		}
