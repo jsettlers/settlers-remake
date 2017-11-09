@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor.map;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
@@ -126,8 +124,8 @@ public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 		return false;
 	}
 
-	@Override
-	public ArrayList<EMaterialType> getRemainingOrder() {
-		return new ArrayList<>();
-	}
+//	@Override
+//	public ArrayList<EMaterialType> getRemainingOrder() {
+//		return new ArrayList<>();
+//	}
 }

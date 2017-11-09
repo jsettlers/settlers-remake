@@ -4,7 +4,7 @@ apply plugin: 'java'
 ext {
     streamSupportVersion = '1.5.4'
 
-    androidAnnotationsVersion = '4.4.0-SNAPSHOT'
+    androidAnnotationsVersion = '4.4.0'
     androidSupportLibraryVersion = '26.1.0'
 
     androidBuildToolsVersion = '26.0.1'
