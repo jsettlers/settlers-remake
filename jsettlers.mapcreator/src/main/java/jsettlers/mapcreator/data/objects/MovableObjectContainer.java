@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
+import java.util.ArrayList;
+
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
@@ -58,15 +61,6 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
-	}
-
-	@Override
-	public EMovableType getMovableType() {
-		return movableObject.getType();
-	}
-
-	@Override
 	public EMovableAction getAction() {
 		return EMovableAction.NO_ACTION;
 	}
@@ -87,7 +81,7 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return pos;
 	}
 
@@ -121,7 +115,53 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
+	public void stopOrStartWorking(boolean stop) {
+	}
+
+	@Override
+	public EMovableType getMovableType() {
+		return movableObject.getType();
+	}
+
+	@Override
 	public int getID() {
 		return 0;
+	}
+
+
+	//TODO - tom-pratt - implemented these blindly to stop the build failing.
+	@Override
+	public ImageLink[] getImages() {
+		return new ImageLink[0];
+	}
+
+	@Override
+	public boolean isShip() {
+		return false;
+	}
+
+	@Override
+	public ArrayList<IMovable> getPassengers() {
+		return null;
+	}
+
+	@Override
+	public int getNumberOfStacks() {
+		return 0;
+	}
+
+	@Override
+	public EMaterialType getCargoType(int stack) {
+		return null;
+	}
+
+	@Override
+	public int getCargoCount(int stack) {
+		return 0;
+	}
+
+	@Override
+	public boolean isAlive() {
+		return false;
 	}
 }
