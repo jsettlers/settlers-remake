@@ -411,7 +411,7 @@ public class TestMap implements IGraphicsGrid {
 		for (TestSettler settler : this.settlers) {
 			settler.increaseProgress();
 			if (settler.moveOn()) {
-				TestTile newPosition = this.getTile(settler.getDirection().getNextHexPoint(settler.getPos()));
+				TestTile newPosition = this.getTile(settler.getDirection().getNextHexPoint(settler.getPosition()));
 				if (newPosition == null) {
 					// should not happen
 					EDirection direction = getRandomDirection();
@@ -420,7 +420,7 @@ public class TestMap implements IGraphicsGrid {
 
 					TestTile nextPosition = this.getTile(settler.getDirection().getNextHexPoint(newPosition.getPos()));
 
-					this.getTile(settler.getPos()).setMovable(null);
+					this.getTile(settler.getPosition()).setMovable(null);
 					newPosition.setMovable(settler);
 					settler.setPosition(newPosition);
 

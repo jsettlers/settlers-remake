@@ -49,7 +49,7 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return this.position;
 	}
 

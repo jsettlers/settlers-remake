@@ -210,7 +210,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 		}
 
 		@Override
-		public ShortPoint2D getPos() {
+		public ShortPoint2D getPosition() {
 			return position;
 		}
 

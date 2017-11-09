@@ -58,7 +58,7 @@ public class SimpleDijkstraTester {
 
 		IPathCalculatable requester = new IPathCalculatable() {
 			@Override
-			public ShortPoint2D getPos() {
+			public ShortPoint2D getPosition() {
 				return new ShortPoint2D(100, 100);
 			}
 
@@ -69,6 +69,11 @@ public class SimpleDijkstraTester {
 
 			@Override
 			public boolean needsPlayersGround() {
+				return false;
+			}
+
+			@Override
+			public boolean isShip() {
 				return false;
 			}
 		};

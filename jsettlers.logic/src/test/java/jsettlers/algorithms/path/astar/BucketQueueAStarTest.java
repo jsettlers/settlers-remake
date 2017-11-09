@@ -66,7 +66,7 @@ public class BucketQueueAStarTest {
 	private IPathCalculatable getPathable(final short x, final short y) {
 		return new IPathCalculatable() {
 			@Override
-			public ShortPoint2D getPos() {
+			public ShortPoint2D getPosition() {
 				return new ShortPoint2D(x, y);
 			}
 

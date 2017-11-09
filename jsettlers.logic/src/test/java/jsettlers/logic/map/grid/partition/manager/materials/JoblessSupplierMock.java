@@ -33,7 +33,7 @@ public class JoblessSupplierMock implements IJoblessSupplier {
 			private static final long serialVersionUID = 3833820381369081344L;
 
 			@Override
-			public ShortPoint2D getPos() {
+			public ShortPoint2D getPosition() {
 				return pos;
 			}
 
@@ -58,7 +58,7 @@ public class JoblessSupplierMock implements IJoblessSupplier {
 		IManagerBearer closest = null;
 
 		for (IManagerBearer curr : jobless) {
-			int currDist = ShortPoint2D.getOnGridDist(curr.getPos().x - position.x, curr.getPos().y - position.y);
+			int currDist = ShortPoint2D.getOnGridDist(curr.getPosition().x - position.x, curr.getPosition().y - position.y);
 			if (closestDist > currDist) {
 				closest = curr;
 				closestDist = currDist;
