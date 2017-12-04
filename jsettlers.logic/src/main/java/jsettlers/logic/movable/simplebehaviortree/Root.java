@@ -16,6 +16,7 @@ public class Root<T> extends Node<T> {
 	protected NodeStatus onTick(Tick<T> tick) {
 		return child.execute(tick);
 	}
+
 	public Root<T> init() {
 		maxID = initiate(-1);
 		return this;

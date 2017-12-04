@@ -37,13 +37,13 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     @Override
-    public void onAwake() {
+    protected void onAwake() {
         gameC = entity.get(GameFieldComponent.class);
         aMovableWrapper = new MovableWrapper(entity);
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
         gameC.getAllMovables().offer(aMovableWrapper);
         gameC.getMovableGrid().enterPosition(position, aMovableWrapper, true);
@@ -56,7 +56,7 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     @Override
-    public void onDisable() {
+    protected void onDisable() {
         // TODO: refactor leavePosition to not use the instance
         gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
 
@@ -65,7 +65,7 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
     }
 

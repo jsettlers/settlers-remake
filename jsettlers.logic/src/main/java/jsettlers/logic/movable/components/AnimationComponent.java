@@ -21,7 +21,7 @@ public class AnimationComponent extends Component {
     public AnimationComponent() { }
 
     @Override
-    public void onLateUpdate() {
+    protected void onLateUpdate() {
         if (isAnimating())
             entity.setInvocationDelay(getRemainingTime());
     }

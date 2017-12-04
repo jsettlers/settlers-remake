@@ -2,7 +2,7 @@ package jsettlers.logic.movable.components;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.movable.BehaviorTreeFactory;
-import jsettlers.logic.movable.Entity;
+import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
@@ -35,79 +35,79 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
 abstract class DonkeyBehaviorTreeFactory extends BehaviorTreeFactory {
     private static final long serialVersionUID = -6930178935920899644L;
 
-    private static Action<Entity> TryDropMaterial() {
-        return new Action<>(e->{
-            EMaterialType material = e.mmatC().removeMaterial();
+    private static Action<Context> TryDropMaterial() {
+        return new Action<>(c->{
+            EMaterialType material = c.entity.mmatC().removeMaterial();
             if (material == EMaterialType.NO_MATERIAL) return NodeStatus.Failure;
-            e.gameC().getMovableGrid().dropMaterial(e.movC().getPos(), material, true, true);
+            c.entity.gameC().getMovableGrid().dropMaterial(c.entity.movC().getPos(), material, true, true);
             return NodeStatus.Success;
         });
     }
 
-    private static Action<Entity> TryTakeMaterialFromMarket() {
-        return new Action<>(e->{
-            EMaterialType material = e.donkeyC().getMarket().tryToTakeDonkeyMaterial();
+    private static Action<Context> TryTakeMaterialFromMarket() {
+        return new Action<>(c->{
+            EMaterialType material = c.entity.donkeyC().getMarket().tryToTakeDonkeyMaterial();
             if (material == null || material == EMaterialType.NO_MATERIAL) return NodeStatus.Failure;
-            e.mmatC().addMaterial(material);
+            c.entity.mmatC().addMaterial(material);
             return NodeStatus.Success;
         });
     }
 
-    private static Action<Entity> TryFindNewMarket() {
-        return new Action<>(e->{
-            IDonkeyMarket market = e.donkeyC().findNextMarketNeedingDonkey();
+    private static Action<Context> TryFindNewMarket() {
+        return new Action<>(c->{
+            IDonkeyMarket market = c.entity.donkeyC().findNextMarketNeedingDonkey();
             if (market == null) return NodeStatus.Failure;
-            e.donkeyC().setMarket(market);
+            c.entity.donkeyC().setMarket(market);
             return NodeStatus.Success;
         });
     }
 
-    private static boolean hasValidMarket(Entity entity) {
-        return entity.donkeyC().getMarket() != null;
+    private static boolean hasValidMarket(Context c) {
+        return c.entity.donkeyC().getMarket() != null;
     }
 
-    public static Root<Entity> create() {
+    public static Root<Context> create() {
         return new Root<>($("==<Root>==",
             SetAttackableWhile(false,
                 Selector(
                     TriggerGuard(AttackableComponent.ReceivedHit.class,
                         $("received hit", Sequence(
-                            $("unassign market", Action(e->{e.donkeyC().resetMarket();})),
-                            $("stop going to market", Action(e->{e.steerC().resetTarget();})),
-                            $("drop all materials", Repeat(Condition(e->!e.mmatC().isEmpty()),Optional(TryDropMaterial())))
+                            $("unassign market", Action(c->{c.entity.donkeyC().resetMarket();})),
+                            $("stop going to market", Action(c->{c.entity.steerC().resetTarget();})),
+                            $("drop all materials", Repeat(Condition(c->!c.entity.mmatC().isEmpty()),Optional(TryDropMaterial())))
                         ))
                     ),
                     Guard(DonkeyBehaviorTreeFactory::hasValidMarket, true,
                         Selector(
                             $("fulfill request", MemSequence(
-                                $("go to market", Action(e->{ e.steerC().setTarget(e.donkeyC().getMarket().getDoor()); })),
+                                $("go to market", Action(c->{ c.entity.steerC().setTarget(c.entity.donkeyC().getMarket().getDoor()); })),
                                 $("wait for target reached", WaitForTargetReached_FailIfNotReachable()),
-                                $("check for pending transport jobs", Condition(e->e.donkeyC().getMarket().needsDonkey())),
+                                $("check for pending transport jobs", Condition(c->c.entity.donkeyC().getMarket().needsDonkey())),
                                 $("take material", TryTakeMaterialFromMarket()),
                                 $("optionally take a second material", Optional(TryTakeMaterialFromMarket())),
                                 SetAttackableWhile(true,
                                     $("follow waypoints", Repeat(Repeat.Policy.NONPREEMPTIVE,
-                                        Condition(e->e.donkeyC().hasNextWaypoint()),
+                                        Condition(c->c.entity.donkeyC().hasNextWaypoint()),
                                         MemSequence(
-                                            $("go to next waypoint", Action(e->{ e.steerC().setTarget(e.donkeyC().peekNextWaypoint()); })),
+                                            $("go to next waypoint", Action(c->{ c.entity.steerC().setTarget(c.entity.donkeyC().peekNextWaypoint()); })),
                                             $("wait", WaitForTargetReached_FailIfNotReachable()),
-                                            Action(e->{e.donkeyC().getNextWaypoint();})
+                                            Action(c->{c.entity.donkeyC().getNextWaypoint();})
                                         )
                                     ))
                                 ),
-                                $("drop all materials", Repeat(Condition(e->!e.mmatC().isEmpty()),Optional(TryDropMaterial()))),
+                                $("drop all materials", Repeat(Condition(c->!c.entity.mmatC().isEmpty()),Optional(TryDropMaterial()))),
                                 Selector(
                                     $("try find new market", TryFindNewMarket()),
                                     $("go back to market", MemSequence(
-                                        Action(e->{ e.steerC().setTarget(e.donkeyC().getMarket().getDoor()); }),
+                                        Action(c->{ c.entity.steerC().setTarget(c.entity.donkeyC().getMarket().getDoor()); }),
                                         Optional($("wait", WaitForTargetReached_FailIfNotReachable())),
-                                        Action(e->{e.donkeyC().resetMarket();})
+                                        Action(c->{c.entity.donkeyC().resetMarket();})
                                     ))
                                 )
                             )),
                             $("resolve failures", Sequence(
-                                $("invalidate market", Action(e->{e.donkeyC().resetMarket();})),
-                                $("drop materials", Repeat(Condition(e->!e.mmatC().isEmpty()), Optional(TryDropMaterial())))
+                                $("invalidate market", Action(c->{c.entity.donkeyC().resetMarket();})),
+                                $("drop materials", Repeat(Condition(c->!c.entity.mmatC().isEmpty()), Optional(TryDropMaterial())))
                             ))
                         )
                     ),

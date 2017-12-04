@@ -1,4 +1,5 @@
 package jsettlers.logic.movable.components;
+import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
@@ -10,19 +11,19 @@ import jsettlers.logic.movable.simplebehaviortree.Root;
 
 public class BehaviorComponent extends Component {
     private static final long serialVersionUID = -7388888039559869043L;
-    private final Root<Entity> root;
-    private Tick<Entity> tick;
-    public BehaviorComponent(Root<Entity> behaviorTree) {
+    private final Root<Context> root;
+    private Tick<Context> tick;
+    public BehaviorComponent(Root<Context> behaviorTree) {
         root = behaviorTree;
     }
 
     @Override
-    public void onAwake() {
-        tick = new Tick<>(entity, root);
+    protected void onAwake() {
+        tick = new Tick<>(new Context(entity,this), root);
     }
 
     @Override
-    public void onUpdate() {
+    protected void onUpdate() {
         NodeStatus status = tick.Tick();
     }
 }

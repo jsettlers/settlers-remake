@@ -8,6 +8,7 @@ import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableDouble;
 import jsettlers.logic.movable.BehaviorTreeFactory;
+import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
@@ -36,19 +37,19 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
     private static abstract class GeologistBehaviorTreeFactory extends BehaviorTreeFactory {
         private static final long serialVersionUID = 8692659559502611661L;
 
-        private static Action<Entity> WorkOnPosIfPossible() {
-            return new Action<>(entity -> {
-                ShortPoint2D pos = entity.movC().getPos();
+        private static Action<Context> WorkOnPosIfPossible() {
+            return new Action<>(c -> {
+                ShortPoint2D pos = c.entity.movC().getPos();
 
-                if (entity.specC().getCenterOfWork() == null) {
-                    entity.specC().setCenterOfWork(pos);
+                if (c.entity.specC().getCenterOfWork() == null) {
+                    c.entity.specC().setCenterOfWork(pos);
                 }
 
-                entity.gameC().getMovableGrid().setMarked(pos, false); // unmark the pos for the following check
-                boolean canWorkOnPos = entity.gameC().getMovableGrid().fitsSearchType(entity.movC(), pos.x, pos.y, ESearchType.RESOURCE_SIGNABLE);
+                c.entity.gameC().getMovableGrid().setMarked(pos, false); // unmark the pos for the following check
+                boolean canWorkOnPos = c.entity.gameC().getMovableGrid().fitsSearchType(c.entity.movC(), pos.x, pos.y, ESearchType.RESOURCE_SIGNABLE);
 
                 if (canWorkOnPos) {
-                    entity.gameC().getMovableGrid().setMarked(pos, true);
+                    c.entity.gameC().getMovableGrid().setMarked(pos, true);
                     return NodeStatus.Success;
                 }
                 return NodeStatus.Failure;
@@ -60,7 +61,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
             return new Find_GoToWorkablePosition();
         }
 
-        private static class Find_GoToWorkablePosition extends Action<Entity> {
+        private static class Find_GoToWorkablePosition extends Action<Context> {
 
             private static final long serialVersionUID = -5393050237159114345L;
 
@@ -68,10 +69,10 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
                 super(Find_GoToWorkablePosition::run);
             }
 
-            private static ShortPoint2D getCloseWorkablePos(Entity target) {
-                MovableComponent movC = target.get(MovableComponent.class);
-                GameFieldComponent gameC = target.get(GameFieldComponent.class);
-                SpecialistComponent workC = target.get(SpecialistComponent.class);
+            private static ShortPoint2D getCloseWorkablePos(Context c) {
+                MovableComponent movC = c.entity.movC();
+                GameFieldComponent gameC = c.entity.gameC();
+                SpecialistComponent specC = c.entity.specC();
 
                 MutablePoint2D bestNeighbourPos = new MutablePoint2D(-1, -1);
                 MutableDouble bestNeighbourDistance = new MutableDouble(Double.MAX_VALUE); // distance from start point
@@ -82,7 +83,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
                         return isValidPosition && canWorkOnPos;
                     }
                 ).forEach((x, y) -> {
-                    double distance = ShortPoint2D.getOnGridDist(x - workC.getCenterOfWork().x, y - workC.getCenterOfWork().y);
+                    double distance = ShortPoint2D.getOnGridDist(x - specC.getCenterOfWork().x, y - specC.getCenterOfWork().y);
                     if (distance < bestNeighbourDistance.value) {
                         bestNeighbourDistance.value = distance;
                         bestNeighbourPos.x = x;
@@ -97,19 +98,19 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
                 }
             }
 
-            public static NodeStatus run(Entity target) {
-                MovableComponent movC = target.get(MovableComponent.class);
-                GameFieldComponent gameC = target.get(GameFieldComponent.class);
-                SpecialistComponent workC = target.get(SpecialistComponent.class);
-                SteeringComponent steerC = target.get(SteeringComponent.class);
+            public static NodeStatus run(Context c) {
+                MovableComponent movC = c.entity.movC();
+                GameFieldComponent gameC = c.entity.gameC();
+                SpecialistComponent specC = c.entity.specC();
+                SteeringComponent steerC = c.entity.steerC();
 
-                ShortPoint2D closeWorkablePos = getCloseWorkablePos(target);
+                ShortPoint2D closeWorkablePos = getCloseWorkablePos(c);
 
                 if (closeWorkablePos != null && steerC.setTarget(closeWorkablePos)) {
                     gameC.getMovableGrid().setMarked(closeWorkablePos, true);
                     return NodeStatus.Success;
                 }
-                workC.setCenterOfWork(null);
+                specC.setCenterOfWork(null);
 
                 ShortPoint2D pos = movC.getPos();
                 Path path = steerC.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE);
@@ -122,48 +123,48 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
             }
         }
 
-        private static void setTargetWorkPos(Entity entity) {
-            PlayerCmdComponent.LeftClickCommand cmd = entity.getNotificationsIt(PlayerCmdComponent.LeftClickCommand.class).next();
-            entity.specC().setTargetWorkPos(cmd.pos);
+        private static void setTargetWorkPos(Context c) {
+            PlayerCmdComponent.LeftClickCommand cmd = c.comp.getNotificationsIt(PlayerCmdComponent.LeftClickCommand.class).next();
+            c.entity.specC().setTargetWorkPos(cmd.pos);
         }
 
-        public static Root<Entity> create() {
+        public static Root<Context> create() {
             final short ACTION1_DURATION = 1400;
             final short ACTION2_DURATION = 1500;
 
             return new Root<>(Selector(
                 TriggerGuard(PlayerCmdComponent.LeftClickCommand.class,
                     MemSequence(
-                        Action(e->{e.specC().setIsWorking(false);}),
+                        Action(c->{c.entity.specC().setIsWorking(false);}),
                         Action(GeologistBehaviorTreeFactory::setTargetWorkPos)
                     )
                 ),
                 TriggerGuard(PlayerCmdComponent.AltLeftClickCommand.class,
                     MemSequence(
-                        Action(e->{e.specC().setIsWorking(true);}),
+                        Action(c->{c.entity.specC().setIsWorking(true);}),
                         Action(GeologistBehaviorTreeFactory::setTargetWorkPos)
                     )
                 ),
                 TriggerGuard(PlayerCmdComponent.StartWorkCommand.class,
                     Sequence(
-                        Action(e->{e.specC().setIsWorking(true);}),
-                        Action(e->{e.specC().resetTargetWorkPos();})
+                        Action(c->{c.entity.specC().setIsWorking(true);}),
+                        Action(c->{c.entity.specC().resetTargetWorkPos();})
                     )
                 ),
-                Guard(e -> e.specC().getTargetWorkPos() != null, true,
+                Guard(c -> c.entity.specC().getTargetWorkPos() != null, true,
                     Selector(
                         MemSequence(
-                            Action(e->{e.steerC().setTarget(e.specC().getTargetWorkPos());}),
+                            Action(c->{c.entity.steerC().setTarget(c.entity.specC().getTargetWorkPos());}),
                             WaitForTargetReached_FailIfNotReachable(),
-                            Action(e->{e.specC().resetTargetWorkPos();})
+                            Action(c->{c.entity.specC().resetTargetWorkPos();})
                         ),
                         Sequence(
-                            Action(e->{e.specC().resetTargetWorkPos();}),
-                            Action(e->{e.specC().setIsWorking(false);})
+                            Action(c->{c.entity.specC().resetTargetWorkPos();}),
+                            Action(c->{c.entity.specC().setIsWorking(false);})
                         )
                     )
                 ),
-                Guard(e -> e.get(SpecialistComponent.class).isWorking(), true,
+                Guard(c -> c.entity.specC().isWorking(), true,
                     Selector(
                         $("find a place and work there", MemSequence(
                             Find_GoToWorkablePosition(),
@@ -174,7 +175,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
                             StartAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
                             WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
                         )),
-                        $("on failure: stop working", Action(e -> { e.specC().setIsWorking(false);}))
+                        $("on failure: stop working", Action(c -> { c.entity.specC().setIsWorking(false);}))
                     )
                 )
             ));

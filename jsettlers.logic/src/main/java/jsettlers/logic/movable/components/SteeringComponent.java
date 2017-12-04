@@ -25,7 +25,7 @@ public class SteeringComponent extends Component {
     public static class LeavePositionRequest extends Notification {}
 
     @Override
-    public void onAwake() {
+    protected void onAwake() {
         gameC = entity.get(GameFieldComponent.class);
         movC = entity.get(MovableComponent.class);
         aniC = entity.get(AnimationComponent.class);
@@ -58,7 +58,7 @@ public class SteeringComponent extends Component {
     }
 
     @Override
-    public void onUpdate() {
+    protected void onUpdate() {
         if (path == null) return;
         aniC.stopAnimation();
         // if path is finished

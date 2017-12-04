@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,27 +33,27 @@ public class Entity implements Serializable, IScheduledTimerable {
     private final int id;
 
     private static final long serialVersionUID = -5615478576016074072L;
-    private final Map<Class<? extends Component>, Component> components;
+    private final Map<Class<? extends Component>, Component> components = new IdentityHashMap<>();
+    private final Map<Class<? extends Component>, Component> componentLookup = new IdentityHashMap<>();
+    private Set<Notification> notificationsNext;
     private Set<Notification> notificationsCurrent;
-    private Set<Notification> notificationsLast;
+    public Set<Notification> getAllNotifications() {
+        return notificationsCurrent;
+    }
 
     /**
      * Checks whether or not all Component dependencies are satisfied.
      * @return {@code true} if all Component dependencies are satisfied, {@code false} otherwise.
      */
     public boolean checkComponentDependencies() {
-        for(Class<? extends Component> cmp : this.components.keySet()) {
+        for(Class<? extends Component> cmp : this.componentLookup.keySet()) {
             Requires ann = cmp.getAnnotation(Requires.class);
             if (ann == null) continue;
             for (Class<? extends Component> dependency : ann.value()) {
-                assert components.containsKey(dependency): components.get(cmp).getClass().getName() + "[" + cmp.getName() + "]: " + dependency.getName() + " missing";
+                assert componentLookup.containsKey(dependency): componentLookup.get(cmp).getClass().getName() + "[" + cmp.getName() + "]: " + dependency.getName() + " missing";
             }
         }
         return true;
-    }
-
-    public boolean consumeNotification(Notification notification) {
-        return notificationsLast.remove(notification);
     }
 
     public enum State { ACTIVE, INACTIVE, UNINITALIZED }
@@ -64,9 +63,8 @@ public class Entity implements Serializable, IScheduledTimerable {
     public Entity() {
         id = MovableDataManager.getNextID();
         state = State.UNINITALIZED;
-        components = new IdentityHashMap<>();
+        notificationsNext = new HashSet<>();
         notificationsCurrent = new HashSet<>();
-        notificationsLast = new HashSet<>();
     }
 
     public Entity(Component... cs) {
@@ -99,35 +97,35 @@ public class Entity implements Serializable, IScheduledTimerable {
         if (active) {
             state = State.ACTIVE;
             for (Component c : components.values()) {
-                c.onEnable();
+                c.Enable();
             }
         } else {
             state = State.INACTIVE;
             for (Component c : components.values()) {
-                c.onDisable();
+                c.Disable();
             }
         }
     }
 
     private void initialize() {
         for (Component component : components.values()) {
-            component.onAwake();
+            component.Awake();
         }
         RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
     }
 
     private void invokeUpdate() {
         for (Component component : components.values()) {
-            component.onUpdate();
+            component.Update();
         }
         for (Component component : components.values()) {
-            component.onLateUpdate();
+            component.LateUpdate();
         }
     }
 
     private void invokeDestroy() {
         for (Component component : components.values()) {
-            component.onDestroy();
+            component.Destroy();
         }
     }
 
@@ -137,99 +135,52 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     public void add(Component c) {
         Class cls = c.getClass();
-        assert !components.containsKey(cls): "Component already registered";
+        assert !componentLookup.containsKey(cls): "Component already registered";
+        componentLookup.put(cls, c);
         components.put(cls, c);
         c.entity = this;
         // Iterate over all super classes
         cls = cls.getSuperclass();
         while (cls != null && cls != Component.class) {
-            assert !components.containsKey(cls): "Component already registered";
-            components.put(cls, c);
+            assert !componentLookup.containsKey(cls): "Component already registered";
+            componentLookup.put(cls, c);
             cls = cls.getSuperclass();
         }
     }
 
     public void remove(Class<? extends Component> c) {
+        componentLookup.remove(c);
         components.remove(c);
         Class cls = c.getSuperclass();
         while (cls != null && cls != Component.class) {
-            components.remove(cls);
+            componentLookup.remove(cls);
             cls = cls.getSuperclass();
         }
     }
 
     @SuppressWarnings("unchecked")
     public <C extends Component> C get(Class<C> c) {
-        return (C) components.get(c);
+        return (C) componentLookup.get(c);
     }
 
     public boolean containsComponent(Class<? extends Component> c) {
-        return components.containsKey(c);
-    }
-
-    public <T extends Notification> Iterator<T> getNotificationsIt(Class<T> type) {
-        class NotificationIterator implements Iterator<T> {
-            private T nextItem;
-            private Iterator<Notification> it = notificationsLast.iterator();
-            private boolean consumed = false;
-
-            private NotificationIterator() {
-                findNext();
-            }
-
-            private void findNext() {
-                consumed = false;
-                nextItem = null;
-                while (it.hasNext()) {
-                    Notification n = it.next();
-                    if (type.isInstance(n)) {
-                        nextItem = (T)n;
-                        return;
-                    }
-                    nextItem = null;
-                }
-            }
-
-            @Override
-            public boolean hasNext() {
-                if (consumed) findNext();
-                return nextItem != null;
-            }
-
-            @Override
-            public T next() {
-                consumed = true;
-                return nextItem;
-            }
-        }
-        return new NotificationIterator();
-    }
-
-    public <T extends Notification> List<T> getNotifications(Class<T> type) {
-        Iterator<T> it = getNotificationsIt(type);
-        List<T> result = new ArrayList<T>();
-        while (it.hasNext()) {
-            result.add(it.next());
-        }
-        return result;
-    }
-
-    public <T extends Notification> boolean containsNotification(Class<T> type) {
-        return getNotificationsIt(type).hasNext();
+        return componentLookup.containsKey(c);
     }
 
     public void raiseNotification(Notification note) {
-        notificationsCurrent.add(note);
+        notificationsNext.add(note);
     }
 
     public void convertTo(Entity blueprint) {
         // remove all unused components
         for (Class<? extends Component> cls : components.keySet()) {
-            if (!blueprint.containsComponent(cls)) remove(cls);
+            if (!blueprint.components.containsKey(cls)) remove(cls);
         }
         // add all new components
         List<Component> newComponents = new ArrayList<>();
         for (Class<? extends Component> cls : blueprint.components.keySet()) {
+            // ignore components we already have
+            if (components.containsKey(cls)) continue;
             Component c = blueprint.get(cls);
             blueprint.remove(cls);
             newComponents.add(c);
@@ -238,11 +189,11 @@ public class Entity implements Serializable, IScheduledTimerable {
         if (state != State.UNINITALIZED) {
             // initialize all new components
             for (Component c : newComponents) {
-                c.onAwake();
+                c.Awake();
             }
             if (state == State.ACTIVE) {
                 for (Component c : newComponents) {
-                    c.onEnable();
+                    c.Enable();
                 }
             }
         }
@@ -276,8 +227,8 @@ public class Entity implements Serializable, IScheduledTimerable {
 
         invokeUpdate();
 
-        notificationsLast = notificationsCurrent;
-        notificationsCurrent = new HashSet<>();
+        notificationsCurrent = notificationsNext;
+        notificationsNext = new HashSet<>();
 
         return resetInvokationDelay();
     }

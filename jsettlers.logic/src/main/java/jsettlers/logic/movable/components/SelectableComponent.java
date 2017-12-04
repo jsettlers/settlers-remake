@@ -26,7 +26,7 @@ public class SelectableComponent extends Component {
     }
 
     @Override
-    public void onDisable() {
+    protected void onDisable() {
         setSelected(false);
     }
 }

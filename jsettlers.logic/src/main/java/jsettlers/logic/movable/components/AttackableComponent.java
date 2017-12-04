@@ -32,7 +32,7 @@ public class AttackableComponent extends Component {
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         health = -200;
     }
 }
