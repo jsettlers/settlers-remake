@@ -36,27 +36,17 @@ public class Tick<T> implements Serializable {
 		return state;
 	}
 	
-	public void EnterNode(Node<T> node) {
+	public void VisitNode(Node<T> node) {
 		if (!blockOpenNodes)
 			openNodes.push(node);
-	}
-	
-	public void OpenNode(Node<T> node) {
-		
 	}
 	
 	public void TickNode(Node<T> node) {
 		
 	}
 	
-	public void CloseNode(Node<T> node) {
+	public void LeaveNode(Node<T> node) {
 		if (!blockOpenNodes)
 			openNodes.pop();
 	}
-	
-	public void ExitNode(Node<T> node) {
-		
-	}
-	
-
 }

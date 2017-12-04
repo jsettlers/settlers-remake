@@ -13,11 +13,6 @@ import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Guard;
-import jsettlers.logic.movable.simplebehaviortree.nodes.MemSequence;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Sequence;
-import jsettlers.logic.movable.simplebehaviortree.nodes.WaitFor;
 
 /**
  * @author homoroselaps
@@ -59,6 +54,10 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
                 return NodeStatus.Failure;
             }
             );
+        }
+
+        private static Find_GoToWorkablePosition Find_GoToWorkablePosition() {
+            return new Find_GoToWorkablePosition();
         }
 
         private static class Find_GoToWorkablePosition extends Action<Entity> {
@@ -106,7 +105,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 
                 ShortPoint2D closeWorkablePos = getCloseWorkablePos(target);
 
-                if (closeWorkablePos != null && steerC.goToPos(closeWorkablePos)) {
+                if (closeWorkablePos != null && steerC.setTarget(closeWorkablePos)) {
                     gameC.getMovableGrid().setMarked(closeWorkablePos, true);
                     return NodeStatus.Success;
                 }
@@ -132,52 +131,50 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
             final short ACTION1_DURATION = 1400;
             final short ACTION2_DURATION = 1500;
 
-            return new Root<>(new Selector<>(
+            return new Root<>(Selector(
                 TriggerGuard(PlayerCmdComponent.LeftClickCommand.class,
-                    new MemSequence<>(
-                        new Action<>(e->{e.specC().setIsWorking(false);}),
-                        new Action<>(GeologistBehaviorTreeFactory::setTargetWorkPos)
+                    MemSequence(
+                        Action(e->{e.specC().setIsWorking(false);}),
+                        Action(GeologistBehaviorTreeFactory::setTargetWorkPos)
                     )
                 ),
                 TriggerGuard(PlayerCmdComponent.AltLeftClickCommand.class,
-                    new MemSequence<>(
-                        new Action<>(e->{e.specC().setIsWorking(true);}),
-                        new Action<>(GeologistBehaviorTreeFactory::setTargetWorkPos)
+                    MemSequence(
+                        Action(e->{e.specC().setIsWorking(true);}),
+                        Action(GeologistBehaviorTreeFactory::setTargetWorkPos)
                     )
                 ),
                 TriggerGuard(PlayerCmdComponent.StartWorkCommand.class,
-                    new Sequence<>(
-                        new Action<>(e->{e.specC().setIsWorking(true);}),
-                        new Action<>(e->{e.specC().resetTargetWorkPos();})
+                    Sequence(
+                        Action(e->{e.specC().setIsWorking(true);}),
+                        Action(e->{e.specC().resetTargetWorkPos();})
                     )
                 ),
-                new Guard<>(e -> e.specC().getTargetWorkPos() != null, true,
-                    new Selector<>(
-                        new MemSequence<>(
-                            new Action<>(e->{e.steerC().goToPos(e.specC().getTargetWorkPos());}),
-                            WaitForTargetReached_FailIfNot(),
-                            new Action<>(e->{e.specC().resetTargetWorkPos();})
+                Guard(e -> e.specC().getTargetWorkPos() != null, true,
+                    Selector(
+                        MemSequence(
+                            Action(e->{e.steerC().setTarget(e.specC().getTargetWorkPos());}),
+                            WaitForTargetReached_FailIfNotReachable(),
+                            Action(e->{e.specC().resetTargetWorkPos();})
                         ),
-                        new Sequence<>(
-                            new Action<>(e->{e.specC().resetTargetWorkPos();}),
-                            new Action<>(e->{e.specC().setIsWorking(false);})
+                        Sequence(
+                            Action(e->{e.specC().resetTargetWorkPos();}),
+                            Action(e->{e.specC().setIsWorking(false);})
                         )
                     )
                 ),
-                new Guard<>(e -> e.get(SpecialistComponent.class).isWorking(), true,
-                    new Selector<>(
-                        // find a place and work there
-                        new MemSequence<>(
-                            new Find_GoToWorkablePosition(),
-                            WaitForTargetReached_FailIfNot(),
+                Guard(e -> e.get(SpecialistComponent.class).isWorking(), true,
+                    Selector(
+                        $("find a place and work there", MemSequence(
+                            Find_GoToWorkablePosition(),
+                            WaitForTargetReached_FailIfNotReachable(),
                             WorkOnPosIfPossible(),
                             StartAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
-                            new WaitFor(AnimationComponent.AnimationFinishedTrigger.class),
+                            WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
                             StartAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
-                            new WaitFor(AnimationComponent.AnimationFinishedTrigger.class)
-                        ),
-                        // stop working if no work could be found
-                        new Action<>(e -> { e.specC().setIsWorking(false);})
+                            WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
+                        )),
+                        $("on failure: stop working", Action(e -> { e.specC().setIsWorking(false);}))
                     )
                 )
             ));

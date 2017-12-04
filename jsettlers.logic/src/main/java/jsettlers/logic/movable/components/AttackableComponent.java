@@ -13,7 +13,10 @@ public class AttackableComponent extends Component {
 
     private static final long serialVersionUID = -5453513130369184993L;
     private float health;
+
     private boolean isAttackable = false;
+    public boolean isAttackable() { return isAttackable; }
+    public void isAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
 
     public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
         health -= strength;
@@ -22,14 +25,6 @@ public class AttackableComponent extends Component {
 
     public float getHealth() {
         return health;
-    }
-
-    public boolean isAttackable() {
-        return isAttackable;
-    }
-
-    public void setAttackable(boolean isAttackable) {
-        this.isAttackable = isAttackable;
     }
 
     public void informAboutAttackable(ILogicMovable other) {

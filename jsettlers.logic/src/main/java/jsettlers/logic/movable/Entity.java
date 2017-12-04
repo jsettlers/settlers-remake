@@ -169,11 +169,11 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     public <T extends Notification> Iterator<T> getNotificationsIt(Class<T> type) {
         class NotificationIterator implements Iterator<T> {
-            T nextItem;
-            Iterator<Notification> it = notificationsLast.iterator();
-            boolean consumed = false;
+            private T nextItem;
+            private Iterator<Notification> it = notificationsLast.iterator();
+            private boolean consumed = false;
 
-            public NotificationIterator() {
+            private NotificationIterator() {
                 findNext();
             }
 

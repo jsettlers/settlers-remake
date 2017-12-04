@@ -13,11 +13,11 @@ public class Root<T> extends Node<T> {
 		this.child = child;
 	}
 	@Override
-	protected NodeStatus onTick(Tick<T> tick) { 
-		return child.execute(tick); 
+	protected NodeStatus onTick(Tick<T> tick) {
+		return child.execute(tick);
 	}
 	public Root<T> init() {
-		maxID = initiate(-1); 
+		maxID = initiate(-1);
 		return this;
 	}
 }

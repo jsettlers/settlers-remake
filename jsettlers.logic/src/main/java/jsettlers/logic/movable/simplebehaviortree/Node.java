@@ -19,27 +19,26 @@ public class Node<T> implements Serializable {
 	}
 
 	public NodeStatus execute(Tick<T> tick) {
+		if (!isOpen) {
+			open(tick);
+		}
 		enter(tick);
-		open(tick);
 		NodeStatus status = this.tick(tick);
+		exit(tick);
 		if (!status.equals(NodeStatus.Running)) {
 			close(tick);
 		}
-		exit(tick);
 		return status;
 	}
 
 	private void enter(Tick<T> tick) {
-		tick.EnterNode(this);
+		tick.VisitNode(this);
 		onEnter(tick);
 	}
 
 	private void open(Tick<T> tick) {
-		if (!isOpen) {
-			tick.OpenNode(this);
-			isOpen = true;
-			onOpen(tick);	
-		}		
+		isOpen = true;
+		onOpen(tick);
 	}
 	
 	private NodeStatus tick(Tick<T> tick) {
@@ -49,14 +48,13 @@ public class Node<T> implements Serializable {
 
 	public void close(Tick<T> tick) {
 		if (isOpen) {
-			tick.CloseNode(this);
+			tick.LeaveNode(this);
 			isOpen = false;
 			onClose(tick);
 		}
 	}
 
 	private void exit(Tick<T> tick) {
-		tick.ExitNode(this);
 		onExit(tick);
 	}
 	

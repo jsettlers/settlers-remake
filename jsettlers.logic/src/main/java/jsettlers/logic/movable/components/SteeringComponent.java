@@ -31,14 +31,17 @@ public class SteeringComponent extends Component {
         aniC = entity.get(AnimationComponent.class);
     }
 
-    public boolean goToPos(ShortPoint2D targetPos) {
-        //TODO: rename to moveTo
+    public boolean setTarget(ShortPoint2D targetPos) {
         if (movC.getPos().equals(targetPos)) {
             entity.raiseNotification(new TargetReachedTrigger());
             return true;
         }
         path = gameC.getMovableGrid().calculatePathTo(movC, targetPos);
         return path != null;
+    }
+
+    public void resetTarget() {
+        path = null;
     }
 
     public void followPath(Path path) {

@@ -19,7 +19,6 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.MemSelector;
 import jsettlers.logic.movable.simplebehaviortree.nodes.MemSequence;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Sequence;
-import jsettlers.logic.movable.simplebehaviortree.nodes.WaitFor;
 
 /**
  * @author homoroselaps
@@ -85,7 +84,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
                 EMovableType type = e.bearerC().barrack.popWeaponForBearer();
                 if (type != null) {
                     convertTo(e, type);
-                    e.steerC().goToPos(targetPosition);
+                    e.steerC().setTarget(targetPosition);
                     e.movC().getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
                     return NodeStatus.Success;
                 }
@@ -136,123 +135,102 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
         }
 
         public static Root<Entity> create() {
-            return new Root<>(new Selector<>(
+            return new Root<>(Selector(
                 TriggerGuard(BearerComponent.DeliveryJob.class,
-                    new Guard<>(e -> e.bearerC().hasJob(), false,
+                    Guard(e -> e.bearerC().hasJob(), false,
                         accept_SaveDeliveryJob())
                 ),
                 TriggerGuard(BearerComponent.BecomeSoldierJob.class,
-                    new Guard<>(e -> e.bearerC().hasJob(), false,
+                    Guard(e -> e.bearerC().hasJob(), false,
                         accept_SaveBecomeSoldierJob())
                 ),
                 TriggerGuard(BearerComponent.BecomeWorkerJob.class,
-                    new Guard<>(e -> e.bearerC().hasJob(), false,
+                    Guard(e -> e.bearerC().hasJob(), false,
                         accept_SaveBecomeWorkerJob())
                 ),
-                new Guard<>(e -> e.bearerC().hasBecomeWorkerJob(), true,
-                    new Selector<>(
-                        // try to fulfil the job
-                        new MemSequence<>(
-                            // grab a tool if needed
-                            new MemSelector<>(
-                                // either: no tool needed
-                                new Condition<>(e -> e.bearerC().materialOffer == null),
-                                // or: try fetch the tool
-                                new MemSelector<>(
-                                    new MemSequence<>(
-                                        new Action<>(e -> {
-                                            e.steerC().goToPos(e.bearerC().materialOffer.getPos());
-                                        }),
-                                        WaitForTargetReached_FailIfNot(),
-                                        new Condition<>(BearerBehaviorTreeFactory::canTakeMaterial),
+                Guard(e -> e.bearerC().hasBecomeWorkerJob(), true,
+                    Selector(
+                        $("try to fulfil the job", MemSequence(
+                            $("grab a tool if needed", Guard(e -> e.bearerC().materialOffer == null,
+                                Selector(
+                                    MemSequence(
+                                        $("go to the tool", Action(e -> { e.steerC().setTarget(e.bearerC().materialOffer.getPos()); })),
+                                        WaitForTargetReached_FailIfNotReachable(),
+                                        $("can we pick it up?", Condition(BearerBehaviorTreeFactory::canTakeMaterial)),
                                         StartAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-                                        new WaitFor(AnimationComponent.AnimationFinishedTrigger.class),
+                                        WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
                                         tryTakeMaterialFromMap(),
                                         StartAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-                                        new WaitFor(AnimationComponent.AnimationFinishedTrigger.class)
+                                        WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
                                     ),
-                                    // handle failure
-                                    new Sequence<>(
-                                        new Action<>(BearerBehaviorTreeFactory::distributionAborted),
-                                        new Failer<>()
-                                    )
+                                    $("handle failure", Sequence(
+                                        Action(BearerBehaviorTreeFactory::distributionAborted),
+                                        Failer()
+                                    ))
                                 )
-                            ),
-                            new Action<>(e -> {
-                                convertTo(e, e.bearerC().workerCreationRequest.requestedMovableType());
-                            })
-                        ),
-                        // Handle job failed
-                        new Sequence<>(
-                            new Action<>(BearerBehaviorTreeFactory::workerCreationRequestFailed),
-                            new Action<>(BearerBehaviorTreeFactory::resetJob),
-                            new Failer<>()
-                        )
+                            )),
+                            $("convert Entity to a worker", Action(e->{ convertTo(e, e.bearerC().workerCreationRequest.requestedMovableType()); }))
+                        )),
+                        $("handle failure", Sequence(
+                            Action(BearerBehaviorTreeFactory::workerCreationRequestFailed),
+                            Action(BearerBehaviorTreeFactory::resetJob),
+                            Failer()
+                        ))
                     )
                 ),
-                new Guard<>(e -> e.bearerC().hasDeliveryJob(), true,
-                    new MemSequence<>(
-                        // step 1&2: go to materialOffer and take material
-                        new Selector<>(
-                            new MemSequence<>(
-                                new Action<>(e -> {
-                                    e.steerC().goToPos(e.bearerC().materialOffer.getPos());
+                Guard(e -> e.bearerC().hasDeliveryJob(), true,
+                    MemSequence(
+                        Selector(
+                            $("go to materialOffer and take material", MemSequence(
+                                Action(e -> {
+                                    e.steerC().setTarget(e.bearerC().materialOffer.getPos());
                                 }),
-                                WaitForTargetReached_FailIfNot(),
-                                new Condition<>(BearerBehaviorTreeFactory::canTakeMaterial),
+                                WaitForTargetReached_FailIfNotReachable(),
+                                Condition(BearerBehaviorTreeFactory::canTakeMaterial),
                                 StartAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-                                new WaitFor(AnimationComponent.AnimationFinishedTrigger.class),
+                                WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
                                 tryTakeMaterialFromMap(),
                                 StartAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-                                new WaitFor(AnimationComponent.AnimationFinishedTrigger.class)
-                            ),
-                            // reoffer the material
-                            new Sequence<>(
-                                new Action<>(BearerBehaviorTreeFactory::distributionAborted),
-                                new Action<>(BearerBehaviorTreeFactory::deliveryAborted),
-                                new Action<>(BearerBehaviorTreeFactory::resetJob),
-                                new Failer<>()
-                            )
+                                WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
+                            )),
+                            $("handle failure", Sequence(
+                                Action(BearerBehaviorTreeFactory::distributionAborted),
+                                Action(BearerBehaviorTreeFactory::deliveryAborted),
+                                Action(BearerBehaviorTreeFactory::resetJob),
+                                Failer()
+                            ))
                         ),
-                        // step 3-4: go to request & drop material
-                        new Selector<>(
-                            new MemSequence<>(
-                                new Action<>(e -> {
-                                    e.steerC().goToPos(e.bearerC().deliveryRequest.getPos());
-                                }),
-                                WaitForTargetReached_FailIfNot(),
-                                new Condition<>(e -> e.bearerC().materialType.isDroppable()),
+                        Selector(
+                            $("go to request & drop material", MemSequence(
+                                Action(e -> { e.steerC().setTarget(e.bearerC().deliveryRequest.getPos()); }),
+                                WaitForTargetReached_FailIfNotReachable(),
+                                Condition(e -> e.bearerC().materialType.isDroppable()),
                                 StartAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-                                new WaitFor(AnimationComponent.AnimationFinishedTrigger.class),
+                                WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
                                 tryFulfillRequest(),
                                 StartAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-                                new WaitFor(AnimationComponent.AnimationFinishedTrigger.class),
-                                new Action<>(BearerBehaviorTreeFactory::resetJob)
-                            ),
-                            // reoffer the material
-                            new Sequence<>(
-                                dropMaterial(),
-                                new Action<>(BearerBehaviorTreeFactory::deliveryAborted),
-                                new Action<>(BearerBehaviorTreeFactory::resetJob),
-                                new Failer<>()
-                            )
+                                WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+                                Action(BearerBehaviorTreeFactory::resetJob)
+                            )),
+                            $("handle failure", Sequence(
+                                $("reoffer the material", dropMaterial()),
+                                Action(BearerBehaviorTreeFactory::deliveryAborted),
+                                Action(BearerBehaviorTreeFactory::resetJob),
+                                Failer()
+                            ))
                         )
                     )
                 ),
-                new Guard<>(e -> e.bearerC().hasBecomeSoldierJob(), true,
-                    new Selector<>(
-                        // try to fulfil the job
-                        new MemSequence<>(
-                            new Action<>(e -> {
-                                e.steerC().goToPos(e.bearerC().barrack.getDoor());
-                            }),
-                            WaitForTargetReached_FailIfNot(),
+                Guard(e -> e.bearerC().hasBecomeSoldierJob(), true,
+                    Selector(
+                        $("fullfill the job", MemSequence(
+                            Action(e -> { e.steerC().setTarget(e.bearerC().barrack.getDoor()); }),
+                            WaitForTargetReached_FailIfNotReachable(),
                             tryTakeWeapon_ConvertToSoldier()
-                        ),
-                        // Handle job failed
-                        new Sequence<>(
-                            new Action<>(BearerBehaviorTreeFactory::resetJob)
-                        )
+                        )),
+                        $("handle failure", Sequence(
+                            Action(BearerBehaviorTreeFactory::resetJob)
+                        ))
                     )
                 )
             ));
