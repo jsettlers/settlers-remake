@@ -65,6 +65,7 @@ public class Entity implements Serializable, IScheduledTimerable {
         state = State.UNINITALIZED;
         notificationsNext = new HashSet<>();
         notificationsCurrent = new HashSet<>();
+        resetInvokationDelay();
     }
 
     public Entity(Component... cs) {
