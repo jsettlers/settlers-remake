@@ -28,89 +28,88 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.Sequence;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Succeeder;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Wait;
 
-public abstract class BehaviorTreeFactory implements Serializable {
-    private static final long serialVersionUID = 8396039806339873520L;
+public final class BehaviorTreeHelper {
 
     /* --- Node Factory --- */
 
-    protected static Action<Context> Action(INodeStatusActionConsumer<Context> action) {
+    public static Action<Context> Action(INodeStatusActionConsumer<Context> action) {
         return new Action<Context>(action);
     }
 
-    protected static Action<Context> Action(INodeStatusActionFunction<Context> action) {
+    public static Action<Context> Action(INodeStatusActionFunction<Context> action) {
         return new Action<Context>(action);
     }
 
-    protected static Condition<Context> Condition(IBooleanConditionFunction<Context> condition) {
+    public static Condition<Context> Condition(IBooleanConditionFunction<Context> condition) {
         return new Condition<>(condition);
     }
 
-    protected static Failer<Context> Failer() {
+    public static Failer<Context> Failer() {
         return new Failer<>();
     }
 
-    protected static Guard<Context> Guard(IBooleanConditionFunction<Context> condition, Node<Context> child) {
+    public static Guard<Context> Guard(IBooleanConditionFunction<Context> condition, Node<Context> child) {
         return new Guard<Context>(condition, child);
     }
 
-    protected static Guard<Context> Guard(IBooleanConditionFunction<Context> condition, boolean shouldBe, Node<Context> child) {
+    public static Guard<Context> Guard(IBooleanConditionFunction<Context> condition, boolean shouldBe, Node<Context> child) {
         return new Guard<Context>(condition, shouldBe, child);
     }
 
-    protected static Inverter<Context> Inverter(Node<Context> child) {
+    public static Inverter<Context> Inverter(Node<Context> child) {
         return new Inverter<>(child);
     }
 
     @SafeVarargs
-    protected static MemSelector<Context> MemSelector(Node<Context>... children) {
+    public static MemSelector<Context> MemSelector(Node<Context>... children) {
         return new MemSelector<>(children);
     }
 
     @SafeVarargs
-    protected static MemSequence<Context> MemSequence(Node<Context>... children) {
+    public static MemSequence<Context> MemSequence(Node<Context>... children) {
         return new MemSequence<>(children);
     }
 
     @SafeVarargs
-    protected static Parallel<Context> Parallel(Parallel.Policy successPolicy, boolean preemptive, Node<Context>... children) {
+    public static Parallel<Context> Parallel(Parallel.Policy successPolicy, boolean preemptive, Node<Context>... children) {
         return new Parallel<Context>(successPolicy, preemptive, children);
     }
 
-    protected static Repeat<Context> Repeat(Repeat.Policy policy, Node<Context> condition, Node<Context> child) {
+    public static Repeat<Context> Repeat(Repeat.Policy policy, Node<Context> condition, Node<Context> child) {
         return new Repeat<>(policy, condition, child);
     }
 
-    protected static Repeat<Context> Repeat(Node<Context> condition, Node<Context> child) {
+    public static Repeat<Context> Repeat(Node<Context> condition, Node<Context> child) {
         return new Repeat<>(condition, child);
     }
 
     @SafeVarargs
-    protected static Selector<Context> Selector(Node<Context>... children) {
+    public static Selector<Context> Selector(Node<Context>... children) {
         return new Selector<>(children);
     }
 
     @SafeVarargs
-    protected static Sequence<Context> Sequence(Node<Context>... children) {
+    public static Sequence<Context> Sequence(Node<Context>... children) {
         return new Sequence<>(children);
     }
 
-    protected static Succeeder<Context> Succeeder() {
+    public static Succeeder<Context> Succeeder() {
         return new Succeeder<>();
     }
 
-    protected static Wait<Context> Wait(Node<Context> condition) {
+    public static Wait<Context> Wait(Node<Context> condition) {
         return new Wait<>(condition);
     }
 
-    protected static NotificationCondition NotificationCondition(Class<? extends Notification> type) {
+    public static NotificationCondition NotificationCondition(Class<? extends Notification> type) {
         return new NotificationCondition(type);
     }
 
-    protected static NotificationCondition NotificationCondition(Class<? extends Notification> type, boolean consume) {
+    public static NotificationCondition NotificationCondition(Class<? extends Notification> type, boolean consume) {
         return new NotificationCondition(type, consume);
     }
 
-    protected static Node<Context> WaitForTargetReached_FailIfNotReachable() {
+    public static Node<Context> WaitForTargetReached_FailIfNotReachable() {
         // wait for targetReached, but abort if target not reachable
         return Sequence(
             Inverter(NotificationCondition(SteeringComponent.TargetNotReachedTrigger.class, true)),
@@ -118,7 +117,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
         );
     }
 
-    protected static Property<Context, Boolean> SetAttackableWhile(boolean value, Node<Context> child) {
+    public static Property<Context, Boolean> SetAttackableWhile(boolean value, Node<Context> child) {
         return new Property<>(
             (c,v)->{c.entity.attC().isAttackable(v);},
             (c)->{return c.entity.attC().isAttackable();},
@@ -126,30 +125,30 @@ public abstract class BehaviorTreeFactory implements Serializable {
             child);
     }
 
-    protected static Guard<Context> TriggerGuard(Class<? extends Notification> type, Node<Context> child) {
+    public static Guard<Context> TriggerGuard(Class<? extends Notification> type, Node<Context> child) {
         return new Guard<>(entity -> entity.comp.getNotificationsIt(type).hasNext(), true, child);
     }
 
-    protected static Action<Context> StartAnimation(EMovableAction animation, short duration) {
+    public static Action<Context> StartAnimation(EMovableAction animation, short duration) {
         return new Action<>(c -> {
             c.entity.aniC().startAnimation(animation, duration);
         });
     }
 
-    protected static void convertTo(Entity entity, EMovableType type) {
+    public static void convertTo(Entity entity, EMovableType type) {
         Entity blueprint = EntityFactory.CreateEntity(entity.gameC().getMovableGrid(), type, entity.movC().getPos(), entity.movC().getPlayer());
         entity.convertTo(blueprint);
     }
 
-    protected static <T> Node<T> Optional(Node<T> child) {
+    public static <T> Node<T> Optional(Node<T> child) {
         return new Selector<T>(child, new Succeeder<T>());
     }
 
-    protected static Sleep Sleep(int milliseconds) {
+    public static Sleep Sleep(int milliseconds) {
         return new Sleep(milliseconds);
     }
 
-    protected static class Sleep extends Node<Context> {
+    public static class Sleep extends Node<Context> {
         private static final long serialVersionUID = 8774557186392581042L;
         boolean done = false;
         int delay = -1;
@@ -159,7 +158,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
         }
 
         @Override
-        protected NodeStatus onTick(Tick<Context> tick) {
+        public NodeStatus onTick(Tick<Context> tick) {
             if (done) return NodeStatus.Success;
             tick.Target.getEntity().setInvocationDelay(delay);
             done = true;
@@ -167,25 +166,25 @@ public abstract class BehaviorTreeFactory implements Serializable {
         }
 
         @Override
-        protected void onOpen(Tick<Context> tick) {
+        public void onOpen(Tick<Context> tick) {
             done = false;
         }
     }
 
-    protected static Node<Context> WaitForNotification(Class<? extends Notification> type, boolean consume) {
+    public static Node<Context> WaitForNotification(Class<? extends Notification> type, boolean consume) {
         return Wait(NotificationCondition(type, consume));
     }
 
-    protected static Debug $(String message, Node<Context> child) {
-        return new Debug(message, child);
+    public static Debug $(String msg, Node<Context> child) {
+        return new Debug(msg, child);
     }
 
-    protected static Debug $(String message) {
-        return new Debug(message);
+    public static Debug $(String msg) {
+        return new Debug(msg);
     }
 
-    protected static class Debug extends Decorator<Context> {
-        private static final boolean DEBUG = true;
+    public static class Debug extends Decorator<Context> {
+        private static final boolean DEBUG = false;
         private static final long serialVersionUID = 9019598003328102086L;
         private final String message;
         public Debug(String message) {
@@ -199,7 +198,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
         }
 
         @Override
-        protected NodeStatus onTick(Tick<Context> tick) {
+        public NodeStatus onTick(Tick<Context> tick) {
             if (DEBUG) System.out.println(message);
             if (child != null) {
                 NodeStatus result = child.execute(tick);
@@ -211,7 +210,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
         }
     }
 
-    protected static class NotificationCondition extends Condition<Context> {
+    public static class NotificationCondition extends Condition<Context> {
         private static final long serialVersionUID = 1780756145252644771L;
 
         public NotificationCondition(Class<? extends Notification> type) {
