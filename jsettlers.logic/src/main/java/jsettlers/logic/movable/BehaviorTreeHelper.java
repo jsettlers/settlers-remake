@@ -1,10 +1,10 @@
 package jsettlers.logic.movable;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.simplebehaviortree.Decorator;
 import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
@@ -119,8 +119,16 @@ public final class BehaviorTreeHelper {
 
     public static Property<Context, Boolean> SetAttackableWhile(boolean value, Node<Context> child) {
         return new Property<>(
-            (c,v)->{c.entity.attC().isAttackable(v);},
-            (c)->{return c.entity.attC().isAttackable();},
+            (c,v)->{c.entity.attC().IsAttackable(v);},
+            (c)->{return c.entity.attC().IsAttackable();},
+            value,
+            child);
+    }
+
+    public static Property<Context, Boolean> SetIdleBehaviorActiveWhile(boolean value, Node<Context> child) {
+        return new Property<>(
+            (c,v)->{c.entity.steerC().IsIdleBehaviorActive(v);},
+            (c)->c.entity.steerC().IsIdleBehaviorActive(),
             value,
             child);
     }
@@ -150,8 +158,8 @@ public final class BehaviorTreeHelper {
 
     public static class Sleep extends Node<Context> {
         private static final long serialVersionUID = 8774557186392581042L;
-        boolean done = false;
-        int delay = -1;
+        final int delay;
+        int endTime;
         public Sleep(int milliseconds) {
             super();
             delay = milliseconds;
@@ -159,15 +167,15 @@ public final class BehaviorTreeHelper {
 
         @Override
         public NodeStatus onTick(Tick<Context> tick) {
-            if (done) return NodeStatus.Success;
-            tick.Target.getEntity().setInvocationDelay(delay);
-            done = true;
+            int remaining = endTime - MatchConstants.clock().getTime();
+            if (remaining <= 0) return NodeStatus.Success;
+            tick.Target.entity.setInvocationDelay(remaining);
             return NodeStatus.Running;
         }
 
         @Override
         public void onOpen(Tick<Context> tick) {
-            done = false;
+            endTime = MatchConstants.clock().getTime() + delay;
         }
     }
 

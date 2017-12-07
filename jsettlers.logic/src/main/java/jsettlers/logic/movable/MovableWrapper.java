@@ -129,7 +129,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
     @Override
     public boolean isAttackable() {
         if (!entity.containsComponent(AttackableComponent.class)) return false;
-        return entity.get(AttackableComponent.class).isAttackable();
+        return entity.get(AttackableComponent.class).IsAttackable();
     }
 
     @Override
@@ -164,7 +164,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public boolean push(ILogicMovable pushingMovable) {
-        entity.raiseNotification(new SteeringComponent.LeavePositionRequest());
+        entity.raiseNotification(new SteeringComponent.LeavePositionRequest(pushingMovable));
         return false;
     }
 

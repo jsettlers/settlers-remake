@@ -15,8 +15,8 @@ public class AttackableComponent extends Component {
     private float health;
 
     private boolean isAttackable = false;
-    public boolean isAttackable() { return isAttackable; }
-    public void isAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
+    public boolean IsAttackable() { return isAttackable; }
+    public void IsAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
 
     public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
         health -= strength;

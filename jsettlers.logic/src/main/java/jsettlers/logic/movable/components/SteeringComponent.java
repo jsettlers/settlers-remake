@@ -4,13 +4,16 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Notification;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
@@ -18,7 +21,9 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.$;
 import static jsettlers.logic.movable.BehaviorTreeHelper.Action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.Condition;
 import static jsettlers.logic.movable.BehaviorTreeHelper.Guard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.MemSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.Selector;
+import static jsettlers.logic.movable.BehaviorTreeHelper.Sleep;
 import static jsettlers.logic.movable.BehaviorTreeHelper.TriggerGuard;
 
 /**
@@ -33,9 +38,18 @@ public class SteeringComponent extends Component {
     private AnimationComponent aniC;
     private Tick<Context> tick;
 
+    private boolean isIdleBehaviorActive = false;
+    public boolean IsIdleBehaviorActive() { return isIdleBehaviorActive; }
+    public void IsIdleBehaviorActive(boolean value) { isIdleBehaviorActive = value; }
+
     public static class TargetReachedTrigger extends Notification {}
     public static class TargetNotReachedTrigger extends Notification {}
-    public static class LeavePositionRequest extends Notification {}
+    public static class LeavePositionRequest extends Notification {
+        public final ILocatable sender;
+        public LeavePositionRequest(ILocatable sender) {
+            this.sender = sender;
+        }
+    }
 
     @Override
     protected void onAwake() {
@@ -71,28 +85,79 @@ public class SteeringComponent extends Component {
         }
     }
 
+    /*
+    if (goToRandomDirection(pushingMovable)) { // try to find free direction
+				return true; // if we found a free direction, go there and tell the pushing one we'll move
+
+			} else { // if we didn't find a direction, check if it's possible to exchange positions
+				if (pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
+					return false; // the other movable just pushed to get space, we can't do anything for it here.
+
+				} else if (pushingMovable.getMovableType().isPlayerControllable()
+						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
+					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
+					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
+					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
+					return true;
+
+				} else { // exchange not possible, as the location is not valid.
+					return false;
+				}
+			}
+     */
+
     private Root<Context> CreateBehaviorTree() {
         return new Root<Context>($("==<Root>==",
             Selector(
-                TriggerGuard(LeavePositionRequest.class,
-                    $("we got pushed")
-                ),
                 Guard(c->path != null, true,
                     Action(c->{ followPath(); })
                 ),
                 Guard(c->gameC.getMovableGrid().isBlockedOrProtected(movC.getPos().x, movC.getPos().y),true,
                     Action(c->{ goToNonBlockedOrProtectedPosition(); })
                 ),
-                Condition(c->this.flockToDecentralize()),
-                Action(c->{turnInRandomDirection();})
+                Guard(c->isIdleBehaviorActive,
+                    Selector(
+                        $("if LeavePositionRequest", TriggerGuard(LeavePositionRequest.class,
+                            $("try go in random direction", Action(context->{
+                                LeavePositionRequest note = context.comp.getNextNotification(LeavePositionRequest.class, false);
+                                if (note != null && goToRandomDirection(note.sender)) {
+                                    context.comp.consumeNotification(note);
+                                    return NodeStatus.Success;
+                                }
+                                return NodeStatus.Failure;
+                            }))
+                        )),
+                        $("move away from other movables", MemSequence(
+                            Condition(c->this.flockToDecentralize()),
+                            Sleep(500)
+                        )),
+                        $("turn in a random direction", MemSequence(
+                            Action(c->{ turnInRandomDirection(); }),
+                            Sleep(1000)
+                        ))
+                    )
+                )
             )
         ));
     }
 
     @Override
     protected void onUpdate() {
-        aniC.stopAnimation();
         tick.Tick();
+    }
+
+    private boolean goToRandomDirection(ILocatable pushingMovable) {
+        int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
+        EDirection pushedFromDir = EDirection.getDirection(movC.getPos(), pushingMovable.getPos());
+
+        for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+            EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+            if (currDir != pushedFromDir && goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void followPath() {
@@ -114,7 +179,6 @@ public class SteeringComponent extends Component {
 
                 if (newPath == null) { // no path found
                     path = null;
-
                     entity.raiseNotification(new TargetNotReachedTrigger());
                 } else {
                     this.path = newPath; // continue with new path
@@ -125,7 +189,7 @@ public class SteeringComponent extends Component {
                 }
             }
         } else { // step not possible, so try it next time (push not supported)
-
+            blockingMovable.push(movC.getaMovableWrapper());
         }
     }
 

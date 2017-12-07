@@ -58,6 +58,15 @@ public abstract class Component implements Serializable {
         return result;
     }
 
+    public <T extends Notification> T getNextNotification(Class<T> type, boolean consume) {
+        Iterator<T> it = getNotificationsIt(type);
+        T note = it.next();
+        if (note != null) {
+            if (consume) consumeNotification(note);
+        }
+        return null;
+    }
+
     public <T extends Notification> boolean containsNotification(Class<T> type) {
         return getNotificationsIt(type).hasNext();
     }

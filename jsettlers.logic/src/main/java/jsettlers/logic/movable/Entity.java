@@ -77,12 +77,12 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     private int resetInvokationDelay() {
         int lastValue = invocationDelay;
-        invocationDelay = Constants.MOVABLE_INTERRUPT_PERIOD;
+        invocationDelay = -1;
         return lastValue;
     }
 
     public void setInvocationDelay(int delay) {
-        invocationDelay = Math.max(invocationDelay, delay);
+        invocationDelay = invocationDelay > 0 ? Math.min(invocationDelay, delay) : delay;
     }
 
     public boolean isActive() {
@@ -231,7 +231,7 @@ public class Entity implements Serializable, IScheduledTimerable {
         notificationsCurrent = notificationsNext;
         notificationsNext = new HashSet<>();
 
-        return resetInvokationDelay();
+        return Math.max(resetInvokationDelay(), Constants.MOVABLE_INTERRUPT_PERIOD);
     }
 
     @Override

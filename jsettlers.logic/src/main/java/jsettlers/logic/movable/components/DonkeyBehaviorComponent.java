@@ -31,6 +31,7 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
     protected Root<Context> CreateBehaviorTree() {
         return new Root<>($("==<Root>==",
             SetAttackableWhile(false,
+            SetIdleBehaviorActiveWhile(false,
                 Selector(
                     TriggerGuard(AttackableComponent.ReceivedHit.class,
                         $("received hit", Sequence(
@@ -75,13 +76,15 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
                     ),
                     // if no market in need then wait for second
                     Guard(DonkeyBehaviorComponent::hasValidMarket, false,
-                        $("search for valid market", new MemSelector<>(
-                            TryFindNewMarket()
-                            //lSleep(1000)
-                        ))
+                        SetIdleBehaviorActiveWhile(true,
+                            $("search for valid market", new MemSelector<>(
+                                TryFindNewMarket(),
+                                Sleep(1000)
+                            ))
+                        )
                     )
                 ))
-            )
+            ))
         );
     }
 

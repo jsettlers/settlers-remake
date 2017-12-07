@@ -21,6 +21,11 @@ public class AnimationComponent extends Component {
     public AnimationComponent() { }
 
     @Override
+    protected void onUpdate() {
+        if (!isAnimating()) stopAnimation();
+    }
+
+    @Override
     protected void onLateUpdate() {
         if (isAnimating())
             entity.setInvocationDelay(getRemainingTime());
@@ -45,7 +50,7 @@ public class AnimationComponent extends Component {
         isSoundPlayed = false;
     }
 
-    public void stopAnimation() {
+    private void stopAnimation() {
         this.animation = EMovableAction.NO_ACTION;
     }
 
