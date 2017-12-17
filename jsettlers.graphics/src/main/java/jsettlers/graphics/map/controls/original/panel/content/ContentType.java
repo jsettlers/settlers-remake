@@ -14,6 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import jsettlers.graphics.map.controls.original.panel.content.buildings.BuildingBuildContent;
+import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
+import jsettlers.graphics.map.controls.original.panel.content.material.distribution.DistributionPanel;
+import jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel;
+import jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent;
+import jsettlers.graphics.map.controls.original.panel.content.material.production.MaterialsProductionPanel;
+import jsettlers.graphics.map.controls.original.panel.content.settlers.statistics.SettlersStatisticsPanel;
+import jsettlers.graphics.map.controls.original.panel.content.settlers.warriors.WarriorsPanel;
 import jsettlers.graphics.ui.UIPanel;
 
 /**
@@ -41,11 +49,11 @@ public final class ContentType {
 	public static final AbstractContentProvider BUILD_SOCIAL = new BuildingBuildContent(EBuildingsCategory.BUILDINGS_CATEGORY_SOCIAL);
 
 	public static final AbstractContentProvider STOCK = new InventoryPanel();
-	public static final AbstractContentProvider TOOLS = new ToolsPanel();
+	public static final AbstractContentProvider TOOLS = new MaterialsProductionPanel();
 	public static final AbstractContentProvider GOODS_SPREAD = new DistributionPanel();
 	public static final AbstractContentProvider GOODS_TRANSPORT = new MaterialPriorityContent();
 
-	public static final SettlersStatisticsPanel SETTLERSTATISTIC = new SettlersStatisticsPanel();
+	public static final SettlersStatisticsPanel SETTLER_STATISTIC = new SettlersStatisticsPanel();
 	public static final AbstractContentProvider PROFESSION = EMPTY;
 	public static final WarriorsPanel WARRIORS = new WarriorsPanel();
 	public static final AbstractContentProvider PRODUCTION = EMPTY;

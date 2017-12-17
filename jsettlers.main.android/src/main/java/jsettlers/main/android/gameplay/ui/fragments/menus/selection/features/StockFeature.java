@@ -20,6 +20,7 @@ import static java8.util.J8Arrays.stream;
 import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
@@ -28,14 +29,12 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.utils.OriginalImageProvider;
+import jsettlers.main.android.gameplay.ui.adapters.MaterialsAdapter;
+import jsettlers.main.android.gameplay.viewstates.StockMaterialState;
 
-import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import java8.util.stream.Collectors;
 
@@ -50,14 +49,15 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	private final RecyclerView recyclerView;
 	private final ImageView buildingImageView;
 
-	public StockFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
+	public StockFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
 		super(view, building, menuNavigator);
 		this.drawControls = drawControls;
 		this.actionControls = actionControls;
 
 		buildingImageView = (ImageView) getView().findViewById(R.id.image_view_building);
 
-		materialsAdapter = new MaterialsAdapter();
+		materialsAdapter = new MaterialsAdapter(activity);
+		materialsAdapter.setItemClickListener(this::materialSelected);
 		recyclerView = (RecyclerView) getView().findViewById(R.id.recyclerView);
 		recyclerView.setHasFixedSize(true);
 	}
@@ -86,6 +86,10 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		}
 	}
 
+	private void materialSelected(StockMaterialState stockMaterialState) {
+		actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), stockMaterialState.getMaterialType(), !stockMaterialState.isStocked(), true));
+	}
+
 	private void update() {
 		if (getBuildingState().isStock()) {
 			recyclerView.setVisibility(View.VISIBLE);
@@ -95,143 +99,13 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		}
 	}
 
-	private List<MaterialState> materialStates() {
+	private List<StockMaterialState> materialStates() {
+		IStockSettings stockSettings = ((IBuilding.IStock) getBuilding()).getStockSettings();
+
 		return stream(EMaterialType.STOCK_MATERIALS)
-				.map(eMaterialType -> new MaterialState(eMaterialType, getBuildingState()))
+				.map(eMaterialType -> new StockMaterialState(eMaterialType, stockSettings))
 				.collect(Collectors.toList());
 	}
 
-	/**
-	 * materials adapter
-	 */
-	private class MaterialsAdapter extends RecyclerView.Adapter<MaterialViewHolder> {
-		private final LayoutInflater inflater;
 
-		private List<MaterialState> materialStates;
-
-		MaterialsAdapter() {
-			inflater = LayoutInflater.from(getContext());
-		}
-
-		@Override
-		public int getItemCount() {
-			return materialStates.size();
-		}
-
-		@Override
-		public MaterialViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			View view = inflater.inflate(R.layout.item_stock_material, parent, false);
-			return new MaterialViewHolder(view);
-		}
-
-		@Override
-		public void onBindViewHolder(MaterialViewHolder holder, int position) {
-			MaterialState materialState = materialStates.get(position);
-			holder.bind(materialState);
-		}
-
-		@Override
-		public void onBindViewHolder(MaterialViewHolder holder, int position, List<Object> payloads) {
-			if (payloads == null || payloads.size() == 0) {
-				onBindViewHolder(holder, position);
-			} else {
-				holder.updateState(materialStates.get(position));
-			}
-		}
-
-		void setMaterialStates(List<MaterialState> materialStates) {
-			if (this.materialStates != null) {
-				DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MaterialsDiffCallback(this.materialStates, materialStates));
-				diffResult.dispatchUpdatesTo(this);
-			}
-
-			this.materialStates = materialStates;
-		}
-	}
-
-	/**
-	 * stock item viewholder
-	 */
-	class MaterialViewHolder extends RecyclerView.ViewHolder {
-		private final ImageView imageView;
-		private MaterialState materialState;
-
-		MaterialViewHolder(View itemView) {
-			super(itemView);
-			imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
-			itemView.setOnClickListener(v -> actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), !materialState.isStocked(), true)));
-		}
-
-		void bind(MaterialState materialState) {
-			this.materialState = materialState;
-			OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
-			itemView.setSelected(materialState.isStocked());
-		}
-
-		void updateState(MaterialState materialState) {
-			this.materialState = materialState;
-			itemView.setSelected(materialState.isStocked());
-		}
-	}
-
-	/**
-	 * Model for stock item
-	 */
-	private class MaterialState {
-		private final EMaterialType materialType;
-		private final boolean stocked;
-
-		MaterialState(EMaterialType materialType, BuildingState state) {
-			this.materialType = materialType;
-			this.stocked = state.stockAcceptsMaterial(materialType);
-		}
-
-		EMaterialType getMaterialType() {
-			return materialType;
-		}
-
-		boolean isStocked() {
-			return stocked;
-		}
-	}
-
-	/**
-	 * Diff callback
-	 */
-	private class MaterialsDiffCallback extends DiffUtil.Callback {
-
-		private final List<MaterialState> oldStates;
-		private final List<MaterialState> newStates;
-
-		MaterialsDiffCallback(List<MaterialState> oldStates, List<MaterialState> newStates) {
-			this.oldStates = oldStates;
-			this.newStates = newStates;
-		}
-
-		@Override
-		public int getOldListSize() {
-			return oldStates.size();
-		}
-
-		@Override
-		public int getNewListSize() {
-			return newStates.size();
-		}
-
-		@Override
-		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-			return oldStates.get(oldItemPosition).getMaterialType() == newStates.get(newItemPosition).getMaterialType();
-		}
-
-		@Override
-		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-			return oldStates.get(oldItemPosition).isStocked() == newStates.get(newItemPosition).isStocked();
-		}
-
-		@Nullable
-		@Override
-		public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-			return Boolean.TRUE;
-		}
-	}
 }

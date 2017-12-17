@@ -29,7 +29,7 @@ public enum EMapStartResources {
 				return EMapStartResources.values()[i];
 		}
 
-		System.err.println("wrong value for 'EMapStartResources' " + Integer.toString(mapValue) + "!");
+		System.err.println("wrong value for 'EOriginalMapStartResources' " + Integer.toString(mapValue) + "!");
 
 		return EMapStartResources.HIGH_GOODS;
 	}

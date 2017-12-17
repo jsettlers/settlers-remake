@@ -26,11 +26,14 @@ import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MovableObject;
 import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
+import jsettlers.logic.map.loading.original.data.EOriginalMapBuildingType;
+import jsettlers.logic.map.loading.original.data.EOriginalMapCivilizations;
+import jsettlers.logic.map.loading.original.data.EOriginalMapResources;
+import jsettlers.logic.map.loading.original.data.EOriginalMapSettlersType;
+import jsettlers.logic.map.loading.original.data.EOriginalMapStackType;
+import jsettlers.logic.map.loading.original.data.EOriginalMapObjectType;
+import jsettlers.logic.map.loading.original.data.EOriginalLandscapeType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapBuildingType;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapResources;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapSettlersType;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapStackType;
 
 /**
  * @author Thomas Zeugner
@@ -39,28 +42,28 @@ import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapStack
 public class OriginalMapFileContent implements IMapData {
 
 	// - Heigh of original maps are 0..225 and of remake 0..127
-	private final static float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 225f;
-	private final static float ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR = 127f / 15f;
+	private static final float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 225f;
+	private static final float ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR = 127f / 15f;
 
 	// --------------------------------------------------//
 	public static class MapPlayerInfo {
 		public int startX;
 		public int startY;
 		public String playerName;
-		public OriginalMapFileDataStructs.EMapNations nation;
+		public EOriginalMapCivilizations nation;
 
 		public MapPlayerInfo(int x, int y, String playerName, int nationInt) {
 			this.startX = x;
 			this.startY = y;
 			this.playerName = playerName;
-			this.nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationInt);
+			this.nation = EOriginalMapCivilizations.fromMapValue(nationInt);
 		}
 
 		public MapPlayerInfo(int x, int y) {
 			this.startX = x;
 			this.startY = y;
 			this.playerName = "";
-			this.nation = OriginalMapFileDataStructs.EMapNations.ROMANS;
+			this.nation = EOriginalMapCivilizations.ROMANS;
 		}
 	}
 
@@ -116,7 +119,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos > dataCount))
 			return;
 
-		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
+		EOriginalLandscapeType originalType = EOriginalLandscapeType.getTypeByInt(type);
 
 		landscapeType[pos] = originalType.value;
 	}
@@ -125,7 +128,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos > dataCount))
 			return;
 
-		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).getNewInstance();
+		mapObject[pos] = EOriginalMapObjectType.getTypeByInt(type).getNewInstance();
 	}
 
 	public void setPlayerCount(int count) {
@@ -143,14 +146,13 @@ public class OriginalMapFileContent implements IMapData {
 		if ((index < 0) || (index >= mapPlayerInfos.length))
 			return;
 
-		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationType);
+		mapPlayerInfos[index].nation = EOriginalMapCivilizations.fromMapValue(nationType);
 		mapPlayerInfos[index].startX = x;
 		mapPlayerInfos[index].startY = y;
 		mapPlayerInfos[index].playerName = playerName;
 	}
 
 	public void setMapObject(int x, int y, MapDataObject newMapObject) {
-
 		int pos = y * widthHeight + x;
 
 		if ((pos < 0) || (pos >= dataCount))
@@ -166,12 +168,12 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapBuildingType mapBuildingType = EMapBuildingType.getTypeByInt(buildingType);
+		EOriginalMapBuildingType mapBuildingType = EOriginalMapBuildingType.getTypeByInt(buildingType);
 
-		if (mapBuildingType == EMapBuildingType.NOT_A_BUILDING)
+		if (mapBuildingType == EOriginalMapBuildingType.NOT_A_BUILDING)
 			return;
-		if (mapBuildingType.value != null) {
-			mapObject[pos] = new BuildingMapDataObject(mapBuildingType.value, (byte) party);
+		if (mapBuildingType.getValue() != null) {
+			mapObject[pos] = new BuildingMapDataObject(mapBuildingType.getValue(), (byte) party);
 		}
 	}
 
@@ -181,9 +183,9 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapSettlersType mapSettlerType = EMapSettlersType.getTypeByInt(settlerType);
+		EOriginalMapSettlersType mapSettlerType = EOriginalMapSettlersType.getTypeByInt(settlerType);
 
-		if (mapSettlerType == EMapSettlersType.NOT_A_SETTLER)
+		if (mapSettlerType == EOriginalMapSettlersType.NOT_A_SETTLER)
 			return;
 		if (mapSettlerType.value != null) {
 			mapObject[pos] = new MovableObject(mapSettlerType.value, (byte) party);
@@ -196,9 +198,9 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapStackType mapStackType = EMapStackType.getTypeByInt(stackType);
+		EOriginalMapStackType mapStackType = EOriginalMapStackType.getTypeByInt(stackType);
 
-		if (mapStackType == EMapStackType.NOT_A_STACK)
+		if (mapStackType == EOriginalMapStackType.NOT_A_STACK)
 			return;
 		if (mapStackType.value != null) {
 			mapObject[pos] = new StackMapDataObject(mapStackType.value, count);
@@ -216,7 +218,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapResources mapResources = EMapResources.getTypeByInt(resourcesType);
+		EOriginalMapResources mapResources = EOriginalMapResources.getTypeByInt(resourcesType);
 
 		if (resourcesAmount == 0) {
 			resources[pos] = EResourceType.NOTHING;

@@ -27,11 +27,11 @@ public interface IPartitionSettings {
 
 	/**
 	 * This method gives access to the material distribution settings of the partition.
-	 * 
+	 *
 	 * @param materialType
 	 * @return Returns the distribution settings for the given {@link EMaterialType}.
 	 */
-	IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType);
+	IMaterialDistributionSettings getDistributionSettings(EMaterialType materialType);
 
 	IMaterialProductionSettings getMaterialProductionSettings();
 

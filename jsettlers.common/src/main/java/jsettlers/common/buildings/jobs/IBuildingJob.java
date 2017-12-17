@@ -23,9 +23,11 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * This is a building job, a job that can be done by a worker.
  * <p>
- * Jobs are organized as an cyclic graph, and every job can give yu the next job that is to be executed if it succeeds or fails.
+ * Jobs are organized as an cyclic graph, and every job can give you the next job that is to be executed if it succeeds or fails.
+ * <p>
+ * They are defined in XML files for each building 
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public interface IBuildingJob {
 	/**

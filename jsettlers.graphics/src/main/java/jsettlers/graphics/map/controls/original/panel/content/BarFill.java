@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -49,16 +49,16 @@ public class BarFill extends UIPanel {
 	public void drawAt(GLDrawContext gl) {
 		gl.color(0f, 0.78f, 0.78f, 1f);
 		FloatRectangle position = getPosition();
-		float fillx = barFillPercentage < .01f ? 0 : barFillPercentage > .99f ? 1 : EMPTY_X * (1 - barFillPercentage) + FULL_X * barFillPercentage;
-		float maxx = position.getMinX() * (1 - fillx) + position.getMaxX() * fillx;
-		gl.fillQuad(position.getMinX(), position.getMinY(), maxx, position.getMaxY());
+		float fillX = barFillPercentage < .01f ? 0 : barFillPercentage > .99f ? 1 : EMPTY_X * (1 - barFillPercentage) + FULL_X * barFillPercentage;
+		float maxX = position.getMinX() * (1 - fillX) + position.getMaxX() * fillX;
+		gl.fillQuad(position.getMinX(), position.getMinY(), maxX, position.getMaxY());
 
 		super.drawBackground(gl);
 	}
 
 	@Override
-	public Action getAction(final float relativex, float relativey) {
-		final float relativeFill = getFillForClick(relativex);
+	public Action getAction(final float relativeX, float relativeY) {
+		final float relativeFill = getFillForClick(relativeX);
 		return new ExecutableAction() {
 			@Override
 			public void execute() {
@@ -70,18 +70,18 @@ public class BarFill extends UIPanel {
 		};
 	}
 
-	protected float getFillForClick(final float relativex) {
-		if (relativex < EMPTY_X) {
+	protected float getFillForClick(final float relativeX) {
+		if (relativeX < EMPTY_X) {
 			return 0;
-		} else if (relativex > FULL_X) {
+		} else if (relativeX > FULL_X) {
 			return 1;
 		} else {
-			return (relativex - EMPTY_X) / (FULL_X - EMPTY_X);
+			return (relativeX - EMPTY_X) / (FULL_X - EMPTY_X);
 		}
 	}
 
 	@Override
-	public String getDescription(float relativex, float relativey) {
+	public String getDescription(float relativeX, float relativeY) {
 		return Math.round(descriptionPercentage * 100) + "%";
 	}
 

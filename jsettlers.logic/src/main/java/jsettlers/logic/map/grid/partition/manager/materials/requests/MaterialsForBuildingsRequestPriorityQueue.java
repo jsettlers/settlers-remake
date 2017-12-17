@@ -14,21 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials.requests;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.partition.IMaterialsDistributionSettings;
-import jsettlers.common.material.EPriority;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.list.DoubleLinkedList;
-import jsettlers.logic.constants.MatchConstants;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.material.EPriority;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.collections.list.DoubleLinkedList;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialDistributionSettings;
+
 /**
- * This class is an advanced priority queue for material requests. The requests are served according to the settings. The settings specify the
- * probability that a given type of building will be served.
+ * This class is an advanced priority queue for material requests. The requests are served according to the settings. The settings specify the probability that a given type of building will be served.
  *
  * @author Andreas Eberle
  *
@@ -36,22 +34,29 @@ import java.util.Iterator;
 public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMaterialRequestPriorityQueue {
 	private static final long serialVersionUID = 4856036773080549412L;
 
-	private static final EBuildingType[] ADDITIONAL_BUILDING_TYPES           = {EBuildingType.STOCK, EBuildingType.HARBOR, EBuildingType.MARKET_PLACE};
-	private static final int             NUMBER_OF_ADDITIONAL_BUILDING_TYPES = ADDITIONAL_BUILDING_TYPES.length;
+	private static final EBuildingType[] ADDITIONAL_BUILDING_TYPES = { EBuildingType.STOCK, EBuildingType.HARBOR, EBuildingType.MARKET_PLACE };
+	private static final int NUMBER_OF_ADDITIONAL_BUILDING_TYPES = ADDITIONAL_BUILDING_TYPES.length;
 
 	private final DoubleLinkedList<MaterialRequestObject> queues[][];
 
-	private final IMaterialsDistributionSettings settings;
+	private final MaterialDistributionSettings settings;
+	private final EBuildingType[] buildingTypes;
+	private final int numberOfAllBuildings;
+	private final int numberOfConfigurableBuildings;
 
 	private transient int[] buildingTypesToIndex;
 
 	@SuppressWarnings("unchecked")
-	public MaterialsForBuildingsRequestPriorityQueue(IMaterialsDistributionSettings settings) {
+	public MaterialsForBuildingsRequestPriorityQueue(MaterialDistributionSettings settings) {
 		this.settings = settings;
+
+		buildingTypes = settings.getBuildingTypes();
+		numberOfConfigurableBuildings = buildingTypes.length;
+		numberOfAllBuildings = numberOfConfigurableBuildings + NUMBER_OF_ADDITIONAL_BUILDING_TYPES;
 
 		queues = new DoubleLinkedList[EPriority.NUMBER_OF_PRIORITIES][];
 		for (int i = 0; i < queues.length; i++) {
-			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildingTypes() + NUMBER_OF_ADDITIONAL_BUILDING_TYPES);
+			queues[i] = DoubleLinkedList.getArray(numberOfAllBuildings);
 		}
 
 		calculateBuildingTypesToIndex();
@@ -63,12 +68,11 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 		for (int i = 0; i < buildingTypesToIndex.length; i++) {
 			buildingTypesToIndex[i] = -1;
 		}
-		int numberOfBuildings = settings.getNumberOfBuildingTypes();
-		for (int i = 0; i < numberOfBuildings; i++) {
-			buildingTypesToIndex[settings.getBuildingType(i).ordinal] = i;
+		for (int i = 0; i < buildingTypes.length; i++) {
+			buildingTypesToIndex[buildingTypes[i].ordinal] = i;
 		}
 		for (int i = 0; i < NUMBER_OF_ADDITIONAL_BUILDING_TYPES; i++) {
-			buildingTypesToIndex[ADDITIONAL_BUILDING_TYPES[i].ordinal] = numberOfBuildings + i;
+			buildingTypesToIndex[ADDITIONAL_BUILDING_TYPES[i].ordinal] = buildingTypes.length + i;
 		}
 	}
 
@@ -90,15 +94,19 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 	protected MaterialRequestObject getRequestForPriority(int priority) {
 		DoubleLinkedList<MaterialRequestObject>[] queues = this.queues[priority];
 
-		int startIndex = getRandomStartIndex();
+		EBuildingType randomStartBuilding = settings.drawRandomBuilding();
+		if (randomStartBuilding == null) {
+			return null;
+		}
+		int randomStartIndex = buildingTypesToIndex[randomStartBuilding.ordinal];
 
-		final int numberOfBuildingTypes = settings.getNumberOfBuildingTypes();
-		final int numberOfBuildings = numberOfBuildingTypes + NUMBER_OF_ADDITIONAL_BUILDING_TYPES;
-		for (int i = 0; i < numberOfBuildings; i++) {
-			int buildingIdx = (i + startIndex) % numberOfBuildings;
+		for (int i = 0; i < numberOfAllBuildings; i++) {
+			int buildingIdx = (i + randomStartIndex) % numberOfAllBuildings;
 
 			// if this building type should not receive any materials, skip it; if it is additional building, always check it
-			if (buildingIdx < numberOfBuildingTypes && settings.getProbablity(buildingIdx) <= 0.0f) { continue; }
+			if (buildingIdx < numberOfConfigurableBuildings && settings.getDistributionProbability(buildingTypes[buildingIdx]) <= 0.0f) {
+				continue;
+			}
 
 			MaterialRequestObject foundRequest = findRequestInQueue(queues[buildingIdx]);
 			if (foundRequest != null) {
@@ -109,32 +117,15 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 		return null;
 	}
 
-	private int getRandomStartIndex() {
-		float randomNumber = MatchConstants.random().nextFloat();
-		float sum = 0;
-
-		int numberOfBuildings = settings.getNumberOfBuildingTypes();
-		for (int i = 0; i < numberOfBuildings; i++) {
-			sum += settings.getProbablity(i);
-			if (randomNumber < sum) {
-				return i;
-			}
-		}
-
-		System.err.println("ERROR: No correct material distribution!");
-		return 0;
-	}
-
 	@Override
 	public void moveObjectsOfPositionTo(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newAbstractQueue) {
-		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPriorityQueue : "can't move positions between diffrent types of queues.";
+		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPriorityQueue : "can't move positions between different types of queues.";
 
 		MaterialsForBuildingsRequestPriorityQueue newQueue = (MaterialsForBuildingsRequestPriorityQueue) newAbstractQueue;
-		final int numberOfBuildings = settings.getNumberOfBuildingTypes();
 
 		for (int priorityIndex = 0; priorityIndex < queues.length; priorityIndex++) {
 			DoubleLinkedList<MaterialRequestObject>[] priorityQueue = queues[priorityIndex];
-			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
+			for (int queueIdx = 0; queueIdx < numberOfConfigurableBuildings; queueIdx++) {
 				Iterator<MaterialRequestObject> iterator = priorityQueue[queueIdx].iterator();
 				while (iterator.hasNext()) {
 					MaterialRequestObject curr = iterator.next();
@@ -150,13 +141,12 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 
 	@Override
 	public void mergeInto(AbstractMaterialRequestPriorityQueue newAbstractQueue) {
-		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPriorityQueue : "can't move positions between diffrent types of queues.";
+		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPriorityQueue : "can't move positions between different types of queues.";
 
 		MaterialsForBuildingsRequestPriorityQueue newQueue = (MaterialsForBuildingsRequestPriorityQueue) newAbstractQueue;
-		final int numberOfBuildings = settings.getNumberOfBuildingTypes();
 
 		for (int priorityIndex = 0; priorityIndex < queues.length; priorityIndex++) {
-			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
+			for (int queueIdx = 0; queueIdx < numberOfConfigurableBuildings; queueIdx++) {
 				DoubleLinkedList<MaterialRequestObject> currList = queues[priorityIndex][queueIdx];
 				DoubleLinkedList<MaterialRequestObject> newList = newQueue.queues[priorityIndex][queueIdx];
 				for (MaterialRequestObject request : currList) {
@@ -179,15 +169,29 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) { return true; }
-		if (obj == null) { return false; }
-		if (getClass() != obj.getClass()) { return false; }
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		MaterialsForBuildingsRequestPriorityQueue other = (MaterialsForBuildingsRequestPriorityQueue) obj;
-		if (!Arrays.equals(buildingTypesToIndex, other.buildingTypesToIndex)) { return false; }
-		if (!Arrays.deepEquals(queues, other.queues)) { return false; }
+		if (!Arrays.equals(buildingTypesToIndex, other.buildingTypesToIndex)) {
+			return false;
+		}
+		if (!Arrays.deepEquals(queues, other.queues)) {
+			return false;
+		}
 		if (settings == null) {
-			if (other.settings != null) { return false; }
-		} else if (!settings.equals(other.settings)) { return false; }
+			if (other.settings != null) {
+				return false;
+			}
+		} else if (!settings.equals(other.settings)) {
+			return false;
+		}
 		return true;
 	}
 }
