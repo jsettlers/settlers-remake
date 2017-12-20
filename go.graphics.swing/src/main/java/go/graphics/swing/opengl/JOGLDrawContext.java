@@ -184,9 +184,16 @@ public class JOGLDrawContext implements GLDrawContext {
 			return null;
 		}
 
+		//fix strange alpha test problem (minimap and landscape are unaffected)
+		ShortBuffer bfr = BufferUtils.createShortBuffer(data.capacity());
+		int cap = data.capacity();
+		for(int i = 0;i != cap;i++)	bfr.put(i, data.get(i));
+
+
+
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
-				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, data);
+				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, bfr);
 		setTextureParameters();
 
 		return new JOGLTextureHandle(this, texture);
