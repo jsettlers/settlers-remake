@@ -28,6 +28,8 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
+import org.lwjgl.opengl.GL;
+
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -158,8 +160,8 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 		gl2.glLoadIdentity();
 
-		if (context == null || context.getGl2() != gl2) {
-			context = new JOGLDrawContext(gl2);
+		if (context == null) {
+			context = new JOGLDrawContext(GL.createCapabilities());
 		}
 		context.startFrame();
 		area.drawArea(context);

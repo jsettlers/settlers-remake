@@ -1199,7 +1199,7 @@ public class Background implements IGraphicsBackgroundListener {
 			try {
 				gl.glTranslatef(0, 0, -.1f);
 				gl.glScalef(1, 1, 0);
-				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
+				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
 				gl.color(1, 1, 1, 1);
 				gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), geometryhandle, geometrytirs);
 			} finally {

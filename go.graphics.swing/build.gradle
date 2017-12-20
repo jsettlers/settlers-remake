@@ -29,4 +29,21 @@ dependencies {
     runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-i586"
     runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-windows-amd64"
     runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-windows-i586"
+
+    compile "org.lwjgl:lwjgl:3.1.5"
+    compile "org.lwjgl:lwjgl-opengl:3.1.5"
+    compile "org.lwjgl:lwjgl-glfw:3.1.5"
+
+    compile "org.lwjgl:lwjgl:3.1.5:natives-linux"
+    compile "org.lwjgl:lwjgl:3.1.5:natives-macos"
+    compile "org.lwjgl:lwjgl:3.1.5:natives-windows"
+
+    compile "org.lwjgl:lwjgl-opengl:3.1.5:natives-linux"
+    compile "org.lwjgl:lwjgl-opengl:3.1.5:natives-macos"
+    compile "org.lwjgl:lwjgl-opengl:3.1.5:natives-windows"
+
+    compile "org.lwjgl:lwjgl-glfw:3.1.5:natives-linux"
+    compile "org.lwjgl:lwjgl-glfw:3.1.5:natives-macos"
+    compile "org.lwjgl:lwjgl-glfw:3.1.5:natives-windows"
+
 }
