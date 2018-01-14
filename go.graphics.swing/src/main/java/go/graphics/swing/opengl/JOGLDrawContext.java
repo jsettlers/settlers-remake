@@ -56,8 +56,6 @@ public class JOGLDrawContext implements GLDrawContext {
 	public JOGLDrawContext(GLCapabilities glcaps) {
 		this.glcaps = glcaps;
 
-		org.lwjgl.opengl.GL.createCapabilities();
-
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 

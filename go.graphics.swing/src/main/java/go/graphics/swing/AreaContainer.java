@@ -14,21 +14,23 @@
  *******************************************************************************/
 package go.graphics.swing;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
+import java.nio.IntBuffer;
 
 import javax.swing.JPanel;
-
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.awt.GLJPanel;
-import com.jogamp.opengl.glu.GLU;
-
-import org.lwjgl.opengl.GL;
+import javax.swing.SwingUtilities;
 
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
@@ -42,7 +44,7 @@ import go.graphics.swing.opengl.JOGLDrawContext;
  * 
  * @author michael
  */
-public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvider {
+public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvider, Runnable {
 
 	/**
 	 * 
@@ -52,120 +54,148 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 	private Component canvas;
 	private JOGLDrawContext context;
+	private boolean continue_run = true;
+
+	private int width = 1, height = 1;
+	private int new_width = 1, new_height = 1;
+	private boolean change_res = true;
+	private Object wnd_lock = new Object();
+
+	private BufferedImage bi = null;
+	private IntBuffer pixels;
+
+	private Thread render_thread;
+	private boolean listeners = false;
 
 	/**
-	 * creates a new area conaainer
+	 * creates a new area container
 	 * 
 	 * @param area
 	 *            The area to display
 	 */
 	public AreaContainer(Area area) {
-		this(area, false);
-	}
-
-	/**
-	 * creates a new area conaainer
-	 * 
-	 * @param area
-	 *            The area to display
-	 */
-	public AreaContainer(Area area, boolean forceLightweight) {
 		this.area = area;
 		this.setLayout(new BorderLayout());
 
-		GLProfile profile = GLProfile.getDefault();
-		GLCapabilities cap = new GLCapabilities(profile);
-		cap.setStencilBits(1);
-
-		GLEventListener glEventListener = new GLEventListener() {
-
+		ComponentListener cl = new ComponentListener() {
 			@Override
-			public void reshape(GLAutoDrawable gl, int x, int y, int width, int height) {
-				resizeArea(gl.getGL().getGL2(), x, y, width, height);
+			public void componentResized(ComponentEvent componentEvent) {
+				Component cmp = componentEvent.getComponent();
+				synchronized (wnd_lock) {
+					new_width = cmp.getWidth();
+					new_height = cmp.getHeight();
+					change_res = true;
+				}
 			}
 
 			@Override
-			public void init(GLAutoDrawable arg0) {
-				arg0.getGL().setSwapInterval(0);
+			public void componentMoved(ComponentEvent componentEvent) {
 			}
 
 			@Override
-			public void dispose(GLAutoDrawable arg0) {
-				disposeAll();
+			public void componentShown(ComponentEvent componentEvent) {
 			}
 
 			@Override
-			public void display(GLAutoDrawable glDrawable) {
-				draw(glDrawable.getGL().getGL2());
+			public void componentHidden(ComponentEvent componentEvent) {
 			}
 		};
 
-		if (forceLightweight) {
-			GLJPanel panel = new GLJPanel(cap);
-			panel.addGLEventListener(glEventListener);
-			canvas = panel;
-		} else {
-			GLCanvas glCanvas = new GLCanvas(cap);
-			glCanvas.addGLEventListener(glEventListener);
-			canvas = glCanvas;
-		}
+		JPanel panel = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics graphics) {
+				super.paintComponent(graphics);
+
+				if(!listeners) {
+					new GOSwingEventConverter(SwingUtilities.windowForComponent(canvas), AreaContainer.this);
+					listeners = true;
+				}
+				synchronized (wnd_lock) {
+					graphics.drawImage(bi, 0, 0, null);
+					graphics.dispose();
+				}
+			}
+		};
+		panel.addComponentListener(cl);
+		canvas = panel;
 
 		// Listener for Key-, Mouse- etc. events
-		new GOSwingEventConverter(canvas, this);
 
 		area.addRedrawListener(this);
 		this.add(canvas);
+
+		render_thread = new Thread(this);
+		render_thread.start();
 	}
 
-	/**
-	 * Resizes the area.
-	 * 
-	 * @param gl2
-	 *            The GL object
-	 * @param x
-	 *            unused
-	 * @param y
-	 *            unused
-	 * @param width
-	 *            The width
-	 * @param height
-	 *            The hieght
-	 */
-	protected void resizeArea(GL2 gl2, int x, int y, int width, int height) {
-		gl2.glMatrixMode(GL2.GL_PROJECTION);
-		gl2.glLoadIdentity();
-
-		// coordinate system origin at lower left with width and height same as
-		// the window
-		GLU glu = new GLU();
-		glu.gluOrtho2D(0.0f, width, 0.0f, height);
-
-		gl2.glMatrixMode(GL2.GL_MODELVIEW);
-		gl2.glLoadIdentity();
-
-		gl2.glViewport(0, 0, width, height);
-
-		area.setWidth(width);
-		area.setHeight(height);
+	@Override
+	public void removeNotify() {
+		super.removeNotify();
+		continue_run = false;
 	}
 
-	/**
-	 * Draws the content area on the OpenGl object.
-	 * 
-	 * @param gl2
-	 *            Where to draw on.
-	 */
-	protected void draw(GL2 gl2) {
-		gl2.glClear(GL2.GL_COLOR_BUFFER_BIT);
+	@Override
+	public void run() {
+		GLFWErrorCallback ec = GLFWErrorCallback.createPrint(System.err);;
+		GLFW.glfwSetErrorCallback(ec);
 
-		gl2.glLoadIdentity();
+		GLFW.glfwInit();
 
-		if (context == null) {
-			context = new JOGLDrawContext(GL.createCapabilities());
+		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 1);
+		long glfw_wnd = GLFW.glfwCreateWindow(area.getWidth() + 1, area.getHeight() + 1, "lwjgl-offscreen", 0, 0);
+		GLFW.glfwMakeContextCurrent(glfw_wnd);
+		GLFW.glfwSwapInterval(0);
+
+		context = new JOGLDrawContext(GL.createCapabilities());
+
+		while (continue_run) {
+			synchronized (wnd_lock) {
+				if (change_res) {
+					width = new_width;
+					height = new_height;
+					GLFW.glfwSetWindowSize(glfw_wnd, width, height);
+					GL11.glMatrixMode(GL11.GL_PROJECTION);
+					GL11.glLoadIdentity();
+					// coordinate system origin at lower left with width and height same as
+					// the window
+					GL11.glOrtho(0, width, 0, height, -1, 1);
+
+					GL11.glMatrixMode(GL11.GL_MODELVIEW);
+					GL11.glLoadIdentity();
+					GL11.glViewport(0, 0, width, height);
+					area.setWidth(width);
+					area.setHeight(height);
+					bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+					pixels = BufferUtils.createIntBuffer(width*height);
+					change_res = false;
+				}
+			}
+			GLFW.glfwPollEvents();
+
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			GL11.glLoadIdentity();
+
+			context.startFrame();
+			area.drawArea(context);
+
+			synchronized (wnd_lock) {
+				GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+				for(int x = 0;x != width;x++) {
+					for(int y = 0; y!= height;y++) {
+						bi.setRGB(x, height-y-1, pixels.get(y*width+x));
+					}
+				}
+			}
+			// uncomment to clear the offscreen buffer
+			//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			// uncomment to draw the offscreen buffer to offscreen window
+			//GLFW.glfwSwapBuffers(glfw_wnd);
 		}
-		context.startFrame();
-		area.drawArea(context);
+
+		GLFW.glfwTerminate();
+		disposeAll();
 	}
+
 
 	/**
 	 * Disposes all textures / buffers that were allocated by this context.
