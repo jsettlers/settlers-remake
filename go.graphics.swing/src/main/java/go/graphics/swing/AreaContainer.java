@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015-2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -30,12 +30,13 @@ import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.GLFWContextCreator;
 import go.graphics.swing.contextcreator.GLXContextCreator;
 import go.graphics.swing.contextcreator.WGLContextCreator;
-import go.graphics.swing.opengl.JOGLDrawContext;
+import go.graphics.swing.opengl.LWJGLDrawContext;
 
 /**
  * This class lets you embed areas into swing components.
  * 
  * @author michael
+ * @author paul
  */
 public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvider {
 
@@ -46,7 +47,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	protected final Area area;
 
 	private ContextCreator cc;
-	private JOGLDrawContext context;
+	private LWJGLDrawContext context;
 
 	/**
 	 * creates a new area container
@@ -102,7 +103,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	}
 
 	public void init() {
-		context = new JOGLDrawContext(GL.createCapabilities());
+		context = new LWJGLDrawContext(GL.createCapabilities());
 	}
 
 	public void draw() {

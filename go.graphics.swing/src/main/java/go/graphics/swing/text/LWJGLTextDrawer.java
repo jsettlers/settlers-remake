@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,7 +17,7 @@ package go.graphics.swing.text;
 import org.lwjgl.opengl.GL11;
 
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.JOGLDrawContext;
+import go.graphics.swing.opengl.LWJGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -29,18 +29,15 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ShortBuffer;
-
-import javax.imageio.ImageIO;
 
 /**
  * This class is a text drawer used to wrap the text renderer.
- * 
+ *
  * @author michael
+ * @author paul
  */
-public final class JOGLTextDrawer implements TextDrawer {
+public final class LWJGLTextDrawer implements TextDrawer {
 
 	private static final String FONTNAME = "Arial";
 
@@ -54,7 +51,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 
 	private Color color = Color.WHITE;
 
-	private final JOGLDrawContext drawContext;
+	private final LWJGLDrawContext drawContext;
 
 	/**
 	 * Creates a new text drawer.
@@ -63,7 +60,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 *            The size of the text.
 	 * @param drawContext
 	 */
-	public JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
+	public LWJGLTextDrawer(EFontSize size, LWJGLDrawContext drawContext) {
 		this.drawContext = drawContext;
 		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, size.getSize());
 

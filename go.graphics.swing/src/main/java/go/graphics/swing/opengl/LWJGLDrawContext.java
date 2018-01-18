@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015-2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,17 +18,15 @@ import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.JOGLBufferHandle.JOGLGeometryHandle;
-import go.graphics.swing.opengl.JOGLBufferHandle.JOGLTextureHandle;
-import go.graphics.swing.text.JOGLTextDrawer;
+import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLGeometryHandle;
+import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLTextureHandle;
+import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
@@ -39,21 +37,22 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GLCapabilities;
 
 /**
- * This is the draw context implementation for JOGL. OpenGL draw calles are mapped to the corresponding JOGL calls.
- * 
+ * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
+ *
  * @author Michael Zangl
+ * @author paul
  *
  */
-public class JOGLDrawContext implements GLDrawContext {
+public class LWJGLDrawContext implements GLDrawContext {
 
-	private JOGLTextDrawer[] textDrawers = new JOGLTextDrawer[EFontSize
+	private LWJGLTextDrawer[] textDrawers = new LWJGLTextDrawer[EFontSize
 			.values().length];
 
 	private static final int FLOATS_PER_COLORED_TRI_VERTEX = 9;
 	private final GLCapabilities glcaps;
 	private final boolean canUseVBOs;
 
-	public JOGLDrawContext(GLCapabilities glcaps) {
+	public LWJGLDrawContext(GLCapabilities glcaps) {
 		this.glcaps = glcaps;
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
@@ -194,7 +193,7 @@ public class JOGLDrawContext implements GLDrawContext {
 				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, bfr);
 		setTextureParameters();
 
-		return new JOGLTextureHandle(this, texture);
+		return new LWJGLTextureHandle(this, texture);
 	}
 
 	/**
@@ -324,7 +323,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	@Override
 	public TextDrawer getTextDrawer(EFontSize size) {
 		if (textDrawers[size.ordinal()] == null) {
-			textDrawers[size.ordinal()] = new JOGLTextDrawer(size, this);
+			textDrawers[size.ordinal()] = new LWJGLTextDrawer(size, this);
 		}
 		return textDrawers[size.ordinal()];
 	}
@@ -420,7 +419,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			}
 		} else {
 			geometries.add(genertateBuffer(geometry));
-			return new JOGLGeometryHandle(this, geometries.size() - 1);
+			return new LWJGLGeometryHandle(this, geometries.size() - 1);
 		}
 	}
 
@@ -506,7 +505,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			vertexBufferId = geometries.size();
 			geometries.add(bb);
 		}
-		return new JOGLGeometryHandle(this, vertexBufferId);
+		return new LWJGLGeometryHandle(this, vertexBufferId);
 	}
 
 	private int allocateVBO() {
