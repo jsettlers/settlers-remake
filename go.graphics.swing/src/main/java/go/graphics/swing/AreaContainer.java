@@ -14,29 +14,22 @@
  *******************************************************************************/
 package go.graphics.swing;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import org.lwjgl.system.Platform;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.image.BufferedImage;
-import java.nio.IntBuffer;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
-import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
+import go.graphics.swing.contextcreator.ContextCreator;
+import go.graphics.swing.contextcreator.GLFWContextCreator;
+import go.graphics.swing.contextcreator.GLXContextCreator;
+import go.graphics.swing.contextcreator.WGLContextCreator;
 import go.graphics.swing.opengl.JOGLDrawContext;
 
 /**
@@ -44,28 +37,16 @@ import go.graphics.swing.opengl.JOGLDrawContext;
  * 
  * @author michael
  */
-public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvider, Runnable {
+public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvider {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8204496712425576430L;
-	private final Area area;
+	protected final Area area;
 
-	private Component canvas;
+	private ContextCreator cc;
 	private JOGLDrawContext context;
-	private boolean continue_run = true;
-
-	private int width = 1, height = 1;
-	private int new_width = 1, new_height = 1;
-	private boolean change_res = true;
-	private Object wnd_lock = new Object();
-
-	private BufferedImage bi = null;
-	private IntBuffer pixels;
-
-	private Thread render_thread;
-	private boolean listeners = false;
 
 	/**
 	 * creates a new area container
@@ -77,123 +58,59 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		this.area = area;
 		this.setLayout(new BorderLayout());
 
-		ComponentListener cl = new ComponentListener() {
-			@Override
-			public void componentResized(ComponentEvent componentEvent) {
-				Component cmp = componentEvent.getComponent();
-				synchronized (wnd_lock) {
-					new_width = cmp.getWidth();
-					new_height = cmp.getHeight();
-					change_res = true;
-				}
-			}
+		Platform platform = Platform.get();
 
-			@Override
-			public void componentMoved(ComponentEvent componentEvent) {
-			}
 
-			@Override
-			public void componentShown(ComponentEvent componentEvent) {
-			}
+		if(platform == Platform.LINUX) {
+			// linux(x11) only, making the canvas larger does not work
+			// if your screen is flickering try "-Dsun.awt.noerasebackground=true" or System.setProperty("sun.awt.noerasebackground", true);
+			cc = new GLXContextCreator(this);
+		} else if(platform == Platform.WINDOWS) {
+		    // never tested
+			cc = new WGLContextCreator(this);
+		} else {
+			// laggy, slow and creates its own window, but works on osx and linux(wayland) too.
+			cc = new GLFWContextCreator(this);
+		}
 
-			@Override
-			public void componentHidden(ComponentEvent componentEvent) {
-			}
-		};
-
-		JPanel panel = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics graphics) {
-				super.paintComponent(graphics);
-
-				if(!listeners) {
-					new GOSwingEventConverter(SwingUtilities.windowForComponent(canvas), AreaContainer.this);
-					listeners = true;
-				}
-				synchronized (wnd_lock) {
-					graphics.drawImage(bi, 0, 0, null);
-					graphics.dispose();
-				}
-			}
-		};
-		panel.addComponentListener(cl);
-		canvas = panel;
-
-		// Listener for Key-, Mouse- etc. events
+		cc.init();
 
 		area.addRedrawListener(this);
-		this.add(canvas);
 
-		render_thread = new Thread(this);
-		render_thread.start();
 	}
 
 	@Override
 	public void removeNotify() {
+		disposeAll();
+		cc.stop();
 		super.removeNotify();
-		continue_run = false;
 	}
 
-	@Override
-	public void run() {
-		GLFWErrorCallback ec = GLFWErrorCallback.createPrint(System.err);;
-		GLFW.glfwSetErrorCallback(ec);
+	public void resize_gl(int width, int height) {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		// coordinate system origin at lower left with width and height same as
+		// the window
+		GL11.glOrtho(0, width, 0, height, -1, 1);
 
-		GLFW.glfwInit();
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glViewport(0, 0, width, height);
+		area.setWidth(width);
+		area.setHeight(height);
 
-		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 1);
-		long glfw_wnd = GLFW.glfwCreateWindow(area.getWidth() + 1, area.getHeight() + 1, "lwjgl-offscreen", 0, 0);
-		GLFW.glfwMakeContextCurrent(glfw_wnd);
-		GLFW.glfwSwapInterval(0);
+	}
 
+	public void init() {
 		context = new JOGLDrawContext(GL.createCapabilities());
+	}
 
-		while (continue_run) {
-			synchronized (wnd_lock) {
-				if (change_res) {
-					width = new_width;
-					height = new_height;
-					GLFW.glfwSetWindowSize(glfw_wnd, width, height);
-					GL11.glMatrixMode(GL11.GL_PROJECTION);
-					GL11.glLoadIdentity();
-					// coordinate system origin at lower left with width and height same as
-					// the window
-					GL11.glOrtho(0, width, 0, height, -1, 1);
+	public void draw() {
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glLoadIdentity();
 
-					GL11.glMatrixMode(GL11.GL_MODELVIEW);
-					GL11.glLoadIdentity();
-					GL11.glViewport(0, 0, width, height);
-					area.setWidth(width);
-					area.setHeight(height);
-					bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-					pixels = BufferUtils.createIntBuffer(width*height);
-					change_res = false;
-				}
-			}
-			GLFW.glfwPollEvents();
-
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			GL11.glLoadIdentity();
-
-			context.startFrame();
-			area.drawArea(context);
-
-			synchronized (wnd_lock) {
-				GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-				for(int x = 0;x != width;x++) {
-					for(int y = 0; y!= height;y++) {
-						bi.setRGB(x, height-y-1, pixels.get(y*width+x));
-					}
-				}
-			}
-			// uncomment to clear the offscreen buffer
-			//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			// uncomment to draw the offscreen buffer to offscreen window
-			//GLFW.glfwSwapBuffers(glfw_wnd);
-		}
-
-		GLFW.glfwTerminate();
-		disposeAll();
+		context.startFrame();
+		area.drawArea(context);
 	}
 
 
@@ -209,7 +126,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 	@Override
 	public void requestRedraw() {
-		canvas.repaint();
+		cc.repaint();
 	}
 
 	/**
@@ -217,7 +134,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	 */
 	@Override
 	public void requestFocus() {
-		canvas.requestFocus();
+		cc.requestFocus();
 	}
 
 	@Override
