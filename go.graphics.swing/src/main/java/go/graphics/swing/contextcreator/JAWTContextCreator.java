@@ -67,6 +67,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
                     first_draw = false;
                 }
+                makeCurrent(true);
 
                 synchronized (wnd_lock) {
                     if (change_res) {
@@ -77,8 +78,6 @@ public abstract class JAWTContextCreator extends ContextCreator {
                         change_res = false;
                     }
                 }
-
-                makeCurrent(true);
 
                 parent.draw();
 

@@ -63,8 +63,8 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 
 		if(platform == Platform.LINUX) {
-			// linux(x11) only, making the canvas larger does not work
-			// if your screen is flickering try "-Dsun.awt.noerasebackground=true" or System.setProperty("sun.awt.noerasebackground", true);
+			// linux(x11) only
+			// if your screen is flickering try "-Dsun.awt.noerasebackground=true" or System.setProperty("sun.awt.noerasebackground", "true");
 			cc = new GLXContextCreator(this);
 		} else if(platform == Platform.WINDOWS) {
 		    // never tested
