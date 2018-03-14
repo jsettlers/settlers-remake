@@ -78,5 +78,7 @@ public class WGLContextCreator extends JAWTContextCreator {
     @Override
     protected void createNewSurfaceInfo() {
         win32surfaceinfo = JAWTWin32DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
+        hwnd = win32surfaceinfo.hwnd();
+        hdc = win32surfaceinfo.hdc();
     }
 }
