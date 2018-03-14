@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,7 +20,6 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
-import go.graphics.event.mouse.GOPanEvent;
 import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -50,6 +49,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -71,7 +71,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 	private JPanel infoField;
 	private Surface glCanvas;
 	private File gfxDirectory;
-	private DefaultListModel listItems;
+	private DefaultListModel<String> listItems;
 	private AdvancedDatFileReader reader;
 
 	private enum ImageSet {
@@ -105,8 +105,8 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		infoField.add(lblNumLandscapeSeqs);
 		infoField.add(lblNumUiSeqs);
 
-		listItems = new DefaultListModel();
-		listView = new JList(listItems);
+		listItems = new DefaultListModel<>();
+		listView = new JList<>(listItems);
 		listView.getSelectionModel().addListSelectionListener(this);
 
 		JSplitPane splitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -220,7 +220,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		if (e.getFirstIndex() < 0 || e.getValueIsAdjusting())
 			return;
 
-		String fileName = (String) listItems.get(e.getFirstIndex());
+		String fileName = (String) listView.getSelectedValue();
 
 		DatFileType type = DatFileType.RGB565;
 		File file = new File(gfxDirectory, fileName);
@@ -234,6 +234,8 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		reader = new AdvancedDatFileReader(file, type);
 		showFileInfo(type, reader);
 
+		glCanvas.resetOffset();
+		glCanvas.resetZoom();
 		glCanvas.invalidate();
 		glCanvas.requestFocus();
 	}
@@ -273,6 +275,8 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 					}
 				}
 			});
+
+			JOptionPane.showMessageDialog(null, "Export completed!", "DatFileViewer - Export", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -286,7 +290,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		if (openDirDlg.showDialog(null, null) == JFileChooser.APPROVE_OPTION) {
 			File exportDir = new File(openDirDlg.getSelectedFile().getAbsolutePath());
 
-			File datfile = new File(gfxDirectory, (String) listItems.get(selectedIndex));
+			File datfile = new File(gfxDirectory, listItems.get(selectedIndex));
 			DatFileType type;
 			if (datfile.getName().contains(DatFileType.RGB555.getFileSuffix())) {
 				type = DatFileType.RGB555;
@@ -323,7 +327,12 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	private <T extends Image> void exportSequence(File dir, int index, Sequence<T> seq) {
 		File seqdir = new File(dir, index + "");
-		seqdir.mkdirs();
+		if (!seqdir.exists()) {
+			if (!seqdir.mkdirs()) {
+				JOptionPane.showMessageDialog(null, "Can't create path: " + seqdir.toString(), "DatFileViewer - Export", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
 		for (int j = 0; j < seq.length(); j++) {
 			T image = seq.getImage(j);
 			exportSingleImage((SingleImage) image, new File(seqdir, j + ".png"));
@@ -354,16 +363,20 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		private float zoom = 1.0f;
 		private int offsetY = 0;
 		private int offsetX = 0;
-		public ImageSet currentSet;
+		ImageSet currentSet;
 
-		public Surface() {
+		Surface() {
 			currentSet = ImageSet.SETTLERS;
 			resetOffset();
 		}
 
-		public void resetOffset() {
+		void resetOffset() {
 			offsetY = 0;
 			offsetX = 0;
+		}
+
+		void resetZoom() {
+			zoom = 1.0f;
 		}
 
 		// region Drawing Code
@@ -393,10 +406,10 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				drawMultipleSequences(gl2, yPos, sequences);
 			} else if (currentSet == ImageSet.GUI) {
 				Sequence<GuiImage> sequences = reader.getGuis();
-				drawSingleSequence(gl2, yPos, 40, sequences);
+				drawSingleSequence(gl2, yPos, 20, sequences);
 			} else {
 				Sequence<LandscapeImage> sequences = reader.getLandscapes();
-				drawSingleSequence(gl2, yPos, 40, sequences);
+				drawSingleSequence(gl2, yPos, 20, sequences);
 			}
 		}
 
@@ -407,7 +420,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			for (int i = 0; i < sequences.size(); i++) {
 				Sequence<T> seq = sequences.get(i);
 
-				int maxHeight = drawSingleSequence(gl2, y, 50, seq);
+				int maxHeight = drawSingleSequence(gl2, y, 20, seq);
 
 				gl2.color(0, 0, 0, 1);
 				drawer.drawString(-20, y + 20, seqIndex + ":");
@@ -425,7 +438,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				maxHeight = Math.max(maxHeight, image.getHeight());
 
 				drawImage(gl2, x, y, index, (SingleImage) image);
-				x += Math.max(50, image.getWidth()) + 20;
+				x += Math.max(50, image.getWidth()) + xSpacing;
 			}
 			return maxHeight;
 		}
@@ -486,8 +499,6 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				}
 
 				this.invalidate();
-			} else if (event instanceof GODrawEvent) {
-			} else if (event instanceof GOPanEvent) {
 			} else if (event instanceof GOZoomEvent) {
 				zoom *= ((GOZoomEvent) event).getZoomFactor();
 				this.invalidate();
