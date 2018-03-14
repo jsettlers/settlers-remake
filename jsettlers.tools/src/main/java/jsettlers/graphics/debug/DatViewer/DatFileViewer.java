@@ -23,7 +23,6 @@ import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import java8.util.function.Consumer;
 import jsettlers.common.Color;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.graphics.image.GuiImage;
@@ -56,8 +55,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +65,6 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 	private JLabel lblNumSettlerSeqs;
 	private JLabel lblNumLandscapeSeqs;
 	private JList listView;
-	private JPanel infoField;
 	private Surface glCanvas;
 	private File gfxDirectory;
 	private DefaultListModel<String> listItems;
@@ -92,7 +88,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 	private DatFileViewer() {
 		glCanvas = new Surface();
 
-		infoField = new JPanel();
+		JPanel infoField = new JPanel();
 		infoField.setLayout(new BoxLayout(infoField, BoxLayout.PAGE_AXIS));
 
 		lblDatType = new JLabel();
@@ -147,65 +143,42 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		showMenu.add(showGui);
 		showMenu.add(showLandscape);
 
-		openDirItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser openDirDlg = new JFileChooser();
-				openDirDlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				if (openDirDlg.showDialog(null, null) == JFileChooser.APPROVE_OPTION) {
-					gfxDirectory = new File(openDirDlg.getSelectedFile().getAbsolutePath());
+		openDirItem.addActionListener((e) -> {
+			JFileChooser openDirDlg = new JFileChooser();
+			openDirDlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			if (openDirDlg.showDialog(null, null) == JFileChooser.APPROVE_OPTION) {
+				gfxDirectory = new File(openDirDlg.getSelectedFile().getAbsolutePath());
 
-					FileUtils.iterateChildren(gfxDirectory, new Consumer<File>() {
-						@Override
-						public void accept(File currentFile) {
-							String fileName = currentFile.getName();
-							if (currentFile.isFile() && fileName.endsWith(".dat")) {
-								listItems.addElement(currentFile.getName());
-							}
-						}
-					});
-				}
+				FileUtils.iterateChildren(gfxDirectory, (currentFile) -> {
+					String fileName = currentFile.getName();
+					if (currentFile.isFile() && fileName.endsWith(".dat")) {
+						listItems.addElement(currentFile.getName());
+					}
+				});
 			}
 		});
 
-		exportThis.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				onExportSelectedFile();
-
-			}
+		exportThis.addActionListener((e) -> {
+			onExportSelectedFile();
 		});
 
-		exportAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				onExportAllFiles();
-
-			}
+		exportAll.addActionListener((e) -> {
+			onExportAllFiles();
 		});
 
-		showSettlers.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				glCanvas.currentSet = ImageSet.SETTLERS;
-				glCanvas.invalidate();
-			}
+		showSettlers.addActionListener((e) -> {
+			glCanvas.currentSet = ImageSet.SETTLERS;
+			glCanvas.invalidate();
 		});
 
-		showGui.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				glCanvas.currentSet = ImageSet.GUI;
-				glCanvas.invalidate();
-			}
+		showGui.addActionListener((e) -> {
+			glCanvas.currentSet = ImageSet.GUI;
+			glCanvas.invalidate();
 		});
 
-		showLandscape.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				glCanvas.currentSet = ImageSet.LANDTILES;
-				glCanvas.invalidate();
-			}
+		showLandscape.addActionListener((e) -> {
+			glCanvas.currentSet = ImageSet.LANDTILES;
+			glCanvas.invalidate();
 		});
 
 		JMenuBar bar = new JMenuBar();
@@ -259,20 +232,17 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		openDirDlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if (openDirDlg.showDialog(null, null) == JFileChooser.APPROVE_OPTION) {
 			File exportDir = openDirDlg.getSelectedFile();
-			FileUtils.iterateChildren(gfxDirectory, new Consumer<File>() {
-				@Override
-				public void accept(File currentFile) {
-					String fileName = currentFile.getName();
-					if (currentFile.isFile() && fileName.endsWith(".dat")) {
-						DatFileType type;
-						if (currentFile.getName().contains(DatFileType.RGB555.getFileSuffix())) {
-							type = DatFileType.RGB555;
-						} else
-							type = DatFileType.RGB565;
+			FileUtils.iterateChildren(gfxDirectory, (File currentFile) -> {
+				String fileName = currentFile.getName();
+				if (currentFile.isFile() && fileName.endsWith(".dat")) {
+					DatFileType type;
+					if (currentFile.getName().contains(DatFileType.RGB555.getFileSuffix())) {
+						type = DatFileType.RGB555;
+					} else
+						type = DatFileType.RGB565;
 
-						AdvancedDatFileReader file = new AdvancedDatFileReader(new File(gfxDirectory, fileName), type);
-						exportFile(exportDir, file);
-					}
+					AdvancedDatFileReader file = new AdvancedDatFileReader(new File(gfxDirectory, fileName), type);
+					exportFile(exportDir, file);
 				}
 			});
 
