@@ -59,6 +59,8 @@ public class SwingManagedJSettlers {
 	}
 
 	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption, ResourceSetupException {
+		// removes screen flickering
+		System.setProperty("sun.awt.noerasebackground", "true");
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
 		setupResourceManagers(optionableProperties);
