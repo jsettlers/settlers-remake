@@ -26,6 +26,7 @@ import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
+import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.GLFWContextCreator;
 import go.graphics.swing.contextcreator.GLXContextCreator;
@@ -56,23 +57,25 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	 *            The area to display
 	 */
 	public AreaContainer(Area area) {
+		this(area, BackendSelector.DEFAULT_BACKEND);
+	}
+
+	public AreaContainer(Area area, BackendSelector.BackendItem backend) {
 		this.area = area;
 		this.setLayout(new BorderLayout());
 
-		Platform platform = Platform.get();
 
-
-		if(platform == Platform.LINUX) {
+		cc = BackendSelector.createBackend(this, backend);
+		/*if(platform == Platform.LINUX) {
 			// linux(x11) only
 			// if your screen is flickering try "-Dsun.awt.noerasebackground=true" or System.setProperty("sun.awt.noerasebackground", "true");
 			cc = new GLXContextCreator(this);
 		} else if(platform == Platform.WINDOWS) {
-		    // never tested
 			cc = new WGLContextCreator(this);
 		} else {
 			// laggy, slow and creates its own window, but works on osx and linux(wayland) too.
 			cc = new GLFWContextCreator(this);
-		}
+		}*/
 
 		cc.init();
 
