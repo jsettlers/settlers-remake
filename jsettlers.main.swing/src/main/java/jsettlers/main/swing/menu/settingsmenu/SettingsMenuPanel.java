@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import go.graphics.swing.contextcreator.BackendSelector;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
@@ -37,7 +38,11 @@ public class SettingsMenuPanel extends JPanel {
 	private final JLabel playerNameLabel = new JLabel();
 	private final JTextField playerNameField = new JTextField();
 	private final JLabel volumeLabel = new JLabel();
-	private final VolumeSlider volumeSlider = new VolumeSlider();
+	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100);
+	private final JLabel fpsLimitLabel = new JLabel();
+	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 1,240);
+	private final JLabel backendLabel = new JLabel();
+	private final BackendSelector backendSelector = new BackendSelector();
 	private final JButton cancelButton = new JButton();
 	private final JButton saveButton = new JButton();
 
@@ -58,6 +63,10 @@ public class SettingsMenuPanel extends JPanel {
 		panel.add(playerNameField);
 		panel.add(volumeLabel);
 		panel.add(volumeSlider);
+		panel.add(fpsLimitLabel);
+		panel.add(fpsLimitSlider);
+		panel.add(backendLabel);
+		panel.add(backendSelector);
 		panel.add(cancelButton);
 		panel.add(saveButton);
 		add(panel);
@@ -68,11 +77,15 @@ public class SettingsMenuPanel extends JPanel {
 		cancelButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
 		playerNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
 		volumeLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		fpsLimitLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		backendLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
 	}
 
 	private void localize() {
 		playerNameLabel.setText(Labels.getString("settings-name"));
 		volumeLabel.setText(Labels.getString("settings-volume"));
+		fpsLimitLabel.setText(Labels.getString("settings-fps-limit"));
+		backendLabel.setText(Labels.getString("settings-backend"));
 		saveButton.setText(Labels.getString("settings-ok"));
 		cancelButton.setText(Labels.getString("settings-back"));
 	}
@@ -81,6 +94,8 @@ public class SettingsMenuPanel extends JPanel {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		playerNameField.setText(settingsManager.getPlayer().getName());
 		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
+		fpsLimitSlider.setValue(settingsManager.getFpsLimit());
+		backendSelector.setSelectedItem(settingsManager.getBackend());
 	}
 
 	private void addListener() {
@@ -88,6 +103,8 @@ public class SettingsMenuPanel extends JPanel {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			settingsManager.set(SettingsManager.SETTING_USERNAME, playerNameField.getText());
 			settingsManager.set(SettingsManager.SETTING_VOLUME, (volumeSlider.getValue() / 100D) + "");
+			settingsManager.set(SettingsManager.SETTING_FPS_LIMIT, fpsLimitSlider.getValue() + "");
+			settingsManager.set(SettingsManager.SETTING_BACKEND, backendSelector.getSelectedItem() + "");
 			mainMenuPanel.reset();
 		});
 		cancelButton.addActionListener(e -> mainMenuPanel.reset());

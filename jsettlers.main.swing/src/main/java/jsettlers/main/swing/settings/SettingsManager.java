@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 
+import go.graphics.swing.contextcreator.BackendSelector;
+import go.graphics.swing.contextcreator.GLFWContextCreator;
 import go.graphics.swing.sound.ISoundSettingsProvider;
 
 import jsettlers.common.CommonConstants;
@@ -33,7 +35,9 @@ public class SettingsManager implements ISoundSettingsProvider {
 	public static final String SETTING_USERNAME = "name";
 	public static final String SETTING_SERVER = "server";
 	public static final String SETTING_VOLUME = "volume";
+	public static final String SETTING_BACKEND = "backend";
 	public static final String FULL_SCREEN_MODE = "fullScreenMode";
+	public static final String SETTING_FPS_LIMIT = "fpsLimit";
 
 	private static Reference<SettingsManager> manager;
 
@@ -66,6 +70,10 @@ public class SettingsManager implements ISoundSettingsProvider {
 			return CommonConstants.DEFAULT_SERVER_ADDRESS;
 		} else if (SETTING_VOLUME.equals(key)) {
 			return 0.7f + "";
+		} else if(SETTING_FPS_LIMIT.equals(key)) {
+			return "60";
+		} else if(SETTING_BACKEND.equals(key)) {
+			return BackendSelector.DEFAULT_BACKEND.cc_name;
 		}
 		return null;
 	}
@@ -105,6 +113,20 @@ public class SettingsManager implements ISoundSettingsProvider {
 		} catch (NumberFormatException e) {
 		}
 		return 1;
+	}
+
+	public int getFpsLimit() {
+		String fpsLimitString = get(SETTING_FPS_LIMIT);
+		try {
+			int fps_limit = Integer.parseInt(fpsLimitString);
+			return Math.max(Math.min(fps_limit, 240), 1);
+		} catch (NumberFormatException e) {
+		}
+		return 1;
+	}
+
+	public BackendSelector.BackendItem getBackend() {
+		return BackendSelector.getBackendByName(get(SETTING_BACKEND));
 	}
 
 	public void setFullScreenMode(boolean fullScreenMode) {

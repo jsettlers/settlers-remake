@@ -160,10 +160,10 @@ public class JSettlersFrame extends JFrame {
 			public void run() {
 				region.requestRedraw();
 			}
-		}, 100, 25);
+		}, 100, 1000/SettingsManager.getInstance().getFpsLimit());
 
 		SwingUtilities.invokeLater(() -> {
-			setContentPane(new AreaContainer(area));
+			setContentPane(new AreaContainer(area, SettingsManager.getInstance().getBackend()));
 			revalidate();
 			repaint();
 		});
@@ -189,7 +189,7 @@ public class JSettlersFrame extends JFrame {
 	}
 
 	public IMapInterfaceConnector showStartedGame(IStartedGame startedGame) {
-		MapContent content = new MapContent(startedGame, soundPlayer, ETextDrawPosition.TOP_RIGHT);
+		MapContent content = new MapContent(startedGame, soundPlayer, SettingsManager.getInstance().getFpsLimit(), ETextDrawPosition.TOP_RIGHT);
 		SwingUtilities.invokeLater(() -> setContent(content));
 		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(this::showMainMenu));
 		return content.getInterfaceConnector();

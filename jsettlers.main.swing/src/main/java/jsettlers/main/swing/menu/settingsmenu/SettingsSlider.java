@@ -25,14 +25,17 @@ import jsettlers.main.swing.menu.general.SettlersSlider;
  * 
  * @author Andreas Butti
  */
-public class VolumeSlider extends SettlersSlider {
+public class SettingsSlider extends SettlersSlider {
 	private static final long serialVersionUID = 1L;
 
-	public VolumeSlider() {
-		setStringPainted(true);
+	private String unit;
 
-		setMinimum(0);
-		setMaximum(100);
+	public SettingsSlider(String unit, int min_value, int max_value) {
+		setStringPainted(true);
+		this.unit = unit;
+
+		setMinimum(min_value);
+		setMaximum(max_value);
 		setValue(50);
 
 		putClientProperty(ELFStyle.KEY, ELFStyle.PROGRESSBAR_SLIDER);
@@ -42,6 +45,6 @@ public class VolumeSlider extends SettlersSlider {
 	@Override
 	public void setValue(int n) {
 		super.setValue(n);
-		setString(n + "%");
+		setString(n + unit);
 	}
 }
