@@ -316,8 +316,9 @@ public class AdvancedDatFileReader implements DatFileSet {
 				for (; i < settlerstarts.length; i++) {
 					shadowstarts[i] = -1;
 				}
-				if (shadowdifference == 33) // correct shadow for
+				if (shadowdifference == 33) { // correct shadow for
 					shadowstarts[92] = shadowstarts[90]; // building site pole
+				}
 			}
 		}
 	}
