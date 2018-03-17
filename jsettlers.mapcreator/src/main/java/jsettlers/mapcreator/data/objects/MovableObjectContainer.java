@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
@@ -59,6 +60,11 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return null;
 	}
 
 	@Override
