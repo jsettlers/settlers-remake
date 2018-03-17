@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,7 +26,7 @@ import jsettlers.logic.player.Player;
 public final class SlaughterhouseBuilding extends WorkerBuilding implements IBuilding.ISoundRequestable {
 	private static final long serialVersionUID = -1556449527268300282L;
 
-	private boolean soundRequested = false;
+	private transient boolean soundRequested = false;
 
 	public SlaughterhouseBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(type, player, position, buildingsGrid);

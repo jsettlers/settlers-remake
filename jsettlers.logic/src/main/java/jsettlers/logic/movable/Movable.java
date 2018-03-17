@@ -113,7 +113,7 @@ public final class Movable implements ILogicMovable {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		movablesByID.put(this.id, this);
 		allMovables.add(this);
@@ -729,11 +729,11 @@ public final class Movable implements ILogicMovable {
 	 * @return returns the movable with the given ID<br>
 	 * or null if the id can not be found
 	 */
-	public final static ILogicMovable getMovableByID(int id) {
+	public static ILogicMovable getMovableByID(int id) {
 		return movablesByID.get(id);
 	}
 
-	public final static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
+	public static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
 		return allMovables;
 	}
 

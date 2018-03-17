@@ -91,7 +91,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 113: (4 times): amazone killed
  * 116: refused center of work displacement
  * 117: bees
- * 
+ *
  * @author michael
  */
 public class SoundManager {
@@ -139,7 +139,7 @@ public class SoundManager {
 	 * Creates a new sound manager.
 	 *
 	 * @param soundPlayer
-	 *            The soundPlayer to play sounds at.
+	 * 		The soundPlayer to play sounds at.
 	 */
 	public SoundManager(SoundPlayer soundPlayer) {
 		this.soundPlayer = soundPlayer;
@@ -150,10 +150,10 @@ public class SoundManager {
 	 * Reads the start indexes of the sounds.
 	 *
 	 * @param reader
-	 *            The reader to read from.
+	 * 		The reader to read from.
 	 * @return An array of start indexes for each sound and it's variants.
 	 * @throws IOException
-	 *             If the file could not be read.
+	 * 		If the file could not be read.
 	 */
 	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
 		int[] sequenceHeaderStarts = new int[SEQUENCE_N];
@@ -180,7 +180,7 @@ public class SoundManager {
 	 *
 	 * @return The file reader.
 	 * @throws IOException
-	 *             If the file could not be opened,
+	 * 		If the file could not be opened,
 	 */
 	protected static ByteReader openSoundFile() throws IOException {
 		File sndFile = getSoundFile();
@@ -206,9 +206,9 @@ public class SoundManager {
 	 * Plays a given sound.
 	 *
 	 * @param soundId
-	 *            The sound id to play.
+	 * 		The sound id to play.
 	 * @param volume
-	 *            The volume
+	 * 		The volume
 	 */
 	public void playSound(int soundId, float volume) {
 		initialize();
@@ -230,13 +230,13 @@ public class SoundManager {
 	 * Plays a given sound at a given coordinate
 	 *
 	 * @param soundId
-	 *            The sound id to play
+	 * 		The sound id to play
 	 * @param volume
-	 *            The volume
+	 * 		The volume
 	 * @param x
-	 *            The x coordinate of the sound
+	 * 		The x coordinate of the sound
 	 * @param y
-	 *            The y coordinate of the sound
+	 * 		The y coordinate of the sound
 	 */
 	public void playSound(int soundId, float volume, int x, int y) {
 		if (map == null || map.getVisibleStatus(x, y) <= CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
@@ -255,6 +255,7 @@ public class SoundManager {
 				int b = y - area.getMinY();
 				int a = x - area.getLineStartX(b);
 				float leftVolume, rightVolume;
+
 				if (a < 0) { // volume depending on position right or left
 					leftVolume = 0;
 					rightVolume = 0;
@@ -266,24 +267,28 @@ public class SoundManager {
 					rightVolume = volume * (2f * (maxA - a) / maxA - .5f);
 				} else if (a < maxA) {
 					leftVolume = 0;
-					rightVolume = volume* 4f * (maxA - a) / maxA;
+					rightVolume = volume * 4f * (maxA - a) / maxA;
 				} else {
 					leftVolume = 0;
 					rightVolume = 0;
 				}
+
 				float distanceVolume = Z_STEPS_FOR_MAX_VOLUME;
-				if (b < 0) // volume depending on position up or down
+				if (b < 0) { // volume depending on position up or down
 					distanceVolume = 0;
-				else if (b < maxB / 4)
+				} else if (b < maxB / 4) {
 					distanceVolume = 4f * Z_STEPS_FOR_MAX_VOLUME * b / maxB;
-				else if (b >= maxB)
+				} else if (b >= maxB) {
 					distanceVolume = 0;
-				else if (b >= 3 * maxB / 4)
+				} else if (b >= 3 * maxB / 4) {
 					distanceVolume = 4f * Z_STEPS_FOR_MAX_VOLUME * (maxB - b) / maxB;
+				}
+
 				distanceVolume /= maxA; // volume depending on zoom level
 				if (distanceVolume > 1) {
 					distanceVolume = 1;
 				}
+
 				leftVolume *= distanceVolume;
 				rightVolume *= distanceVolume;
 				soundPlayer.playSound(alternatives[rand], leftVolume, rightVolume);
@@ -317,7 +322,7 @@ public class SoundManager {
 	 * Sets the sound file lookup path.
 	 *
 	 * @param lookupPath
-	 *            The file path.
+	 * 		The file path.
 	 */
 	public static void setLookupPath(File lookupPath) {
 		SoundManager.lookupPath = lookupPath;
@@ -335,7 +340,7 @@ public class SoundManager {
 		 * Create a new {@link SoundDataRetriever}.
 		 *
 		 * @param reader
-		 *            The byte reader.
+		 * 		The byte reader.
 		 */
 		SoundDataRetriever(ByteReader reader) {
 			this.reader = reader;
@@ -351,12 +356,12 @@ public class SoundManager {
 	 * Reads the sound data from a byte reader.
 	 *
 	 * @param reader
-	 *            The reader to read.
+	 * 		The reader to read.
 	 * @param start
-	 *            The sound start position.
+	 * 		The sound start position.
 	 * @return The read sound data.
 	 * @throws IOException
-	 *             If that sound could not be read.
+	 * 		If that sound could not be read.
 	 */
 	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
 		reader.skipTo(start);
