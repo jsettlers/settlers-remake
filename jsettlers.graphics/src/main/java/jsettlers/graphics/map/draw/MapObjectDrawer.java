@@ -309,7 +309,7 @@ public class MapObjectDrawer {
 			break;
 
 		case SMOKE:
-			int height = 30;
+			final int height = 30;
 			drawByProgressWithHeight(x, y, height, 13, 42, progress, color);
 			break;
 

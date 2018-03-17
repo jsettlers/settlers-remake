@@ -33,7 +33,7 @@ public enum EOriginalMapSettlersType {
 	SAWMILLER(EMovableType.SAWMILLER),
 	FORESTER(EMovableType.FORESTER),
 	BOWMAN_L1(EMovableType.BOWMAN_L1),
-	IRON_MELTER(EMovableType.MELTER),
+	MELTER(EMovableType.MELTER),
 	MINER(EMovableType.MINER),
 	SMITH(EMovableType.SMITH),
 	MILLER(EMovableType.MILLER),

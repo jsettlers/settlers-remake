@@ -348,7 +348,10 @@ public final class SettlerImageMap {
 			EMovableAction action, EMaterialType material, EDirection direction) {
 
 
-		if(movableType==null||action==null||material==null||direction==null){
+		if(movableType == null
+				|| action == null
+				|| material == null
+				|| direction==null) {
 			int i = 0;
 			i++;
 		}
