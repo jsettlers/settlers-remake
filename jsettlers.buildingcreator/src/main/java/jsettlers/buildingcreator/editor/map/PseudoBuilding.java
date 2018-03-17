@@ -27,7 +27,7 @@ import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
-public class PseudoBuilding implements IBuilding, IBuilding.IMill, IBuilding.ISlaughterhouse {
+public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 	private final EBuildingType type;
 	private final ShortPoint2D pos;
 
