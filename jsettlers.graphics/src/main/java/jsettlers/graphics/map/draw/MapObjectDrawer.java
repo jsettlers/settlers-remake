@@ -128,6 +128,8 @@ public class MapObjectDrawer {
 
 	private static final float FLAG_ROOF_Z = 0.89f;
 
+	private static final int SMOKE_HEIGHT = 30;
+
 	private final SoundManager sound;
 	private final MapDrawContext context;
 
@@ -309,8 +311,7 @@ public class MapObjectDrawer {
 			break;
 
 		case SMOKE:
-			final int height = 30;
-			drawByProgressWithHeight(x, y, height, 13, 42, progress, color);
+			drawByProgressWithHeight(x, y, SMOKE_HEIGHT, 13, 42, progress, color);
 			break;
 
 		case PLANT_DECORATION:
