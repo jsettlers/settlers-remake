@@ -14,17 +14,18 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.map.loading.MapLoadException;
+import jsettlers.logic.movable.Movable;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import jsettlers.logic.map.loading.MapLoadException;
-
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public class GameSerializer {
 
@@ -33,11 +34,11 @@ public class GameSerializer {
 
 	/**
 	 * Saves the grid to the given output file.
-	 * 
+	 *
 	 * @param grid
-	 *            The grid to use.
+	 * 		The grid to use.
 	 * @param out
-	 *            The output file/stream for the game.
+	 * 		The output file/stream for the game.
 	 * @throws IOException
 	 */
 	public void save(MainGrid grid, final ObjectOutputStream oos) throws IOException {
@@ -87,6 +88,8 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
+				Building.writeStaticState(oos);
+				Movable.writeStaticState(oos);
 				oos.writeObject(grid);
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -107,6 +110,8 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
+				Building.readStaticState(ois);
+				Movable.readStaticState(ois);
 				grid = (MainGrid) ois.readObject();
 			} catch (Throwable t) {
 				t.printStackTrace();

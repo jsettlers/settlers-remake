@@ -14,11 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -41,6 +36,14 @@ import jsettlers.logic.movable.strategies.FleeStrategy;
 import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Central Movable class of JSettlers.
@@ -106,18 +109,18 @@ public final class Movable implements ILogicMovable {
 		grid.enterPosition(position, this, true);
 	}
 
-	/**
-	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
-	 *
-	 * @param ois
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		movablesByID.put(this.id, this);
-		allMovables.add(this);
-		nextID = Math.max(nextID, this.id + 1);
+	@SuppressWarnings("unchecked")
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		nextID = ois.readInt();
+		allMovables.clear();
+		allMovables.addAll((Collection<? extends ILogicMovable>) ois.readObject());
+		movablesByID.putAll((Map<? extends Integer, ? extends ILogicMovable>) ois.readObject());
+	}
+
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
+		oos.writeInt(nextID);
+		oos.writeObject(allMovables);
+		oos.writeObject(movablesByID);
 	}
 
 	/**
