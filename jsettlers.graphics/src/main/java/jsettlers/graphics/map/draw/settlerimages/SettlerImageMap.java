@@ -339,11 +339,6 @@ public final class SettlerImageMap {
 	 * @return The item of the map at the given position. Is not null.
 	 */
 	private SettlerImageMapItem getMapItem(EMovableType movableType, EMovableAction action, EMaterialType material, EDirection direction) {
-		if (movableType == null || action == null || material == null || direction == null) {
-			int i = 0;
-			i++;
-		}
-
 		SettlerImageMapItem item = this.map[movableType.ordinal()][action.ordinal()][material.ordinal][direction.ordinal];
 		if (item == null) {
 			return DEFAULT_ITEM;
