@@ -60,6 +60,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
+import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
@@ -743,7 +744,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private Action getActionForCommand(GOCommandEvent commandEvent) {
 		UIPoint position = commandEvent.getCommandPosition();
 		if (controls.containsPoint(position)) {
-			return controls.getActionFor(position, commandEvent.isSelecting());
+			return controls.getActionFor(position, commandEvent);
 		} else {
 			// handle map click
 			return handleCommandOnMap(commandEvent, position);
@@ -781,7 +782,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	};
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent, UIPoint position) {
-
 		float x = (float) position.getX();
 		float y = (float) position.getY();
 		ShortPoint2D onMap = this.context.getPositionOnScreen(x, y);
@@ -790,7 +790,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			if (commandEvent.isSelecting()) {
 				action = handleSelectCommand(onMap);
 			} else {
-				action = new PointAction(EActionType.MOVE_TO, onMap);
+				action = new MoveToAction(onMap, MoveToAction.modeForModifiers(commandEvent.getModifiers()));
 			}
 			return action;
 		}
@@ -894,7 +894,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 			break;
 		case MOVE_TO:
-			moveToMarker = ((PointAction) action).getPosition();
+			moveToMarker = ((MoveToAction) action).getPosition();
 			moveToMarkerTime = System.currentTimeMillis();
 			break;
 		case SHOW_MESSAGE:

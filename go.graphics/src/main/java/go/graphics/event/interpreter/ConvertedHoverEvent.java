@@ -25,7 +25,8 @@ import go.graphics.event.mouse.GOHoverEvent;
 public class ConvertedHoverEvent extends AbstractMouseEvent implements
 		GOHoverEvent {
 
-	public ConvertedHoverEvent(UIPoint start) {
+	public ConvertedHoverEvent(UIPoint start, int modifiers) {
+		super(modifiers);
 		position = start;
 	}
 

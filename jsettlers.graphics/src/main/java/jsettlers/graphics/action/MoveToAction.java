@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,30 +12,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package go.graphics.event;
+package jsettlers.graphics.action;
 
-/**
- * This is a extension to normal events.
- * <p>
- * Modal events are capable of passing on data about the event while the event is on the modal phase.
- * 
- * @author michael
- */
-public class SingleHandlerGoModalEvent extends SingleHandlerGoEvent {
-	public SingleHandlerGoModalEvent() {
+import go.graphics.event.GOEvent;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.EMoveToMode;
+import jsettlers.common.position.ShortPoint2D;
+
+public class MoveToAction extends PointAction {
+
+	private final EMoveToMode mode;
+
+	public MoveToAction(ShortPoint2D position, EMoveToMode mode) {
+		super(EActionType.MOVE_TO, position);
+		this.mode = mode;
 	}
 	
-	public SingleHandlerGoModalEvent(int modifiers) {
-		super(modifiers);
+	public EMoveToMode getMode() {
+		return mode;
 	}
-	
-	/**
-	 * This method notifies the handler, if it supports the {@link GOModalEventHandler}, that the event data has changed.
-	 */
-	protected void fireModalDataRefreshed() {
-		if (getHandler() instanceof GOModalEventHandler) {
-			GOModalEventHandler modalHandler = (GOModalEventHandler) getHandler();
-			modalHandler.eventDataChanged(this);
+
+	@Override
+	public String toString() {
+		return "MoveToAction [mode=" + mode + ", getPosition()=" + getPosition() + "]";
+	}
+
+	public static EMoveToMode modeForModifiers(int modifiers) {
+		if ((modifiers & GOEvent.MODIFIER_ALT) != 0) {
+			return EMoveToMode.WORK;
 		}
+		if ((modifiers & GOEvent.MODIFIER_CTRL) != 0) {
+			return EMoveToMode.FORCED;
+		}
+		if ((modifiers & GOEvent.MODIFIER_SHIFT) != 0) {
+			return EMoveToMode.ADD_WAYPOINT;
+		}
+		return EMoveToMode.NORMAL;
 	}
 }

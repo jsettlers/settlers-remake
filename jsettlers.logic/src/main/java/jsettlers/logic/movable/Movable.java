@@ -18,6 +18,7 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
@@ -75,6 +76,7 @@ public final class Movable implements ILogicMovable {
 	private ShortPoint2D position;
 
 	private ShortPoint2D requestedTargetPosition = null;
+	protected EMoveToMode requestedMoveMode;
 	private Path path;
 
 	private float health;
@@ -128,9 +130,12 @@ public final class Movable implements ILogicMovable {
 	 *
 	 * @param targetPosition
 	 */
-	public final void moveTo(ShortPoint2D targetPosition) {
+	@Override
+	public final void moveTo(ShortPoint2D targetPosition, EMoveToMode mode) {
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
 			this.requestedTargetPosition = targetPosition;
+			this.requestedMoveMode = mode;
+			strategy.stopOrStartWorking(!mode.doWorkAtDestination());
 		}
 	}
 
@@ -138,6 +143,7 @@ public final class Movable implements ILogicMovable {
 		return this.state == EMovableState.PATHING && this.path.getTargetPos().equals(targetPosition);
 	}
 
+	@Override
 	public void leavePosition() {
 		if (state != EMovableState.DOING_NOTHING || !enableNothingToDo) {
 			return;
@@ -220,7 +226,7 @@ public final class Movable implements ILogicMovable {
 					requestedTargetPosition = null;
 
 					if (foundPath) {
-						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
+						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos(), requestedMoveMode);
 						return animationDuration; // we already follow the path and initiated the walking
 					} else {
 						break;
@@ -284,6 +290,7 @@ public final class Movable implements ILogicMovable {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
+			strategy.pathDone(path.getTargetPos());
 			path = null;
 			return;
 		}

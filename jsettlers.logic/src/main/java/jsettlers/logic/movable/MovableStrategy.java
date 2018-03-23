@@ -17,6 +17,7 @@ package jsettlers.logic.movable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
@@ -237,8 +238,9 @@ public abstract class MovableStrategy implements Serializable {
 	 *            The target position of the old path or null if no old path was set.
 	 * @param targetPos
 	 *            The new target position.
+	 * @param mode The mode for the target 
 	 */
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToMode mode) {
 	}
 
 	/**
@@ -331,6 +333,9 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected void pathAborted(ShortPoint2D pathTarget) {
+	}
+
+	protected void pathDone(ShortPoint2D pathTarget) {
 	}
 
 	/**

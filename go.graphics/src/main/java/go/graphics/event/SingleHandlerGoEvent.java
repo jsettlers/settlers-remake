@@ -24,6 +24,16 @@ public class SingleHandlerGoEvent implements GOEvent {
 
 	private int phase = PHASE_INITIALIZING;
 
+	private final int modifiers;
+
+	public  SingleHandlerGoEvent() {
+		this(0);
+	}
+	
+	public  SingleHandlerGoEvent(int modifiers) {
+		this.modifiers = modifiers;
+	}
+
 	@Override
 	public void setHandler(GOEventHandler handler) {
 		if (getPhase() != PHASE_INITIALIZING) {
@@ -66,5 +76,10 @@ public class SingleHandlerGoEvent implements GOEvent {
 	@Override
 	public int getPhase() {
 		return phase;
+	}
+
+	@Override
+	public int getModifiers() {
+		return modifiers;
 	}
 }

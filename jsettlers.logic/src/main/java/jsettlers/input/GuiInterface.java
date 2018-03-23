@@ -30,6 +30,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
@@ -42,6 +43,7 @@ import jsettlers.common.selectable.ISelectable;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.action.ConvertAction;
+import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
@@ -217,13 +219,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case MOVE_TO: {
-			final PointAction moveToAction = (PointAction) action;
+			final MoveToAction moveToAction = (MoveToAction) action;
 
 			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
 				setBuildingWorkArea(moveToAction.getPosition());
 
 			} else {
-				moveTo(moveToAction.getPosition());
+				moveTo(moveToAction.getPosition(), moveToAction.getMode());
 			}
 			break;
 		}
@@ -503,9 +505,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, playerId, getIDsOfSelected()));
 	}
 
-	private void moveTo(ShortPoint2D pos) {
+	private void moveTo(ShortPoint2D pos, EMoveToMode mode) {
 		final List<Integer> selectedIds = getIDsOfSelected();
-		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
+		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds, mode));
 	}
 
 	private List<Integer> getIDsOfSelected() {

@@ -64,7 +64,7 @@ public class AbstractEventConverter {
 	 */
 	protected void startDraw(UIPoint start) {
 		if (ongoingDrawEvent == null) {
-			ongoingDrawEvent = new ConvertedDrawEvent(start);
+			ongoingDrawEvent = new ConvertedDrawEvent(start, getCurrentModifiers());
 
 			handleEvent(ongoingDrawEvent);
 
@@ -83,7 +83,8 @@ public class AbstractEventConverter {
 		if (ongoingDrawEvent != null) {
 			if (tryReplaceEvent(position, ReplacableEvent.DRAW,
 					ongoingDrawEvent.getTime(),
-					ongoingDrawEvent.getMouseMoved())) {
+					ongoingDrawEvent.getMouseMoved(),
+					ongoingDrawEvent.getModifiers())) {
 				abortDraw();
 			} else {
 				ongoingDrawEvent.released();
@@ -101,7 +102,7 @@ public class AbstractEventConverter {
 
 	protected void startPan(UIPoint start) {
 		if (ongoingPanEvent == null) {
-			ongoingPanEvent = new ConvertedPanEvent(start);
+			ongoingPanEvent = new ConvertedPanEvent(start, getCurrentModifiers());
 			handleEvent(ongoingPanEvent);
 			ongoingPanEvent.initialized();
 		}
@@ -116,7 +117,9 @@ public class AbstractEventConverter {
 	protected void endPan(UIPoint position) {
 		if (ongoingPanEvent != null) {
 			if (tryReplaceEvent(position, ReplacableEvent.PAN,
-					ongoingPanEvent.getTime(), ongoingPanEvent.getMouseMoved())) {
+					ongoingPanEvent.getTime(),
+					ongoingPanEvent.getMouseMoved(),
+					ongoingPanEvent.getModifiers())) {
 				abortPan();
 			} else {
 				ongoingPanEvent.released();
@@ -127,7 +130,7 @@ public class AbstractEventConverter {
 
 	protected void startZoom() {
 		if (ongoingZoomEvent == null) {
-			ongoingZoomEvent = new ConvertedZoomEvent();
+			ongoingZoomEvent = new ConvertedZoomEvent(getCurrentModifiers());
 			handleEvent(ongoingZoomEvent);
 			ongoingZoomEvent.initialized();
 		}
@@ -156,7 +159,7 @@ public class AbstractEventConverter {
 
 	protected void startHover(UIPoint start) {
 		if (ongoingHoverEvent == null) {
-			ongoingHoverEvent = new ConvertedHoverEvent(start);
+			ongoingHoverEvent = new ConvertedHoverEvent(start, getCurrentModifiers());
 			handleEvent(ongoingHoverEvent);
 			ongoingHoverEvent.initialized();
 		}
@@ -172,7 +175,8 @@ public class AbstractEventConverter {
 		if (ongoingHoverEvent != null) {
 			if (tryReplaceEvent(position, ReplacableEvent.HOVER,
 					ongoingHoverEvent.getTime(),
-					ongoingHoverEvent.getMouseMoved())) {
+					ongoingHoverEvent.getMouseMoved(),
+					ongoingHoverEvent.getModifiers())) {
 				abortHover();
 			} else {
 				ongoingHoverEvent.released();
@@ -188,8 +192,8 @@ public class AbstractEventConverter {
 		}
 	}
 
-	protected boolean fireCommandEvent(UIPoint point, boolean isSelect) {
-		ConvertedCommandEvent commandEvent = new ConvertedCommandEvent(point, isSelect);
+	protected boolean fireCommandEvent(UIPoint point, boolean isSelect, int modifiers) {
+		ConvertedCommandEvent commandEvent = new ConvertedCommandEvent(point, isSelect, modifiers);
 
 		handleEvent(commandEvent);
 
@@ -200,7 +204,7 @@ public class AbstractEventConverter {
 
 	protected synchronized void startKeyEvent(String string) {
 		if (ongoingKeyEvent == null) {
-			ongoingKeyEvent = new GOKeyEvent(string);
+			ongoingKeyEvent = new GOKeyEvent(string, getCurrentModifiers());
 			replaceKeyEvent(ongoingKeyEvent);
 			handleEvent(ongoingKeyEvent);
 			ongoingKeyEvent.started();
@@ -251,7 +255,8 @@ public class AbstractEventConverter {
 		private final UIPoint position;
 		private final boolean selecting;
 
-		public ConvertedCommandEvent(UIPoint position, boolean selecting) {
+		public ConvertedCommandEvent(UIPoint position, boolean selecting, int modifiers) {
+			super(modifiers);
 			this.position = position;
 			this.selecting = selecting;
 		}
@@ -279,11 +284,11 @@ public class AbstractEventConverter {
 	}
 
 	private boolean tryReplaceEvent(UIPoint p, ReplacableEvent e, double time,
-			double distance) {
+			double distance, int modifiers) {
 		for (EventReplacementRule r : replace) {
 			if (r.matches(e, time, distance)) {
 				boolean success = fireCommandEvent(p,
-						r.replaced == Replacement.COMMAND_SELECT);
+						r.replaced == Replacement.COMMAND_SELECT, modifiers);
 				if (success) {
 					return true;
 				}
@@ -298,6 +303,10 @@ public class AbstractEventConverter {
 
 	protected boolean panStarted() {
 		return ongoingPanEvent != null;
+	}
+
+	protected int getCurrentModifiers() {
+		return 0;
 	}
 
 	/**

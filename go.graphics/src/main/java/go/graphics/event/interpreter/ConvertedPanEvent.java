@@ -31,8 +31,10 @@ class ConvertedPanEvent extends AbstractMouseEvent implements GOPanEvent {
 	 * 
 	 * @param point
 	 *            THe point the user first put his mouse to.
+	 * @param modifiers The modifiers
 	 */
-	protected ConvertedPanEvent(UIPoint point) {
+	protected ConvertedPanEvent(UIPoint point, int modifiers) {
+		super(modifiers);
 		this.position = point;
 		this.original = point;
 	}

@@ -32,6 +32,10 @@ package go.graphics.event;
  * @author michael
  */
 public interface GOEvent {
+	int MODIFIER_SHIFT = 1;
+	int MODIFIER_CTRL = 2;
+	int MODIFIER_ALT = 4;
+	
 	/**
 	 * Indicates that the event is in the initialization phase. In this pahse, the event handler is searched.
 	 */
@@ -75,4 +79,10 @@ public interface GOEvent {
 	 * @return The phase the event is in.
 	 */
 	int getPhase();
+	
+	/**
+	 * Gets the modifiers for the event
+	 * @return The modifiers as bit set
+	 */
+	int getModifiers();
 }

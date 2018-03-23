@@ -16,6 +16,7 @@ package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.OccupierPlace;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
@@ -38,6 +39,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	 */
 	private enum ESoldierState {
 		AGGRESSIVE,
+		FORCED_MOVE,
 
 		SEARCH_FOR_ENEMIES,
 		HITTING,
@@ -70,6 +72,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected void action() {
 		switch (state) {
 		case AGGRESSIVE:
+		case FORCED_MOVE:
 			break;
 
 		case HITTING:
@@ -108,7 +111,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
 							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), movable.getPos());
 							super.goInDirection(escapeDirection, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
-							movable.moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+							movable.moveTo(null, EMoveToMode.NORMAL); // reset moveToRequest, so the soldier doesn't go there after fleeing.
 
 						} // else { // we are in the tower, so wait and check again next time.
 
@@ -312,12 +315,12 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToMode mode) {
 		if (targetPos != null && this.oldPathTarget != null) {
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
 			inSaveGotoMode = false;
 		}
-		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+		changeStateTo(mode.isForced() ? ESoldierState.FORCED_MOVE : ESoldierState.SEARCH_FOR_ENEMIES);
 	}
 
 	@Override
@@ -388,12 +391,24 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	@Override
 	protected void pathAborted(ShortPoint2D pathTarget) {
 		switch (state) {
+		case FORCED_MOVE:
+			changeStateTo(ESoldierState.AGGRESSIVE);
+			break;
 		case INIT_GOTO_TOWER:
 		case GOING_TO_TOWER:
 			notifyTowerThatRequestFailed();
 			break;
 		default:
 			state = ESoldierState.AGGRESSIVE;
+			break;
+		}
+	}
+	
+	@Override
+	protected void pathDone(ShortPoint2D pathTarget) {
+		switch (state) {
+		case FORCED_MOVE:
+			changeStateTo(ESoldierState.AGGRESSIVE);
 			break;
 		}
 	}

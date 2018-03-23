@@ -16,6 +16,7 @@ package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.ShortPoint2D;
@@ -36,6 +37,7 @@ public final class GeologistStrategy extends MovableStrategy {
 
 	private EGeologistState state = EGeologistState.JOBLESS;
 	private ShortPoint2D centerPos;
+	private boolean working;
 
 	public GeologistStrategy(Movable movable) {
 		super(movable);
@@ -45,13 +47,17 @@ public final class GeologistStrategy extends MovableStrategy {
 	protected void action() {
 		switch (state) {
 		case JOBLESS:
-			return;
+			break;
 
 		case GOING_TO_POS: {
 			ShortPoint2D pos = movable.getPos();
 
 			if (centerPos == null) {
 				this.centerPos = pos;
+			}
+			
+			if (!working) {
+				break;
 			}
 
 			super.getGrid().setMarked(pos, false); // unmark the pos for the following check
@@ -84,6 +90,11 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	private void findWorkablePosition() {
+		if (!working) {
+			this.state = EGeologistState.JOBLESS;
+			centerPos = null;
+			return;
+		}
 		ShortPoint2D closeWorkablePos = getCloseWorkablePos();
 
 		if (closeWorkablePos != null && super.goToPos(closeWorkablePos)) {
@@ -141,7 +152,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToMode mode) {
 		this.state = EGeologistState.GOING_TO_POS;
 		centerPos = null;
 
@@ -154,6 +165,7 @@ public final class GeologistStrategy extends MovableStrategy {
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
+		working = !stop;
 		if (stop) {
 			state = EGeologistState.JOBLESS;
 		} else {

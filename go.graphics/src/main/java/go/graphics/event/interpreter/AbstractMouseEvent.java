@@ -23,8 +23,8 @@ public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 	private int mouseMoved = 0;
 	private long startTime = 0;
 
-	public AbstractMouseEvent() {
-		super();
+	public AbstractMouseEvent(int modifiers) {
+		super(modifiers);
 		startTime = System.currentTimeMillis();
 	}
 

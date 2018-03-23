@@ -73,6 +73,7 @@ import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
@@ -233,7 +234,7 @@ class WhatToDoAi implements IWhatToDoAi {
 
 	private void sendMovableTo(IMovable movable, ShortPoint2D target) {
 		if (movable != null) {
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, Collections.singletonList(movable.getID())));
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, Collections.singletonList(movable.getID()), EMoveToMode.FORCED));
 		}
 	}
 
@@ -442,7 +443,7 @@ class WhatToDoAi implements IWhatToDoAi {
 			List<Integer> pioneerIds = stream(pioneers).map(pioneerPosition -> mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID()).collect(Collectors.toList());
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, pioneerIds, EMovableType.BEARER));
 			// pioneers which can not be converted shall walk into player's land to be converted the next tic
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds));
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds, EMoveToMode.FORCED));
 		}
 	}
 
@@ -464,7 +465,7 @@ class WhatToDoAi implements IWhatToDoAi {
 			PioneerGroup pioneersWithNoAction = broadenerPioneers.getPioneersWithNoAction();
 			ShortPoint2D broadenTarget = pioneerAi.findBroadenTarget();
 			if (broadenTarget != null) {
-				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenTarget, pioneersWithNoAction.getPioneerIds()));
+				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenTarget, pioneersWithNoAction.getPioneerIds(), EMoveToMode.WORK));
 			}
 		}
 	}
@@ -473,7 +474,7 @@ class WhatToDoAi implements IWhatToDoAi {
 		if (resourcePioneers.isNotEmpty()) {
 			ShortPoint2D resourceTarget = pioneerAi.findResourceTarget();
 			if (resourceTarget != null) {
-				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, resourceTarget, resourcePioneers.getPioneerIds()));
+				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, resourceTarget, resourcePioneers.getPioneerIds(), EMoveToMode.WORK));
 			}
 		}
 	}

@@ -18,6 +18,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
+import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.action.IAction;
@@ -103,10 +104,11 @@ public class MapEditorControls implements IControls {
 
 	@Override
 	public void setMapViewport(MapRectangle screenArea) {
+		//ignored
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position, boolean select) {
+	public Action getActionFor(UIPoint position, GOCommandEvent event) {
 		return null;
 	}
 

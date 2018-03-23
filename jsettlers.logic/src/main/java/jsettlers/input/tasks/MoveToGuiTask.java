@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -28,35 +29,44 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class MoveToGuiTask extends MovableGuiTask {
 	private ShortPoint2D position;
+	private EMoveToMode mode;
 
 	public MoveToGuiTask() {
 	}
 
-	public MoveToGuiTask(byte playerId, ShortPoint2D pos, List<Integer> selection) {
+	public MoveToGuiTask(byte playerId, ShortPoint2D pos, List<Integer> selection, EMoveToMode mode) {
 		super(EGuiAction.MOVE_TO, playerId, selection);
 		this.position = pos;
+		this.mode = mode;
 	}
 
 	public ShortPoint2D getPosition() {
 		return position;
+	}
+	
+	public EMoveToMode getMode() {
+		return mode;
 	}
 
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		super.serializeTask(dos);
 		SimpleGuiTask.serializePosition(dos, position);
+		dos.writeByte(mode.ordinal());
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
 		position = SimpleGuiTask.deserializePosition(dis);
+		mode = EMoveToMode.values()[dis.readByte()];
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
+		result = prime * result + ((mode == null) ? 0 : mode.hashCode());
 		result = prime * result + ((position == null) ? 0 : position.hashCode());
 		return result;
 	}
@@ -70,6 +80,8 @@ public class MoveToGuiTask extends MovableGuiTask {
 		if (getClass() != obj.getClass())
 			return false;
 		MoveToGuiTask other = (MoveToGuiTask) obj;
+		if (mode != other.mode)
+			return false;
 		if (position == null) {
 			if (other.position != null)
 				return false;

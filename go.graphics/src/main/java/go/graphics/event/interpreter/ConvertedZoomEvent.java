@@ -33,7 +33,8 @@ public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEven
 	/**
 	 * Constructor
 	 */
-	public ConvertedZoomEvent() {
+	public ConvertedZoomEvent(int modifiers) {
+		super(modifiers);
 	}
 
 	@Override
