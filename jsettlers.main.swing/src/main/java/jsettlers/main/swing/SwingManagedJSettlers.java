@@ -32,6 +32,9 @@ import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
@@ -44,8 +47,6 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
-import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
-import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.main.swing.resources.SwingResourceLoader.ResourceSetupException;
 import jsettlers.network.client.OfflineNetworkConnector;
 
@@ -62,6 +63,7 @@ public class SwingManagedJSettlers {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
 		setupResourceManagers(optionableProperties);
+		ImageProvider.getInstance().startPreloading();
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();
 		handleStartOptions(optionableProperties, settlersFrame);

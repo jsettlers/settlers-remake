@@ -49,7 +49,7 @@ public class SwingResourceLoader {
 		SettlersFolderInfo settlersFolderInfo = getPathOfOriginalSettlers(options);
 
 		// setup image and sound provider
-		ImageProvider.setLookupPath(settlersFolderInfo.gfxFolder);
+		ImageProvider.getInstance().addLookupPath(settlersFolderInfo.gfxFolder);
 		SoundManager.setLookupPath(settlersFolderInfo.sndFolder);
 
 		// Set the resources directory.

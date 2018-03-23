@@ -15,6 +15,7 @@
 package jsettlers.graphics.map.draw;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -51,11 +52,6 @@ public final class ImageProvider {
 	private static final int LAST_SEQUENCE_NUMBER = 2;
 	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
 
-	/**
-	 * The lookup path for the dat files.
-	 */
-	private static File lookupPath;
-
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
 		@Override
 		public SequenceList<Image> getSettlers() {
@@ -83,12 +79,22 @@ public final class ImageProvider {
 		}
 	};
 
+	/**
+	 * Enable image loading trace.
+	 */
+	private static final boolean TRACE_IMAGE_LOADING = true;
+
 	private static ImageProvider instance;
 
 	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<>();
 	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<>();
-
 	private ImageIndexFile indexFile = null;
+
+	/**
+	 * The lookup paths for the dat files.
+	 */
+	private final List<File> lookupPaths = new ArrayList<File>();
+	private boolean preloaded;
 
 	private ImageProvider() {
 	}
@@ -111,9 +117,9 @@ public final class ImageProvider {
 	 * @param path
 	 *            The directory. It may not exist, but must not be null.
 	 */
-	public static void setLookupPath(File path) {
-		ImageProvider.lookupPath = path;
-		getInstance().startPreloading();
+	public void addLookupPath(File path) {
+		lookupPaths.add(path);
+		startPreloading();
 	}
 
 	/**
@@ -295,10 +301,12 @@ public final class ImageProvider {
 	}
 
 	private File findFileInPaths(String fileName) {
-		for (File currentFile : lookupPath.listFiles()) {
-			if (currentFile.isFile() && currentFile.canRead() &&
-					currentFile.getName().equalsIgnoreCase(fileName)) {
-				return currentFile;
+		for (File lookupPath : lookupPaths) {
+			for (File currentFile : lookupPath.listFiles()) {
+				if (currentFile.isFile() && currentFile.canRead() &&
+						currentFile.getName().equalsIgnoreCase(fileName)) {
+					return currentFile;
+				}
 			}
 		}
 		return null;
@@ -308,10 +316,16 @@ public final class ImageProvider {
 		String numberString = String.format(Locale.ENGLISH, "%02d", fileIndex);
 		for (DatFileType type : DatFileType.values()) {
 			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
+			if (TRACE_IMAGE_LOADING) {
+				traceImageLoad("Searching file " + fileName);
+			}
 
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
+				if (TRACE_IMAGE_LOADING) {
+					traceImageLoad("Opening file " + fileName);
+				}
 				return new AdvancedDatFileReader(file, type);
 			}
 		}
@@ -324,14 +338,20 @@ public final class ImageProvider {
 	 * 
 	 * @return
 	 */
-	public Thread startPreloading() {
-		if (lookupPath != null) {
+	public synchronized Thread startPreloading() {
+		if (preloaded) {
+			traceImageLoad("Preloading already started.");
+			return null;
+		} else if (lookupPaths.isEmpty()) {
+			traceImageLoad("No lookup path set. Image preloading failed.");
+		} else {
 			Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
 			thread.start();
+			preloaded = true;
+			traceImageLoad("Started image preload thread with id=" + thread.getId());
 			return thread;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	/**
@@ -340,6 +360,13 @@ public final class ImageProvider {
 	 * The task may never be executed.
 	 */
 	public void addPreloadTask(GLPreloadTask task) {
+		traceImageLoad("Scheduling preload task " + task);
 		tasks.add(task);
+	}
+
+	public static void traceImageLoad(String message) {
+		if (TRACE_IMAGE_LOADING) {
+			System.out.println("[IMAGES] " + message);
+		}
 	}
 }
