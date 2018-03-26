@@ -68,7 +68,7 @@ public class AiDifficultiesIT {
 	}
 
 	@Test
-	public void veryHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() throws MapLoadException {
+	public void veryHardShouldProduceCertainAmountOfSoldiersWithin90Minutes() throws MapLoadException {
 		byte playerId = (byte) 0;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
 		playerSettings[playerId] = new PlayerSetting(EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, playerId);
@@ -76,9 +76,9 @@ public class AiDifficultiesIT {
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
-		MatchConstants.clock().fastForwardTo(86 * MINUTES);
+		MatchConstants.clock().fastForwardTo(90 * MINUTES);
 
-		short expectedMinimalProducedSoldiers = 950;
+		short expectedMinimalProducedSoldiers = 1000;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			stopAndFail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " soldiers within 90 minutes.\nOnly " + producedSoldiers
