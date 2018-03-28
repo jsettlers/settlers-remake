@@ -19,19 +19,24 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import java.awt.Graphics;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import go.graphics.DrawmodeListener;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
-public abstract class AsyncContextCreator extends ContextCreator implements Runnable {
+public abstract class AsyncContextCreator extends ContextCreator implements Runnable,DrawmodeListener {
 
+	private boolean offscreen = true;
+	private boolean clear_offscreen = true;
     private boolean continue_run = true;
 
+	protected boolean ignore_resize = false;
     protected BufferedImage bi = null;
     protected IntBuffer pixels;
 
@@ -57,10 +62,14 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
                     first_draw = false;
                 }
 
-                synchronized (wnd_lock) {
-                    graphics.drawImage(bi, 0, 0, null);
-                    graphics.dispose();
-                }
+				if(offscreen) {
+					synchronized (wnd_lock) {
+						graphics.drawImage(bi, 0, 0, null);
+						graphics.dispose();
+					}
+				} else {
+					graphics.drawString("Press m to enable offscreen transfer", width/3, height/2);
+				}
             }
         };
 
@@ -98,37 +107,51 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
         parent.init();
 
         while(continue_run) {
-            if (change_res) {
-                width = new_width;
-                height = new_height;
-                async_set_size(width, height);
+			if (change_res) {
+				if(!ignore_resize) {
+					width = new_width;
+					height = new_height;
+					async_set_size(width, height);
 
-                parent.resize_gl(width, height);
+					parent.resize_gl(width, height);
 
-                bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-                pixels = BufferUtils.createIntBuffer(width*height);
-                change_res = false;
-            }
+					bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+					pixels = BufferUtils.createIntBuffer(width * height);
+				}
+				ignore_resize = false;
+				change_res = false;
+			}
 
-            async_refresh();
+			async_refresh();
 
-            parent.draw();
+			parent.draw();
 
-            synchronized (wnd_lock) {
-                GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-                for(int x = 0;x != width;x++) {
-                    for(int y = 0; y!= height;y++) {
-                        bi.setRGB(x, height-y-1, pixels.get(y*width+x));
-                    }
-                }
-            }
+			if (offscreen) {
+				synchronized (wnd_lock) {
+					GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+					for (int x = 0; x != width; x++) {
+						for (int y = 0; y != height; y++) {
+							bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
+						}
+					}
+				}
+			}
 
-            // uncomment to clear the offscreen buffer
-            //GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-            // uncomment to draw the offscreen buffer to offscreen window
-            //async_swapbuffers();
+			if(!offscreen || clear_offscreen ){
+				if(clear_offscreen) {
+					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+					clear_offscreen = false;
+				}
+				async_swapbuffers();
+			}
         }
 
         async_stop();
     }
+
+	@Override
+	public void changeDrawMode() {
+		offscreen = !offscreen;
+		clear_offscreen = true;
+	}
 }

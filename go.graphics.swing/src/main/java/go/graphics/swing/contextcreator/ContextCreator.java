@@ -58,6 +58,9 @@ public abstract class ContextCreator implements ComponentListener{
             new_width = cmp.getWidth();
             new_height = cmp.getHeight();
             change_res = true;
+
+            if(new_width == 0) new_width = 1;
+            if(new_height == 0) new_height = 1;
         }
     }
 

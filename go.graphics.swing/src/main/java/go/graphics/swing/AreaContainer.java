@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import go.graphics.DrawmodeListener;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -78,6 +79,10 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Could not create opengl context through " + backend.cc_name + "\nPress ok to exit");
 			System.exit(1);
+		}
+
+		if(cc instanceof DrawmodeListener) {
+			area.setDrawmodeListener((DrawmodeListener) cc);
 		}
 
 
