@@ -14,27 +14,48 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
-import org.lwjgl.opengl.WGL;
 import org.lwjgl.system.Platform;
 
-import java.lang.reflect.InvocationTargetException;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 import go.graphics.swing.AreaContainer;
 
 public class BackendSelector extends JComboBox<BackendSelector.BackendItem> {
 
+	private BackendItem current_item = null;
+	private static final Platform current_platform = Platform.get();
 
 	public static final ArrayList<BackendItem> backends = new ArrayList<>();
-	public static final BackendItem DEFAULT_BACKEND = new BackendItem(null, "default");
-	public static final BackendItem GLFW_BACKEND = new BackendItem(GLFWContextCreator.class, "glfw");
-	public static final BackendItem GLX_BACKEND = new BackendItem(GLXContextCreator.class, "glx");
-	public static final BackendItem WGL_BACKEND = new BackendItem(WGLContextCreator.class, "wgl");
+	public static final BackendItem DEFAULT_BACKEND = new BackendItem(null, "default", null);
+	public static final BackendItem GLFW_BACKEND = new BackendItem(GLFWContextCreator.class, "glfw", null);
+	public static final BackendItem GLX_BACKEND = new BackendItem(GLXContextCreator.class, "glx", null);
+	public static final BackendItem WGL_BACKEND = new BackendItem(WGLContextCreator.class, "wgl", Platform.WINDOWS);
+
+	@Override
+	public void actionPerformed(ActionEvent actionEvent) {
+		super.actionPerformed(actionEvent);
+
+		if(actionEvent.getActionCommand() == "comboBoxChanged") {
+			BackendItem bi = (BackendItem) getSelectedItem();
+			if (bi.platform != null && bi.platform != current_platform) {
+				setSelectedItem(current_item);
+				BackendSelector.this.hidePopup();
+				JOptionPane.showMessageDialog(BackendSelector.this.getParent(), bi.cc_name + " is only available on " + bi.platform);
+			} else {
+				current_item = bi;
+			}
+
+		}
+	}
 
 	public BackendSelector() {
 		setEditable(false);
+
+		addActionListener(this);
 
 		addItem(DEFAULT_BACKEND);
 		addItem(GLFW_BACKEND);
@@ -69,14 +90,16 @@ public class BackendSelector extends JComboBox<BackendSelector.BackendItem> {
 
 	public static class BackendItem {
 
-		public BackendItem(Class<? extends ContextCreator> cc_class, String cc_name) {
+		public BackendItem(Class<? extends ContextCreator> cc_class, String cc_name, Platform platform) {
 			this.cc_class = cc_class;
 			this.cc_name = cc_name;
+			this.platform = platform;
 
 			backends.add(this);
 		}
 
 		public Class<? extends ContextCreator> cc_class;
+		public Platform platform;
 		public String cc_name;
 
 		@Override
