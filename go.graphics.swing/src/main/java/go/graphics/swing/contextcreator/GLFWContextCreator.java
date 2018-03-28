@@ -31,7 +31,7 @@ public class GLFWContextCreator extends AsyncContextCreator {
         GLFWErrorCallback ec = GLFWErrorCallback.createPrint(System.err);;
         GLFW.glfwSetErrorCallback(ec);
 
-        GLFW.glfwInit();
+		if(!GLFW.glfwInit()) throw new Error("glfwInit() failed!");
 
         GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 1);
         glfw_wnd = GLFW.glfwCreateWindow(width + 1, width + 1, "lwjgl-offscreen", 0, 0);

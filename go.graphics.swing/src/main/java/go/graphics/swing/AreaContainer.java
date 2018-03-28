@@ -16,10 +16,10 @@ package go.graphics.swing;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.Platform;
 
 import java.awt.BorderLayout;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import go.graphics.RedrawListener;
@@ -28,9 +28,6 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
-import go.graphics.swing.contextcreator.GLFWContextCreator;
-import go.graphics.swing.contextcreator.GLXContextCreator;
-import go.graphics.swing.contextcreator.WGLContextCreator;
 import go.graphics.swing.opengl.LWJGLDrawContext;
 
 /**
@@ -64,8 +61,6 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		this.area = area;
 		this.setLayout(new BorderLayout());
 
-
-		cc = BackendSelector.createBackend(this, backend);
 		/*if(platform == Platform.LINUX) {
 			// linux(x11) only
 			// if your screen is flickering try "-Dsun.awt.noerasebackground=true" or System.setProperty("sun.awt.noerasebackground", "true");
@@ -76,8 +71,15 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 			// laggy, slow and creates its own window, but works on osx and linux(wayland) too.
 			cc = new GLFWContextCreator(this);
 		}*/
+		try {
+			cc = BackendSelector.createBackend(this, backend);
+			cc.init();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Could not create opengl context through " + backend.cc_name + "\nPress ok to exit");
+			System.exit(1);
+		}
 
-		cc.init();
 
 		area.addRedrawListener(this);
 

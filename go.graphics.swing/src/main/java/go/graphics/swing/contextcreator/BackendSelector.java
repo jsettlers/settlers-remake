@@ -50,7 +50,7 @@ public class BackendSelector extends JComboBox<BackendSelector.BackendItem> {
 		return DEFAULT_BACKEND;
 	}
 
-	public static ContextCreator createBackend(AreaContainer ac, BackendItem backend) {
+	public static ContextCreator createBackend(AreaContainer ac, BackendItem backend) throws Exception {
 		BackendItem real_backend = backend;
 
 		if(backend == null || backend.cc_class == null) {
@@ -64,13 +64,7 @@ public class BackendSelector extends JComboBox<BackendSelector.BackendItem> {
 			}
 		}
 
-		try {
-			return real_backend.cc_class.getConstructor(AreaContainer.class).newInstance(ac);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return  null;
+		return real_backend.cc_class.getConstructor(AreaContainer.class).newInstance(ac);
 	}
 
 	public static class BackendItem {

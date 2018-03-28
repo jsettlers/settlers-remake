@@ -29,8 +29,10 @@ public class GLXContextCreator extends JAWTContextCreator {
     private long display = 0;
     private long context = 0;
 
-    public GLXContextCreator(AreaContainer ac) {
-        super(ac);
+	public GLXContextCreator(AreaContainer ac) {
+		super(ac);
+		// do we have xlib support ?
+		X11.getLibrary().getName();
     }
 
     @Override
@@ -52,9 +54,9 @@ public class GLXContextCreator extends JAWTContextCreator {
         XVisualInfo xvi = GLX.glXChooseVisual(display, screen, xvi_attrs);
 
 
-        context = GLX.glXCreateContext(display, xvi, 0, true);
-
-    }
+		context = GLX.glXCreateContext(display, xvi, 0, true);
+		if (context == 0) throw new Error("Could not create GLX context!");
+	}
 
     @Override
     public void stop() {

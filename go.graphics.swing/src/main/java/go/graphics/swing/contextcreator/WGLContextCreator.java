@@ -31,6 +31,8 @@ public class WGLContextCreator extends JAWTContextCreator {
 
     public WGLContextCreator(AreaContainer ac) {
         super(ac);
+		// do we have gdi and wgl support ?
+		GDI32.getLibrary().getName();
     }
 
 
@@ -67,12 +69,14 @@ public class WGLContextCreator extends JAWTContextCreator {
         pfd.cDepthBits((byte) 24);
         pfd.cStencilBits((byte) 1);
 
-        pixel_format = GDI32.ChoosePixelFormat(hdc, pfd);
+		pixel_format = GDI32.ChoosePixelFormat(hdc, pfd);
+		if(pixel_format == 0) throw new Error("Could not find pixel format!");
         GDI32.SetPixelFormat(hdc, pixel_format, pfd);
 
         pfd.free();
 
         context = WGL.wglCreateContext(hdc);
+		if(context == 0) throw new Error("Could not create WGL context!");
     }
 
     @Override
