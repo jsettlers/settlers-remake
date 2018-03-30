@@ -71,5 +71,5 @@ clean {
 }
 
 dependencies {
-    testCompile project(':jsettlers.testutils')
+    testImplementation project(':jsettlers.testutils')
 }

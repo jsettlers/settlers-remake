@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.ext.androidBuildToolsVersion
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion rootProject.ext.androidMinSdkVersion
-        targetSdkVersion rootProject.ext.androidTargetSdkVersion
+        minSdkVersion 19
+        targetSdkVersion 25
     }
 
     buildTypes {
@@ -33,6 +33,6 @@ android {
 }
 
 dependencies {
-    compile project(':go.graphics')
+    implementation project(':go.graphics')
 }
 

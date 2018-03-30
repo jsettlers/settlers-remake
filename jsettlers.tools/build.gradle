@@ -1,15 +1,15 @@
 apply plugin: 'java'
 
 dependencies {
-    compile 'junit:junit:4.12'
-    compile project(':go.graphics')
-    compile project(':go.graphics.swing')
-    compile project(':jsettlers.common')
-    compile project(':jsettlers.graphics')
-    compile project(':jsettlers.graphics.swing')
-    compile project(':jsettlers.logic')
-    compile project(':jsettlers.main.swing')
-    compile project(':jsettlers.network')
-    compile project(':jsettlers.testutils')
-    compile project(':jsettlers.tests')
+    implementation 'junit:junit:4.12'
+    implementation project(':go.graphics')
+    implementation project(':go.graphics.swing')
+    implementation project(':jsettlers.common')
+    implementation project(':jsettlers.graphics')
+    implementation project(':jsettlers.graphics.swing')
+    implementation project(':jsettlers.logic')
+    implementation project(':jsettlers.main.swing')
+    implementation project(':jsettlers.network')
+    implementation project(':jsettlers.testutils')
+    implementation project(':jsettlers.tests')
 }
