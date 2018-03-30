@@ -24,4 +24,5 @@ dependencies {
     implementation project(':jsettlers.network')
 
     testImplementation project(':jsettlers.testutils')
+    testImplementation project(':jsettlers.main.swing')
 }
