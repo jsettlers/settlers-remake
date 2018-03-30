@@ -4,5 +4,6 @@ dependencies {
     implementation 'junit:junit:4.12'
     implementation project(':jsettlers.common')
     implementation project(':jsettlers.logic')
+    implementation project(':jsettlers.network')
     implementation project(':jsettlers.main.swing')
 }
