@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.android.support:support-v4:27.1.0'
     implementation 'com.android.support:gridlayout-v7:27.1.0'
 
-    implementation 'biz.laenger.android:vpbs:0.0.3'
+    implementation 'biz.laenger.android:vpbs:0.0.5'
     implementation 'me.relex:circleindicator:1.2.2@aar'
     implementation 'com.yqritc:recyclerview-flexibledivider:1.4.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
