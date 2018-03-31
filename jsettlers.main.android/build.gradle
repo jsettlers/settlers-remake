@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion rootProject.ext.androidCompileSdkVersion
+    buildToolsVersion rootProject.ext.androidBuildToolsVersion
 
     defaultConfig {
         applicationId "jsettlers.main.android"
-        minSdkVersion 19
-        targetSdkVersion 25
+        minSdkVersion rootProject.ext.androidMinSdkVersion
+        targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1
         versionName '0.0.1'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -56,12 +56,12 @@ dependencies {
     implementation project(':jsettlers.common')
     implementation project(':jsettlers.network')
 
-    implementation 'com.android.support:appcompat-v7:27.1.0'
-    implementation 'com.android.support:support-v4:27.1.0'
-    implementation 'com.android.support:cardview-v7:27.1.0'
-    implementation 'com.android.support:design:27.1.0'
-    implementation 'com.android.support:support-v4:27.1.0'
-    implementation 'com.android.support:gridlayout-v7:27.1.0'
+    implementation 'com.android.support:appcompat-v7:' + rootProject.ext.androidSupportLibraryVersion
+    implementation 'com.android.support:support-v4:' + rootProject.ext.androidSupportLibraryVersion
+    implementation 'com.android.support:cardview-v7:' + rootProject.ext.androidSupportLibraryVersion
+    implementation 'com.android.support:design:' + rootProject.ext.androidSupportLibraryVersion
+    implementation 'com.android.support:support-v4:' + rootProject.ext.androidSupportLibraryVersion
+    implementation 'com.android.support:gridlayout-v7:' + rootProject.ext.androidSupportLibraryVersion
 
     implementation 'biz.laenger.android:vpbs:0.0.5'
     implementation 'me.relex:circleindicator:1.2.2@aar'
@@ -69,8 +69,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
-    implementation 'org.androidannotations:androidannotations-api:4.4.0'
-    annotationProcessor 'org.androidannotations:androidannotations:4.4.0'
+    implementation 'org.androidannotations:androidannotations-api:' + rootProject.ext.androidAnnotationsVersion
+    annotationProcessor 'org.androidannotations:androidannotations:' + rootProject.ext.androidAnnotationsVersion
 
     // test dependencies
     androidTestImplementation project(':jsettlers.testutils')
