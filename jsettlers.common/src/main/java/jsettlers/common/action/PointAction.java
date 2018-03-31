@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2016
+/*
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,33 +11,39 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.action;
+ */
+package jsettlers.common.action;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Instructs the logic to compute and display the constructions mark for the given building.
- * 
- * @author michael
+ * This action states that the user wants something to move to the given position.
  *
+ * @author Michael Zangl
  */
-public class ShowConstructionMarksAction extends Action {
-	private EBuildingType buildingType;
+public class PointAction extends Action {
 
-	public ShowConstructionMarksAction(EBuildingType buildingType) {
-		super(EActionType.SHOW_CONSTRUCTION_MARK);
-		this.buildingType = buildingType;
+	private final ShortPoint2D position;
 
+	/**
+	 * Creates a new moveto aciton.
+	 *
+	 * @param type
+	 *            The type of this action.
+	 * @param position
+	 *            The position the user clicked at.
+	 */
+	public PointAction(EActionType type, ShortPoint2D position) {
+		super(type);
+		this.position = position;
 	}
 
 	/**
-	 * Get the type of building to show the construction marks for.
-	 * 
-	 * @return The type or <code>null</code> if none should be displayed.
+	 * Gets the position on the map the user wants to move the unit(s) to.
+	 *
+	 * @return The position.
 	 */
-	public EBuildingType getBuildingType() {
-		return buildingType;
+	public ShortPoint2D getPosition() {
+		return this.position;
 	}
 }

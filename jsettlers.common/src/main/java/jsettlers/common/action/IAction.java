@@ -12,52 +12,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.action;
-
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.position.ShortPoint2D;
+package jsettlers.common.action;
 
 /**
- * @author codingberlin
+ * 
+ * @author Andreas Eberle
+ *
  */
-public class SetMaterialProductionAction extends Action {
-
-	public enum EMaterialProductionType {
-		INCREASE,
-		DECREASE,
-		SET_PRODUCTION,
-		SET_RATIO;
-
-		public static final EMaterialProductionType[] VALUES = EMaterialProductionType.values();
-	}
-
-	private final EMaterialType materialType;
-	private final EMaterialProductionType productionType;
-	private final float ratio;
-	private final ShortPoint2D position;
-
-	public SetMaterialProductionAction(ShortPoint2D position, EMaterialType materialType, EMaterialProductionType productionType, float ratio) {
-		super(EActionType.SET_MATERIAL_PRODUCTION);
-		this.materialType = materialType;
-		this.productionType = productionType;
-		this.ratio = ratio;
-		this.position = position;
-	}
-
-	public float getRatio() {
-		return ratio;
-	}
-
-	public EMaterialProductionType getProductionType() {
-		return productionType;
-	}
-
-	public EMaterialType getMaterialType() {
-		return materialType;
-	}
-
-	public ShortPoint2D getPosition() {
-		return position;
-	}
+public interface IAction {
+	EActionType getActionType();
 }

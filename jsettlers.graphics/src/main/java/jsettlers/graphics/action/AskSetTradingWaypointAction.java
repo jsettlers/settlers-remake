@@ -14,8 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 
 /**
  * This is an action combined with a {@link EWaypointType} that asks the user to set the trading waypoint.
