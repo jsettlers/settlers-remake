@@ -374,7 +374,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 
 			drawer.setColor(1, 1, 1, a);
-			drawer.drawString(x, y, m.getMessage());
+			drawer.drawString(x, y, Labels.getString(m.getMessageLabel()));
 
 			messageIndex++;
 		}
