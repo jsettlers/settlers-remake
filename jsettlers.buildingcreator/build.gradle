@@ -6,7 +6,6 @@ dependencies {
     compile project(':go.graphics.swing')
     compile project(':jsettlers.common')
     compile project(':jsettlers.graphics')
-    compile project(':jsettlers.graphics.swing')
     compile project(':jsettlers.logic')
     compile project(':jsettlers.main.swing')
 }
