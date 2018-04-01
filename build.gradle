@@ -176,7 +176,7 @@ if (findProject(':jsettlers.main.android')) {
     task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
         into('JSettlers-Android') {
             from { project.getRootProject().file('LICENSE.txt') }
-            from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
+            from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/debug/jsettlers.main.android-debug.apk')
             rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
         }
 
