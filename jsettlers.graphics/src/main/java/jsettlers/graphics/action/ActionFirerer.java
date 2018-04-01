@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.IAction;
 
 import java.util.Timer;
 import java.util.TimerTask;

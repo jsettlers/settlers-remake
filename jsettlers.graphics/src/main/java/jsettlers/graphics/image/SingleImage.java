@@ -19,6 +19,7 @@ import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
+import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
@@ -29,7 +30,7 @@ import jsettlers.graphics.reader.ImageMetadata;
  * This is the base for all images that are directly loaded from the image file.
  * <p>
  * This class interprets the image data in 5-5-5-1-Format. To change the interpretation, it is possible to subclass this class.
- * 
+ *
  * @author Michael Zangl
  */
 public class SingleImage extends Image implements ImageDataPrivider {
@@ -47,17 +48,17 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Creates a new image by the given buffer.
-	 * 
+	 *
 	 * @param data
-	 *            The data buffer for the image with an unspecified color format.
+	 * 		The data buffer for the image with an unspecified color format.
 	 * @param width
-	 *            The width.
+	 * 		The width.
 	 * @param height
-	 *            The height.
+	 * 		The height.
 	 * @param offsetX
-	 *            The x offset of the image.
+	 * 		The x offset of the image.
 	 * @param offsetY
-	 *            The y offset of the image.
+	 * 		The y offset of the image.
 	 */
 	protected SingleImage(ShortBuffer data, int width, int height, int offsetX,
 			int offsetY) {
@@ -70,11 +71,11 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Creates a new image by linking this images data to the data of the provider.
-	 * 
+	 *
 	 * @param metadata
-	 *            The mata data to use.
+	 * 		The mata data to use.
 	 * @param data
-	 *            The data to use.
+	 * 		The data to use.
 	 */
 	protected SingleImage(ImageMetadata metadata, short[] data) {
 		this.data = ShortBuffer.wrap(data);
@@ -132,9 +133,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Generates the texture, if needed, and returns the index of that texutre.
-	 * 
+	 *
 	 * @param gl
-	 *            The gl context to use to generate the image.
+	 * 		The gl context to use to generate the image.
 	 * @return The gl handle or <code>null</code> if the texture is not allocated.
 	 */
 	public TextureHandle getTextureIndex(GLDrawContext gl) {
@@ -186,7 +187,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float)
 	 */
 	@Override
@@ -196,7 +197,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float, go.graphics.Color)
 	 */
 	@Override
@@ -214,7 +215,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext, go.graphics.Color)
 	 */
 	@Override
@@ -322,8 +323,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
-					- getOffsetY(), viewX + getOffsetX() + width, viewY
-					- getOffsetY() - height,
+							- getOffsetY(), viewX + getOffsetX() + width, viewY
+							- getOffsetY() - height,
 					0, 0, getTextureScaleX(),
 					getTextureScaleY(), iColor);
 		} catch (IllegalBufferException e) {
@@ -341,15 +342,15 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Draws a triangle part of this image on the image buffer.
-	 * 
+	 *
 	 * @param gl
-	 *            The context to use
+	 * 		The context to use
 	 * @param buffer
-	 *            The buffer to draw on.
+	 * 		The buffer to draw on.
 	 * @param viewX
-	 *            Image center x coordinate
+	 * 		Image center x coordinate
 	 * @param viewY
-	 *            Image center y coordinate
+	 * 		Image center y coordinate
 	 * @param u1
 	 * @param v1
 	 * @param u2
@@ -393,5 +394,24 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
+	}
+
+	public BufferedImage convertToBufferedImage() {
+		if (width <= 0 || height <= 0) {
+			return null;
+		}
+
+		BufferedImage rendered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		ShortBuffer data = getData().duplicate();
+		data.rewind();
+
+		int[] rgbArray = new int[data.remaining()];
+		for (int i = 0; i < rgbArray.length; i++) {
+			short myColor = data.get();
+			rgbArray[i] = Color.convertTo32Bit(myColor);
+		}
+
+		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
+		return rendered;
 	}
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import go.graphics.GLDrawContext;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
 
