@@ -19,7 +19,6 @@ task unitTest(type: Test) {
 
 
 dependencies {
-    implementation project(':jsettlers.graphics')
     implementation project(':jsettlers.common')
     implementation project(':jsettlers.network')
 

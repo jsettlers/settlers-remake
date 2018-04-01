@@ -17,7 +17,7 @@ package jsettlers.mapcreator.main.action;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
 

@@ -34,7 +34,6 @@ dependencies {
     testImplementation project(':go.graphics.swing')
     testImplementation project(':jsettlers.common')
     testImplementation project(':jsettlers.graphics')
-    testImplementation project(':jsettlers.graphics.swing')
     testImplementation project(':jsettlers.logic')
     testImplementation project(':jsettlers.main.swing')
     testImplementation project(':jsettlers.network')

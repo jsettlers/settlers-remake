@@ -31,7 +31,6 @@ dependencies {
     implementation project(':go.graphics.swing')
     implementation project(':jsettlers.common')
     implementation project(':jsettlers.graphics')
-    implementation project(':jsettlers.graphics.swing')
     implementation project(':jsettlers.logic')
     implementation project(':jsettlers.main.swing')
 }

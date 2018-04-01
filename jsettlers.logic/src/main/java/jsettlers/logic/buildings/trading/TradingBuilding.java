@@ -25,7 +25,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;

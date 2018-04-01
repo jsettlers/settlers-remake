@@ -43,7 +43,7 @@ import jsettlers.graphics.sequence.Sequence;
  * This is the main image provider. It provides access to all images.
  * <p>
  * Settlers supports two image modes, one rgb mode (555 bits) and one rgb mode (565 bits).
- * 
+ *
  * @author michael
  */
 public final class ImageProvider {
@@ -88,6 +88,7 @@ public final class ImageProvider {
 	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<>();
 	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<>();
 
+	private Thread preloadingThread;
 	private ImageIndexFile indexFile = null;
 
 	private ImageProvider() {
@@ -95,7 +96,7 @@ public final class ImageProvider {
 
 	/**
 	 * Gets an instance of an image provider
-	 * 
+	 *
 	 * @return The provider
 	 */
 	public static ImageProvider getInstance() {
@@ -109,7 +110,7 @@ public final class ImageProvider {
 	 * Sets the path to look for dat files.
 	 *
 	 * @param path
-	 *            The directory. It may not exist, but must not be null.
+	 * 		The directory. It may not exist, but must not be null.
 	 */
 	public static void setLookupPath(File path) {
 		ImageProvider.lookupPath = path;
@@ -118,9 +119,9 @@ public final class ImageProvider {
 
 	/**
 	 * Tries to get a file content.
-	 * 
+	 *
 	 * @param file
-	 *            The file number to search for.
+	 * 		The file number to search for.
 	 * @return The content as set or <code> null </code>
 	 */
 	public synchronized AdvancedDatFileReader getFileReader(int file) {
@@ -148,7 +149,7 @@ public final class ImageProvider {
 	 * Gets an image by a link.
 	 *
 	 * @param link
-	 *            The link that describes the image
+	 * 		The link that describes the image
 	 * @return The image or a null image.
 	 */
 	public Image getImage(ImageLink link) {
@@ -159,11 +160,11 @@ public final class ImageProvider {
 	 * Gets the highest resolution image that fits the given size.
 	 *
 	 * @param link
-	 *            The link that describes the image
+	 * 		The link that describes the image
 	 * @param width
-	 *            The width the image should have (at least).
+	 * 		The width the image should have (at least).
 	 * @param height
-	 *            The height the image should have (at least).
+	 * 		The height the image should have (at least).
 	 * @return The image or a null image.
 	 */
 	public Image getImage(ImageLink link, float width, float height) {
@@ -208,7 +209,7 @@ public final class ImageProvider {
 	 *
 	 * @param link
 	 * @param sequenceNumber
-	 *            must be an integer from 0 to 2.
+	 * 		must be an integer from 0 to 2.
 	 * @return the image matching the specified indexes.
 	 */
 	private Image getSequencedImage(OriginalImageLink link, int sequenceNumber) {
@@ -232,9 +233,9 @@ public final class ImageProvider {
 	 * Gets a landscape texture.
 	 *
 	 * @param file
-	 *            The file number it is in.
+	 * 		The file number it is in.
 	 * @param seqnumber
-	 *            It's sequence number.
+	 * 		It's sequence number.
 	 * @return The image, or an empty image.
 	 */
 	private SingleImage getLandscapeImage(int file, int seqnumber) {
@@ -253,9 +254,9 @@ public final class ImageProvider {
 	 * Gets a given gui image.
 	 *
 	 * @param file
-	 *            The file the image is in.
+	 * 		The file the image is in.
 	 * @param seqnumber
-	 *            The image number.
+	 * 		The image number.
 	 * @return The image.
 	 */
 	public SingleImage getGuiImage(int file, int seqnumber) {
@@ -272,9 +273,9 @@ public final class ImageProvider {
 	 * Gets an settler sequence.
 	 *
 	 * @param file
-	 *            The file of the sequence.
+	 * 		The file of the sequence.
 	 * @param seqnumber
-	 *            The number of the sequence in the file.
+	 * 		The number of the sequence in the file.
 	 * @return The settler sequence.
 	 */
 	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
@@ -321,16 +322,22 @@ public final class ImageProvider {
 
 	/**
 	 * Starts preloading the images, if lookup paths have been set.
-	 * 
+	 *
 	 * @return
 	 */
-	public Thread startPreloading() {
-		if (lookupPath != null) {
-			Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
-			thread.start();
-			return thread;
-		} else {
-			return null;
+	public void startPreloading() {
+		if (lookupPath != null && preloadingThread == null) {
+			preloadingThread = new Thread(new ImagePreloadTask(), "image preloader");
+			preloadingThread.start();
+		}
+	}
+
+	public void waitForPreloadingFinish() {
+		startPreloading();
+		try {
+			preloadingThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
