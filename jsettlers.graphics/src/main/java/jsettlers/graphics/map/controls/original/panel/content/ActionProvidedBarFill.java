@@ -14,8 +14,7 @@
  */
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.map.controls.original.panel.content.BarFill;
+import jsettlers.common.action.Action;
 
 /**
  * @author codingberlin

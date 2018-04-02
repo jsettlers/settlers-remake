@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,37 +11,41 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.action;
+ */
+package jsettlers.common.action;
 
-import jsettlers.common.material.EPriority;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
 
 /**
- * This {@link Action} is used to set the priority of a building. When it is fired, the priority is set for the current selection.
+ * This action is fired whenever the visible map area has been changed by the user.
  * 
- * @author Andreas Eberle
+ * @author Michael Zangl
+ * @see EActionType#SCREEN_CHANGE
  */
-public class SetBuildingPriorityAction extends Action {
+public class ScreenChangeAction extends Action {
 
-	private final EPriority newPriority;
+	private final MapRectangle screenArea;
 
 	/**
-	 * Creates a new {@link SetBuildingPriorityAction}.
+	 * Creates a new screen change action.
 	 * 
-	 * @param newPriority
-	 *            The new priority.
+	 * @param screenArea
+	 *            the area
 	 */
-	public SetBuildingPriorityAction(EPriority newPriority) {
-		super(EActionType.SET_BUILDING_PRIORITY);
-		this.newPriority = newPriority;
+	public ScreenChangeAction(MapRectangle screenArea) {
+		super(EActionType.SCREEN_CHANGE);
+		this.screenArea = screenArea;
 	}
 
 	/**
-	 * @return Returns the new priority that shall be set to the selected building.
+	 * Gets the new area of the screen.
+	 * 
+	 * @return The screen area.
 	 */
-	public EPriority getNewPriority() {
-		return newPriority;
+	public MapRectangle getScreenArea() {
+		return screenArea;
 	}
 
 }

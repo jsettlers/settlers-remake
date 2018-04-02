@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,14 +11,32 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.menu.action;
+ */
+package jsettlers.common.action;
+
+import jsettlers.common.buildings.EBuildingType;
 
 /**
+ * Instructs the logic to compute and display the constructions mark for the given building.
  * 
- * @author Andreas Eberle
+ * @author michael
  *
  */
-public interface IAction {
-	EActionType getActionType();
+public class ShowConstructionMarksAction extends Action {
+	private EBuildingType buildingType;
+
+	public ShowConstructionMarksAction(EBuildingType buildingType) {
+		super(EActionType.SHOW_CONSTRUCTION_MARK);
+		this.buildingType = buildingType;
+
+	}
+
+	/**
+	 * Get the type of building to show the construction marks for.
+	 * 
+	 * @return The type or <code>null</code> if none should be displayed.
+	 */
+	public EBuildingType getBuildingType() {
+		return buildingType;
+	}
 }

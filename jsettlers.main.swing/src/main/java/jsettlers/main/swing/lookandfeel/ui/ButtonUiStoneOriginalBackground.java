@@ -14,20 +14,18 @@
  *******************************************************************************/
 package jsettlers.main.swing.lookandfeel.ui;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.main.swing.lookandfeel.DrawHelper;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 import javax.swing.plaf.basic.BasicButtonUI;
-
-import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.swing.utils.ImageUtils;
-import jsettlers.main.swing.lookandfeel.DrawHelper;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 /**
  * Button UI Implementation
@@ -51,8 +49,8 @@ public class ButtonUiStoneOriginalBackground extends BasicButtonUI {
 	 */
 	public ButtonUiStoneOriginalBackground() {
 		ImageProvider imageProvider = ImageProvider.getInstance();
-		backgroundImage = ImageUtils.convertToBufferedImage(imageProvider.getGuiImage(3, 326));
-		backgroundPressedImage = ImageUtils.convertToBufferedImage(imageProvider.getGuiImage(3, 329));
+		backgroundImage = imageProvider.getGuiImage(3, 326).convertToBufferedImage();
+		backgroundPressedImage = imageProvider.getGuiImage(3, 329).convertToBufferedImage();
 	}
 
 	@Override
