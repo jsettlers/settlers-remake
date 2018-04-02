@@ -15,7 +15,7 @@
 package jsettlers.graphics.map.controls.original.panel.button;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 
 /**
  * This is a material button for the trading GUI.

@@ -21,7 +21,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import jsettlers.common.movable.EMovableType;
-import jsettlers.graphics.action.ConvertAction;
+import jsettlers.common.action.ConvertAction;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;

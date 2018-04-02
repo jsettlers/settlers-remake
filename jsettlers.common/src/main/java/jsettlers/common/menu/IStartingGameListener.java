@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,7 +21,7 @@ package jsettlers.common.menu;
 public interface IStartingGameListener {
 	/**
 	 * Notifies this listener of the current progress of the start. May only be called before {@link #preLoadFinished(IStartedGame)} is called.
-	 * 
+	 *
 	 * @param state
 	 * @param progress
 	 */
@@ -29,9 +29,9 @@ public interface IStartingGameListener {
 
 	/**
 	 * Notifies the listener that a game was started and gives it access to the game data.
-	 * 
+	 *
 	 * @param game
-	 *            The game that was just started.
+	 * 		The game that was just started.
 	 * @retrun A {@link IMapInterfaceConnector} that can be used to access the game afterwards.
 	 */
 	IMapInterfaceConnector preLoadFinished(IStartedGame game);
@@ -39,4 +39,8 @@ public interface IStartingGameListener {
 	void startFailed(EGameError errorType, Exception exception);
 
 	void startFinished();
+
+	void startingLoadingGame();
+
+	void waitForPreloading();
 }

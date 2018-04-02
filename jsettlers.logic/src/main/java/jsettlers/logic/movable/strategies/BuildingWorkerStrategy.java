@@ -29,7 +29,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.messages.SimpleMessage;
+import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;

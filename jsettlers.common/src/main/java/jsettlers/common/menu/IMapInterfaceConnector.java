@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.menu;
 
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.IAction;
 import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;

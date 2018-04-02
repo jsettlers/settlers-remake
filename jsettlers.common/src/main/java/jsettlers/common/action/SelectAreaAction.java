@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,14 +11,38 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.menu.action;
+ */
+package jsettlers.common.action;
+
+import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
 
 /**
+ * This class hold special information for the action type {@link EActionType#SELECT_AREA}.
  * 
- * @author Andreas Eberle
- *
+ * @author michael
  */
-public interface IAction {
-	EActionType getActionType();
+public class SelectAreaAction extends Action {
+	private final IMapArea area;
+
+	/**
+	 * Creates a new select area action.
+	 * 
+	 * @param area
+	 *            The area.
+	 */
+	public SelectAreaAction(IMapArea area) {
+		super(EActionType.SELECT_AREA);
+		this.area = area;
+	}
+
+	/**
+	 * Gets the selected area.
+	 * 
+	 * @return The area.
+	 */
+	public IMapArea getArea() {
+		return this.area;
+	}
 }
