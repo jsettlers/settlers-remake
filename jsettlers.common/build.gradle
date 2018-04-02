@@ -20,10 +20,10 @@ task findGitRevision {
     Repository repository = builder.readEnvironment().findGitDir(file('.')).build();
     def headRef = repository.getRef("HEAD")
     def localRev = headRef.objectId.name
-    repository.close();
+    repository.close()
 
     ext {
-        rev = localRev;
+        rev = localRev
     }
     onlyIf {
         !commitFile.isFile() || !commitFile.text.contains(rev)
