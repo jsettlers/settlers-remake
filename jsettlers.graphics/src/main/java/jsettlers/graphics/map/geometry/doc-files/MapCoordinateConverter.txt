@@ -1,0 +1,46 @@
+number example:
+
+viewX = 16 * mapX - 8 * mapY + 7192
+
+vievY = - 9 * mapY + 2 * H + 8091
+
+
+mapX = viewX / 16 - viewY / 18 + H / 9
+
+mapY = - viewY / 9 + 2 * H / 9 + 899
+
+-------------------------------------
+
+always valid:
+
+xscale = viewWidth / mapWidth
+yscale = viewHeight / mapHeight
+
+M00 = xscale
+M01 = - xscale / 2
+M02 = xscale * mapHeight / 2
+M10 = 0
+M11 = - yscale
+M12 = viewHeight
+MHX = 0
+MHY = 2
+
+
+viewX = M00 * mapX + M01 * mapY + M02
+
+viewY = M11 * mapY + MHY * H + M12
+
+
+mapX = I00 * viewX + I01 * viewY + IHX * H
+
+mapY = I11 * viewY + IHY * H + I12
+
+
+I00 = 1 / xscale
+I01 = - 1 / 2 / yscale
+I02 = 0
+I10 = 0
+I11 = - 1 / yscale
+I12 = mapHeight
+IHX = 1 / yscale
+IHY = 2 / yscale
