@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -159,8 +159,18 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
+		public boolean isFreeShipPosition(ShortPoint2D position) {
+			return false;
+		}
+
+		@Override
 		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
+		}
+
+		@Override
+		public boolean isWaterSafe(int x, int y) {
+			return false;
 		}
 
 		@Override
@@ -192,13 +202,13 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 					}
 
 					@Override
-					public ShortPoint2D getPos() {
+					public ShortPoint2D getPosition() {
 						return source;
 					}
 				}, new IMaterialRequest() {
 
 					@Override
-					public ShortPoint2D getPos() {
+					public ShortPoint2D getPosition() {
 						return targetPos;
 					}
 
@@ -252,6 +262,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public ILogicMovable getMovableAt(int x, int y) {
 			return movableMap[x][y];
+		}
+
+		@Override
+		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
+			return null;
 		}
 
 		@Override

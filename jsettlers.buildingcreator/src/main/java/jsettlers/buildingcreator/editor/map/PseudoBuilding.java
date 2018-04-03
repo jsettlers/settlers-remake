@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,20 +14,18 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor.map;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+
+import java.util.Collections;
+import java.util.List;
 
 public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 	private final EBuildingType type;
@@ -124,10 +122,5 @@ public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 	@Override
 	public boolean cannotWork() {
 		return false;
-	}
-
-	@Override
-	public ArrayList<EMaterialType> getRemainingOrder() {
-		return new ArrayList<>();
 	}
 }
