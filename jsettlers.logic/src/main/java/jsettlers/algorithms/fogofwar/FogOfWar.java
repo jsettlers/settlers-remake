@@ -99,14 +99,12 @@ public final class FogOfWar implements Serializable {
 
 	final class NewFoWThread extends Thread {
 		private static final byte DIM_DOWN_SPEED = 10;
-		private final CircleDrawer drawer;
-		private byte[][] buffer;
+		private final CircleDrawer drawer = new CircleDrawer();
+		private byte[][] buffer = new byte[width][height];
 
 		NewFoWThread() {
 			super("FoWThread");
 			super.setDaemon(true);
-			this.buffer = new byte[width][height];
-			drawer = new CircleDrawer();
 		}
 
 		@Override
