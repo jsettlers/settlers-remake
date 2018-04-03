@@ -29,7 +29,6 @@ import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
@@ -90,15 +89,5 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 
 	@Override
 	public void startFinished() {
-	}
-
-	@Override
-	public void startingLoadingGame() {
-		ImageProvider.getInstance().startPreloading();
-	}
-
-	@Override
-	public void waitForPreloading() {
-		ImageProvider.getInstance().waitForPreloadingFinish();
 	}
 }

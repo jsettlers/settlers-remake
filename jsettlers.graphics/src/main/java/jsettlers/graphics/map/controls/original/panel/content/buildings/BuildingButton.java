@@ -23,7 +23,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.common.action.ShowConstructionMarksAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;

@@ -72,10 +72,6 @@ public enum EMovableAction {
 	 * A costume action, see above.
 	 */
 	ACTION2,
-	/**
-	 * A costume action, see above.
-	 */
-	ACTION3,
 
 	/**
 	 * The settler bends down

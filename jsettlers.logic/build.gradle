@@ -19,9 +19,9 @@ task unitTest(type: Test) {
 
 
 dependencies {
-    implementation project(':jsettlers.common')
-    implementation project(':jsettlers.network')
+    compile project(':jsettlers.graphics')
+    compile project(':jsettlers.common')
+    compile project(':jsettlers.network')
 
-    testImplementation project(':jsettlers.testutils')
-    testImplementation project(':jsettlers.main.swing')
+    testCompile project(':jsettlers.testutils')
 }

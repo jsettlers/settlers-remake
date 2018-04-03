@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2018
+/*******************************************************************************
+ * Copyright (c) 2015
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,55 +11,43 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- */
-package jsettlers.common.action;
+ *******************************************************************************/
+package jsettlers.graphics.action;
 
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Sets a traiding waypoint position for the selected building.
+ * This is a build action. This happens when the user clicks on a map position to build a building there.
  * 
  * @author Michael Zangl
  *
  */
-public class SetTradingWaypointAction extends PointAction {
+public class BuildAction extends PointAction {
+
+	private final EBuildingType building;
 
 	/**
-	 * The waypoint types, ordered in the order they are visited by the donkeys/ships.
+	 * Creates a new build action.
 	 * 
-	 * @author Michael Zangl
-	 *
-	 */
-	public enum EWaypointType {
-		WAYPOINT_1,
-		WAYPOINT_2,
-		WAYPOINT_3,
-		DESTINATION;
-
-		public static final EWaypointType[] VALUES = values();
-	}
-
-	private final EWaypointType waypoint;
-
-	/**
-	 * Creates a new {@link SetTradingWaypointAction}.
-	 * 
-	 * @param waypoint
-	 *            The waypoint to set.
+	 * @param building
+	 *            The building to be built.
 	 * @param position
-	 *            The position to set it at.
+	 *            The position at which the building should (approximately) be built.
 	 */
-	public SetTradingWaypointAction(EWaypointType waypoint, ShortPoint2D position) {
-		super(EActionType.SET_TRADING_WAYPOINT, position);
-		this.waypoint = waypoint;
+	public BuildAction(EBuildingType building, ShortPoint2D position) {
+		super(EActionType.BUILD, position);
+		this.building = building;
 	}
 
 	/**
-	 * Gets the waypoint to set.
+	 * gets the building that corresponds with this action, if the action is an build action.
 	 * 
-	 * @return The waypoint.
+	 * @return The building, <code>null</code> if it is not a build action.
 	 */
-	public EWaypointType getWaypointType() {
-		return waypoint;
+	public EBuildingType getBuildingType() {
+		return this.building;
 	}
+
 }

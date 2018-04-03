@@ -34,12 +34,12 @@ public class Tree extends GrowingObject implements ISoundable {
 
 	private static final RelativePoint[] BLOCKED = new RelativePoint[] { new RelativePoint(0, 0) };
 
-	private transient boolean soundPlayed;
+	private boolean soundPlayed;
 
 	/**
 	 * Creates a new Tree.
 	 * 
-	 * @param pos
+	 * @param grid
 	 */
 	public Tree(ShortPoint2D pos) {
 		super(pos, EMapObjectType.TREE_GROWING);

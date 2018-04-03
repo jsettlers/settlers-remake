@@ -15,7 +15,7 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;

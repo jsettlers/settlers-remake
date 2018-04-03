@@ -19,7 +19,7 @@ import static java8.util.J8Arrays.stream;
 import java.util.Collection;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 
 /**

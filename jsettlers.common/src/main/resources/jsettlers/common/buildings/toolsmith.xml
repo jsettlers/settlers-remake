@@ -161,22 +161,24 @@
     <job name="go_to_melt10" type="WALK" direction="NORTH_WEST" successjob="go_to_melt11" failjob="go_to_door" />
     <job name="go_to_melt11" type="WALK" direction="NORTH_WEST" successjob="go_to_melt12" failjob="go_to_door" />
     <job name="go_to_melt12" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_iron1" failjob="go_to_door" />
-    <job name="drop_iron1" type="DROP" material="NO_MATERIAL" successjob="drop_iron5" failjob="go_to_door" />
 
-    <job name="drop_iron5" type="PLAY_ACTION3" time="3" successjob="drop_iron8" failjob="go_to_door" />
+    <job name="drop_iron1" type="DROP" material="NO_MATERIAL" successjob="drop_iron4" failjob="go_to_door" />
+    <job name="drop_iron4" type="SMOKE_ON" dx="-3" dy="-1" successjob="drop_iron5" failjob="go_to_door" />
+    <job name="drop_iron5" type="WAIT" time="4" successjob="drop_iron7" failjob="go_to_door" />
+    <job name="drop_iron7" type="SMOKE_OFF" dx="-3" dy="-1" successjob="drop_iron8" failjob="go_to_door" />
+    <job name="drop_iron8" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" takeMaterialFromMap="false" />
 
-    <job name="drop_iron8" type="TAKE" material="IRON" successjob="go_to_hammer1" failjob="go_to_door" takeMaterialFromMap="false" />
     <job name="go_to_hammer1" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer2" failjob="go_to_door" />
     <job name="go_to_hammer2" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer3" failjob="go_to_door" />
     <job name="go_to_hammer3" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer4" failjob="go_to_door" />
-    <job name="go_to_hammer4" type="LOOK_AT" direction="NORTH_WEST" successjob="hammer0" failjob="go_to_door" />
+    <job name="go_to_hammer4" type="LOOK_AT" direction="NORTH_WEST" successjob="hammer1" failjob="go_to_door" />
 
-    <job name="hammer0" type="SET_MATERIAL" material="NO_MATERIAL" successjob="hammer1" failjob="go_to_door" />
     <job name="hammer1" type="PLAY_ACTION1" time=".7" successjob="hammer2" failjob="go_to_door" />
     <job name="hammer2" type="PLAY_ACTION1" time=".7" successjob="hammer3" failjob="go_to_door" />
     <job name="hammer3" type="PLAY_ACTION1" time=".7" successjob="hammer4" failjob="go_to_door" />
     <job name="hammer4" type="PLAY_ACTION1" time=".7" successjob="hammer5" failjob="go_to_door" />
     <job name="hammer5" type="PLAY_ACTION1" time=".7" successjob="go_to_drop1" failjob="go_to_door" />
+
 
     <job name="go_to_drop1" type="WALK" direction="EAST" successjob="go_to_drop2" failjob="go_to_door" />
     <job name="go_to_drop2" type="WALK" direction="EAST" successjob="go_to_drop3" failjob="go_to_door" />

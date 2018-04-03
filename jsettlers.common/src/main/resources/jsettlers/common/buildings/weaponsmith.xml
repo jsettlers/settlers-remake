@@ -78,7 +78,7 @@
 	<blocked dx="0" dy="2" block="false" />
 	<blocked dx="-1" dy="1" block="false" />
 
-	<door dx="4" dy="1" />
+	<door dx="3" dy="0" />
 
 	<constructionStack dx="0" dy="3" material="PLANK" buildrequired="5" />
 	<constructionStack dx="3" dy="3" material="STONE" buildrequired="3" />
@@ -105,29 +105,23 @@
 	<startjob name="go_to_door" />
 
 	<!-- wait at home cycle -->
-	<job name="go_to_door" type="GO_TO" dx="4" dy="1" successjob="hide" failjob="hide" />
+	<job name="go_to_door" type="GO_TO" dx="3" dy="0" successjob="hide" failjob="hide" />
 	<job name="hide" type="HIDE" successjob="waithome" failjob="hide" />
 
 	<job name="waithome" type="WAIT" time="1" successjob="checkhome1" failjob="checkhome1" />
 	<job name="checkhome1" type="AVAILABLE" material="IRON" dx="3" dy="3" successjob="checkhome2" failjob="waithome" />
 	<job name="checkhome2" type="AVAILABLE" material="COAL" dx="-2" dy="2" successjob="checkhome3" failjob="waithome" />
 	<job name="checkhome3" type="NOT_FULL" dx="5" dy="1" successjob="checkhome4" failjob="waithome" />
-	<job name="checkhome4" type="POP_WEAPON" successjob="go_to_work1" failjob="go_to_work1" />
-	<job name="go_to_work1" type="SHOW" direction="SOUTH_EAST" dx="3" dy="0" successjob="gotocoal" failjob="waithome" />
+	<job name="checkhome4" type="POP_WEAPON" successjob="go_to_work1" failjob="waithome" />
 
-	<job name="gotocoal" type="GO_TO" successjob="lookatcoal" failjob="go_to_door" dx="-2" dy="2"/>
-	<job name="lookatcoal" type="LOOK_AT" direction="NORTH_WEST" successjob="takecoal" failjob="go_to_door" />
-	<job name="takecoal" type="TAKE" material="COAL" successjob="go_drop_coal1" failjob="go_to_door" />
+	<job name="go_to_work1" type="SHOW" direction="SOUTH_EAST" dx="3" dy="0" successjob="go_to_work2" failjob="waithome" />
+	<job name="go_to_work2" type="WALK" direction="SOUTH_EAST" successjob="go_to_work3" failjob="go_to_door" />
+	<job name="go_to_work3" type="WALK" direction="SOUTH_WEST" successjob="go_to_work4" failjob="go_to_door" />
+	<job name="go_to_work4" type="WALK" direction="SOUTH_WEST" successjob="go_to_work5" failjob="go_to_door" />
+	<job name="go_to_work5" type="WALK" direction="WEST" successjob="pickiron1" failjob="go_to_door" />
 
-	<job name="go_drop_coal1" type="WALK" direction="EAST" successjob="go_drop_coal2" failjob="go_to_door" />
-	<job name="go_drop_coal2" type="WALK" direction="NORTH_EAST" successjob="dropcoal0" failjob="go_to_door" />
-
-	<job name="dropcoal0" type="LOOK_AT" direction="NORTH_WEST" successjob="dropcoal1" failjob="go_to_door" />
-	<job name="dropcoal1" type="DROP" material="NO_MATERIAL" successjob="gotoiron" failjob="go_to_door" />
-
-	<job name="gotoiron" type="GO_TO" successjob="lookatiron" failjob="go_to_door" dx="3" dy="3"/>
-	<job name="lookatiron" type="LOOK_AT" direction="NORTH_EAST" successjob="takeiron" failjob="go_to_door" />
-	<job name="takeiron" type="TAKE" material="IRON" successjob="go_drop_iron1" failjob="go_to_door" />
+	<!-- work cycle, starts at iron stack (3, 3) -->
+	<job name="pickiron1" type="TAKE" material="IRON" successjob="go_drop_iron1" failjob="go_to_door" />
 
 	<job name="go_drop_iron1" type="WALK" direction="WEST" successjob="go_drop_iron2" failjob="go_to_door" />
 	<job name="go_drop_iron2" type="WALK" direction="WEST" successjob="go_drop_iron3" failjob="go_to_door" />
@@ -135,27 +129,49 @@
 	<job name="go_drop_iron4" type="WALK" direction="NORTH_WEST" successjob="dropiron0" failjob="go_to_door" />
 
 	<job name="dropiron0" type="LOOK_AT" direction="NORTH_WEST" successjob="dropiron1" failjob="go_to_door" />
-	<job name="dropiron1" type="DROP" material="NO_MATERIAL" successjob="wait1" failjob="go_to_door" />
+	<job name="dropiron1" type="DROP" material="NO_MATERIAL" successjob="go_to_coal1" failjob="go_to_door" />
 
-	<job name="wait1" type="PLAY_ACTION3" time="3" successjob="take_weapon1" failjob="go_to_door" />
+	<job name="go_to_coal1" type="WALK" direction="SOUTH_WEST" successjob="go_to_coal2" failjob="go_to_door" />
+	<job name="go_to_coal2" type="WALK" direction="WEST" successjob="pickcoal1" failjob="go_to_door" />
+
+	<job name="pickcoal1" type="TAKE" material="COAL" successjob="go_drop_coal1" failjob="go_to_door" />
+
+	<job name="go_drop_coal1" type="WALK" direction="EAST" successjob="go_drop_coal2" failjob="go_to_door" />
+	<job name="go_drop_coal2" type="WALK" direction="NORTH_EAST" successjob="dropcoal0" failjob="go_to_door" />
+
+	<job name="dropcoal0" type="LOOK_AT" direction="NORTH_WEST" successjob="dropcoal1" failjob="go_to_door" />
+	<job name="dropcoal1" type="DROP" material="NO_MATERIAL" successjob="wait" failjob="go_to_door" />
+
+	<!-- wait a bit -->
+	<job name="wait" type="WAIT" time="1.5" successjob="take_weapon1" failjob="go_to_door" />
 
 	<!-- take weapon -->
-	<job name="take_weapon1" type="TAKE" material="IRON" successjob="go_to_hammer1" failjob="go_to_door" takeMaterialFromMap="false"/>
-	<job name="go_to_hammer1" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer2" failjob="go_to_door" />
-	<job name="go_to_hammer2" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer3" failjob="go_to_door" />
-    <job name="go_to_hammer3" type="LOOK_AT" direction="NORTH_EAST" successjob="hammer0" failjob="go_to_door" />
+	<job name="take_weapon1" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" takeMaterialFromMap="false"/>
 
-	<job name="hammer0" type="SET_MATERIAL" material="NO_MATERIAL" successjob="hammer1" failjob="go_to_door" />
+	<job name="go_to_hammer1" type="WALK" direction="SOUTH_WEST" successjob="go_to_hammer2" failjob="go_to_door" />
+	<job name="go_to_hammer2" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer3" failjob="go_to_door" />
+	<job name="go_to_hammer3" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer4" failjob="go_to_door" />
+	<job name="go_to_hammer4" type="WALK" direction="EAST" successjob="go_to_hammer5" failjob="go_to_door" />
+    <job name="go_to_hammer5" type="LOOK_AT" direction="NORTH_WEST" successjob="hammer0" failjob="go_to_door" />
+
+	<job name="hammer0" type="SET_MATERIAL" material="HAMMER" successjob="hammer1" failjob="go_to_door" />
 	<job name="hammer1" type="PLAY_ACTION1" time=".7" successjob="hammer2" failjob="go_to_door" />
     <job name="hammer2" type="PLAY_ACTION1" time=".7" successjob="hammer3" failjob="go_to_door" />
     <job name="hammer3" type="PLAY_ACTION1" time=".7" successjob="hammer4" failjob="go_to_door" />
     <job name="hammer4" type="PLAY_ACTION1" time=".7" successjob="hammer5" failjob="go_to_door" />
-    <job name="hammer5" type="PLAY_ACTION1" time=".7" successjob="go_drop_sword" failjob="go_to_door" />
+    <job name="hammer5" type="PLAY_ACTION1" time=".7" successjob="hammer6" failjob="go_to_door" />
+	<job name="hammer6" type="SET_MATERIAL" material="SWORD" successjob="go_drop_sword0" failjob="go_to_door" />
 
-	<job name="go_drop_sword" type="GO_TO" successjob="lookatweapon" failjob="go_to_door" dx="5" dy="1"/>
+	<job name="go_drop_sword0" type="WALK" direction="EAST" successjob="go_drop_sword1" failjob="go_to_door" />
+	<job name="go_drop_sword1" type="WALK" direction="EAST" successjob="go_drop_sword2" failjob="go_to_door" />
+	<job name="go_drop_sword2" type="WALK" direction="NORTH_EAST" successjob="go_drop_sword3" failjob="go_to_door" />
+	<job name="go_drop_sword3" type="WALK" direction="NORTH_EAST" successjob="go_drop_sword4" failjob="go_to_door" />
+	<job name="go_drop_sword4" type="WALK" direction="NORTH_EAST" successjob="go_drop_sword5" failjob="go_to_door" />
+	<job name="go_drop_sword5" type="WALK" direction="EAST" successjob="drop_weapon1" failjob="go_to_door" />
 
-	<job name="lookatweapon" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_weapon1" failjob="go_to_door" />
-	<job name="drop_weapon1" type="DROP_POPPED" successjob="go_inside1" failjob="go_to_door" />
+	<job name="drop_weapon1" type="DROP_POPPED" successjob="drop_weapon2" failjob="go_to_door" />
+	<job name="drop_weapon2" type="DROP" material="NO_MATERIAL" successjob="go_inside1" failjob="go_to_door" />
 
-	<job name="go_inside1" type="WALK" direction="WEST" successjob="hide" failjob="hide" />
+	<job name="go_inside1" type="WALK" direction="WEST" successjob="go_inside2" failjob="hide" />
+	<job name="go_inside2" type="LOOK_AT" direction="NORTH_WEST" successjob="hide" failjob="hide" />
 </building>

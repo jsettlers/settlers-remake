@@ -20,7 +20,7 @@ import jsettlers.common.sound.ISoundable;
 public abstract class ProgressingSoundableObject extends ProgressingObject implements ISoundable {
 	private static final long serialVersionUID = -7740838546551477874L;
 
-	private transient boolean soundPlayed;
+	private boolean soundPlayed;
 
 	protected ProgressingSoundableObject(ShortPoint2D pos) {
 		super(pos);

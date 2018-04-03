@@ -85,7 +85,7 @@ public class RelativeSettings<T extends Enum> implements Serializable {
 		float prefixSum = 0;
 		for (int index = 0; index < userValues.length; index++) {
 			prefixSum += userValues[index];
-			if (random < prefixSum) {
+			if (random <= prefixSum) {
 				if (decreaseOnDraw) {
 					changeUserValue(index, -1);
 				}

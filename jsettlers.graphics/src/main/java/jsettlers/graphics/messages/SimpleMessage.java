@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2018
+/*******************************************************************************
+ * Copyright (c) 2015
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,40 +11,43 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- */
-package jsettlers.common.menu.messages;
+ *******************************************************************************/
+package jsettlers.graphics.messages;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.messages.EMessageType;
+import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.localization.Labels;
 
 /**
- * This is a messageLabel that states that the user was attacked by an other player.
- *
+ * This is a message that states that the user was attacked by an other player.
+ * 
  * @author Michael Zangl
  */
 public class SimpleMessage implements IMessage {
 	private final byte sender;
 	private final ShortPoint2D pos;
-	private final String messageLabel;
+	private final String message;
 	private final EMessageType type;
 	private int age;
 
 	/**
-	 * Creates a new simple chat messageLabel.
-	 *
+	 * Creates a new simple chat message.
+	 * 
 	 * @param type
-	 * 		The messageLabel type.
-	 * @param messageLabel
-	 * 		The messageLabel string to display.
+	 *            The message type.
+	 * @param message
+	 *            The message string to display.
 	 * @param sender
-	 * 		The sender of the messageLabel
+	 *            The sender of the message
 	 * @param pos
-	 * 		The position the messageLabel was sent from.
+	 *            The position the message was sent from.
 	 */
-	private SimpleMessage(EMessageType type, String messageLabel, byte sender, ShortPoint2D pos) {
+	public SimpleMessage(EMessageType type, String message, byte sender, ShortPoint2D pos) {
 		this.type = type;
-		this.messageLabel = messageLabel;
+		this.message = message;
 		this.sender = sender;
 		this.pos = pos;
 		this.age = 0;
@@ -67,8 +70,8 @@ public class SimpleMessage implements IMessage {
 	}
 
 	@Override
-	public String getMessageLabel() {
-		return messageLabel;
+	public String getMessage() {
+		return message;
 	}
 
 	@Override
@@ -84,54 +87,61 @@ public class SimpleMessage implements IMessage {
 	@Override
 	public boolean duplicates(IMessage m) {
 		if ((m.getSender() == this.sender)
-				&& m.getMessageLabel().equals(this.messageLabel)
+				&& m.getMessage().equals(this.message)
 				&& m.getType() == this.type) {
 			if ((this.type == EMessageType.ATTACKED) || (this.type == EMessageType.MINERALS)) {
 				if (m.getAge() < MESSAGE_TTL / 6) {
-					return this.pos.getOnGridDistTo(m.getPosition()) < MESSAGE_DIST_THRESHOLD;
+					if (this.pos.getOnGridDistTo(m.getPosition())
+							< MESSAGE_DIST_THRESHOLD) {
+						return true;
+					}
 				}
-			} else {
-				return this.pos.equals(m.getPosition());
+			} else if (this.pos.equals(m.getPosition())) {
+				return true;
 			}
 		}
 		return false;
 	}
 
 	/**
-	 * Creates a new attacked-messageLabel.
-	 *
+	 * Creates a new attacked-message.
+	 * 
 	 * @param otherplayer
-	 * 		The attacking player
+	 *            The attacking player
 	 * @param pos
-	 * 		The position that player attacked on.
-	 * @return THe messageLabel.
+	 *            The position that player attacked on.
+	 * @return THe message.
 	 */
 	public static IMessage attacked(byte otherplayer, ShortPoint2D pos) {
-		return new SimpleMessage(EMessageType.ATTACKED, "attacked", otherplayer, pos);
+		String message = Labels.getString("attacked");
+		return new SimpleMessage(EMessageType.ATTACKED, message, otherplayer,
+				pos);
 	}
 
 	/**
-	 * Create a new messageLabel if a geologist found minerals.
-	 *
+	 * Create a new message if a geologist found minerals.
+	 * 
 	 * @param type
-	 * 		The type of minerals.
+	 *            The type of minerals.
 	 * @param pos
-	 * 		The position
-	 * @return The messageLabel object
+	 *            The position
+	 * @return The message object
 	 */
 	public static IMessage foundMinerals(EMaterialType type, ShortPoint2D pos) {
-		return new SimpleMessage(EMessageType.MINERALS, "minerals_" + type.toString(), (byte) -1, pos);
+		String message = Labels.getString("minerals_" + type.toString());
+		return new SimpleMessage(EMessageType.MINERALS, message, (byte) -1, pos);
 	}
 
 	/**
-	 * Create a new messageLabel that a building cannot find any more work.
-	 *
+	 * Create a new message that a building cannot find any more work.
+	 * 
 	 * @param building
-	 * 		The building
-	 * @return THe messageLabel object
+	 *            The building
+	 * @return THe message object
 	 */
 	public static IMessage cannotFindWork(IBuilding building) {
-		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, "cannot_find_work_" + building.getBuildingType(), (byte) -1, building.getPosition());
+		String message = Labels.getString("cannot_find_work_" + building.getBuildingType());
+		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, message, (byte) -1, building.getPosition());
 	}
 
 }

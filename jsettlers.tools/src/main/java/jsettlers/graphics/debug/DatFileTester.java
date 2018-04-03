@@ -14,6 +14,17 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -23,6 +34,7 @@ import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.utils.FileUtils;
@@ -37,17 +49,8 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.swing.utils.ImageUtils;
 import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
 
 public class DatFileTester {
 	private static final int DAT_FILE_INDEX = 0;
@@ -269,7 +272,7 @@ public class DatFileTester {
 
 	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
-		BufferedImage rendered = image.convertToBufferedImage();
+		BufferedImage rendered = ImageUtils.convertToBufferedImage(image);
 		if (rendered == null) {
 			return;
 		}

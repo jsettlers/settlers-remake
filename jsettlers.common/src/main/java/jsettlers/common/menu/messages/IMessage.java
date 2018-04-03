@@ -54,7 +54,7 @@ public interface IMessage {
 	 * 
 	 * @return A string that can be displayed to the user. Never null.
 	 */
-	String getMessageLabel();
+	String getMessage();
 
 	/**
 	 * Gets the Player that send the message, as byte. If the message is a status message for the current user, the sender is -1. For attack messages,

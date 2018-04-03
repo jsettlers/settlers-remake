@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main.action;
 
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.Action;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.graphics.action.Action;
 
 /**
  * This action states that drawing on the map was aborted.

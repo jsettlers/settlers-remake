@@ -15,7 +15,7 @@
 package jsettlers.graphics.ui;
 
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 
 /**
  * This is a button, consisting of images in the given file.

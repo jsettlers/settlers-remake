@@ -29,9 +29,9 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.action.EActionType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.action.PointAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 

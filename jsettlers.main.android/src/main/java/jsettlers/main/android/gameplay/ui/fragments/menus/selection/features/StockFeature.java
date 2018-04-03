@@ -22,7 +22,7 @@ import java.util.List;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.action.SetAcceptedStockMaterialAction;
+import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;

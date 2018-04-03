@@ -17,7 +17,7 @@ package jsettlers.main.replay;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.UIState;
-import jsettlers.common.action.IAction;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;

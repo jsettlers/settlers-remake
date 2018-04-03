@@ -19,7 +19,7 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
-import jsettlers.common.action.EActionType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;

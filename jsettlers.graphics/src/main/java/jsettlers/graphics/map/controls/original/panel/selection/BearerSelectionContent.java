@@ -18,7 +18,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.action.ConvertAction;
+import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;

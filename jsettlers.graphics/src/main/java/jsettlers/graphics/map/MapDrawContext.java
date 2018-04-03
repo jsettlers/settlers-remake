@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import java.util.Iterator;
-
 import go.graphics.GLDrawContext;
+import go.graphics.UIPoint;
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -29,6 +29,8 @@ import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
+
+import java.util.Iterator;
 
 /**
  * This is the drawing context for a map. It is used to translate the visible screen space to local coordinate space and holds the current gl context.
@@ -204,16 +206,29 @@ public final class MapDrawContext implements IGLProvider {
 	 * @return The map position under the point.
 	 */
 	public ShortPoint2D getPositionUnder(float screenX, float screenY) {
-		// do a three step iteration by using the coordinate transformation and the map height
-		int mapX = getConverter().getMapX(screenX, screenY);
-		int mapY = getConverter().getMapY(screenX, screenY);
-		float height = map.getHeightAt(mapX, mapY);
-		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
-		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
-		height = map.getHeightAt(mapX, mapY);
-		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
-		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
-		return new ShortPoint2D(mapX, mapY);
+		ShortPoint2D currentPoint = converter.getMap(screenX, screenY);
+		UIPoint desiredOnScreen = new UIPoint(screenX, screenY);
+
+		UIPoint onScreen = converter.getView(currentPoint.x, currentPoint.y, getHeight(currentPoint.x, currentPoint.y));
+		double currentBest = onScreen.distance(desiredOnScreen);
+
+		boolean couldBeImproved;
+		do {
+			couldBeImproved = false;
+
+			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
+				onScreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
+				double newDistance = onScreen.distance(desiredOnScreen);
+				if (newDistance < currentBest) {
+					currentBest = newDistance;
+					currentPoint = p;
+					couldBeImproved = true;
+				}
+			}
+
+		} while (couldBeImproved);
+
+		return currentPoint;
 	}
 
 	/**
@@ -422,10 +437,18 @@ public final class MapDrawContext implements IGLProvider {
 			return new CoordinateStream() {
 				@Override
 				public boolean iterate(IBooleanCoordinateFunction function) {
-					MapRectangle rect = getConverter().getMapForScreen(drawRect);
-					for (int x = rect.getMinX(); x <= rect.getMinX() + rect.getHeight(); x++) {
-						for (int y = rect.getMinY(); y <= rect.getMinY() + rect.getHeight(); y++) {
+					int width = base.getWidth();
+					int lastRelativeYWithPoint = 0;
+
+					for (int relativeY = 0; relativeY < MIN_SEARCH_LINES || relativeY - lastRelativeYWithPoint <= 2; relativeY++) {
+						int lineStartX = base.getLineStartX(relativeY);
+
+						for (int relativeX = 0; relativeX < width; relativeX++) {
+							int x = lineStartX + relativeX;
+							int y = base.getLineY(relativeY);
+
 							if (HeightedMapRectangle.this.contains(x, y)) {
+								lastRelativeYWithPoint = relativeY;
 								if (!function.apply(x, y)) {
 									return false;
 								}

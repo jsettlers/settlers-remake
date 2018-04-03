@@ -20,7 +20,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 
 public class SoundableSelfDeletingObject extends SelfDeletingMapObject implements ISoundable {
-	private transient boolean soundPlayed;
+	private boolean soundPlayed;
 
 	public SoundableSelfDeletingObject(ShortPoint2D pos, EMapObjectType type, float duration, IPlayer player) {
 		super(pos, type, duration, player);

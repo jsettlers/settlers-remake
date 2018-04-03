@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 - 2018
+ * Copyright (c) 2015
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,35 +12,52 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.buildings.workers;
+package jsettlers.graphics.action;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.player.Player;
 
 /**
- * This is a slaughterhouse building
+ * @author codingberlin
  */
-public final class SlaughterhouseBuilding extends WorkerBuilding implements IBuilding.ISoundRequestable {
-	private static final long serialVersionUID = -1556449527268300282L;
+public class SetMaterialProductionAction extends Action {
 
-	private transient boolean soundRequested = false;
+	public enum EMaterialProductionType {
+		INCREASE,
+		DECREASE,
+		SET_PRODUCTION,
+		SET_RATIO;
 
-	public SlaughterhouseBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
-		super(type, player, position, buildingsGrid);
+		public static final EMaterialProductionType[] VALUES = EMaterialProductionType.values();
 	}
 
-	@Override
-	public boolean isSoundRequested() {
-		boolean ret = soundRequested;
-		soundRequested = false;
-		return ret;
+	private final EMaterialType materialType;
+	private final EMaterialProductionType productionType;
+	private final float ratio;
+	private final ShortPoint2D position;
+
+	public SetMaterialProductionAction(ShortPoint2D position, EMaterialType materialType, EMaterialProductionType productionType, float ratio) {
+		super(EActionType.SET_MATERIAL_PRODUCTION);
+		this.materialType = materialType;
+		this.productionType = productionType;
+		this.ratio = ratio;
+		this.position = position;
 	}
 
-	@Override
-	public void requestSound() {
-		soundRequested = true;
+	public float getRatio() {
+		return ratio;
+	}
+
+	public EMaterialProductionType getProductionType() {
+		return productionType;
+	}
+
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
+
+	public ShortPoint2D getPosition() {
+		return position;
 	}
 }

@@ -17,7 +17,7 @@ package jsettlers.graphics.map.controls.original.panel.button;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;

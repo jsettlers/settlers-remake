@@ -123,8 +123,7 @@
 
 	<!-- go to the gold ore stack -->
 	<job name="toOre1" 		type="WALK" 		successjob="toOre2" 	failjob="gohome" 	direction="SOUTH_EAST" />
-	<job name="toOre2" 		type="WALK" 		successjob="lookatore" 	failjob="gohome" 	direction="SOUTH_WEST" />
-	<job name="lookatore"	type="LOOK_AT" 		successjob="takeore1" 	failjob="gohome" 	direction="NORTH_WEST" />
+	<job name="toOre2" 		type="WALK" 		successjob="takeore1" 	failjob="gohome" 	direction="SOUTH_WEST" />
 
 	<!-- take ore -->
 	<job name="takeore1" 	type="TAKE" 		successjob="goputore1" 	failjob="gohome"	material="GOLDORE" />
@@ -142,10 +141,9 @@
 	<job name="dropOre2" 	type="DROP" 		successjob="goToCoal1" 	failjob="gohome" 	material="NO_MATERIAL" />
 
 	<!-- go to coal stack -->
-	<job name="goToCoal1" 	type="WALK" 		successjob="lookatcoal" failjob="gohome" 	direction="WEST" />
+	<job name="goToCoal1" 	type="WALK" 		successjob="takeCoal1" 	failjob="gohome" 	direction="WEST" />
 
 	<!-- take coal -->
-	<job name="lookatcoal" 	type="LOOK_AT"		successjob="takeCoal1" 	failjob="gohome"	direction="NORTH_WEST" />
 	<job name="takeCoal1" 	type="TAKE" 		successjob="delivCoal1"	failjob="gohome" 	material="COAL" />
 
 	<!-- go to the melting pot -->
@@ -162,7 +160,7 @@
 	<job name="gopot4" 		type="WALK" 		successjob="gopot5"		failjob="gohome" 	direction="EAST" />
 
 	<job name="gopot5" 		type="LOOK_AT" 		successjob="gopot6" 	failjob="gohome" 	direction="NORTH_WEST" />
-	<job name="gopot6" 		type="PLAY_ACTION1"	successjob="takegold1" 	failjob="gohome" 	time="3.5" />
+	<job name="gopot6" 		type="WAIT" 		successjob="takegold1" 	failjob="gohome" 	time="3.5" />
 
 	<!-- take the gold -->
 	<job name="takegold1" 	type="TAKE" 		successjob="goToGold1"	failjob="gohome" 	material="GOLD" 	takeMaterialFromMap="false"/>
@@ -173,16 +171,10 @@
 	<job name="goToGold3" 	type="WALK" 		successjob="goToGold4" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="goToGold4" 	type="WALK" 		successjob="goToGold6" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="goToGold6" 	type="WALK" 		successjob="goToGold7" 	failjob="gohome" 	direction="NORTH_EAST" />
-	<job name="goToGold7" 	type="WALK" 		successjob="lookatgold"	failjob="gohome" 	direction="EAST" />
-	<job name="lookatgold"	type="LOOK_AT" 		successjob="dropGold1" 	failjob="gohome" 	direction="NORTH_EAST" />
+	<job name="goToGold7" 	type="WALK" 		successjob="dropGold1" 	failjob="gohome" 	direction="EAST" />
 
 	<!-- drop the gold -->
-	<job name="dropGold1" 	type="DROP" 		successjob="checkB1"	failjob="gohome" 	material="GOLD" />
+	<job name="dropGold1" 	type="DROP" 		successjob="gohome"		failjob="gohome" 	material="GOLD" />
 
-	<!-- do not disappear if there is still stuff left -->
-	<job name="checkB1" 	type="AVAILABLE" 	successjob="checkB2" 	failjob="gohome" dx="-3" dy="2" material="COAL" />
-	<job name="checkB2" 	type="AVAILABLE" 	successjob="checkB3" 	failjob="gohome" dx="3" dy="3"  material="GOLDORE" />
-	<job name="checkB3" 	type="NOT_FULL" 	successjob="toore"		failjob="gohome" dx="4" dy="1" />
-	<job name="toore" 		type="GO_TO" 		successjob="lookatore"	failjob="hide" 	 dx="3" dy="3" />
 
 </building>

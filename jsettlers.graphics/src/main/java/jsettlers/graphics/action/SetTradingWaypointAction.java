@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2018
+/*******************************************************************************
+ * Copyright (c) 2015
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,39 +11,56 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- */
-package jsettlers.common.action;
+ *******************************************************************************/
+package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This action states that the user wants something to move to the given position.
- *
+ * Sets a traiding waypoint position for the selected building.
+ * 
  * @author Michael Zangl
+ *
  */
-public class PointAction extends Action {
-
-	private final ShortPoint2D position;
+public class SetTradingWaypointAction extends PointAction {
 
 	/**
-	 * Creates a new moveto aciton.
+	 * The waypoint types, ordered in the order they are visited by the donkeys/ships.
+	 * 
+	 * @author Michael Zangl
 	 *
-	 * @param type
-	 *            The type of this action.
-	 * @param position
-	 *            The position the user clicked at.
 	 */
-	public PointAction(EActionType type, ShortPoint2D position) {
-		super(type);
-		this.position = position;
+	public enum EWaypointType {
+		WAYPOINT_1,
+		WAYPOINT_2,
+		WAYPOINT_3,
+		DESTINATION;
+
+		public static final EWaypointType[] VALUES = values();
+	}
+
+	private final EWaypointType waypoint;
+
+	/**
+	 * Creates a new {@link SetTradingWaypointAction}.
+	 * 
+	 * @param waypoint
+	 *            The waypoint to set.
+	 * @param position
+	 *            The position to set it at.
+	 */
+	public SetTradingWaypointAction(EWaypointType waypoint, ShortPoint2D position) {
+		super(EActionType.SET_TRADING_WAYPOINT, position);
+		this.waypoint = waypoint;
 	}
 
 	/**
-	 * Gets the position on the map the user wants to move the unit(s) to.
-	 *
-	 * @return The position.
+	 * Gets the waypoint to set.
+	 * 
+	 * @return The waypoint.
 	 */
-	public ShortPoint2D getPosition() {
-		return this.position;
+	public EWaypointType getWaypointType() {
+		return waypoint;
 	}
 }

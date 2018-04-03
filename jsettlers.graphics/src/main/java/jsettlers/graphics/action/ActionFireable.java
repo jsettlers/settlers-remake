@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import jsettlers.common.action.IAction;
+import jsettlers.common.menu.action.IAction;
 
 /**
  * This interface provides a method that allows you to fire an action on the object that implements the listener.

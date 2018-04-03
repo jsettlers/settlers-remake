@@ -30,7 +30,7 @@ import java.util.List;
 import java8.util.stream.Collectors;
 import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.action.SetAcceptedStockMaterialAction;
+import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;

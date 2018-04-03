@@ -4,11 +4,11 @@ apply plugin: 'java'
 ext {
     streamSupportVersion = '1.5.4'
 
-    androidAnnotationsVersion = '4.4.0'
-    androidSupportLibraryVersion = '27.1.0'
+    androidAnnotationsVersion = '4.3.0'
+    androidSupportLibraryVersion = '25.3.1'
 
-    androidBuildToolsVersion = '27.0.3'
-    androidCompileSdkVersion = 27
+    androidBuildToolsVersion = '25.0.3'
+    androidCompileSdkVersion = 25
     androidMinSdkVersion = 19
     androidTargetSdkVersion = 25
 }
@@ -17,11 +17,11 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        google()
     }
     dependencies {
         classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
-        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'me.tatarka:gradle-retrolambda:3.4.0'
     }
 }
 
@@ -29,13 +29,13 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        google()
         maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
     }
 }
 
 
 subprojects {
+    apply plugin: 'me.tatarka.retrolambda'
 
     plugins.withType(JavaPlugin).whenPluginAdded {
         test {
@@ -87,16 +87,25 @@ subprojects {
         duplicatesStrategy 'exclude'
     }
 
+    plugins.withId("me.tatarka.retrolambda") {
+        retrolambda {
+            jdk System.getenv("JAVA_HOME")
+            oldJdk System.getenv("JAVA_HOME")
+            javaVersion JavaVersion.VERSION_1_7
+            incremental true
+        }
+    }
+
     // Add streamsupport dependency
     def addGlobalDependencies = {
         dependencies {
-            implementation 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
 
-            testImplementation 'junit:junit:4.12'
+            testCompile 'junit:junit:4.12'
         }
     }
 
@@ -176,7 +185,7 @@ if (findProject(':jsettlers.main.android')) {
     task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
         into('JSettlers-Android') {
             from { project.getRootProject().file('LICENSE.txt') }
-            from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/debug/jsettlers.main.android-debug.apk')
+            from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
             rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
         }
 

@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -29,10 +28,9 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.menu.messages.SimpleMessage;
+import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
-import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.EGoInDirectionMode;
@@ -208,10 +206,6 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			super.playAction(EMovableAction.ACTION2, currentJob.getTime());
 			jobFinished();
 			break;
-		case PLAY_ACTION3:
-			super.playAction(EMovableAction.ACTION3, currentJob.getTime());
-			jobFinished();
-			break;
 
 		case AVAILABLE:
 			if (super.getGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
@@ -239,9 +233,6 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case START_WORKING:
 		case STOP_WORKING:
-			if (building instanceof SlaughterhouseBuilding) {
-				((SlaughterhouseBuilding) building).requestSound();
-			}
 			if (building instanceof MillBuilding) {
 				((MillBuilding) building).setRotating(currentJob.getType() == EBuildingJobType.START_WORKING);
 			}
@@ -353,7 +344,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void executeAction() {
 		clearMark();
-		if (super.getGrid().executeSearchType(movable, movable.getPos(), currentJob.getSearchType())) {
+		if (super.getGrid().executeSearchType(movable, movable.getPosition(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
@@ -378,8 +369,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	/**
 	 * @param dijkstra
-	 * 		if true, dijkstra algorithm is used<br>
-	 * 		if false, in area finder is used.
+	 *            if true, dijkstra algorithm is used<br>
+	 *            if false, in area finder is used.
 	 */
 	private void preSearchPathAction(boolean dijkstra) {
 		super.setPosition(getCurrentJobPos());
@@ -408,7 +399,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = movable.getDirection();
-			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPos()), EResourceType.FISH);
+			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPosition()), EResourceType.FISH);
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:
@@ -445,7 +436,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void lookAtSearched() {
-		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPos(), currentJob.getSearchType());
+		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPosition(), currentJob.getSearchType());
 		if (direction != null) {
 			super.lookInDirection(direction);
 			jobFinished();
@@ -481,7 +472,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void dropCurrentMaterial() {
 		EMaterialType material = movable.getMaterial();
 		if (material.isDroppable()) {
-			super.getGrid().dropMaterial(movable.getPos(), material, true, false);
+			super.getGrid().dropMaterial(movable.getPosition(), material, true, false);
 		}
 		super.setMaterial(EMaterialType.NO_MATERIAL);
 	}
@@ -541,14 +532,5 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	@Override
 	public boolean isAlive() {
 		return !killed;
-	}
-
-	@Override
-	public EBuildingType getBuildingType() {
-		if (building != null) {
-			return building.getBuildingType();
-		} else {
-			return null;
-		}
 	}
 }

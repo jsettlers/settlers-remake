@@ -16,7 +16,7 @@ package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 
 public interface UIElement {
 	void setPosition(FloatRectangle position);

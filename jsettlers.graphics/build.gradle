@@ -16,8 +16,8 @@ clean {
 }
 
 dependencies {
-    implementation project(':jsettlers.common')
-    implementation project(':go.graphics')
+    compile project(':jsettlers.common')
+    compile project(':go.graphics')
 }
 
 

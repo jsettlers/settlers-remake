@@ -19,7 +19,7 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 
 /**
  * This is a special button that has a label on it.

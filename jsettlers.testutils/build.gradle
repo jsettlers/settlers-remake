@@ -1,9 +1,8 @@
 apply plugin: 'java'
 
 dependencies {
-    implementation 'junit:junit:4.12'
-    implementation project(':jsettlers.common')
-    implementation project(':jsettlers.logic')
-    implementation project(':jsettlers.network')
-    implementation project(':jsettlers.main.swing')
+    compile 'junit:junit:4.12'
+    compile project(':jsettlers.common')
+    compile project(':jsettlers.logic')
+    compile project(':jsettlers.main.swing')
 }

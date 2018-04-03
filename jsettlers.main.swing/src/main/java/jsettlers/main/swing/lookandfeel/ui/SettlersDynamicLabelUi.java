@@ -14,16 +14,18 @@
  *******************************************************************************/
 package jsettlers.main.swing.lookandfeel.ui;
 
-import jsettlers.graphics.map.draw.ImageProvider;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicLabelUI;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.swing.utils.ImageUtils;
 
 /**
  * Label UI, with different stylings
@@ -54,7 +56,7 @@ public class SettlersDynamicLabelUi extends BasicLabelUI {
 	public SettlersDynamicLabelUi(Color foregroundColor, int x, int y, int width, int heigth) {
 		this.foregroundColor = foregroundColor;
 		ImageProvider imageProvider = ImageProvider.getInstance();
-		BufferedImage guiImage = imageProvider.getGuiImage(2, 13).convertToBufferedImage();
+		BufferedImage guiImage = ImageUtils.convertToBufferedImage(imageProvider.getGuiImage(2, 13));
 
 		this.backgroundImage = guiImage.getSubimage(x, y, width, heigth);
 	}

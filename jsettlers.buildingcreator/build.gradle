@@ -2,10 +2,11 @@ apply plugin: 'java'
 
 
 dependencies {
-    implementation project(':go.graphics')
-    implementation project(':go.graphics.swing')
-    implementation project(':jsettlers.common')
-    implementation project(':jsettlers.graphics')
-    implementation project(':jsettlers.logic')
-    implementation project(':jsettlers.main.swing')
+    compile project(':go.graphics')
+    compile project(':go.graphics.swing')
+    compile project(':jsettlers.common')
+    compile project(':jsettlers.graphics')
+    compile project(':jsettlers.graphics.swing')
+    compile project(':jsettlers.logic')
+    compile project(':jsettlers.main.swing')
 }

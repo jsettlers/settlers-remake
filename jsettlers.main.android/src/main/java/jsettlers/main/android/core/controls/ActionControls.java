@@ -15,7 +15,7 @@
 
 package jsettlers.main.android.core.controls;
 
-import jsettlers.common.action.EActionType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.ActionFireable;
 
 /**

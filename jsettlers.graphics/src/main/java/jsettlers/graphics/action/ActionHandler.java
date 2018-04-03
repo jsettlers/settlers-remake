@@ -16,7 +16,6 @@ package jsettlers.graphics.action;
 
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
-import jsettlers.common.action.Action;
 
 /**
  * This is a go event handler that preforms an action when the event is fired.

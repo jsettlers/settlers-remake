@@ -19,7 +19,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 
 public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 

@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.IAction;
-import jsettlers.common.action.Action;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 

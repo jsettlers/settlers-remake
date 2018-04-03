@@ -18,8 +18,8 @@ package jsettlers.graphics.ui;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.IPositionSupplier;
-import jsettlers.common.action.Action;
-import jsettlers.common.action.SetMaterialProductionAction;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.SetMaterialProductionAction;
 
 /**
  * @author codingberlin

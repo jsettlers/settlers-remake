@@ -20,9 +20,9 @@ import android.view.View;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.IAction;
-import jsettlers.common.action.Action;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;

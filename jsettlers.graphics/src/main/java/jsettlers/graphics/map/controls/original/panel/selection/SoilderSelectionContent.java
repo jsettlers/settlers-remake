@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
-import jsettlers.common.action.EActionType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;

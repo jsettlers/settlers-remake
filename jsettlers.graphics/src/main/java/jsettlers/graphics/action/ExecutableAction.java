@@ -14,8 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import jsettlers.common.action.Action;
-import jsettlers.common.action.EActionType;
+import jsettlers.common.menu.action.EActionType;
 
 /**
  * This is an action that can be executed. When fired, this action is not interpreted but executed instead.

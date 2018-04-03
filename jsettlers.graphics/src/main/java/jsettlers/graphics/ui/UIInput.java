@@ -21,7 +21,7 @@ import go.graphics.event.GOKeyEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import jsettlers.common.action.Action;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.utils.FocusAction;
 
 /**
