@@ -86,7 +86,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			return;
 		}
 
-		if (!building.isNotDestroyed()) { // check if building is still ok
+		if (building.isDestroyed()) { // check if building is still ok
 			buildingDestroyed();
 			return;
 		}
