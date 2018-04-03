@@ -23,7 +23,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.PointAction;
+import jsettlers.common.action.PointAction;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.ILogicMovable;

@@ -83,16 +83,25 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
-	 * 
+	 *
 	 * @author michael
 	 */
 	interface IMill extends IBuilding, ISoundable {
 		/**
 		 * If the woking animation of the mill should be shown.
-		 * 
+		 *
 		 * @return True if the mill is working.
 		 */
 		boolean isRotating();
+	}
+
+	/**
+	 * This building can request a sound.
+	 *
+	 */
+	interface ISoundRequestable extends IBuilding {
+		boolean isSoundRequested();
+		void requestSound();
 	}
 
 	/**
