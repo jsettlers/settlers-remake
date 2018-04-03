@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
+import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;

@@ -19,12 +19,12 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.common.action.SetTradingWaypointAction;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IteratorFilter;
-import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.IDockBuilding;
