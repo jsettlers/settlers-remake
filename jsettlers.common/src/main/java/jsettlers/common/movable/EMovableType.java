@@ -40,12 +40,13 @@ public enum EMovableType {
 	MILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	BAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	PIG_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	DONKEY_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	SLAUGHTERER(EMaterialType.AXE, ESelectionType.PEOPLE, true),
 	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	WINEGROWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	HEALER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-
+	DOCKWORKER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
 	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
 	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true),
 

@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2016
+/*
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,33 +11,38 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.action;
+ */
+package jsettlers.common.action;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
 
 /**
- * Instructs the logic to compute and display the constructions mark for the given building.
+ * This class hold special information for the action type {@link EActionType#SELECT_AREA}.
  * 
  * @author michael
- *
  */
-public class ShowConstructionMarksAction extends Action {
-	private EBuildingType buildingType;
+public class SelectAreaAction extends Action {
+	private final IMapArea area;
 
-	public ShowConstructionMarksAction(EBuildingType buildingType) {
-		super(EActionType.SHOW_CONSTRUCTION_MARK);
-		this.buildingType = buildingType;
-
+	/**
+	 * Creates a new select area action.
+	 * 
+	 * @param area
+	 *            The area.
+	 */
+	public SelectAreaAction(IMapArea area) {
+		super(EActionType.SELECT_AREA);
+		this.area = area;
 	}
 
 	/**
-	 * Get the type of building to show the construction marks for.
+	 * Gets the selected area.
 	 * 
-	 * @return The type or <code>null</code> if none should be displayed.
+	 * @return The area.
 	 */
-	public EBuildingType getBuildingType() {
-		return buildingType;
+	public IMapArea getArea() {
+		return this.area;
 	}
 }

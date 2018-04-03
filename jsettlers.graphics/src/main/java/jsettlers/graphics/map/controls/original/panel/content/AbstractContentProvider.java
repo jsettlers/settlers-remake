@@ -15,11 +15,11 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.PointAction;
+import jsettlers.common.action.PointAction;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.ui.UIPanel;
 

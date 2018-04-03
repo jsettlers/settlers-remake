@@ -28,9 +28,9 @@ import jsettlers.graphics.map.MapDrawContext;
 public class BackgroundSound implements Runnable {
 	private static final int BACKGROUND_SLEEP_TIME = 50;
 	private static final double BIRDS1_FRACTION = .25;
-	private static final double BIRDS_FREQUENCY = .3;
+	private static final double BIRDS_FREQUENCY = .15;
 
-	private static final float BIRDS_VOLUME = .4f;
+	private static final float BIRDS_VOLUME = .3f;
 	private static final float WATER_VOLUME =  .1f;
 	private static final float DESERT_VOLUME =  .05f;
 	private static final float RIVER_VOLUME =  .03f;

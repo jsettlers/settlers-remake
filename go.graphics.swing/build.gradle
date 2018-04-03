@@ -3,7 +3,7 @@ apply plugin: 'java'
 def lwjgl_version="3.1.6"
 
 dependencies {
-    compile project(':go.graphics')
+    implementation project(':go.graphics')
 
     compile "org.lwjgl:lwjgl:"+lwjgl_version
     compile "org.lwjgl:lwjgl-opengl:"+lwjgl_version
