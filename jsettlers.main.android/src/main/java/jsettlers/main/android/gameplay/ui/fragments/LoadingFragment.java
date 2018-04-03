@@ -15,6 +15,7 @@
 
 package jsettlers.main.android.gameplay.ui.fragments;
 
+import jsettlers.graphics.map.draw.ImageProvider;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
@@ -104,5 +105,15 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	public void startFinished() {
 		gameStarter.getStartingGame().setListener(null);
 		getActivity().runOnUiThread(() -> navigator.showMap());
+	}
+
+	@Override
+	public void startingLoadingGame() {
+		ImageProvider.getInstance().startPreloading();
+	}
+
+	@Override
+	public void waitForPreloading() {
+		ImageProvider.getInstance().waitForPreloadingFinish();
 	}
 }

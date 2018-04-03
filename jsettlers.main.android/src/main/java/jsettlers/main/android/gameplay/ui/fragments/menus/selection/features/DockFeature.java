@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,13 +18,12 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.ImageView;
-
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EShipType;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.main.android.R;
@@ -101,15 +100,15 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	@Override
 	public void actionFired(IAction action) {
 		switch (action.getActionType()) {
-			case ASK_SET_DOCK:
-				snackbar = Snackbar
-						.make(getView(), "Choose dock position", Snackbar.LENGTH_INDEFINITE)
-						.setAction("Cancel", view -> taskControls.endTask());
-				snackbar.show();
-				break;
-			case SET_DOCK:
-			case ABORT:
-				dismissSnackbar();
+		case ASK_SET_DOCK:
+			snackbar = Snackbar
+					.make(getView(), "Choose dock position", Snackbar.LENGTH_INDEFINITE)
+					.setAction("Cancel", view -> taskControls.endTask());
+			snackbar.show();
+			break;
+		case SET_DOCK:
+		case ABORT:
+			dismissSnackbar();
 		}
 
 	}
@@ -131,18 +130,18 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 
 			if (currentOrderedShip != orderedShip) {
 				switch (orderedShip) {
-					case FERRY:
-						OriginalImageProvider.get(ferrySelectedImageLink).setAsImage(ferryImageView);
-						OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
-						break;
-					case CARGO_SHIP:
-						OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
-						OriginalImageProvider.get(tradeShipSelectedImageLink).setAsImage(tradeShipImageView);
-						break;
-					default:
-						OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
-						OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
-						break;
+				case FERRY:
+					OriginalImageProvider.get(ferrySelectedImageLink).setAsImage(ferryImageView);
+					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
+					break;
+				case CARGO_SHIP:
+					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
+					OriginalImageProvider.get(tradeShipSelectedImageLink).setAsImage(tradeShipImageView);
+					break;
+				default:
+					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
+					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
+					break;
 				}
 
 				currentOrderedShip = orderedShip;

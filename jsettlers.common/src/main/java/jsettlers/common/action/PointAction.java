@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,33 +12,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+package jsettlers.common.action;
 
-package jsettlers.main.android.core.controls;
-
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.Action;
-import jsettlers.graphics.action.ActionFireable;
-
-import android.view.View;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Created by tompr on 13/01/2017.
+ * This action states that the user wants something to move to the given position.
+ *
+ * @author Michael Zangl
  */
-public class ActionClickListener implements View.OnClickListener {
-	private final ActionFireable actionFireable;
-	private final Action action;
+public class PointAction extends Action {
 
-	public ActionClickListener(ActionFireable actionFireable, EActionType actionType) {
-		this(actionFireable, new Action(actionType));
+	private final ShortPoint2D position;
+
+	/**
+	 * Creates a new moveto aciton.
+	 *
+	 * @param type
+	 *            The type of this action.
+	 * @param position
+	 *            The position the user clicked at.
+	 */
+	public PointAction(EActionType type, ShortPoint2D position) {
+		super(type);
+		this.position = position;
 	}
 
-	public ActionClickListener(ActionFireable actionFireable, Action action) {
-		this.actionFireable = actionFireable;
-		this.action = action;
-	}
-
-	@Override
-	public void onClick(View view) {
-		actionFireable.fireAction(action);
+	/**
+	 * Gets the position on the map the user wants to move the unit(s) to.
+	 *
+	 * @return The position.
+	 */
+	public ShortPoint2D getPosition() {
+		return this.position;
 	}
 }

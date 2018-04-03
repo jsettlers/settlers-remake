@@ -15,6 +15,7 @@
 package jsettlers.logic.movable;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -24,7 +25,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
-import jsettlers.graphics.messages.SimpleMessage;
+import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
@@ -39,8 +40,11 @@ import jsettlers.logic.timer.RescheduleTimer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -123,21 +127,18 @@ public final class Movable implements ILogicMovable {
 		grid.enterPosition(position, this, true);
 	}
 
-	/**
-	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
-	 *
-	 * @param ois
-	 * 		ObjectInputStream
-	 * @throws IOException
-	 * 		Exception regarding IO
-	 * @throws ClassNotFoundException
-	 * 		Class not found exception
-	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		movablesByID.put(this.id, this);
-		allMovables.add(this);
-		nextID = Math.max(nextID, this.id + 1);
+	@SuppressWarnings("unchecked")
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		nextID = ois.readInt();
+		allMovables.clear();
+		allMovables.addAll((Collection<? extends ILogicMovable>) ois.readObject());
+		movablesByID.putAll((Map<? extends Integer, ? extends ILogicMovable>) ois.readObject());
+	}
+
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
+		oos.writeInt(nextID);
+		oos.writeObject(allMovables);
+		oos.writeObject(movablesByID);
 	}
 
 	/**
@@ -880,6 +881,11 @@ public final class Movable implements ILogicMovable {
 	@Override
 	public final void stopOrStartWorking(boolean stop) {
 		strategy.stopOrStartWorking(stop);
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return this.strategy.getBuildingType();
 	}
 
 	@Override

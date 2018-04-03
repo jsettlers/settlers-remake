@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
@@ -139,6 +140,11 @@ public class TestSettler implements IMovable {
 	@Override
 	public int getCargoCount(int stack) {
 		return 0;
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return null;
 	}
 
 	@Override

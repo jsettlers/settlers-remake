@@ -14,8 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.menu;
 
-import jsettlers.common.menu.action.IAction;
-import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.action.IAction;
 
 /**
  * This is a map interface listener. <h2>Registering listeners</h2> At first you have to get the connector when adding the map va

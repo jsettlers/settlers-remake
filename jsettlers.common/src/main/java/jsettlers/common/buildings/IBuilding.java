@@ -98,6 +98,15 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	}
 
 	/**
+	 * This building can request a sound.
+	 *
+	 */
+	interface ISoundRequestable extends IBuilding {
+		boolean isSoundRequested();
+		void requestSound();
+	}
+
+	/**
 	 * This interface should be implemented by towers that can have occupying people in them.
 	 *
 	 * @author michael

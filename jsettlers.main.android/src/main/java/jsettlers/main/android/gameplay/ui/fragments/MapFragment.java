@@ -39,9 +39,10 @@ import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-import jsettlers.common.menu.action.EActionType;
+
+import jsettlers.common.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;

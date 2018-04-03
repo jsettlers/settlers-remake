@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,17 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.trading;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.List;
-
+import jsettlers.common.action.SetTradingWaypointAction;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IteratorFilter;
-import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.IDockBuilding;
@@ -32,10 +27,13 @@ import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.movable.strategies.trading.IShipHarbor;
 import jsettlers.logic.player.Player;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author Rudolf Polzer
- *
  */
 public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDockBuilding {
 	private static final List<HarborBuilding> ALL_HARBORS = new ArrayList<>();

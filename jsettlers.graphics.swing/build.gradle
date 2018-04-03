@@ -1,8 +1,0 @@
-apply plugin: 'java'
-
-dependencies {
-    compile project(':go.graphics')
-    compile project(':go.graphics.swing')
-    compile project(':jsettlers.graphics')
-    compile project(':jsettlers.common')
-}

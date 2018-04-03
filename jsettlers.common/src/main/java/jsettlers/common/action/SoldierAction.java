@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,40 +11,40 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.action;
+ */
+package jsettlers.common.action;
 
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.movable.ESoldierType;
 
 /**
- * This action states that the user wants something to move to the given position.
- *
+ * This is for all actions that allows you to specify a soldier type.
+ * 
  * @author Michael Zangl
+ *
  */
-public class PointAction extends Action {
+public class SoldierAction extends Action {
 
-	private final ShortPoint2D position;
+	private final ESoldierType soldierType;
 
 	/**
-	 * Creates a new moveto aciton.
-	 *
-	 * @param type
-	 *            The type of this action.
-	 * @param position
-	 *            The position the user clicked at.
+	 * Create a new {@link SoldierAction}.
+	 * 
+	 * @param actionType
+	 *            The type of action
+	 * @param soldierType
+	 *            The soldiers.
 	 */
-	public PointAction(EActionType type, ShortPoint2D position) {
-		super(type);
-		this.position = position;
+	public SoldierAction(EActionType actionType, ESoldierType soldierType) {
+		super(actionType);
+		this.soldierType = soldierType;
 	}
 
 	/**
-	 * Gets the position on the map the user wants to move the unit(s) to.
-	 *
-	 * @return The position.
+	 * Gets the type of soldiers.
+	 * 
+	 * @return The type.
 	 */
-	public ShortPoint2D getPosition() {
-		return this.position;
+	public ESoldierType getSoldierType() {
+		return soldierType;
 	}
 }
