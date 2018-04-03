@@ -154,7 +154,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private boolean alreadyWalkingToPosition(ShortPoint2D targetPosition) {
-		return this.state == EMovableState.PATHING && this.path.getTargetPos().equals(targetPosition);
+		return this.state == EMovableState.PATHING && this.path.getTargetPosition().equals(targetPosition);
 	}
 
 	public void leavePosition() {
@@ -248,13 +248,13 @@ public final class Movable implements ILogicMovable {
 					this.path = null;
 
 				case DOING_NOTHING:
-					ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
+					ShortPoint2D oldTargetPos = path != null ? path.getTargetPosition() : null;
 					ShortPoint2D oldPos = position;
 					boolean foundPath = goToPos(requestedTargetPosition); // progress is reset in here
 					requestedTargetPosition = null;
 
 					if (foundPath) {
-						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
+						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPosition());
 						return animationDuration; // we already follow the path and initiated the walking
 					} else {
 						break;
@@ -318,7 +318,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private void pathingAction() {
-		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPosition(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
@@ -338,18 +338,18 @@ public final class Movable implements ILogicMovable {
 
 		ILogicMovable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
-			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
+			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPosition())) { // next position is valid
 				goSinglePathStep();
 
 			} else { // next position is invalid
 				movableAction = EMovableAction.NO_ACTION;
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
+				Path newPath = grid.calculatePathTo(this, path.getTargetPosition()); // try to find a new path
 
 				if (newPath == null) { // no path found
 					setState(EMovableState.DOING_NOTHING);
 
-					strategy.pathAborted(path.getTargetPos()); // inform strategy
+					strategy.pathAborted(path.getTargetPosition()); // inform strategy
 					path = null;
 				} else {
 					this.path = newPath; // continue with new path
@@ -785,7 +785,7 @@ public final class Movable implements ILogicMovable {
 	final ShortPoint2D followPresearchedPath() {
 		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
 		followPath(this.path);
-		return path.getTargetPos();
+		return path.getTargetPosition();
 	}
 
 	final void enableNothingToDoAction(boolean enable) {
@@ -849,7 +849,7 @@ public final class Movable implements ILogicMovable {
 
 		grid.leavePosition(this.position, this);
 		this.health = -200;
-		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPosition() : null);
 		this.state = EMovableState.DEAD;
 		this.selected = false;
 
@@ -984,7 +984,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private void setStrategy(MovableStrategy newStrategy) {
-		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPosition() : null);
 		this.strategy = newStrategy;
 		this.movableAction = EMovableAction.NO_ACTION;
 		setState(EMovableState.DOING_NOTHING);

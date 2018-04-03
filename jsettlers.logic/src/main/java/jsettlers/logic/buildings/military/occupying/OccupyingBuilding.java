@@ -196,7 +196,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 			Path path = super.grid.getDijkstra().find(dijkstraRequest);
 			if (path != null) {
-				ILogicMovable soldier = super.grid.getMovable(path.getTargetPos());
+				ILogicMovable soldier = super.grid.getMovable(path.getTargetPosition());
 				if (soldier != null) {
 					IBuildingOccupyableMovable occupier = soldier.setOccupyableBuilding(this);
 					if (occupier != null) {

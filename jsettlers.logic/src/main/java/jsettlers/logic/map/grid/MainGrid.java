@@ -1866,7 +1866,7 @@ public final class MainGrid implements Serializable {
 				}
 			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
 
-			return path != null ? path.getTargetPos() : null;
+			return path != null ? path.getTargetPosition() : null;
 		}
 	}
 

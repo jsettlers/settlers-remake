@@ -115,7 +115,7 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 		} else if (ErrorMarker.MISSING_LIFE_RESOURCE.equals(entry.getAdditionalErrorData())) {
 			// nothing to do
 		} else {
-			scrollTo.scrollTo(entry.getPos());
+			scrollTo.scrollTo(entry.getPosition());
 		}
 	}
 
