@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
-import java.util.ConcurrentModificationException;
-
 import go.graphics.GLDrawContext;
-
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -34,6 +31,7 @@ import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
@@ -49,6 +47,8 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 import jsettlers.graphics.sequence.Sequence;
 import jsettlers.graphics.sound.SoundManager;
 
+import java.util.ConcurrentModificationException;
+
 /**
  * This class handles drawing of objects on the map.
  *
@@ -57,6 +57,7 @@ import jsettlers.graphics.sound.SoundManager;
 public class MapObjectDrawer {
 
 	private static final int SOUND_MILL = 42;
+	private static final int SOUND_SLAUGHTERHOUSE = 14;
 	private static final int SOUND_BUILDING_DESTROYED = 93;
 	private static final int SOUND_SETTLER_KILLED = 35;
 	private static final int SOUND_FALLING_TREE = 36;
@@ -127,6 +128,8 @@ public class MapObjectDrawer {
 
 	private static final float FLAG_ROOF_Z = 0.89f;
 
+	private static final int SMOKE_HEIGHT = 30;
+
 	private final SoundManager sound;
 	private final MapDrawContext context;
 
@@ -143,11 +146,11 @@ public class MapObjectDrawer {
 
 	/**
 	 * Creates a new {@link MapObjectDrawer}.
-	 * 
+	 *
 	 * @param context
-	 *            The context to use for computing the positions.
+	 * 		The context to use for computing the positions.
 	 * @param sound
-	 *            The sound manager to send sounds to play to.
+	 * 		The sound manager to send sounds to play to.
 	 */
 	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
 		this.context = context;
@@ -158,11 +161,11 @@ public class MapObjectDrawer {
 	 * Draws a map object at a given position.
 	 *
 	 * @param x
-	 *            THe position to draw the object.
+	 * 		THe position to draw the object.
 	 * @param y
-	 *            THe position to draw the object.
+	 * 		THe position to draw the object.
 	 * @param object
-	 *            The object (tree, ...) to draw.
+	 * 		The object (tree, ...) to draw.
 	 */
 	public void drawMapObject(int x, int y, IMapObject object) {
 		forceSetup();
@@ -308,7 +311,7 @@ public class MapObjectDrawer {
 			break;
 
 		case SMOKE:
-			drawByProgress(x, y, 13, 42, progress, color);
+			drawByProgressWithHeight(x, y, SMOKE_HEIGHT, 13, 42, progress, color);
 			break;
 
 		case PLANT_DECORATION:
@@ -418,7 +421,7 @@ public class MapObjectDrawer {
 	 * Draws any type of movable.
 	 *
 	 * @param movable
-	 *            The movable.
+	 * 		The movable.
 	 */
 	public void draw(IMovable movable) {
 		forceSetup();
@@ -430,62 +433,138 @@ public class MapObjectDrawer {
 	}
 
 	private void playMovableSound(IMovable movable) {
-		if (!movable.isSoundPlayed()) {
-			final EMovableAction action = movable.getAction();
-			if (action == EMovableAction.ACTION1) {
-				playSoundAction1(movable.getMovableType(), movable.getPos());
-				movable.setSoundPlayed();
-			} else if (action == EMovableAction.ACTION2) {
-				playSoundAction2(movable.getMovableType(), movable.getPos());
-				movable.setSoundPlayed();
+		if (movable.isSoundPlayed()) {
+			return;
+		}
+		int soundNumber = -1;
+		float delay = movable.getMoveProgress();
+		switch (movable.getAction()) {
+		case ACTION1:
+			switch (movable.getMovableType()) {
+			case LUMBERJACK:
+				if (delay > .8) {
+					soundNumber = 0;
+				}
+				break;
+			case BRICKLAYER:
+				if (delay > .7) {
+					soundNumber = 1;
+				}
+				break;
+			case DIGGER:
+				if (delay > .6) {
+					soundNumber = 2;
+				}
+				break;
+			case STONECUTTER:
+				if (delay > .8) {
+					soundNumber = 3;
+				}
+				break;
+			case SAWMILLER:
+				if (delay > .2) {
+					soundNumber = 5;
+				}
+				break;
+			case SMITH:
+				if (delay > .7) {
+					soundNumber = 6;
+				}
+				break;
+			case FARMER:
+				if (delay > .8) {
+					soundNumber = 9;
+				}
+				break;
+			case FISHERMAN:
+				if (delay > .8) {
+					soundNumber = 16;
+				}
+				break;
+			case DOCKWORKER:
+				if (delay > .8) {
+					soundNumber = 20;
+				}
+				break;
+			case HEALER:
+				if (delay > .8) {
+					soundNumber = 21;
+				}
+				break;
+			case GEOLOGIST: // TODO: should also check grid.getResourceAmountAt(x, y)
+				if (sound.random.nextInt(256) == 0) {
+					soundNumber = 24;
+				}
+				break;
+			case SWORDSMAN_L1:
+			case SWORDSMAN_L2:
+			case SWORDSMAN_L3:
+				if (delay > .8) {
+					soundNumber = 30;
+				}
+				break;
+			case BOWMAN_L1:
+			case BOWMAN_L2:
+			case BOWMAN_L3:
+				if (delay > .4) {
+					soundNumber = 33;
+				}
+				break;
+			case PIKEMAN_L1:
+			case PIKEMAN_L2:
+			case PIKEMAN_L3:
+				soundNumber = 34;
+				break;
+			case MELTER:
+				soundNumber = 38;
+				break;
+			case PIG_FARMER:
+				if (delay > .4) {
+					soundNumber = 39;
+				}
+				break;
+			case DONKEY_FARMER:
+				if (delay > .4) {
+					soundNumber = 40;
+				}
+				break;
+			case CHARCOAL_BURNER:
+				if (delay > .8) {
+					soundNumber = 45;
+				}
+				break;
+			}
+			break;
+		case ACTION2:
+			switch (movable.getMovableType()) {
+			case FARMER:
+				if (delay > .8) {
+					soundNumber = 12;
+				}
+				break;
+			case FISHERMAN:
+				if (delay > .5) {
+					soundNumber = 15;
+				}
+				break;
+			case LUMBERJACK:
+				if (delay > .8) {
+					soundNumber = 36;
+				}
+				break;
+			}
+		case ACTION3:
+			switch (movable.getMovableType()) {
+			case FISHERMAN:
+				if (delay > .95) {
+					soundNumber = 17;
+				}
+				break;
 			}
 		}
-	}
-
-	private void playSoundAction1(EMovableType type, ShortPoint2D position) {
-		switch (type) {
-		case BRICKLAYER:
-			sound.playSound(1, 1, position);
-			break;
-		case LUMBERJACK:
-			sound.playSound(0, 1, position);
-			break;
-		case SAWMILLER:
-			sound.playSound(5, 1, position);
-			break;
-		case STONECUTTER:
-			sound.playSound(3, 1, position);
-			break;
-		case DIGGER:
-			sound.playSound(2, 1, position);
-			break;
-		case SMITH:
-			sound.playSound(6, 1, position);
-			break;
-		case FARMER:
-			sound.playSound(12, 1, position);
-			break;
-		case SWORDSMAN_L1:
-		case SWORDSMAN_L2:
-		case SWORDSMAN_L3:
-			sound.playSound(30, 1, position);
-			break;
-		case BOWMAN_L1:
-		case BOWMAN_L2:
-		case BOWMAN_L3:
-			sound.playSound(33, 1, position);
-			break;
-		case CHARCOAL_BURNER:
-			sound.playSound(45, 1, position);
-			break;
-		}
-	}
-
-	private void playSoundAction2(EMovableType type, ShortPoint2D position) {
-		switch (type) {
-		case LUMBERJACK:
-			sound.playSound(36, 1, position);
-			break;
+		if (soundNumber >= 0) {
+			sound.playSound(soundNumber, 1, movable.getPos());
+			movable.setSoundPlayed();
 		}
 	}
 
@@ -494,25 +573,62 @@ public class MapObjectDrawer {
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
-
 		final float moveProgress = movable.getMoveProgress();
-		final Image image = this.imageMap.getImageForSettler(movable, moveProgress);
-
 		Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogStatus);
-
+		Image image;
 		float viewX;
 		float viewY;
+		int height = context.getHeight(x, y);
+
+		// smith action
+		if (movable.getMovableType() == EMovableType.SMITH && movable.getAction() == EMovableAction.ACTION3) {
+			// draw smoke
+			ShortPoint2D smokePosition = movable.getDirection().getNextHexPoint(movable.getPos(), 2);
+			int smokeX = smokePosition.x - 0;
+			int smokeY = smokePosition.y - 0;
+			if (movable.getDirection() == EDirection.NORTH_WEST) {
+				smokeY--;
+			}
+			viewX = context.getConverter().getViewX(smokeX, smokeY, height);
+			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
+			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 43, (int) (moveProgress * 40));
+			image = imageProvider.getImage(link);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+		}
+
+		// melter action
+		if (movable.getMovableType() == EMovableType.MELTER && movable.getAction() == EMovableAction.ACTION1) {
+			int number = (int) (moveProgress * 36);
+			// draw molten metal
+			int metalX = x - 2;
+			int metalY = y - 5;
+			viewX = context.getConverter().getViewX(metalX, metalY, height);
+			viewY = context.getConverter().getViewY(metalX, metalY, height);
+			int metal = (movable.getGarrisonedBuildingType() == EBuildingType.IRONMELT) ? 37 : 36;
+			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, metal, number > 24 ? 24 : number);
+			image = imageProvider.getImage(link);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			// draw smoke
+			int smokeX = x - 9;
+			int smokeY = y - 14;
+			viewX = context.getConverter().getViewX(smokeX, smokeY, height);
+			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
+			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
+			image = imageProvider.getImage(link);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+		}
+
 		if (movable.getAction() == EMovableAction.WALKING) {
 			int originX = x - movable.getDirection().getGridDeltaX();
 			int originY = y - movable.getDirection().getGridDeltaY();
 			viewX = betweenTilesX(originX, originY, x, y, moveProgress);
 			viewY = betweenTilesY;
 		} else {
-			int height = context.getHeight(x, y);
 			viewX = context.getConverter().getViewX(x, y, height);
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
+		image = this.imageMap.getImageForSettler(movable, moveProgress);
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
 
 		if (movable.isSelected()) {
@@ -547,7 +663,9 @@ public class MapObjectDrawer {
 	}
 
 	private void playSound(IMapObject object, int soundId, int x, int y) {
-		if (object instanceof ISoundable) {
+		if (object instanceof IBuilding.ISoundRequestable) {
+			sound.playSound(soundId, 1, x, y);
+		} else if (object instanceof ISoundable) {
 			ISoundable soundable = (ISoundable) object;
 			if (!soundable.isSoundPlayed()) {
 				sound.playSound(soundId, 1, x, y);
@@ -713,13 +831,13 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a player border at a given position.
-	 * 
+	 *
 	 * @param x
-	 *            X position
+	 * 		X position
 	 * @param y
-	 *            Y position
+	 * 		Y position
 	 * @param player
-	 *            The player.
+	 * 		The player.
 	 */
 	public void drawPlayerBorderObject(int x, int y, byte player) {
 		forceSetup();
@@ -753,13 +871,13 @@ public class MapObjectDrawer {
 	 * Draws a stack
 	 *
 	 * @param x
-	 *            The x coordinate of the building
+	 * 		The x coordinate of the building
 	 * @param y
-	 *            The y coordinate of the building
+	 * 		The y coordinate of the building
 	 * @param object
-	 *            The stack to draw.
+	 * 		The stack to draw.
 	 * @param color
-	 *            Color to be drawn
+	 * 		Color to be drawn
 	 */
 	private void drawStack(int x, int y, IStackMapObject object, float color) {
 		forceSetup();
@@ -774,13 +892,13 @@ public class MapObjectDrawer {
 	 * Draws the stack directly to the screen.
 	 *
 	 * @param x
-	 *            The x coordinate of the building
+	 * 		The x coordinate of the building
 	 * @param y
-	 *            The y coordinate of the building
+	 * 		The y coordinate of the building
 	 * @param material
-	 *            The material the stack should have.
+	 * 		The material the stack should have.
 	 * @param count
-	 *            The number of elements on the stack
+	 * 		The number of elements on the stack
 	 */
 	private void drawStackAtScreen(int x, int y, EMaterialType material, int count, float color) {
 		int stackIndex = material.getStackIndex();
@@ -793,7 +911,7 @@ public class MapObjectDrawer {
 	 * Gets the gray color for a given fog.
 	 *
 	 * @param fogStatus
-	 *            The fog of war value
+	 * 		The fog of war value
 	 * @return Fog of war transparency color value
 	 */
 	private static float getColor(int fogStatus) {
@@ -804,13 +922,13 @@ public class MapObjectDrawer {
 	 * Draws a given buildng to the context.
 	 *
 	 * @param x
-	 *            The x coordinate of the building
+	 * 		The x coordinate of the building
 	 * @param y
-	 *            The y coordinate of the building
+	 * 		The y coordinate of the building
 	 * @param building
-	 *            The building to draw
+	 * 		The building to draw
 	 * @param color
-	 *            Gray color shade
+	 * 		Gray color shade
 	 */
 	private void drawBuilding(int x, int y, IBuilding building, float color) {
 		EBuildingType type = building.getBuildingType();
@@ -818,6 +936,10 @@ public class MapObjectDrawer {
 		float state = building.getStateProgress();
 
 		if (state >= 0.99) {
+			if (type == EBuildingType.SLAUGHTERHOUSE && ((IBuilding.ISoundRequestable) building).isSoundRequested()) {
+				playSound(building, SOUND_SLAUGHTERHOUSE, x, y);
+			}
+
 			if (type == EBuildingType.MILL && ((IBuilding.IMill) building).isRotating()) {
 				Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(MILL_FILE, MILL_SEQ);
 
@@ -879,13 +1001,13 @@ public class MapObjectDrawer {
 	 * Draws the occupiers of a building
 	 *
 	 * @param x
-	 *            The x coordinate of the building
+	 * 		The x coordinate of the building
 	 * @param y
-	 *            The y coordinate of the building
+	 * 		The y coordinate of the building
 	 * @param building
-	 *            The occupyed building
+	 * 		The occupyed building
 	 * @param baseColor
-	 *            The base color (gray shade).
+	 * 		The base color (gray shade).
 	 */
 	private void drawOccupiers(int x, int y, IOccupied building, float baseColor) {
 		// this can cause a ConcurrentModificationException when
@@ -992,6 +1114,12 @@ public class MapObjectDrawer {
 		draw(sequence.getImageSafe(index), x, y, color);
 	}
 
+	private void drawByProgressWithHeight(int x, int y, int height, int file, int sequenceIndex, float progress, float color) {
+		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(file, sequenceIndex);
+		int index = Math.min((int) (progress * sequence.length()), sequence.length() - 1);
+		drawWithHeight(sequence.getImageSafe(index), x, y, height, color);
+	}
+
 	private void draw(Image image, int x, int y, Color color, float baseColor) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
@@ -1017,10 +1145,23 @@ public class MapObjectDrawer {
 		draw(image, x, y, iColor);
 	}
 
+	private void drawWithHeight(Image image, int x, int y, int height, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawWithHeight(image, x, y, height, iColor);
+	}
+
 	private void draw(Image image, int x, int y, int color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
+
+		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+	}
+
+	private void drawWithHeight(Image image, int x, int y, int height, int color) {
+		int baseHeight = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, baseHeight + height);
+		float viewY = context.getConverter().getViewY(x, y, baseHeight + height);
 
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
 	}

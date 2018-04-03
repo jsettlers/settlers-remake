@@ -314,6 +314,9 @@ class WhatToDoAi implements IWhatToDoAi {
 			if (isEndGame) {
 				return;
 			}
+			if (isLackOfSettlers()) {
+				return;
+			}
 			if (buildTower()) {
 				return;
 			}
@@ -426,23 +429,34 @@ class WhatToDoAi implements IWhatToDoAi {
 		playerBuildingPlan.put(buildingType, playerBuildingPlan.get(buildingType) + 1);
 	}
 
+	private boolean isLackOfSettlers() {
+		return aiStatistics.getPositionsOfJoblessBearersForPlayer(playerId).size() == 0;
+	}
+
 	private void commandPioneers() {
-		if (aiStatistics.getBorderIngestibleByPioneersOf(playerId).isEmpty() || !aiStatistics.getEnemiesInTownOf(playerId).isEmpty()) {
-			releaseAllPioneers();
+		if (isLackOfSettlers()) {
+			releasePioneers(10);
+		} else if (aiStatistics.getBorderIngestibleByPioneersOf(playerId).isEmpty() || !aiStatistics.getEnemiesInTownOf(playerId).isEmpty()) {
+			releasePioneers(Integer.MAX_VALUE);
 		} else if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) >= 4) {
 			sendOutPioneers();
 		}
 	}
 
-	private void releaseAllPioneers() {
+	private void releasePioneers(int numberOfPioneers) {
 		broadenerPioneers.clear();
 		resourcePioneers.clear();
 		List<ShortPoint2D> pioneers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.PIONEER);
 		if (!pioneers.isEmpty()) {
-			List<Integer> pioneerIds = stream(pioneers).map(pioneerPosition -> mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID()).collect(Collectors.toList());
+			List<Integer> pioneerIds = stream(pioneers)
+					.limit(numberOfPioneers)
+					.map(pioneerPosition -> mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID())
+					.collect(Collectors.toList());
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, pioneerIds, EMovableType.BEARER));
-			// pioneers which can not be converted shall walk into player's land to be converted the next tic
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds));
+			if (numberOfPioneers == Integer.MAX_VALUE) {
+				// pioneers which can not be converted shall walk into player's land to be converted the next tic
+				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds));
+			}
 		}
 	}
 
