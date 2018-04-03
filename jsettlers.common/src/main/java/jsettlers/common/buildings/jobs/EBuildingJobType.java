@@ -201,6 +201,11 @@ public enum EBuildingJobType {
 	PLAY_ACTION2,
 
 	/**
+	 * @see EBuildingJobType#PLAY_ACTION1
+	 */
+	PLAY_ACTION3,
+
+	/**
 	 * executes a command specified by a search option
 	 * <p>
 	 * Parameters: type ({@link jsettlers.common.material.ESearchType})

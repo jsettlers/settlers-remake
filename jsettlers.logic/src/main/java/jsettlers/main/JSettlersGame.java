@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
+import java8.util.Optional;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
@@ -38,7 +39,6 @@ import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IGameTimeProvider;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
@@ -216,6 +216,9 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
+				if (startingGameListener != null) {
+					startingGameListener.startingLoadingGame();
+				}
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
 				clearState();
@@ -228,7 +231,6 @@ public class JSettlersGame {
 				}
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
-				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
 				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(playerSettings);
 				mainGrid = gridWithUiState.getMainGrid();
@@ -242,10 +244,9 @@ public class JSettlersGame {
 				mainGrid.initForPlayer(playerId, playerState.getFogOfWar());
 				mainGrid.startThreads();
 
-				if (imagePreloader != null)
-					imagePreloader.join(); // Wait for ImageProvider to finish loading the images
-
 				waitForStartingGameListener();
+				startingGameListener.waitForPreloading();
+
 				updateProgressListener(EProgressState.WAITING_FOR_OTHER_PLAYERS, 0.98f);
 
 				if (replayFileInputStream != null) {
@@ -338,13 +339,13 @@ public class JSettlersGame {
 			}
 		}
 
-		private void updateProgressListener(EProgressState progressState,
-				float progress) {
+		private void updateProgressListener(EProgressState progressState, float progress) {
 			this.progressState = progressState;
 			this.progress = progress;
 
-			if (startingGameListener != null)
+			if (startingGameListener != null) {
 				startingGameListener.startProgressChanged(progressState, progress);
+			}
 		}
 
 		private void reportFail(EGameError gameError, Exception e) {

@@ -33,7 +33,7 @@ import jsettlers.common.sound.ISoundable;
  * This is a normal building.
  * <p>
  * Buildings are map objects with type {@link EMapObjectType#BUILDING}
- *
+ * 
  * @author michael
  * @author Andreas Eberle
  */
@@ -41,13 +41,13 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 	/**
 	 * Gets the type definition for the building.
-	 *
+	 * 
 	 * @return The building type.
 	 */
 	EBuildingType getBuildingType();
 
 	/**
-	 *
+	 * 
 	 * @return Returns the priority of this Building in receiving materials.
 	 */
 	EPriority getPriority();
@@ -58,7 +58,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	EPriority[] getSupportedPriorities();
 
 	/**
-	 *
+	 * 
 	 * @return true if this building is occupied or does not need to be occupied.
 	 */
 	boolean isOccupied();
@@ -71,48 +71,57 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * When it's construction finished, it is a list of things it needs and it currently has.
 	 * <p>
 	 * Empty stacks are also in the list.
-	 *
+	 * 
 	 * @return A list of materials for this building.
 	 */
 	List<IBuildingMaterial> getMaterials();
 
 	/**
 	 * Gives information if the building cannot work.
-	 *
+	 * 
 	 * @return Return true if this building cannot work.
 	 */
 	boolean cannotWork();
 
 	/**
-	 * This is a mill building. An animation is shown when {@link #isRotating()} returns true.
+	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
 	 *
 	 * @author michael
 	 */
 	interface IMill extends IBuilding, ISoundable {
 		/**
 		 * If the woking animation of the mill should be shown.
-		 *
+		 * 
 		 * @return True if the mill is working.
 		 */
 		boolean isRotating();
 	}
 
 	/**
-	 * This interface should be implemented by towers that can have occupying people in them.
+	 * This building can request a sound.
 	 *
+	 */
+	interface ISoundRequestable extends IBuilding {
+		boolean isSoundRequested();
+		void requestSound();
+	}
+
+	/**
+	 * This interface should be implemented by towers that can have occupying people in them.
+	 * 
 	 * @author michael
 	 */
 	interface IOccupied extends IBuilding {
 		/**
 		 * Gets a list of people occupying this building.
-		 *
+		 * 
 		 * @return The list of people currently in the building.
 		 */
 		List<? extends IBuildingOccupier> getOccupiers();
 
 		/**
 		 * Gets the number of currently searched SOLDIERS.
-		 *
+		 * 
 		 * @param soldierClass
 		 *            The class of soldier.
 		 * @return The number of SOLDIERS currently searched.
@@ -121,7 +130,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 		/**
 		 * Gets the number of SOLDIERS that are currently comming.
-		 *
+		 * 
 		 * @param soldierClass
 		 *            The class of soldier
 		 * @return The number of SOLDIERS comming.
@@ -131,21 +140,21 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 	/**
 	 * A {@link IResourceBuilding} provides an additional productivity field for the GUI.
-	 *
+	 * 
 	 * @author Michael Zangl
 	 * @author Andreas Eberle
 	 */
 	interface IResourceBuilding extends IBuilding {
 		/**
 		 * Gets the productivity of this {@link IResourceBuilding}.
-		 *
+		 * 
 		 * @return The productivity in the interval [0,1].
 		 */
 		float getProductivity();
 
 		/**
 		 * Returns the remaining amount of the building's resource.
-		 *
+		 * 
 		 * @return The number of resources available.
 		 */
 		int getRemainingResourceAmount();
@@ -158,7 +167,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	interface ITrading extends IBuilding {
 		/**
 		 * Gets the amount of material requested for a given type.
-		 *
+		 * 
 		 * @param material
 		 *            The material.
 		 * @return The amount, which is 0 in most cases. {@link Integer#MAX_VALUE} indicates an infinite amount.
@@ -167,7 +176,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 		/**
 		 * Checks if this is a sea trading building.
-		 *
+		 * 
 		 * @return True for sea trading buildings.
 		 */
 		boolean isSeaTrading();

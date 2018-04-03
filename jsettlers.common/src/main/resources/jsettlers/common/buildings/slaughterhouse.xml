@@ -96,7 +96,7 @@
 	
 	<constructionStack dx="2" dy="5" material="PLANK" buildrequired="1" />
 	<constructionStack dx="4" dy="5" material="STONE" buildrequired="1" />
-	<requestStack dx="-3" dy="2" material="PIG" />
+	<requestStack dx="4" dy="3" material="PIG" />
 	
 	<bricklayer dx="-3" dy="1" direction="NORTH_EAST" />
 	<bricklayer dx="0" dy="4" direction="NORTH_EAST" />
@@ -124,31 +124,28 @@
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="hide" dx="-1" dy="2"/>
 	<job name="hide" type="HIDE" successjob="wait" failjob="wait"/>
 	<job name="wait" type="WAIT" successjob="check1" failjob="wait" time="3"/>
-	<job name="check1" type="AVAILABLE" successjob="check2" failjob="wait" dx="-3" dy="2" material="PIG"/>
+	<job name="check1" type="AVAILABLE" successjob="check2" failjob="wait" dx="4" dy="3" material="PIG"/>
 	<job name="check2" type="NOT_FULL" successjob="A_wait" failjob="wait" dx="1" dy="4" />
 
 	<!-- take a pig -->
     <job name="A_wait"   type="WAIT"         successjob="A_show"  failjob="gohome" time="1" />
-	<job name="A_show"   type="SHOW"         successjob="A_walkA1" failjob="gohome" dx="-1" dy="2" />
-	<job name="A_walkA1" type="WALK"         successjob="A_walkA2" failjob="gohome" direction="SOUTH_WEST"/>
-	<job name="A_walkA2" type="WALK"         successjob="A_walkA3" failjob="gohome" direction="WEST"/>
-	<job name="A_walkA3" type="WALK"         successjob="A_take" failjob="gohome" direction="NORTH_WEST"/>
-	<job name="A_take"	 type="TAKE"         successjob="A_walkB1" failjob="gohome" material="PIG"/>
-	<job name="A_walkB1" type="WALK"         successjob="A_walkB2" failjob="gohome" direction="SOUTH_EAST"/>
-	<job name="A_walkB2" type="WALK"         successjob="A_walkB3" failjob="gohome" direction="EAST"/>
-	<job name="A_walkB3" type="WALK"         successjob="A_hide" failjob="gohome" direction="NORTH_EAST"/>
-	<job name="A_hide"   type="HIDE"         successjob="B_wait"  failjob="gohome" />
+	<job name="A_show"   type="SHOW"         successjob="gotopig" failjob="gohome" dx="-1" dy="2" />
+	<job name="gotopig"  type="GO_TO"        successjob="lookatpig" failjob="gohome" dx="4" dy="3"/>
+	<job name="lookatpig" type="LOOK_AT"     successjob="A_take"  failjob="gohome" direction="NORTH_EAST"/>
+	<job name="A_take"	 type="TAKE"         successjob="A_back" failjob="gohome" material="PIG"/>
+	<job name="A_back"   type="GO_TO" 		 successjob="A_hide" failjob="hide" dx="-1" dy="2"/>
+	<job name="A_hide"   type="HIDE"         successjob="wait1"  failjob="hide" />
 
-    <job name="B_wait"   type="WAIT"         successjob="B_start"  failjob="gohome" time="5.7" />
+	<job name="wait1"   type="WAIT"          successjob="startwork"  failjob="hide" time="1" />
+	<job name="startwork" 	type="START_WORKING" successjob="wait2" failjob="hide"		/>
+	<job name="wait2"   type="WAIT"          successjob="B_start"  failjob="hide" time="4.7" />
+
 	<job name="B_start"  type="SET_MATERIAL" successjob="B_show"   failjob="gohome" material="MEAT" />
 	<job name="B_show"   type="SHOW"         successjob="B_walkA1" failjob="gohome" dx="-1" dy="2" />
 	<job name="B_walkA1" type="WALK"         successjob="B_walkA2" failjob="gohome" direction="SOUTH_WEST"/>
-	<job name="B_walkA2" type="WALK"         successjob="B_walkA3"  failjob="gohome" direction="SOUTH_EAST"/>
-	<job name="B_walkA3" type="WALK"         successjob="B_take1"  failjob="gohome" direction="EAST"/>
-	<job name="B_take1"  type="DROP"         successjob="B_walkB1"  failjob="gohome" material="MEAT"/>
-	<job name="B_walkB1" type="WALK"         successjob="B_walkB2" failjob="gohome" direction="WEST"/>
-	<job name="B_walkB2" type="WALK"         successjob="B_walkB3"   failjob="gohome" direction="NORTH_WEST"/>
-	<job name="B_walkB3" type="WALK"         successjob="hide"   failjob="gohome" direction="NORTH_EAST"/>
+	<job name="B_walkA2" type="WALK"         successjob="look"  failjob="gohome" direction="WEST"/>
+	<job name="look"	 type="LOOK_AT"      successjob="B_drop"  failjob="gohome" direction="NORTH_WEST"/>
+	<job name="B_drop"   type="DROP"         successjob="gohome"  failjob="gohome" material="MEAT"/>
 
 </building>
 
