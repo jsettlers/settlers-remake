@@ -126,8 +126,8 @@ public final class FogOfWar implements Serializable {
 		private void rebuildSight() {
 			drawer.setBuffer(buffer);
 
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				for (short y = 0; y < height; y++) {
 					byte currSight = sight[x][y];
 
 					if (currSight >= CommonConstants.FOG_OF_WAR_EXPLORED) {
