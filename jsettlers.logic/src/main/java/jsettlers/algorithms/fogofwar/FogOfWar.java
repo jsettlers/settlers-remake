@@ -111,7 +111,7 @@ public final class FogOfWar implements Serializable {
 
 		@Override
 		public final void run() {
-			mySleep(500);
+			mySleep(500L);
 
 			while (!canceled) {
 				// StopWatch watch = new MilliStopWatch();
@@ -121,7 +121,7 @@ public final class FogOfWar implements Serializable {
 				}
 				// watch.stop("NewFoWThread needed: ");
 
-				mySleep(800);
+				mySleep(800L);
 			}
 		}
 
@@ -169,7 +169,7 @@ public final class FogOfWar implements Serializable {
 			}
 		}
 
-		private void mySleep(int ms) {
+		private void mySleep(long ms) {
 			try {
 				Thread.sleep(ms);
 			} catch (InterruptedException e) {
