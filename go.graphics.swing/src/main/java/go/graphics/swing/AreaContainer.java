@@ -93,7 +93,6 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	@Override
 	public void removeNotify() {
 		disposeAll();
-		cc.stop();
 		super.removeNotify();
 	}
 
@@ -129,6 +128,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	 * Disposes all textures / buffers that were allocated by this context.
 	 */
 	protected void disposeAll() {
+		cc.stop();
 		if (context != null) {
 			context.disposeAll();
 		}

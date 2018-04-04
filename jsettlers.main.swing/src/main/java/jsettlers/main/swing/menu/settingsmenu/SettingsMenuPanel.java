@@ -79,6 +79,7 @@ public class SettingsMenuPanel extends JPanel {
 		volumeLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
 		fpsLimitLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
 		backendLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		backendSelector.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
 	}
 
 	private void localize() {
