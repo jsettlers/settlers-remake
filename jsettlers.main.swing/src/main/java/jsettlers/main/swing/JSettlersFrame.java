@@ -64,6 +64,7 @@ public class JSettlersFrame extends JFrame {
 
 	private Timer redrawTimer;
 	private boolean fullScreen = false;
+	private AreaContainer areaContainer;
 
 	JSettlersFrame() throws HeadlessException {
 		setTitle("JSettlers - Version: " + CommitInfo.COMMIT_HASH_SHORT);
@@ -123,6 +124,11 @@ public class JSettlersFrame extends JFrame {
 	}
 
 	public void showMainMenu() {
+		if(areaContainer != null) {
+			areaContainer.disposeAll();
+			areaContainer = null;
+		}
+
 		abortRedrawTimerIfPresent();
 		setNewContentPane(mainPanel);
 	}
@@ -163,7 +169,7 @@ public class JSettlersFrame extends JFrame {
 		}, 100, 1000/SettingsManager.getInstance().getFpsLimit());
 
 		SwingUtilities.invokeLater(() -> {
-			setContentPane(new AreaContainer(area, SettingsManager.getInstance().getBackend()));
+			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend()));
 			revalidate();
 			repaint();
 		});

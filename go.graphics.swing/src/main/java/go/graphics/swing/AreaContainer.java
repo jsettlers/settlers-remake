@@ -90,12 +90,6 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 	}
 
-	@Override
-	public void removeNotify() {
-		disposeAll();
-		super.removeNotify();
-	}
-
 	public void resize_gl(int width, int height) {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
@@ -127,7 +121,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	/**
 	 * Disposes all textures / buffers that were allocated by this context.
 	 */
-	protected void disposeAll() {
+	public void disposeAll() {
 		cc.stop();
 		if (context != null) {
 			context.disposeAll();
