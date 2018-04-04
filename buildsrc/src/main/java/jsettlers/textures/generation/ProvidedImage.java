@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,16 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.texturegeneration;
+ */
+package jsettlers.textures.generation;
 
 import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
-import jsettlers.common.Color;
-import jsettlers.graphics.image.ImageDataPrivider;
-
-public class ProvidedImage implements ImageDataPrivider {
+public class ProvidedImage {
 
 	private final BufferedImage image;
 	private final int[] offsets;
@@ -30,7 +27,6 @@ public class ProvidedImage implements ImageDataPrivider {
 		this.offsets = offsets;
 	}
 
-	@Override
 	public ShortBuffer getData() {
 		ShortBuffer data = ShortBuffer.allocate(image.getWidth() * image.getHeight());
 		for (int y = 0; y < image.getHeight(); y++) {
@@ -43,24 +39,19 @@ public class ProvidedImage implements ImageDataPrivider {
 		return data;
 	}
 
-	@Override
 	public int getWidth() {
 		return image.getWidth();
 	}
 
-	@Override
 	public int getHeight() {
 		return image.getHeight();
 	}
 
-	@Override
 	public int getOffsetX() {
 		return offsets[0];
 	}
 
-	@Override
 	public int getOffsetY() {
 		return offsets[1];
 	}
-
 }

@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,8 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.texturegeneration;
+ */
+package jsettlers.textures.generation;
+
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.TaskAction;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -25,10 +30,10 @@ import java.util.Hashtable;
 
 /**
  * This program compiles all textures into the needed format for graphics
- * 
+ *
  * @author michael
  */
-public class TextureCompiler implements Runnable, TextureIndex {
+public class TextureCompiler extends DefaultTask implements TextureIndex {
 
 	private DataOutputStream textureIndexOut;
 	private int textureCounter = 0;
@@ -36,40 +41,28 @@ public class TextureCompiler implements Runnable, TextureIndex {
 	private PrintWriter textureConstantsOut;
 	private int imageIndexCounter;
 
-	private final Hashtable<String, Integer> imageIndexes = new Hashtable<String, Integer>();
+	private final Hashtable<String, Integer> imageIndexes = new Hashtable<>();
 
 	private final Object imageIndexMutex = new Object();
 	private final Object textureCounterMutex = new Object();
+
+	@InputDirectory
 	private File resourceDirectory;
-	private File genDirectory;
 
-	public TextureCompiler() {
-		this(null, null);
-	}
-	public TextureCompiler(File resourceDirectory, File genDirectory) {
-		this.setResourceDirectory(resourceDirectory);
-		this.setGenDirectory(genDirectory);
-	}
+	@OutputDirectory
+	private File generationDirectory;
 
-	public static void main(String[] args) {
-		if (args.length < 3) {
-			throw new IllegalArgumentException("Usage: compiler <intput dir> <gen dir>");
-		}
-		
-		new TextureCompiler(new File(args[1]), new File(args[2])).run();
-	}
-
-	// For ant
-	public void execute() throws IOException {
-		if (genDirectory == null) {
-			throw new RuntimeException("please use genDirectory=\"...\"");
+	@TaskAction
+	public void compileTextures() throws IOException {
+		if (generationDirectory == null) {
+			throw new RuntimeException("please use generationDirectory=\"...\"");
 		}
 		if (resourceDirectory == null) {
 			throw new RuntimeException("please use resourceDirectory=\"...\"");
 		}
-		
-		genDirectory.mkdirs();
-		
+
+		generationDirectory.mkdirs();
+
 		openTextureIndex();
 
 		File rawDirectory = new File(getResourceDirectory(), "textures_raw");
@@ -87,21 +80,13 @@ public class TextureCompiler implements Runnable, TextureIndex {
 
 		closeTextureIndex();
 	}
-	@Override
-	public void run() {
-		try {
-			execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private void openTextureIndex() throws IOException {
 		File imagesOut = new File(getResourceDirectory(), "images");
 		textureIndexOut = new DataOutputStream(new FileOutputStream(new File(imagesOut, "texturemap")));
 		textureIndexOut.write(new byte[] { 'T', 'E', 'X', '1' });
 
-		File packageDir = new File(new File(new File(getGenDirectory(), "jsettlers"), "common"), "images");
+		File packageDir = new File(new File(new File(getGenerationDirectory(), "jsettlers"), "common"), "images");
 		packageDir.mkdirs();
 		textureConstantsOut = new PrintWriter(new File(packageDir, "TextureMap.java"));
 		textureConstantsOut.println("package jsettlers.common.images;");
@@ -125,8 +110,7 @@ public class TextureCompiler implements Runnable, TextureIndex {
 	}
 
 	private void closeTextureIndex() throws IOException {
-		ArrayList<String> sortedIndexes = new ArrayList<String>(
-				imageIndexes.keySet());
+		ArrayList<String> sortedIndexes = new ArrayList<>(imageIndexes.keySet());
 		Collections.sort(sortedIndexes);
 
 		textureIndexOut.close();
@@ -149,8 +133,7 @@ public class TextureCompiler implements Runnable, TextureIndex {
 	}
 
 	@Override
-	public void registerTexture(String name, int textureFile, int offsetx, int offsety, int width, int height, boolean hasTorso,
-			TexturePosition position) throws IOException {
+	public void registerTexture(String name, int textureFile, int offsetx, int offsety, int width, int height, boolean hasTorso, TexturePosition position) throws IOException {
 		synchronized (imageIndexMutex) {
 			String safename = name.replaceAll("[^a-zA-Z0-9._]", "_");
 
@@ -188,15 +171,8 @@ public class TextureCompiler implements Runnable, TextureIndex {
 		return resourceDirectory;
 	}
 
-	public void setResourceDirectory(File resourceDirectory) {
-		this.resourceDirectory = resourceDirectory;
+	public File getGenerationDirectory() {
+		return generationDirectory;
 	}
 
-	public File getGenDirectory() {
-		return genDirectory;
-	}
-
-	public void setGenDirectory(File genDirectory) {
-		this.genDirectory = genDirectory;
-	}
 }

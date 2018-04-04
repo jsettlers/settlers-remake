@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,43 +11,31 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.texturegeneration;
+ */
+package jsettlers.textures.generation;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.ImageDataPrivider;
-import jsettlers.graphics.image.SettlerImage;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatFileType;
 
 /**
  * This class lets you generate a texture that can be understood by the graphics module. It generates the .texture file.
- * 
+ *
  * @author michael
  */
 public final class TextureGenerator {
 
-	private static final Pattern ORIGINAL_SETTLER = Pattern.compile("original_\\d+_SETTLER_\\d+_\\d+");
-
 	private static class ImageData {
-		ImageDataPrivider data = null;
-		ImageDataPrivider torso = null;
-		public String name;
+		ProvidedImage data = null;
+		ProvidedImage torso = null;
+		String name;
 	}
 
-	private class LoadImage implements Runnable {
+	private class LoadImagesTask implements Runnable {
 		@Override
 		public void run() {
 			try {
@@ -63,7 +51,7 @@ public final class TextureGenerator {
 		}
 	}
 
-	private class StoreImage implements Runnable {
+	private class StoreImagesTask implements Runnable {
 		@Override
 		public void run() {
 			try {
@@ -84,10 +72,8 @@ public final class TextureGenerator {
 	private final File outDirectory;
 	private final TextureIndex textureIndex;
 
-	private final ArrayBlockingQueue<ImageData> imagesToStore = new ArrayBlockingQueue<>(
-			QUEUE_LENGTH);
-	private final ArrayBlockingQueue<String> imagesToLoad = new ArrayBlockingQueue<>(
-			QUEUE_LENGTH);
+	private final ArrayBlockingQueue<ImageData> imagesToStore = new ArrayBlockingQueue<>(QUEUE_LENGTH);
+	private final ArrayBlockingQueue<String> imagesToLoad = new ArrayBlockingQueue<>(QUEUE_LENGTH);
 	private final Object pipelineMutex = new Object();
 	private int imagesInPipeline;
 
@@ -105,18 +91,18 @@ public final class TextureGenerator {
 	public void start() {
 		started = new Thread[THREADS * 2];
 		for (int i = 0; i < THREADS; i++) {
-			started[i] = new Thread(new LoadImage());
+			started[i] = new Thread(new LoadImagesTask());
 			started[i].start();
 		}
 		for (int i = 0; i < THREADS; i++) {
-			started[i + THREADS] = new Thread(new StoreImage());
+			started[i + THREADS] = new Thread(new StoreImagesTask());
 			started[i + THREADS].start();
 		}
 	}
 
 	/**
 	 * Wait for completion on all threads.
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	public void join() {
@@ -135,7 +121,7 @@ public final class TextureGenerator {
 
 	/**
 	 * Start compiling a new file. Might block some time.
-	 * 
+	 *
 	 * @param list
 	 */
 	public void addTexturesByName(List<String> list) {
@@ -151,32 +137,13 @@ public final class TextureGenerator {
 	}
 
 	private ImageData addIdToTexture(String name) {
-		Matcher matcher = ORIGINAL_SETTLER.matcher(name);
 		ImageData imageData = new ImageData();
 		imageData.name = name;
-
-		// open original image files
-		if (matcher.matches()) {
-			File datfile = null; // TODO: Load dat file matcher.group(1)
-			AdvancedDatFileReader reader = new AdvancedDatFileReader(datfile, DatFileType.RGB555);
-			Image image = reader.getSettlers()
-					.get(Integer.parseInt(matcher.group(2)))
-					.getImageSafe(Integer.parseInt(matcher.group(3)));
-			if (image instanceof SingleImage) {
-				imageData.data = (SingleImage) image;
-			}
-			if (image instanceof SettlerImage) {
-				imageData.torso = (SingleImage) ((SettlerImage) image)
-						.getTorso();
-			}
-		} else {
-			imageData.data = getImage(name);
-			imageData.torso = getImage(name + ".t");
-		}
+		imageData.data = getImage(name);
+		imageData.torso = getImage(name + ".t");
 
 		if (imageData.data == null) {
-			System.err.println("WATNING: loading image " + name
-					+ ": No image file found.");
+			System.err.println("WATNING: loading image " + name + ": No image file found.");
 		}
 		return imageData;
 	}
@@ -193,29 +160,23 @@ public final class TextureGenerator {
 		}
 	}
 
-	private void storeImage(String name, ImageDataPrivider data,
-			boolean hasTorso) {
+	private void storeImage(String name, ProvidedImage data,			boolean hasTorso) {
 		try {
 			if (data != null) {
 				int texture = textureIndex.getNextTextureIndex();
 				TexturePosition position = addAsNewImage(data, texture);
-				textureIndex.registerTexture(name, texture, data.getOffsetX(),
-						data.getOffsetY(), data.getWidth(), data.getHeight(),
-						hasTorso, position);
+				textureIndex.registerTexture(name, texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), hasTorso, position);
 			}
 		} catch (Throwable t) {
-			System.err.println("WARNING: Problem writing image " + name
-					+ ". Problem was: " + t.getMessage());
+			System.err.println("WARNING: Problem writing image " + name + ". Problem was: " + t.getMessage());
 		}
 	}
 
 	// This is slow.
-	private TexturePosition addAsNewImage(ImageDataPrivider data, int texture)
-			throws IOException {
+	private TexturePosition addAsNewImage(ProvidedImage data, int texture) throws IOException {
 		int size = getNextPOT(Math.max(data.getWidth(), data.getHeight()));
 		TextureFile file = new TextureFile(new File(outDirectory, texture + ""), size, size);
-		TexturePosition position = file.addImage(data.getData(),
-				data.getWidth());
+		TexturePosition position = file.addImage(data.getData(), data.getWidth());
 		file.write();
 		return position;
 	}
@@ -228,7 +189,7 @@ public final class TextureGenerator {
 		return i;
 	}
 
-	private ImageDataPrivider getImage(String id) {
+	private ProvidedImage getImage(String id) {
 		try {
 			File imageFile = new File(rawDirectory, id + ".png");
 			int[] offsets = getOffsets(id);

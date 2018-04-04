@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,20 +11,25 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.texturegeneration;
-
-import java.io.IOException;
-
-/**
- * This is a index where textures can be registered
- * 
- * @author michael
- *
  */
-public interface TextureIndex {
-	void registerTexture(String name, int file, int offsetx, int offsety, int width, int height, boolean hasTorso, TexturePosition position)
-			throws IOException;
+package jsettlers.textures.generation;
 
-	int getNextTextureIndex();
+import java.util.Arrays;
+
+public final class TextureMap {
+	private TextureMap() {
+	}
+
+	public static int getIndex(String name) {
+		int arrindex = Arrays.binarySearch(names, name);
+		if (arrindex < 0) {
+			throw new IllegalArgumentException("Could not find " + name + " in image map.");
+		}
+		return indexes[arrindex];
+	}
+
+	private static final String[] names = new String[] {
+	};
+	private static final int[] indexes = new int[] {
+	};
 }
