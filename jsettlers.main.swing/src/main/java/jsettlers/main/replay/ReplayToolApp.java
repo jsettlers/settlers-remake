@@ -49,7 +49,7 @@ public class ReplayToolApp {
 
 		ReplayUtils.replayAndCreateSavegame(new ReplayUtils.ReplayFile(replayFile), targetGameTimeMinutes, "replayForSavegame.log");
 
-		Thread.sleep(2000);
+		Thread.sleep(2000L);
 		System.exit(0);
 	}
 }
