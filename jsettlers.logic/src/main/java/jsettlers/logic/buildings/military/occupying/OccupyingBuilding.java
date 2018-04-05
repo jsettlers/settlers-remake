@@ -86,7 +86,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		final OccupierPlace[] occupierPlaces = super.getBuildingType().getOccupierPlaces();
 		if (occupierPlaces.length > 0) {
 			emptyPlaces.addAll(Arrays.asList(occupierPlaces));
-			requestSoldiers();
+			requestSoldier(ESoldierType.SWORDSMAN);
 		}
 	}
 
@@ -423,7 +423,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		comingSoldiers.put(occupier, new SoldierRequest(soldierClass, emptyPlace));
 	}
 
-	public void requestSoldiers() {
+	public void requestFullSoldiers() {
 		for (OccupierPlace emptyPlace : emptyPlaces) {
 			addSoldierToSearch(new SoldierRequest(emptyPlace.getSoldierClass(), emptyPlace));
 		}
