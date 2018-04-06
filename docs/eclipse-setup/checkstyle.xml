@@ -144,7 +144,7 @@ The checkstyle profile that matches the default formatter profile.
   </module>
   <module name="RegexpSingleline">
     <property name="format" value="(?&lt;!^\s*\*)\s+$"/>
-    <property name="message" value="Line has trailing spaces."/>
+    <property name="messageLabel" value="Line has trailing spaces."/>
   </module>
   <module name="Header">
     <property name="headerFile" value="/home/michael/Arbeitsfläche/settlers/docs/eclipse-setup/checkstyle-header"/>
@@ -152,6 +152,6 @@ The checkstyle profile that matches the default formatter profile.
   </module>
   <module name="RegexpMultiline">
     <property name="format" value="\r\n[\w\W]*"/>
-    <property name="message" value="Use unix line endings."/>
+    <property name="messageLabel" value="Use unix line endings."/>
   </module>
 </module>

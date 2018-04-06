@@ -26,7 +26,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.SetMaterialProductionAction.EMaterialProductionType;
+import jsettlers.common.action.SetMaterialProductionAction.EMaterialProductionType;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;

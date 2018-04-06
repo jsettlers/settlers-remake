@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -28,8 +29,9 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.messages.SimpleMessage;
+import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
+import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.EGoInDirectionMode;
@@ -192,6 +194,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			super.playAction(EMovableAction.ACTION2, currentJob.getTime());
 			jobFinished();
 			break;
+		case PLAY_ACTION3:
+			super.playAction(EMovableAction.ACTION3, currentJob.getTime());
+			jobFinished();
+			break;
 
 		case AVAILABLE:
 			if (super.getGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
@@ -219,6 +225,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case START_WORKING:
 		case STOP_WORKING:
+			if (building instanceof SlaughterhouseBuilding) {
+				((SlaughterhouseBuilding) building).requestSound();
+			}
 			if (building instanceof MillBuilding) {
 				((MillBuilding) building).setRotating(currentJob.getType() == EBuildingJobType.START_WORKING);
 			}
@@ -342,8 +351,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	/**
 	 * @param dijkstra
-	 *            if true, dijkstra algorithm is used<br>
-	 *            if false, in area finder is used.
+	 * 		if true, dijkstra algorithm is used<br>
+	 * 		if false, in area finder is used.
 	 */
 	private void preSearchPathAction(boolean dijkstra) {
 		super.setPosition(getCurrentJobPos());
@@ -505,5 +514,14 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	@Override
 	public boolean isAlive() {
 		return !killed;
+	}
+
+	@Override
+	public EBuildingType getBuildingType() {
+		if (building != null) {
+			return building.getBuildingType();
+		} else {
+			return null;
+		}
 	}
 }

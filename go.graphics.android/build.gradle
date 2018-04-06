@@ -33,6 +33,6 @@ android {
 }
 
 dependencies {
-    compile project(':go.graphics')
+    implementation project(':go.graphics')
 }
 

@@ -23,7 +23,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 

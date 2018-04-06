@@ -14,27 +14,25 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.joinpanel.slots;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.swing.utils.ImageUtils;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /**
  * @author codingberlin
@@ -286,8 +284,7 @@ public class PlayerSlot {
 	}
 
 	private static Image getReadyButtonImage(int file, int seq, int imagenumber, boolean imageIsForEnabledState) {
-		BufferedImage readyImage = ImageUtils.convertToBufferedImage((SingleImage) ImageProvider.getInstance().getSettlerSequence(file, seq)
-				.getImage(imagenumber));
+		BufferedImage readyImage = ((SingleImage) ImageProvider.getInstance().getSettlerSequence(file, seq).getImage(imagenumber)).convertToBufferedImage();
 		if (!imageIsForEnabledState) {
 			readyImage = JSettlersSwingUtil.createDisabledImage(readyImage);
 		}
