@@ -93,16 +93,16 @@ public class SwingResourceLoader {
 	}
 
 	private static void loadDefaultMapFolders(DefaultMapListFactory mapList) {
-		ArrayList<File> mapsFolders = new ArrayList<>();
-
-		// add always maps from working dir. (MapCreator saves them there)
-		mapsFolders.add(new File(".", "maps"));
+		File mapsFolders[] = new File[2];
 
 		if (CommonConstants.MAPS_FOLDER != null) {
-			mapsFolders.add(new File(CommonConstants.MAPS_FOLDER));
+			mapsFolders[0] = new File(CommonConstants.MAPS_FOLDER);
 		}
 
-		mapList.addResourcesDirectory(mapsFolders, new File(".", "save"));
+		// add always maps from working dir. (MapCreator saves them there)
+		mapsFolders[1] = new File(".", "maps");
+
+		mapList.addResourcesDirectory(new File(".", "save"), mapsFolders);
 
 		// Maps contained in jar file?
 		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();

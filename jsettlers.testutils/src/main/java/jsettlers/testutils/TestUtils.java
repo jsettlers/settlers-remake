@@ -71,11 +71,8 @@ public class TestUtils {
 
 			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
 
-			ArrayList<File> mapFolders = new ArrayList<>();
-			mapFolders.add(new File(tempDirectory, "maps"));
-
 			DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
-			mapListFactory.addResourcesDirectory(mapFolders, new File(tempDirectory, "save"));
+			mapListFactory.addResourcesDirectory(new File(tempDirectory, "save"), new File(tempDirectory, "maps"));
 			mapListFactory.addSaveDirectory(new DebugMapLister(new File(tempDirectory, "save"), true));
 			MapList.setDefaultListFactory(mapListFactory);
 		} catch (IOException e) {
