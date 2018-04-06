@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,27 +12,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.objects;
+package jsettlers.logic.buildings.workers;
 
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.sound.ISoundable;
+import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.player.Player;
 
-public abstract class ProgressingSoundableObject extends ProgressingObject implements ISoundable {
-	private static final long serialVersionUID = -7740838546551477874L;
+/**
+ * This is a slaughterhouse building
+ */
+public final class SlaughterhouseBuilding extends WorkerBuilding implements IBuilding.ISoundRequestable {
+	private static final long serialVersionUID = -1556449527268300282L;
 
-	private transient boolean soundPlayed;
+	private transient boolean soundRequested = false;
 
-	protected ProgressingSoundableObject(ShortPoint2D pos) {
-		super(pos);
+	public SlaughterhouseBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
-	public void setSoundPlayed() {
-		this.soundPlayed = true;
+	public boolean isSoundRequested() {
+		boolean ret = soundRequested;
+		soundRequested = false;
+		return ret;
 	}
 
 	@Override
-	public boolean isSoundPlayed() {
-		return this.soundPlayed;
+	public void requestSound() {
+		soundRequested = true;
 	}
 }

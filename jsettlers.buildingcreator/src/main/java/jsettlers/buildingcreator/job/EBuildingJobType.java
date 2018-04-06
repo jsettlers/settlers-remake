@@ -129,5 +129,6 @@ public enum EBuildingJobType {
 	/**
 	 * @see EBuildingJobType#PLAY_ACTION1
 	 */
-	PLAY_ACTION2
+	PLAY_ACTION2,
+	PLAY_ACTION3
 }
