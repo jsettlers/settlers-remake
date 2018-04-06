@@ -83,6 +83,10 @@ public class SwingManagedJSettlers {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = options.getProperty("server");
 		}
 
+		if (options.containsKey("maps")) {
+			CommonConstants.MAPS_FOLDER = options.getProperty("maps");
+		}
+
 		if (options.containsKey("locale")) {
 			String localeString = options.getProperty("locale");
 			String[] localeParts = localeString.split("_");

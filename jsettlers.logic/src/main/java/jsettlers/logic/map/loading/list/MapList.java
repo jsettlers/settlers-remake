@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
@@ -259,9 +260,12 @@ public class MapList implements IMapListerCallable {
 			return new MapList(getMapListers(), saveDirectory);
 		}
 
-		public void addResourcesDirectory(File resources) {
-			addMapDirectory(new DirectoryMapLister(new File(resources, "maps"), true));
-			saveDirectory = new DirectoryMapLister(new File(resources, "save"), true);
+		public void addResourcesDirectory(List<File> mapsFolder, File savesFolder) {
+			for (File mapFolder : mapsFolder) {
+				addMapDirectory(new DirectoryMapLister(mapFolder, true));
+			}
+
+			saveDirectory = new DirectoryMapLister(savesFolder, true);
 			addMapDirectory(saveDirectory);
 		}
 

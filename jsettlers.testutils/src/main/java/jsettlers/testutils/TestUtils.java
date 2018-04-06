@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
@@ -70,8 +71,11 @@ public class TestUtils {
 
 			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
 
+			ArrayList<File> mapFolders = new ArrayList<>();
+			mapFolders.add(new File(tempDirectory, "maps"));
+
 			DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
-			mapListFactory.addResourcesDirectory(tempDirectory);
+			mapListFactory.addResourcesDirectory(mapFolders, new File(tempDirectory, "save"));
 			mapListFactory.addSaveDirectory(new DebugMapLister(new File(tempDirectory, "save"), true));
 			MapList.setDefaultListFactory(mapListFactory);
 		} catch (IOException e) {

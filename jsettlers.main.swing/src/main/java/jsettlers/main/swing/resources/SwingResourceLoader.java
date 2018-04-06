@@ -16,7 +16,9 @@ package jsettlers.main.swing.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
@@ -91,7 +93,16 @@ public class SwingResourceLoader {
 	}
 
 	private static void loadDefaultMapFolders(DefaultMapListFactory mapList) {
-		mapList.addResourcesDirectory(new File("."));
+		ArrayList<File> mapsFolders = new ArrayList<>();
+
+		// add always maps from working dir. (MapCreator saves them there)
+		mapsFolders.add(new File(".", "maps"));
+
+		if (CommonConstants.MAPS_FOLDER != null) {
+			mapsFolders.add(new File(CommonConstants.MAPS_FOLDER));
+		}
+
+		mapList.addResourcesDirectory(mapsFolders, new File(".", "save"));
 
 		// Maps contained in jar file?
 		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();
