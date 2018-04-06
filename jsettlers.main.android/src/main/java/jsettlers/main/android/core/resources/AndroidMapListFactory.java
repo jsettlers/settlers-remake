@@ -25,6 +25,10 @@ public class AndroidMapListFactory extends DefaultMapListFactory {
 	public AndroidMapListFactory(AssetManager manager, File writeableDir) {
 		super();
 		directories.add(new AndroidAssetsMapLister(manager, ""));
-		addResourcesDirectory(writeableDir);
+
+		ArrayList<File> mapsFolders = new ArrayList<>();
+		mapsFolders.add(new File(writeableDir, "maps"));
+
+		addResourcesDirectory(mapsFolders, new File(writeableDir, "save"));
 	}
 }
