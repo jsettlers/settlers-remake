@@ -52,7 +52,7 @@ public final class Constants {
 	/**
 	 * the radius within a tower can request soldiers to enter the building.
 	 */
-	public static final short TOWER_SEARCH_RADIUS = 120;
+	public static final short TOWER_SEARCH_RADIUS = 100;
 	public static final int BOWMAN_ATTACK_RADIUS = 15;
 	public static final int BOWMAN_IN_TOWER_ATTACK_RADIUS = 25;
 	public static final int BOWMAN_MIN_ATTACK_DISTANCE = 7;
