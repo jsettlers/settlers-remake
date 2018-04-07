@@ -21,7 +21,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;

@@ -16,7 +16,6 @@ package jsettlers.main.swing.resources;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
