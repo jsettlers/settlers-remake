@@ -88,4 +88,9 @@ public abstract class CommonConstants {
 	 * Disables the checksum test for original maps.
 	 */
 	public static boolean DISABLE_ORIGINAL_MAPS_CHECKSUM = false;
+
+	/**
+	 * Sets the folder for loading the maps.
+	 */
+	public static String MAPS_FOLDER = null;
 }

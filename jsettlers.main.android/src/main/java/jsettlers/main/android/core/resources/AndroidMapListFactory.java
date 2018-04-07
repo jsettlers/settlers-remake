@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,9 +15,7 @@
 package jsettlers.main.android.core.resources;
 
 import java.io.File;
-
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
-
 import android.content.res.AssetManager;
 
 public class AndroidMapListFactory extends DefaultMapListFactory {
@@ -25,6 +23,6 @@ public class AndroidMapListFactory extends DefaultMapListFactory {
 	public AndroidMapListFactory(AssetManager manager, File writeableDir) {
 		super();
 		directories.add(new AndroidAssetsMapLister(manager, ""));
-		addResourcesDirectory(writeableDir);
+		addResourcesDirectory(new File(writeableDir, "save"), new File(writeableDir, "maps"));
 	}
 }

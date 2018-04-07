@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,6 +17,7 @@ package jsettlers.main.swing.resources;
 import java.io.File;
 import java.io.IOException;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
@@ -91,7 +92,16 @@ public class SwingResourceLoader {
 	}
 
 	private static void loadDefaultMapFolders(DefaultMapListFactory mapList) {
-		mapList.addResourcesDirectory(new File("."));
+		File mapsFolders[] = new File[2];
+
+		if (CommonConstants.MAPS_FOLDER != null) {
+			mapsFolders[0] = new File(CommonConstants.MAPS_FOLDER);
+		}
+
+		// add always maps from working dir. (MapCreator saves them there)
+		mapsFolders[1] = new File(".", "maps");
+
+		mapList.addResourcesDirectory(new File(".", "save"), mapsFolders);
 
 		// Maps contained in jar file?
 		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();
