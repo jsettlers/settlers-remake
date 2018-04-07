@@ -259,10 +259,10 @@ public class MapList implements IMapListerCallable {
 			return new MapList(getMapListers(), saveDirectory);
 		}
 
-		public void addResourcesDirectory(File savesFolder, File ... mapsFolder) {
-			for (File mapFolder : mapsFolder) {
-				if (mapFolder != null) {
-					addMapDirectory(new DirectoryMapLister(mapFolder, true));
+		public void addResourcesDirectory(File savesFolder, File ... mapsFolders) {
+			for (File mapsFolder : mapsFolders) {
+				if (mapsFolder != null) {
+					addMapDirectory(new DirectoryMapLister(mapsFolder, true));
 				}
 			}
 
