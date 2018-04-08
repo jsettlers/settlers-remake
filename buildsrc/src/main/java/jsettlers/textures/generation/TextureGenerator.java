@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -43,21 +44,61 @@ public final class TextureGenerator {
 		this.outDirectory = outDirectory;
 	}
 
-	public void processTexturesByName(String name) {
-		ImageData imageData = addIdToTexture(name);
+	void processTextures(File resourceDirectory) {
+		processTextures(resourceDirectory, resourceDirectory);
+	}
+
+	private void processTextures(File resourceDirectory, File directory) {
+		File[] files = directory.listFiles();
+		if (files == null) {
+			return;
+		}
+
+		Arrays.stream(files)
+				.parallel()
+				.filter(File::isDirectory)
+				.forEach(subDirectory -> processTextures(resourceDirectory, subDirectory));
+		Arrays.stream(files)
+				.parallel()
+				.filter(File::isFile)
+				.filter(file -> file.getName().endsWith(".png"))
+				.filter(file -> !file.getName().endsWith(".t.png")) // torso files are added with their corresponding image file
+				.forEach(file -> processTexturesFile(resourceDirectory, file));
+	}
+
+	private void processTexturesFile(File baseDirectory, File file) {
+		ImageData imageData = addIdToTexture(baseDirectory, file);
 		storeImageData(imageData);
 	}
 
-	private ImageData addIdToTexture(String name) {
+	private ImageData addIdToTexture(File baseDirectory, File imageFile) {
+		String name = calculateName(baseDirectory, imageFile);
+
 		ImageData imageData = new ImageData();
 		imageData.name = name;
-		imageData.data = getImage(name);
-		imageData.torso = getImage(name + ".t");
+		imageData.data = getImage(imageFile);
+
+		File torsoFile = new File(imageFile.getPath().replace(".png", ".t.png"));
+		if (torsoFile.exists()) {
+			imageData.torso = getImage(torsoFile);
+		}
 
 		if (imageData.data == null) {
 			System.err.println("WATNING: loading image " + name + ": No image file found.");
 		}
 		return imageData;
+	}
+
+	private String calculateName(File baseDirectory, File file) {
+		StringBuilder name = new StringBuilder(file.getName());
+		File currentFile = file.getParentFile();
+
+		while (!baseDirectory.equals(currentFile)) {
+			name.insert(0, currentFile.getName() + "-");
+			currentFile = currentFile.getParentFile();
+		}
+
+		return name.toString();
 	}
 
 	private void storeImageData(ImageData imageData) {
@@ -96,23 +137,27 @@ public final class TextureGenerator {
 		return i;
 	}
 
-	private ProvidedImage getImage(String id) {
+	private ProvidedImage getImage(File imageFile) {
 		try {
-			File imageFile = new File(rawDirectory, id + ".png");
-			int[] offsets = getOffsets(id);
+			int[] offsets = getOffsets(imageFile);
 			BufferedImage image = ImageIO.read(imageFile);
 
 			return new ProvidedImage(image, offsets);
 		} catch (Throwable t) {
-			System.err.println("WARNING: Problem reading image " + id
-					+ ". Problem was: " + t.getMessage());
+			System.err.println("WARNING: Problem reading image " + imageFile + ". Problem was: " + t.getMessage());
 			return null;
 		}
 	}
 
-	private int[] getOffsets(String id) {
+	private int[] getOffsets(File imageFile) {
+		File offset = new File(imageFile.getPath() + ".offset");
+
+		if (!offset.exists()) {
+			return new int[] { 0, 0 };
+		}
+
 		int[] offsets = new int[2];
-		File offset = new File(rawDirectory, id + ".png.offset");
+
 		try (Scanner in = new Scanner(offset)) {
 			offsets[0] = in.nextInt();
 			in.skip("\\s+");
@@ -121,8 +166,7 @@ public final class TextureGenerator {
 			return offsets;
 
 		} catch (Throwable t) {
-			System.err.println("WARNING: Problem reading offsets for " + id
-					+ ", assuming (0,0). Problem was: " + t.getMessage());
+			System.err.println("WARNING: Problem reading offsets for " + imageFile + ", assuming (0,0). Problem was: " + t.getMessage());
 			return new int[] { 0, 0 };
 		}
 	}

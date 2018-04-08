@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
-import jsettlers.textures.generation.TextureCompiler
+import jsettlers.textures.generation.TextureGenerationTask
 
 
 configurations {
@@ -18,7 +18,7 @@ sourceSets {
 }
 
 
-task compileTextures(type: TextureCompiler) {
+task compileTextures(type: TextureGenerationTask) {
     resourceDirectory = file('raw_images_for_textures')
     generatedSourcesDirectory = file(generated_directory + 'java')
     generatedResourcesDirectory = file(generated_directory + 'resources/')
