@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
@@ -112,6 +113,11 @@ public class TestSettler implements IMovable {
 
 	@Override
 	public final void stopOrStartWorking(boolean stop) {
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return null;
 	}
 
 	@Override

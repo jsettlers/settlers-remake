@@ -28,9 +28,9 @@ android:
     # Those two lines allow us to use any build tools version.
     - tools
     - platform-tools
-    - android-25
+    - android-27
 
-    - build-tools-25.0.3
+    - build-tools-27.0.3
     - extra-google-m2repository
     - extra-android-m2repository
 
