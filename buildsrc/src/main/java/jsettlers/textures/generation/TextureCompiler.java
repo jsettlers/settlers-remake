@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 
@@ -34,6 +35,7 @@ import java.util.Hashtable;
  * @author michael
  */
 public class TextureCompiler extends DefaultTask implements TextureIndex {
+	private static final String PACKAGE_NAME = "jsettlers/common/images/";
 
 	private DataOutputStream textureIndexOut;
 	private int textureCounter = 0;
@@ -47,46 +49,45 @@ public class TextureCompiler extends DefaultTask implements TextureIndex {
 	private final Object textureCounterMutex = new Object();
 
 	@InputDirectory
-	private File resourceDirectory;
+	public File resourceDirectory;
 
 	@OutputDirectory
-	private File generationDirectory;
+	public File generatedSourcesDirectory;
+
+	@OutputDirectory
+	public File generatedResourcesDirectory;
 
 	@TaskAction
 	public void compileTextures() throws IOException {
-		if (generationDirectory == null) {
+		if (generatedSourcesDirectory == null) {
 			throw new RuntimeException("please use generationDirectory=\"...\"");
 		}
 		if (resourceDirectory == null) {
 			throw new RuntimeException("please use resourceDirectory=\"...\"");
 		}
 
-		generationDirectory.mkdirs();
+		generatedSourcesDirectory.mkdirs();
 
 		openTextureIndex();
 
-		File rawDirectory = new File(getResourceDirectory(), "textures_raw");
-		File outDirectory = new File(getResourceDirectory(), "images");
-		TextureGenerator gen = new TextureGenerator(this, rawDirectory, outDirectory);
-		gen.start();
-		String[] files = rawDirectory.list();
-		for (String file : files) {
-			if (file.matches(".*\\.png")) {
-				String name = file.replaceAll("\\.png", "");
-				gen.addTexturesByName(Collections.singletonList(name));
-			}
+		TextureGenerator gen = new TextureGenerator(this, resourceDirectory, generatedResourcesDirectory);
+		String[] files = resourceDirectory.list();
+		if (files == null) {
+			throw new IllegalArgumentException("Resource directory not found: " + resourceDirectory);
 		}
-		gen.join();
+
+		Arrays.stream(files).parallel().filter(file -> file.matches(".*\\.png")).map(file -> file.replaceAll("\\.png", "")).forEach(gen::processTexturesByName);
 
 		closeTextureIndex();
 	}
 
 	private void openTextureIndex() throws IOException {
-		File imagesOut = new File(getResourceDirectory(), "images");
-		textureIndexOut = new DataOutputStream(new FileOutputStream(new File(imagesOut, "texturemap")));
+		File resourcesDirectoryWithPackage = new File(generatedResourcesDirectory, PACKAGE_NAME);
+		resourcesDirectoryWithPackage.mkdirs();
+		textureIndexOut = new DataOutputStream(new FileOutputStream(new File(resourcesDirectoryWithPackage, "texturemap")));
 		textureIndexOut.write(new byte[] { 'T', 'E', 'X', '1' });
 
-		File packageDir = new File(new File(new File(getGenerationDirectory(), "jsettlers"), "common"), "images");
+		File packageDir = new File(generatedSourcesDirectory, PACKAGE_NAME);
 		packageDir.mkdirs();
 		textureConstantsOut = new PrintWriter(new File(packageDir, "TextureMap.java"));
 		textureConstantsOut.println("package jsettlers.common.images;");
@@ -166,13 +167,4 @@ public class TextureCompiler extends DefaultTask implements TextureIndex {
 			return textureCounter++;
 		}
 	}
-
-	public File getResourceDirectory() {
-		return resourceDirectory;
-	}
-
-	public File getGenerationDirectory() {
-		return generationDirectory;
-	}
-
 }

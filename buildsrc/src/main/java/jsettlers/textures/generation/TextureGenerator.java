@@ -18,9 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * This class lets you generate a texture that can be understood by the graphics module. It generates the .texture file.
@@ -35,49 +33,9 @@ public final class TextureGenerator {
 		String name;
 	}
 
-	private class LoadImagesTask implements Runnable {
-		@Override
-		public void run() {
-			try {
-				while (true) {
-					long start = System.currentTimeMillis();
-					String toLoad = imagesToLoad.take();
-					ImageData data = addIdToTexture(toLoad);
-					imagesToStore.put(data);
-					System.out.println("Time for loading " + data.name + ": " + (System.currentTimeMillis() - start));
-				}
-			} catch (InterruptedException e) {
-			}
-		}
-	}
-
-	private class StoreImagesTask implements Runnable {
-		@Override
-		public void run() {
-			try {
-				while (true) {
-					long start = System.currentTimeMillis();
-					ImageData data = imagesToStore.take();
-					storeImageData(data);
-					System.out.println("Time for storing " + data.name + ": " + (System.currentTimeMillis() - start));
-				}
-			} catch (InterruptedException e) {
-			}
-		}
-	}
-
-	private static final int QUEUE_LENGTH = 32;
-	private static final int THREADS = 8;
 	private final File rawDirectory;
 	private final File outDirectory;
 	private final TextureIndex textureIndex;
-
-	private final ArrayBlockingQueue<ImageData> imagesToStore = new ArrayBlockingQueue<>(QUEUE_LENGTH);
-	private final ArrayBlockingQueue<String> imagesToLoad = new ArrayBlockingQueue<>(QUEUE_LENGTH);
-	private final Object pipelineMutex = new Object();
-	private int imagesInPipeline;
-
-	private Thread[] started;
 
 	public TextureGenerator(TextureIndex textureIndex, File rawDirectory, File outDirectory) {
 		this.textureIndex = textureIndex;
@@ -85,55 +43,9 @@ public final class TextureGenerator {
 		this.outDirectory = outDirectory;
 	}
 
-	/**
-	 * Start all threads. FIXME: Leaks threads.
-	 */
-	public void start() {
-		started = new Thread[THREADS * 2];
-		for (int i = 0; i < THREADS; i++) {
-			started[i] = new Thread(new LoadImagesTask());
-			started[i].start();
-		}
-		for (int i = 0; i < THREADS; i++) {
-			started[i + THREADS] = new Thread(new StoreImagesTask());
-			started[i + THREADS].start();
-		}
-	}
-
-	/**
-	 * Wait for completion on all threads.
-	 *
-	 * @throws InterruptedException
-	 */
-	public void join() {
-		try {
-			synchronized (pipelineMutex) {
-				while (imagesInPipeline > 0) {
-					pipelineMutex.wait();
-				}
-			}
-			for (int i = 0; i < started.length; i++) {
-				started[i].interrupt();
-			}
-		} catch (InterruptedException e) {
-		}
-	}
-
-	/**
-	 * Start compiling a new file. Might block some time.
-	 *
-	 * @param list
-	 */
-	public void addTexturesByName(List<String> list) {
-		for (String name : list) {
-			try {
-				imagesToLoad.put(name);
-				synchronized (pipelineMutex) {
-					imagesInPipeline++;
-				}
-			} catch (InterruptedException e) {
-			}
-		}
+	public void processTexturesByName(String name) {
+		ImageData imageData = addIdToTexture(name);
+		storeImageData(imageData);
 	}
 
 	private ImageData addIdToTexture(String name) {
@@ -153,14 +65,9 @@ public final class TextureGenerator {
 		if (imageData.torso != null) {
 			storeImage(imageData.name, imageData.torso, false);
 		}
-
-		synchronized (pipelineMutex) {
-			imagesInPipeline--;
-			pipelineMutex.notifyAll();
-		}
 	}
 
-	private void storeImage(String name, ProvidedImage data,			boolean hasTorso) {
+	private void storeImage(String name, ProvidedImage data, boolean hasTorso) {
 		try {
 			if (data != null) {
 				int texture = textureIndex.getNextTextureIndex();
@@ -219,5 +126,4 @@ public final class TextureGenerator {
 			return new int[] { 0, 0 };
 		}
 	}
-
 }

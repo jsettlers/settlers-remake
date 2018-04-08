@@ -2,15 +2,26 @@ apply plugin: 'java'
 
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
+import jsettlers.textures.generation.TextureCompiler
+
 
 configurations {
     generated
 }
 
+def generated_directory = 'src/generated/'
+
 sourceSets {
     generated {
-        output.dir('src/generated/java', builtBy: 'findGitRevision')
+        output.dir(generated_directory + 'java', builtBy: 'findGitRevision')
     }
+}
+
+
+task compileTextures(type: TextureCompiler) {
+    resourceDirectory = file('raw_images_for_textures')
+    generatedSourcesDirectory = file(generated_directory + 'java')
+    generatedResourcesDirectory = file(generated_directory + 'resources/')
 }
 
 
@@ -62,6 +73,7 @@ compileJava {
 
 compileGeneratedJava {
     dependsOn findGitRevision
+    dependsOn compileTextures
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
 }
