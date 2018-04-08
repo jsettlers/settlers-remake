@@ -35,7 +35,6 @@ public class TextureIndex {
 
 	private final File generatedResourcesDirectory;
 	private final File generatedSourcesDirectory;
-	private final String packageName;
 
 	private int textureCounter = 0;
 	private int imageIndexCounter;
@@ -43,21 +42,18 @@ public class TextureIndex {
 	private DataOutputStream textureIndexOut;
 	private PrintWriter textureConstantsOut;
 
-	public TextureIndex(File generatedResourcesDirectory, File generatedSourcesDirectory, String packageName) {
+	public TextureIndex(File generatedResourcesDirectory, File generatedSourcesDirectory) {
 		this.generatedResourcesDirectory = generatedResourcesDirectory;
 		this.generatedSourcesDirectory = generatedSourcesDirectory;
-		this.packageName = packageName;
 	}
 
 	public void openTextureIndex() throws IOException {
-		File resourcesDirectoryWithPackage = new File(generatedResourcesDirectory, packageName);
-		resourcesDirectoryWithPackage.mkdirs();
-		textureIndexOut = new DataOutputStream(new FileOutputStream(new File(resourcesDirectoryWithPackage, "texturemap")));
+		generatedResourcesDirectory.mkdirs();
+		textureIndexOut = new DataOutputStream(new FileOutputStream(new File(generatedResourcesDirectory, "texturemap")));
 		textureIndexOut.write(new byte[] { 'T', 'E', 'X', '1' });
 
-		File packageDir = new File(generatedSourcesDirectory, packageName);
-		packageDir.mkdirs();
-		textureConstantsOut = new PrintWriter(new File(packageDir, "TextureMap.java"));
+		generatedSourcesDirectory.mkdirs();
+		textureConstantsOut = new PrintWriter(new File(generatedSourcesDirectory, "TextureMap.java"));
 		textureConstantsOut.println("package jsettlers.common.images;");
 		textureConstantsOut.println("import java.util.Arrays;");
 		textureConstantsOut.println();
@@ -78,14 +74,14 @@ public class TextureIndex {
 		System.out.println("Opened texture index");
 	}
 
-	public void registerTexture(String name, int textureFile, int offsetx, int offsety, int width, int height, boolean hasTorso, TexturePosition position) throws IOException {
+	public void registerTexture(String name, int textureFile, int offsetX, int offsetY, int width, int height, boolean hasTorso, TexturePosition position) throws IOException {
 		synchronized (imageIndexMutex) {
 			String safename = name.replaceAll("[^a-zA-Z0-9._]", "_");
 
 			imageIndexes.put(safename, imageIndexCounter);
 
-			textureIndexOut.writeShort(offsetx);
-			textureIndexOut.writeShort(offsety);
+			textureIndexOut.writeShort(offsetX);
+			textureIndexOut.writeShort(offsetY);
 			textureIndexOut.writeShort(width);
 			textureIndexOut.writeShort(height);
 			textureIndexOut.writeShort(hasTorso ? textureFile | 0x8000 : textureFile);
@@ -133,5 +129,4 @@ public class TextureIndex {
 			return textureCounter++;
 		}
 	}
-
 }

@@ -48,12 +48,13 @@ public class TextureGenerationTask extends DefaultTask {
 			throw new RuntimeException("please use resourceDirectory=\"...\"");
 		}
 
-		generatedSourcesDirectory.mkdirs();
+		File outputResourcesDirectory = new File(this.generatedResourcesDirectory, PACKAGE_NAME);
+		File outputSourcesDirectory = new File(this.generatedSourcesDirectory, PACKAGE_NAME);
 
-		TextureIndex textureIndex = new TextureIndex(generatedResourcesDirectory, generatedSourcesDirectory, PACKAGE_NAME);
+		TextureIndex textureIndex = new TextureIndex(outputResourcesDirectory, outputSourcesDirectory);
 		textureIndex.openTextureIndex();
 
-		TextureGenerator generator = new TextureGenerator(textureIndex, resourceDirectory, generatedResourcesDirectory);
+		TextureGenerator generator = new TextureGenerator(textureIndex, outputResourcesDirectory);
 		generator.processTextures(resourceDirectory);
 
 		textureIndex.closeTextureIndex();

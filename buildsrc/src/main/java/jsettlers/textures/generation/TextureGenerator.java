@@ -34,13 +34,11 @@ public final class TextureGenerator {
 		String name;
 	}
 
-	private final File rawDirectory;
 	private final File outDirectory;
 	private final TextureIndex textureIndex;
 
-	public TextureGenerator(TextureIndex textureIndex, File rawDirectory, File outDirectory) {
+	public TextureGenerator(TextureIndex textureIndex, File outDirectory) {
 		this.textureIndex = textureIndex;
-		this.rawDirectory = rawDirectory;
 		this.outDirectory = outDirectory;
 	}
 
