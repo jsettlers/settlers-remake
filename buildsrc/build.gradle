@@ -13,3 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+apply plugin: 'java'
+dependencies {
+    compile gradleApi()
+}
