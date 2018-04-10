@@ -67,7 +67,6 @@ public class WGLContextCreator extends JAWTContextCreator {
         pfd.cColorBits((byte) 32);
 
         pfd.cDepthBits((byte) 24);
-        pfd.cStencilBits((byte) 1);
 
 		pixel_format = GDI32.ChoosePixelFormat(hdc, pfd);
 		if(pixel_format == 0) throw new Error("Could not find pixel format!");
