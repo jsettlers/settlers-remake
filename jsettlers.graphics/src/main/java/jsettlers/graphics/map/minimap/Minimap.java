@@ -159,49 +159,47 @@ public final class Minimap implements IMinimapData {
 		if (mapViewport == null) {
 			return;
 		}
-		int lineStartX = mapViewport.getLineStartX(0);
-		int firstY = mapViewport.getLineY(0);
-		float minviewx = converter.getViewX(lineStartX, firstY, 0) * width;
-		float maxviewy = Math.min(converter.getViewY(lineStartX, firstY, 0), 1) * height;
-		float maxviewx = converter.getViewX(mapViewport.getLineEndX(0), firstY, 0)
-				* width;
-		int lastY = mapViewport.getLineY(mapViewport.getLines());
-		float minviewy = Math.max(converter.getViewY(lineStartX, lastY, 0), 0) * height;
+		int offset = 50;
+		int minX = mapViewport.getMinX();
+		int minY = mapViewport.getMinY();
+		int maxX = minX + mapViewport.getWidth();
+		int maxY = minY + mapViewport.getHeight() - offset;
+		float minviewx = converter.getViewX(minX, minY, 0) * width;
+		float maxviewy = converter.getViewY(minX, minY, 0) * height;
+		float maxviewx = converter.getViewX(maxX, maxY + offset, 0) * width;
+		float minviewy = converter.getViewY(maxX, maxY, 0) * height;
 
 		context.drawLine(
 				new float[] {
 						// bottom left
-						Math.max(minviewx, minviewy / height * stride * width),
-						minviewy,
-						0,
-						// bottom right
-						Math.min(maxviewx, (minviewy / height * stride + 1)
-								* width),
-						minviewy,
-						0,
-						Math.min(maxviewx, (maxviewy / height * stride + 1)
-								* width),
-						Math.max(
-								(Math.min(maxviewx,
-										(maxviewy / height * stride + 1)
-												* width)
-												- width)
-										/ width / stride * height,
-								minviewy),
-						0,
-						// top right
-						Math.min(maxviewx, (maxviewy / height * stride + 1)
-								* width),
-						maxviewy,
-						0,
-						// top left
 						Math.max(minviewx, maxviewy / height * stride * width),
 						maxviewy,
 						0,
-						Math.max(minviewx, minviewy / height * stride * width),
+						// bottom right
+						Math.min(maxviewx, (maxviewy / height * stride + 1) * width),
+						maxviewy,
+						0,
+						// mid right
+						Math.min(maxviewx, Math.max(maxviewx, (minviewy / height * stride + 1) * width)),
 						Math.min(
-								Math.max(minviewx, minviewy / height * stride
-										* width)
+								(Math.max(maxviewx,
+										(minviewy / height * stride + 1) * width) - width)
+										/ width / stride * height,
+								maxviewy),
+						0,
+						// top right
+						Math.min(maxviewx, (minviewy / height * stride + 1) * width),
+						minviewy,
+						0,
+						// top left
+						Math.max(minviewx, minviewy / height * stride * width),
+						minviewy,
+						0,
+						// mid left
+						Math.min(minviewx, Math.max(minviewx, maxviewy / height * stride * width)),
+						Math.max(
+								Math.min(minviewx,
+										(maxviewy / height * stride + 1) * width) - height
 										/ width / stride * height,
 								maxviewy),
 						0,
