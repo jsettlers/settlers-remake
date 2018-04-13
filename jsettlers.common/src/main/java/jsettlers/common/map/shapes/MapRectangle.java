@@ -54,14 +54,18 @@ public final class MapRectangle implements IMapArea {
 	}
 
 	public final boolean contains(int x, int y) {
-		if (!containsLine(y)) {
+		if (!containsLineY(y)) {
 			return false;
 		}
-		return !(x < getLineStartX(y - getMinY()) || x > getLineEndX(y - getMinY()));
+		return containsLineX(x);
 	}
 
-	public final boolean containsLine(int y) {
-		return y >= getMinY() && y < getMinY() + height;
+	private final boolean containsLineY(int y) {
+		return y >= getMinY() && y <= getMinY() + height;
+	}
+
+	private final boolean containsLineX(int x) {
+		return x >= getMinX() && x <= getMinX() + width;
 	}
 
 	@Override
@@ -90,20 +94,13 @@ public final class MapRectangle implements IMapArea {
 	 *            The line relative to the first line of this rectangle.
 	 */
 	public final int getLineEndX(int line) {
-		return getLineStartX(line) + this.width - 1;
+		return (getLineStartX(line) + this.width - 1);
 	}
 
 	public final int getLineY(int line) {
 		return minY + line;
 	}
 
-	public final short getLines() {
-		return height;
-	}
-
-	public final short getLineLength() {
-		return width;
-	}
 
 	public short getMinX() {
 		return minX;
