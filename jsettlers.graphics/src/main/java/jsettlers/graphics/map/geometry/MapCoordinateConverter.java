@@ -125,13 +125,13 @@ public final class MapCoordinateConverter {
 	 *            The x coordinate in map space.
 	 * @param y
 	 *            The y coordinate in map space.
-	 * @param height
-	 *            The height of the tile.
+	 * @param width
+	 *            The width of the tile.
 	 * @return The view x coordinate
 	 */
-	public float getViewX(float x, float y, float height) {
+	public float getViewX(float x, float y, float width) {
 		return x * this.heightmatrix[M_00] + y * this.heightmatrix[M_01]
-				+ height * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
+				+ width * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
 	}
 
 	/**
@@ -290,8 +290,8 @@ public final class MapCoordinateConverter {
 		float maxMountainHeight = HEIGHT_Y_DISPLACEMENT * Byte.MAX_VALUE;
 		float minX = getExactMapXwithHeight(screen.getMinX(), screen.getMaxY(), 0);
 		float maxX = getExactMapXwithHeight(screen.getMaxX(), screen.getMinY(), maxMountainHeight);
-		float minY = getExactMapYwithHeight(screen.getMaxX(), screen.getMaxY(), 0);
-		float maxY = getExactMapYwithHeight(screen.getMinX(), screen.getMinY(), maxMountainHeight);
+		float minY = getExactMapYwithHeight(screen.getMinX(), screen.getMaxY(), 0);
+		float maxY = getExactMapYwithHeight(screen.getMaxX(), screen.getMinY(), maxMountainHeight);
 		return new MapRectangle((short) minX, (short) minY, (short) (maxX - minX), (short) (maxY - minY));
 	}
 

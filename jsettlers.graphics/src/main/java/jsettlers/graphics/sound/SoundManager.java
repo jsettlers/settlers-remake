@@ -250,8 +250,8 @@ public class SoundManager {
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
 
-				int maxA = area.getLineLength(); // get screen area
-				int maxB = area.getLines();
+				int maxA = area.getWidth(); // get screen area
+				int maxB = area.getHeight();
 				int b = y - area.getMinY();
 				int a = x - area.getLineStartX(b);
 				float leftVolume, rightVolume;
