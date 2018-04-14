@@ -1,4 +1,4 @@
-package jsettlers.graphics.debug.DatViewer;
+package jsettlers.graphics.debug.datviewer;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
