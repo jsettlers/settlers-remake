@@ -51,7 +51,7 @@ public enum EMaterialType {
 	SWORD((short) 59, 14, 111, true, 13, false),
 	TRUNK((short) 41, 3, 171, true, 2, false),
 	WATER((short) 77, 3, 156, true, 12, false),
-	WINE((short) 69, 14, 123, true, 25, false),
+	WINE((short) 69, 14, 129, true, 25, false),
 
 	// Now the non-droppable materials
 
