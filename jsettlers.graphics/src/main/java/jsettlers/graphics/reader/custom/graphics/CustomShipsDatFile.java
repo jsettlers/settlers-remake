@@ -41,17 +41,25 @@ class CustomShipsDatFile extends EmptyDatFile {
 
 			@Override
 			public int size() {
-				return Math.max(29, fallbackSequence.size());
+				return Math.max(30, fallbackSequence.size());
 			}
 
 			@Override
 			public Sequence<Image> get(int index) {
 				if (index == 0) {
 					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_hull_hull", 0, 6));
-				} else if (index == 1) {
+				} else if (index == 2) {
 					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_structures_structures", 0, 6));
 				} else if (index == 28) {
 					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_sail_sail", 0, 6));
+
+				} else if (index == 4) {
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_hull_hull", 0, 6));
+				} else if (index == 6) {
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_structures_structures", 0, 6));
+				} else if (index == 29) {
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_sail_sail", 0, 6));
+
 				} else {
 					return fallbackSequence.get(index);
 				}
