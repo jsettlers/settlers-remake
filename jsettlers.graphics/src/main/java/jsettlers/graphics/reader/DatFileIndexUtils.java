@@ -1,15 +1,8 @@
 package jsettlers.graphics.reader;
 
-import java.io.IOException;
-
 import jsettlers.common.images.AnimationSequence;
-import jsettlers.common.images.DirectImageLink;
-import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.bytereader.ByteReader;
-import jsettlers.graphics.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
@@ -18,12 +11,15 @@ import jsettlers.graphics.sequence.Sequence;
  * In the game, we always reference the image indexes of the gold edition.
  * <p>
  * This utility class holds the information about which index remapping to use for which file.
- * @author michael
  *
+ * @author michael
  */
-public interface DatFileIndexUtils {
+public class DatFileIndexUtils {
 
-	static class FakeShipsDatFile extends EmptyDatFile {
+	private DatFileIndexUtils() {
+	}
+
+	private static class FakeShipsDatFile extends EmptyDatFile {
 		private final ImageProvider fallback;
 
 		private FakeShipsDatFile(ImageProvider fallback) {
@@ -38,7 +34,7 @@ public interface DatFileIndexUtils {
 					// TODO @andreas: Change this to the max number of sequences in the ship file
 					return 1000;
 				}
-				
+
 				@Override
 				public Sequence<Image> get(int index) {
 					// TODO @andreas: implement mapping
@@ -63,16 +59,18 @@ public interface DatFileIndexUtils {
 
 	/**
 	 * Returns a reader that uses gold version indexes
+	 *
 	 * @param fileIndex
-	 * @param reader The reader, using any index (auto-detected)
+	 * @param reader
+	 * 		The reader, using any index (auto-detected)
 	 * @return
 	 */
-	static DatFileReader autoTranslate(int fileIndex, DatFileReader reader, ImageProvider fallback) {
+	public static DatFileReader autoTranslate(int fileIndex, DatFileReader reader, ImageProvider fallback) {
 		if (fileIndex == 36 && reader.getSettlers().size() == 0) {
 			// No ships available
 			return new FakeShipsDatFile(fallback);
 		}
 		return reader;
 	}
-	
+
 }
