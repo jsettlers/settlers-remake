@@ -26,19 +26,17 @@ import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.ImageIndexFile;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatFileIndexUtils;
+import jsettlers.graphics.reader.custom.graphics.DatFileIndexUtils;
 import jsettlers.graphics.reader.DatFileReader;
 import jsettlers.graphics.reader.DatFileSet;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.EmptyDatFile;
-import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 import jsettlers.common.images.TextureMap;
@@ -246,14 +244,14 @@ public final class ImageProvider {
 	 *
 	 * @param file
 	 * 		The file of the sequence.
-	 * @param seqnumber
+	 * @param sequenceNumber
 	 * 		The number of the sequence in the file.
 	 * @return The settler sequence.
 	 */
-	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
+	public Sequence<? extends Image> getSettlerSequence(int file, int sequenceNumber) {
 		DatFileSet set = getFileSet(file);
-		if (set != null && set.getSettlers().size() > seqnumber) {
-			return set.getSettlers().get(seqnumber);
+		if (set != null && set.getSettlers().size() > sequenceNumber) {
+			return set.getSettlers().get(sequenceNumber);
 		} else {
 			return ArraySequence.getNullSequence();
 		}
@@ -291,7 +289,6 @@ public final class ImageProvider {
 			}
 		}
 		return DatFileIndexUtils.autoTranslate(fileIndex, reader, this);
-		// System.err.println("Could not find/load graphic file " + numberString);
 	}
 
 	/**
