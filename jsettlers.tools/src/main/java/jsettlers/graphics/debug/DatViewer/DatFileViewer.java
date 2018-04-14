@@ -34,7 +34,6 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
-import jsettlers.graphics.swing.utils.ImageUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -314,7 +313,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	private void exportSingleImage(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
-		BufferedImage rendered = ImageUtils.convertToBufferedImage(image);
+		BufferedImage rendered = image.convertToBufferedImage();
 		if (rendered == null) {
 			return;
 		}
