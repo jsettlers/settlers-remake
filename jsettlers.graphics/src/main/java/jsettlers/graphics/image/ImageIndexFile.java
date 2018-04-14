@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import jsettlers.common.images.TextureMap;
 import jsettlers.common.resources.ResourceManager;
 
 /**
@@ -29,7 +30,6 @@ import jsettlers.common.resources.ResourceManager;
  */
 public class ImageIndexFile {
 	private static final int SHORTS_PER_IMAGE = 9;
-	private static final int COLOR_MASK = 0x7fff;
 	private ImageIndexImage[] images = null;
 
 	/**
@@ -56,7 +56,7 @@ public class ImageIndexFile {
 	}
 
 	private void load() throws IOException {
-		final DataInputStream in = new DataInputStream(new BufferedInputStream(ResourceManager.getResourcesFileStream("images/texturemap")));
+		final DataInputStream in = new DataInputStream(new BufferedInputStream(getResource("texturemap")));
 
 		ArrayList<ImageIndexTexture> textures = new ArrayList<>();
 
@@ -74,19 +74,23 @@ public class ImageIndexFile {
 			int offsetY = in.readShort();
 			short width = in.readShort();
 			short height = in.readShort();
-			int textureFileNumber = in.readShort() & COLOR_MASK; // < TODO: torso
+			int textureFileNumber = in.readShort() & Short.MAX_VALUE; // < TODO: torso
 
-			float umin = (float) in.readShort() / COLOR_MASK;
-			float vmin = (float) in.readShort() / COLOR_MASK;
-			float umax = (float) in.readShort() / COLOR_MASK;
-			float vmax = (float) in.readShort() / COLOR_MASK;
+			float umin = (float) in.readShort() / Short.MAX_VALUE;
+			float vmin = (float) in.readShort() / Short.MAX_VALUE;
+			float umax = (float) in.readShort() / Short.MAX_VALUE;
+			float vmax = (float) in.readShort() / Short.MAX_VALUE;
 
 			while (textureFileNumber >= textures.size()) {
-				InputStream inputStream = ResourceManager.getResourcesFileStream("images/" + textures.size());
+				InputStream inputStream = getResource("images_" + textures.size());
 				textures.add(new ImageIndexTexture(inputStream));
 			}
 
 			images[i] = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, umin, vmin, umax, vmax);
 		}
+	}
+
+	private InputStream getResource(String string) {
+		return TextureMap.class.getResourceAsStream(string);
 	}
 }

@@ -106,7 +106,7 @@ import jsettlers.graphics.sequence.Sequence;
  * 
  * @author michael
  */
-public class AdvancedDatFileReader implements DatFileSet {
+public class AdvancedDatFileReader implements DatFileReader {
 	/**
 	 * Every dat file seems to have to start with this sequence.
 	 */
@@ -544,6 +544,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 	}
 
+	@Override
 	public ByteReader getReaderForLandscape(int index) throws IOException {
 		initializeIfNeeded();
 		reader.skipTo(landscapestarts[index]);
@@ -637,6 +638,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		return reader;
 	}
 
+	@Override
 	public void generateImageMap(int width, int height, int[] sequences,
 			String id) throws IOException {
 		initializeIfNeeded();
@@ -656,6 +658,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		return torsoTranslator;
 	}
 
+	@Override
 	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
 		return landscapeTranslator;
 	}

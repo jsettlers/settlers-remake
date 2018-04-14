@@ -1,5 +1,8 @@
 package jsettlers.graphics.reader;
 
+import java.io.File;
+import java.util.stream.Stream;
+
 import jsettlers.common.Color;
 
 public enum DatFileType {
@@ -43,5 +46,10 @@ public enum DatFileType {
 			color = (short) Color.convert565to555(color);
 		}
 		return (short) ((color << 1) | 0x01);
+	}
+	
+	public static DatFileType getForPath(File path) {
+		return Stream.of(values()).filter(v -> path.getName().endsWith(v.fileSuffix)).findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Could not determine type of " + path.getName()));
 	}
 }

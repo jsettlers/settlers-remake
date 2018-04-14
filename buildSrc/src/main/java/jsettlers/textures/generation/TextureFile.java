@@ -77,9 +77,10 @@ public class TextureFile {
 			shortBuffer.put(buffer);
 		}
 
-		return new TexturePosition((float) startx / this.width, (float) starty
-				/ this.height, (float) (startx + width + 1) / this.width,
-				(float) (starty + height + 1) / this.height);
+		return new TexturePosition((float) startx / (this.width + 1),
+				(float) (starty + height + 1) / (this.height + 1),
+				(float) (startx + width + 1) / (this.width + 1),
+				(float) starty / (this.height + 1));
 	}
 
 	public void write() throws IOException {

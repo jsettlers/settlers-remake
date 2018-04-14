@@ -33,11 +33,15 @@ import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.DatFileIndexUtils;
+import jsettlers.graphics.reader.DatFileReader;
 import jsettlers.graphics.reader.DatFileSet;
 import jsettlers.graphics.reader.DatFileType;
+import jsettlers.graphics.reader.EmptyDatFile;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
+import jsettlers.common.images.TextureMap;
 
 /**
  * This is the main image provider. It provides access to all images.
@@ -56,37 +60,12 @@ public final class ImageProvider {
 	 */
 	private static File lookupPath;
 
-	private static final DatFileSet EMPTY_SET = new DatFileSet() {
-		@Override
-		public SequenceList<Image> getSettlers() {
-			return new SequenceList<Image>() {
-				@Override
-				public Sequence<Image> get(int index) {
-					return null;
-				}
-
-				@Override
-				public int size() {
-					return 0;
-				}
-			};
-		}
-
-		@Override
-		public Sequence<LandscapeImage> getLandscapes() {
-			return new ArraySequence<>(new LandscapeImage[0]);
-		}
-
-		@Override
-		public Sequence<GuiImage> getGuis() {
-			return new ArraySequence<>(new GuiImage[0]);
-		}
-	};
+	private static final DatFileReader EMPTY_DAT_FILE = new EmptyDatFile();
 
 	private static ImageProvider instance;
 
 	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<>();
-	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<>();
+	private final Hashtable<Integer, DatFileReader> readers = new Hashtable<>();
 
 	private Thread preloadingThread;
 	private ImageIndexFile indexFile = null;
@@ -124,25 +103,18 @@ public final class ImageProvider {
 	 * 		The file number to search for.
 	 * @return The content as set or <code> null </code>
 	 */
-	public synchronized AdvancedDatFileReader getFileReader(int file) {
+	public synchronized DatFileReader getFileReader(int file) {
 		Integer integer = file;
-		AdvancedDatFileReader set = this.readers.get(integer);
+		DatFileReader set = this.readers.get(integer);
 		if (set == null) {
 			set = createFileReader(file);
-			if (set != null) {
-				this.readers.put(integer, set);
-			}
+			this.readers.put(integer, set);
 		}
 		return set;
 	}
 
 	public synchronized DatFileSet getFileSet(int file) {
-		AdvancedDatFileReader set = getFileReader(file);
-		if (set != null) {
-			return set;
-		} else {
-			return EMPTY_SET;
-		}
+		return getFileReader(file);
 	}
 
 	/**
@@ -225,7 +197,7 @@ public final class ImageProvider {
 			indexFile = new ImageIndexFile();
 		}
 
-		int index = 0; // TextureMap.getIndex(link.getName());
+		int index = TextureMap.getIndex(link.getName());
 		return indexFile.getImage(index);
 	}
 
@@ -305,19 +277,21 @@ public final class ImageProvider {
 		return null;
 	}
 
-	private AdvancedDatFileReader createFileReader(int fileIndex) {
+	private DatFileReader createFileReader(int fileIndex) {
 		String numberString = String.format(Locale.ENGLISH, "%02d", fileIndex);
+		DatFileReader reader = EMPTY_DAT_FILE;
 		for (DatFileType type : DatFileType.values()) {
 			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
 
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
-				return new AdvancedDatFileReader(file, type);
+				reader = new AdvancedDatFileReader(file, type);
+				break;
 			}
 		}
-		System.err.println("Could not find/load graphic file " + numberString);
-		return null;
+		return DatFileIndexUtils.autoTranslate(fileIndex, reader, this);
+		// System.err.println("Could not find/load graphic file " + numberString);
 	}
 
 	/**

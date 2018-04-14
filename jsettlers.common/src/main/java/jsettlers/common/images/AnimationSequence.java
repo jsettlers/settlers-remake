@@ -72,7 +72,9 @@ public final class AnimationSequence {
 	 * @return The image link to that image.
 	 */
 	public ImageLink getImage(int index) {
-		assert index < length;
+		if (index >= length || index < 0) {
+			throw new IllegalArgumentException();
+		}
 		return ImageLink.fromName(name, first + index);
 	}
 }

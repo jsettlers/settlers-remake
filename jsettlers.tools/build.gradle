@@ -12,3 +12,13 @@ dependencies {
     implementation project(':jsettlers.testutils')
     implementation project(':jsettlers.tests')
 }
+
+// Usage: compareDatFiles <path1> <path2>
+task compareDatFiles(type:JavaExec) {
+    main = 'jsettlers.graphics.debug.DatFileMappingComparator'
+    if (project.hasProperty("F1") && project.hasProperty("F2")) {
+        args = [ F1, F2]
+    }
+    workingDir = System.getProperty("user.dir")
+    classpath = sourceSets.main.runtimeClasspath
+}

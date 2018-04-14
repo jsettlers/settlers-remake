@@ -88,11 +88,11 @@ public final class TextureGenerator {
 	}
 
 	private String calculateName(File baseDirectory, File file) {
-		StringBuilder name = new StringBuilder(file.getName());
+		StringBuilder name = new StringBuilder(file.getName().replaceFirst("(\\.t)?\\.png$", ""));
 		File currentFile = file.getParentFile();
 
 		while (!baseDirectory.equals(currentFile)) {
-			name.insert(0, currentFile.getName() + "-");
+			name.insert(0, currentFile.getName() + "/");
 			currentFile = currentFile.getParentFile();
 		}
 
@@ -111,6 +111,8 @@ public final class TextureGenerator {
 			if (data != null) {
 				int texture = textureIndex.getNextTextureIndex();
 				TexturePosition position = addAsNewImage(data, texture);
+				System.out.println("Texture file #" + texture + ": add name=" + name + " using offsets x=" + data.getOffsetX() + ".." + (data.getOffsetX() + data.getWidth()) + ", y=" + data.getOffsetY() + ".." + (data.getOffsetY() + data.getHeight())
+					+ " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".." + position.getBottom());
 				textureIndex.registerTexture(name, texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), hasTorso, position);
 			}
 		} catch (Throwable t) {
@@ -121,7 +123,7 @@ public final class TextureGenerator {
 	// This is slow.
 	private TexturePosition addAsNewImage(ProvidedImage data, int texture) throws IOException {
 		int size = getNextPOT(Math.max(data.getWidth(), data.getHeight()));
-		TextureFile file = new TextureFile(new File(outDirectory, texture + ""), size, size);
+		TextureFile file = new TextureFile(new File(outDirectory, "images_" + texture), size, size);
 		TexturePosition position = file.addImage(data.getData(), data.getWidth());
 		file.write();
 		return position;
