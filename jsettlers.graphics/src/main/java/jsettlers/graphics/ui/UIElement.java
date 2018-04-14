@@ -15,6 +15,7 @@
 package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
+import java8.util.Optional;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.action.Action;
 
@@ -28,7 +29,7 @@ public interface UIElement {
 	 */
 	void drawAt(GLDrawContext gl);
 
-	Action getAction(float relativex, float relativey);
+	Optional<Action> getAction(float relativex, float relativey);
 
 	String getDescription(float relativex, float relativey);
 

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
@@ -507,7 +508,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		return isJobless() || building != null;
 	}
 

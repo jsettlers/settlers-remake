@@ -15,6 +15,7 @@
 package jsettlers.logic.movable;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -43,6 +44,7 @@ import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -75,6 +77,10 @@ public final class Movable implements ILogicMovable {
 	private ShortPoint2D position;
 
 	private ShortPoint2D requestedTargetPosition = null;
+	/**
+	 * Move to type of current / last path action
+	 */
+	private EMoveToType requestedMoveToType = EMoveToType.DEFAULT;
 	private Path path;
 
 	private float health;
@@ -128,9 +134,11 @@ public final class Movable implements ILogicMovable {
 	 *
 	 * @param targetPosition
 	 */
-	public final void moveTo(ShortPoint2D targetPosition) {
+	@Override
+	public final void moveTo(ShortPoint2D targetPosition, EMoveToType moveToType) {
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
 			this.requestedTargetPosition = targetPosition;
+			this.requestedMoveToType = Objects.requireNonNull(moveToType);
 		}
 	}
 
@@ -220,7 +228,7 @@ public final class Movable implements ILogicMovable {
 					requestedTargetPosition = null;
 
 					if (foundPath) {
-						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
+						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos(), requestedMoveToType);
 						return animationDuration; // we already follow the path and initiated the walking
 					} else {
 						break;
@@ -280,7 +288,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private void pathingAction() {
-		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep(), requestedMoveToType)) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
@@ -593,6 +601,7 @@ public final class Movable implements ILogicMovable {
 	 *
 	 * @param targetPos
 	 * 		position to move to.
+	 * @param type 
 	 * @return true if it was possible to calculate a path to the given position<br>
 	 * false if it wasn't possible to get a path.
 	 */

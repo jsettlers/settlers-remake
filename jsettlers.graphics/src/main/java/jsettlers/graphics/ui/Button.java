@@ -15,6 +15,10 @@
 package jsettlers.graphics.ui;
 
 import jsettlers.common.images.ImageLink;
+
+import java.util.Objects;
+
+import java8.util.Optional;
 import jsettlers.common.action.Action;
 
 /**
@@ -69,8 +73,8 @@ public class Button extends UIPanel {
 	}
 
 	@Override
-	public Action getAction(float relativex, float relativey) {
-		return getAction();
+	public Optional<Action> getAction(float relativex, float relativey) {
+		return Optional.ofNullable(getAction());
 	}
 
 	@Override
