@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,35 +11,53 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader;
+ */
+package jsettlers.graphics.image.reader.translator;
 
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.sequence.Sequence;
+import java.io.IOException;
+
+import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
- * This is a list of image sequences.
+ * This class translates GUI Images. This handles most - but not all - images used for the GUI.
  * 
- * @author michael
- * @param <T>
- *            The type of the images.
+ * @author Michael Zangl
  */
-public interface SequenceList<T extends Image> {
-	/**
-	 * Gets an image in the sequence.
-	 * 
-	 * @param index
-	 *            The index of the image.
-	 * @return The image in the sequence
-	 * @throws IndexOutOfBoundsException
-	 *             if the index is >= size of smaller than 0.
-	 */
-	Sequence<T> get(int index);
+public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
+
+	private final DatFileType type;
 
 	/**
-	 * Gets the length of the sequence.
+	 * Create a new {@link GuiTranslator}.
 	 * 
-	 * @return The number of images in this sequence.
+	 * @param type
+	 *            The {@link DatFileType} to convert colors.
 	 */
-	int size();
+	public GuiTranslator(DatFileType type) {
+		this.type = type;
+	}
+
+	@Override
+	public short getTransparentColor() {
+		return 0;
+	}
+
+	@Override
+	public short readUntransparentColor(ByteReader reader) throws IOException {
+		return type.convertTo5551(reader.read16());
+	}
+
+	@Override
+	public HeaderType getHeaderType() {
+		return HeaderType.GUI;
+	}
+
+	@Override
+	public GuiImage createImage(ImageMetadata metadata, short[] array) {
+		return new GuiImage(metadata, array);
+	}
+
 }

@@ -24,7 +24,7 @@ import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * This is the base for all images that are directly loaded from the image file.

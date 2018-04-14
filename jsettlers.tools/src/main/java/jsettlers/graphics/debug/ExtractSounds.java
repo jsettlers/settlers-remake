@@ -23,7 +23,7 @@ import javax.swing.JFileChooser;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.resources.SwingResourceLoader;
-import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.sound.SoundManager;
 
 /**

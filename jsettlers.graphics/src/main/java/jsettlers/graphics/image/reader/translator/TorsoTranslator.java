@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,53 +11,42 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader.translator;
+ */
+package jsettlers.graphics.image.reader.translator;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.reader.DatFileType;
-import jsettlers.graphics.reader.ImageMetadata;
-import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.TorsoImage;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
- * This class translates GUI Images. This handles most - but not all - images used for the GUI.
+ * This class reads the torso image. That image is always a grayscale image.
  * 
  * @author Michael Zangl
+ *
  */
-public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
-
-	private final DatFileType type;
-
-	/**
-	 * Create a new {@link GuiTranslator}.
-	 * 
-	 * @param type
-	 *            The {@link DatFileType} to convert colors.
-	 */
-	public GuiTranslator(DatFileType type) {
-		this.type = type;
-	}
+public class TorsoTranslator implements DatBitmapTranslator<TorsoImage> {
+	private static final int TORSO_BITS = 0x1f;
 
 	@Override
 	public short getTransparentColor() {
-		return 0;
+		return 0x00;
 	}
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return type.convertTo5551(reader.read16());
+		int read = reader.read8() & TORSO_BITS; // only 5 bit.
+		return (short) (read << 11 | read << 6 | read << 1 | 0x01);
 	}
 
 	@Override
 	public HeaderType getHeaderType() {
-		return HeaderType.GUI;
+		return HeaderType.DISPLACED;
 	}
 
 	@Override
-	public GuiImage createImage(ImageMetadata metadata, short[] array) {
-		return new GuiImage(metadata, array);
+	public TorsoImage createImage(ImageMetadata metadata, short[] array) {
+		return new TorsoImage(metadata, array);
 	}
-
 }

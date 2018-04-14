@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,39 +12,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+package jsettlers.graphics.image.reader;
 
-package jsettlers.graphics.reader.custom.graphics;
-
-import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.DatFileReader;
-
-/**
- * Different settlers versions use different image indexes.
- * <p>
- * In the game, we always reference the image indexes of the gold edition.
- * <p>
- * This utility class holds the information about which index remapping to use for which file.
- *
- * @author michael
- */
-public class DatFileIndexUtils {
-
-	private DatFileIndexUtils() {
-	}
-
-	/**
-	 * Returns a reader that uses gold version indexes
-	 *
-	 * @param fileIndex
-	 * @param reader
-	 * 		The reader, using any index (auto-detected)
-	 * @return
-	 */
-	public static DatFileReader autoTranslate(int fileIndex, DatFileReader reader, ImageProvider imageProvider) {
-		if (fileIndex == 36) { // use our own ships
-			return new CustomShipsDatFile(reader, imageProvider);
-		}
-		return reader;
-	}
-
+public final class ImageMetadata {
+	public int width;
+	public int height;
+	public int offsetX;
+	public int offsetY;
 }

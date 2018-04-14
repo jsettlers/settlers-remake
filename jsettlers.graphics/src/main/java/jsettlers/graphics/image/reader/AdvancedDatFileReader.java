@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,12 +11,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+ */
+package jsettlers.graphics.image.reader;
 
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
@@ -27,15 +23,20 @@ import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.ShadowImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.TorsoImage;
-import jsettlers.graphics.reader.bytereader.ByteReader;
-import jsettlers.graphics.reader.translator.DatBitmapTranslator;
-import jsettlers.graphics.reader.translator.GuiTranslator;
-import jsettlers.graphics.reader.translator.LandscapeTranslator;
-import jsettlers.graphics.reader.translator.SettlerTranslator;
-import jsettlers.graphics.reader.translator.ShadowTranslator;
-import jsettlers.graphics.reader.translator.TorsoTranslator;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.translator.DatBitmapTranslator;
+import jsettlers.graphics.image.reader.translator.GuiTranslator;
+import jsettlers.graphics.image.reader.translator.LandscapeTranslator;
+import jsettlers.graphics.image.reader.translator.SettlerTranslator;
+import jsettlers.graphics.image.reader.translator.ShadowTranslator;
+import jsettlers.graphics.image.reader.translator.TorsoTranslator;
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.graphics.image.sequence.SequenceList;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * This is an advanced dat file reader. It can read the file, but it only reads needed sequences.
@@ -103,7 +104,7 @@ import jsettlers.graphics.image.sequence.Sequence;
  * <td>Start position of fist image sequence list.</td>
  * </tr>
  * </table>
- * 
+ *
  * @author michael
  */
 public class AdvancedDatFileReader implements DatFileReader {
@@ -221,8 +222,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 * A list of loaded landscae images.
 	 */
 	private LandscapeImage[] landscapeimages = null;
-	private final Sequence<LandscapeImage> landscapesequence =
-			new LandscapeImageSequence();
+	private final Sequence<LandscapeImage> landscapesequence = new LandscapeImageSequence();
 	private int[] landscapestarts;
 
 	private GuiImage[] guiimages = null;
@@ -242,16 +242,11 @@ public class AdvancedDatFileReader implements DatFileReader {
 		this.type = type;
 		directSettlerList = new DirectSettlerSequenceList();
 
-		settlerTranslator =
-				new SettlerTranslator(type);
-		torsoTranslator =
-				new TorsoTranslator();
-		landscapeTranslator =
-				new LandscapeTranslator(type);
-		shadowTranslator =
-				new ShadowTranslator();
-		guiTranslator =
-				new GuiTranslator(type);
+		settlerTranslator = new SettlerTranslator(type);
+		torsoTranslator = new TorsoTranslator();
+		landscapeTranslator = new LandscapeTranslator(type);
+		shadowTranslator = new ShadowTranslator();
+		guiTranslator = new GuiTranslator(type);
 	}
 
 	/**
@@ -286,9 +281,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		if (torsodifference != 0) {
 			int[] oldtorsos = torsostarts;
 			torsostarts = new int[settlerstarts.length];
-			for (int i = 0; i < oldtorsos.length; i++) {
-				torsostarts[i + torsodifference] = oldtorsos[i];
-			}
+			System.arraycopy(oldtorsos, 0, torsostarts, torsodifference, oldtorsos.length);
 			for (int i = 0; i < torsodifference; i++) {
 				torsostarts[i] = -1;
 			}
@@ -298,9 +291,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		if (shadowstarts.length < settlerstarts.length) {
 			int[] oldshadows = shadowstarts;
 			shadowstarts = new int[settlerstarts.length];
-			for (int i = 0; i < oldshadows.length; i++) {
-				shadowstarts[i + shadowdifference] = oldshadows[i];
-			}
+			System.arraycopy(oldshadows, 0, shadowstarts, shadowdifference, oldshadows.length);
 			for (int i = 0; i < shadowdifference; i++) {
 				torsostarts[i] = -1;
 			}
@@ -354,15 +345,15 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 * reads all sequence starts at a given position.
 	 * <p>
 	 * Does not align torsos and shadows.
-	 * 
+	 *
 	 * @param reader
-	 *            The reader to read from.
+	 * 		The reader to read from.
 	 * @param sequenceIndexStart
-	 *            The position to start at.
+	 * 		The position to start at.
 	 * @param type
-	 *            The type of the sequence
+	 * 		The type of the sequence
 	 * @throws IOException
-	 *             if an read error occurred.
+	 * 		if an read error occurred.
 	 */
 	private void readSequencesAt(ByteReader reader, int sequenceIndexStart)
 			throws IOException {
@@ -430,8 +421,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		return directSettlerList;
 	}
 
-	private static final Sequence<Image> NULL_SETTLER_SEQUENCE =
-			new ArraySequence<>(new SettlerImage[0]);
+	private static final Sequence<Image> NULL_SETTLER_SEQUENCE = new ArraySequence<>(new SettlerImage[0]);
 
 	private class DirectSettlerSequenceList implements SequenceList<Image> {
 
@@ -508,7 +498,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 	/**
 	 * This landscape image list loads the landscape images.
-	 * 
+	 *
 	 * @author michael
 	 */
 	private class LandscapeImageSequence implements Sequence<LandscapeImage> {
@@ -564,7 +554,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 	/**
 	 * This landscape image list loads the landscape images.
-	 * 
+	 *
 	 * @author michael
 	 */
 	private class GuiImageSequence implements Sequence<GuiImage> {
@@ -627,7 +617,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 	/**
 	 * Gets a reader positioned at the given settler
-	 * 
+	 *
 	 * @param pointer
 	 * @return
 	 * @throws IOException

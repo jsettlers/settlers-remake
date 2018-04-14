@@ -33,10 +33,10 @@ import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatFileReader;
-import jsettlers.graphics.reader.DatFileType;
-import jsettlers.graphics.reader.SequenceList;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileReader;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.sequence.SequenceList;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
 

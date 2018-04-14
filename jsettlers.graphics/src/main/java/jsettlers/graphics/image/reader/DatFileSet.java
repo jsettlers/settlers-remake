@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,41 +11,43 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader;
+ */
+package jsettlers.graphics.image.reader;
 
-import java.io.IOException;
+import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.graphics.image.sequence.SequenceList;
 
-public class ShortArrayWriter implements ImageArrayProvider {
-	private static final short TRANSPARENT = 0;
-	private short[] array;
-	private int width;
-	private int line;
+/**
+ * This is a dat file set that holds the data of a dat file in converted form.
+ * <p>
+ * It allows access to the torsos, settler images and landscape tiles in the file.
+ * <p>
+ * The lists should allow quick index access.
+ * 
+ * @author michael
+ */
+public interface DatFileSet {
+	/**
+	 * Gets a list of settlers in the dat file.
+	 * 
+	 * @return The unmodifiable list.
+	 */
+	SequenceList<Image> getSettlers();
 
-	@Override
-	public void startImage(int width, int height) throws IOException {
-		if (width == 0 && height == 0) {
-			array = new short[1];
-		}
-		this.width = width;
-		array = new short[width * height];
-	}
+	/**
+	 * Gets a list of landscape tiles in the dat file.
+	 * 
+	 * @return The unmodifiable list.
+	 */
+	Sequence<LandscapeImage> getLandscapes();
 
-	@Override
-	public void writeLine(short[] data, int linelength) throws IOException {
-		int offset = line * width;
-		for (int i = 0; i < linelength; i++) {
-			array[offset + i] = data[i];
-		}
-		for (int i = linelength; i < width; i++) {
-			array[offset + i] = TRANSPARENT;
-		}
-
-		line++;
-	}
-
-	public short[] getArray() {
-		return array;
-	}
-
+	/**
+	 * Gets a list of gui images.
+	 * 
+	 * @return The unmodifiable list.
+	 */
+	Sequence<GuiImage> getGuis();
 }

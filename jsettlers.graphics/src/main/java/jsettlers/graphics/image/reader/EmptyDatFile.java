@@ -12,18 +12,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-package jsettlers.graphics.reader;
+package jsettlers.graphics.image.reader;
 
 import java.io.IOException;
 
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.reader.bytereader.ByteReader;
-import jsettlers.graphics.reader.translator.DatBitmapTranslator;
-import jsettlers.graphics.reader.translator.LandscapeTranslator;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.translator.DatBitmapTranslator;
+import jsettlers.graphics.image.reader.translator.LandscapeTranslator;
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.graphics.image.sequence.SequenceList;
 
 public class EmptyDatFile implements DatFileReader {
 	@Override

@@ -28,11 +28,11 @@ import java.nio.ShortBuffer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.GLPreloadTask;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatBitmapReader;
-import jsettlers.graphics.reader.ImageArrayProvider;
-import jsettlers.graphics.reader.ImageMetadata;
-import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatBitmapReader;
+import jsettlers.graphics.image.reader.ImageArrayProvider;
+import jsettlers.graphics.image.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
 

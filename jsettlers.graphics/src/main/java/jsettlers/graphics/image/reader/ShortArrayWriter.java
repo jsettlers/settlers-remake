@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,12 +11,41 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader;
+ */
+package jsettlers.graphics.image.reader;
 
-public final class ImageMetadata {
-	public int width;
-	public int height;
-	public int offsetX;
-	public int offsetY;
+import java.io.IOException;
+
+public class ShortArrayWriter implements ImageArrayProvider {
+	private static final short TRANSPARENT = 0;
+	private short[] array;
+	private int width;
+	private int line;
+
+	@Override
+	public void startImage(int width, int height) throws IOException {
+		if (width == 0 && height == 0) {
+			array = new short[1];
+		}
+		this.width = width;
+		array = new short[width * height];
+	}
+
+	@Override
+	public void writeLine(short[] data, int linelength) throws IOException {
+		int offset = line * width;
+		for (int i = 0; i < linelength; i++) {
+			array[offset + i] = data[i];
+		}
+		for (int i = linelength; i < width; i++) {
+			array[offset + i] = TRANSPARENT;
+		}
+
+		line++;
+	}
+
+	public short[] getArray() {
+		return array;
+	}
+
 }

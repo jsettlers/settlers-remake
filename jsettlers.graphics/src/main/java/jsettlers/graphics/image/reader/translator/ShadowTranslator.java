@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,42 +11,39 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader;
+ */
+package jsettlers.graphics.image.reader.translator;
 
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.sequence.Sequence;
+import java.io.IOException;
+
+import jsettlers.graphics.image.ShadowImage;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
- * This is a dat file set that holds the data of a dat file in converted form.
- * <p>
- * It allows access to the torsos, settler images and landscape tiles in the file.
- * <p>
- * The lists should allow quick index access.
+ * This class translates shadows.
  * 
- * @author michael
+ * @author Michael Zangl
+ *
  */
-public interface DatFileSet {
-	/**
-	 * Gets a list of settlers in the dat file.
-	 * 
-	 * @return The unmodifiable list.
-	 */
-	SequenceList<Image> getSettlers();
+public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
+	@Override
+	public short readUntransparentColor(ByteReader reader) throws IOException {
+		return 0;
+	}
 
-	/**
-	 * Gets a list of landscape tiles in the dat file.
-	 * 
-	 * @return The unmodifiable list.
-	 */
-	Sequence<LandscapeImage> getLandscapes();
+	@Override
+	public HeaderType getHeaderType() {
+		return HeaderType.DISPLACED;
+	}
 
-	/**
-	 * Gets a list of gui images.
-	 * 
-	 * @return The unmodifiable list.
-	 */
-	Sequence<GuiImage> getGuis();
+	@Override
+	public short getTransparentColor() {
+		return 0x0001;
+	}
+
+	@Override
+	public ShadowImage createImage(ImageMetadata metadata, short[] array) {
+		return new ShadowImage(metadata, array);
+	}
 }

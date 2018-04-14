@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,39 +11,35 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.reader.translator;
+ */
+package jsettlers.graphics.image.sequence;
 
-import java.io.IOException;
-
-import jsettlers.graphics.image.ShadowImage;
-import jsettlers.graphics.reader.ImageMetadata;
-import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.sequence.Sequence;
 
 /**
- * This class translates shadows.
+ * This is a list of image sequences.
  * 
- * @author Michael Zangl
- *
+ * @author michael
+ * @param <T>
+ *            The type of the images.
  */
-public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
-	@Override
-	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return 0;
-	}
+public interface SequenceList<T extends Image> {
+	/**
+	 * Gets an image in the sequence.
+	 * 
+	 * @param index
+	 *            The index of the image.
+	 * @return The image in the sequence
+	 * @throws IndexOutOfBoundsException
+	 *             if the index is >= size of smaller than 0.
+	 */
+	Sequence<T> get(int index);
 
-	@Override
-	public HeaderType getHeaderType() {
-		return HeaderType.DISPLACED;
-	}
-
-	@Override
-	public short getTransparentColor() {
-		return 0x0001;
-	}
-
-	@Override
-	public ShadowImage createImage(ImageMetadata metadata, short[] array) {
-		return new ShadowImage(metadata, array);
-	}
+	/**
+	 * Gets the length of the sequence.
+	 * 
+	 * @return The number of images in this sequence.
+	 */
+	int size();
 }

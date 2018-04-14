@@ -12,16 +12,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-package jsettlers.graphics.reader.custom.graphics;
+package jsettlers.graphics.image.reader.custom.graphics;
 
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.DatFileReader;
-import jsettlers.graphics.reader.EmptyDatFile;
-import jsettlers.graphics.reader.SequenceList;
-import jsettlers.graphics.reader.WrappedAnimation;
+import jsettlers.graphics.image.reader.DatFileReader;
+import jsettlers.graphics.image.reader.EmptyDatFile;
+import jsettlers.graphics.image.sequence.SequenceList;
+import jsettlers.graphics.image.reader.WrappedAnimation;
 
 class CustomShipsDatFile extends EmptyDatFile {
 	private final DatFileReader fallback;
