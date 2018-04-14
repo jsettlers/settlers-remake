@@ -85,11 +85,13 @@
 	<job name="go_to_crop" 	type="GO_TO" 		successjob="take" 		failjob="gohome" 	dx="2" dy="2" />
 	<job name="take" 		type="TAKE" 		successjob="go_back" 	failjob="gohome" 	material="CROP" />
 	<job name="go_back" 	type="GO_TO" 		successjob="hide1" 		failjob="gohome" 	dx="-1" dy="1" />
-	<job name="hide1" 		type="HIDE" 		successjob="startwork" 	failjob="start" 		/>
+	<job name="hide1" 		type="HIDE" 		successjob="wait1" 	failjob="start" 		/>
+	<job name="wait1"	 	type="WAIT" 		successjob="startwork" 	failjob="start" 	time="1" />
 	<job name="startwork" 	type="START_WORKING" successjob="makeflour" failjob="makeflour"		/>
-	<job name="makeflour" 	type="WAIT" 		successjob="stopwork" 	failjob="start" 	time="2.5" />
+	<job name="makeflour" 	type="WAIT" 		successjob="stopwork" 	failjob="start" 	time="5" />
 	<job name="stopwork" 	type="STOP_WORKING" successjob="changeMat2" failjob="changeMat2"	/>
-	<job name="changeMat2" 	type="SET_MATERIAL" successjob="show2" 		failjob="hide" 		material="FLOUR" />
+	<job name="changeMat2" 	type="SET_MATERIAL" successjob="wait2" 		failjob="hide" 		material="FLOUR" />
+	<job name="wait2"	 	type="WAIT" 		successjob="show2"	 	failjob="start" 	time="1" />
 	<job name="show2" 		type="SHOW" 		successjob="walkflour1" failjob="hide" 		dx="-1" dy="1" />
 
 	<job name="walkflour1"	type="WALK" 		successjob="walkflour2" failjob="gohome" 	direction="SOUTH_WEST" />
