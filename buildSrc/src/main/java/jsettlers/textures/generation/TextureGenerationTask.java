@@ -30,14 +30,9 @@ import java.io.IOException;
 public class TextureGenerationTask extends DefaultTask {
 	private static final String PACKAGE_NAME = "jsettlers/common/images/";
 
-	@InputDirectory
-	public File resourceDirectory;
-
-	@OutputDirectory
-	public File generatedSourcesDirectory;
-
-	@OutputDirectory
-	public File generatedResourcesDirectory;
+	private File resourceDirectory;
+	private File generatedSourcesDirectory;
+	private File generatedResourcesDirectory;
 
 	@TaskAction
 	public void compileTextures() throws IOException {
@@ -58,5 +53,32 @@ public class TextureGenerationTask extends DefaultTask {
 		generator.processTextures(resourceDirectory);
 
 		textureIndex.closeTextureIndex();
+	}
+
+	@InputDirectory
+	public File getResourceDirectory() {
+		return resourceDirectory;
+	}
+
+	public void setResourceDirectory(File resourceDirectory) {
+		this.resourceDirectory = resourceDirectory;
+	}
+
+	@OutputDirectory
+	public File getGeneratedSourcesDirectory() {
+		return generatedSourcesDirectory;
+	}
+
+	public void setGeneratedSourcesDirectory(File generatedSourcesDirectory) {
+		this.generatedSourcesDirectory = generatedSourcesDirectory;
+	}
+
+	@OutputDirectory
+	public File getGeneratedResourcesDirectory() {
+		return generatedResourcesDirectory;
+	}
+
+	public void setGeneratedResourcesDirectory(File generatedResourcesDirectory) {
+		this.generatedResourcesDirectory = generatedResourcesDirectory;
 	}
 }

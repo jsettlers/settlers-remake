@@ -4,7 +4,6 @@ local.properties
 /build
 /*/build
 /jsettlers.graphics/layoutbuilder/build/
-/jsettlers.common/texturebuilder/build/
 
 # Generated sources
 /jsettlers.common/src/generated/
