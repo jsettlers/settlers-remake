@@ -31,8 +31,8 @@ public final class MapRectangle implements IMapArea {
 
 	private final short minX;
 	private final short minY;
-	final short width;
-	final short height;
+	private final short width;
+	private final short height;
 
 	public MapRectangle(short minx, short miny, short width, short height) {
 		if (width < 0 || height < 0) {
@@ -94,7 +94,7 @@ public final class MapRectangle implements IMapArea {
 	 *            The line relative to the first line of this rectangle.
 	 */
 	public final int getLineEndX(int line) {
-		return (getLineStartX(line) + this.width - 1);
+		return getLineStartX(line) + this.width - 1;
 	}
 
 	public final int getLineY(int line) {

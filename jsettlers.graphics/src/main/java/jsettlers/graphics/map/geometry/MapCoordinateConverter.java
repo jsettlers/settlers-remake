@@ -290,8 +290,8 @@ public final class MapCoordinateConverter {
 		float maxMountainHeight = HEIGHT_Y_DISPLACEMENT * Byte.MAX_VALUE;
 		float minX = getExactMapXwithHeight(screen.getMinX(), screen.getMaxY(), 0);
 		float maxX = getExactMapXwithHeight(screen.getMaxX(), screen.getMinY(), maxMountainHeight);
-		float minY = getExactMapYwithHeight(screen.getMinX(), screen.getMaxY(), 0);
-		float maxY = getExactMapYwithHeight(screen.getMaxX(), screen.getMinY(), maxMountainHeight);
+		float minY = getExactMapYwithHeight(screen.getMaxX(), screen.getMaxY(), 0);
+		float maxY = getExactMapYwithHeight(screen.getMinX(), screen.getMinY(), maxMountainHeight);
 		return new MapRectangle((short) minX, (short) minY, (short) (maxX - minX), (short) (maxY - minY));
 	}
 
