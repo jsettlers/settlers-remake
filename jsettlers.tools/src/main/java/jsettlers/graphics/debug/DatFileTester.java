@@ -37,7 +37,7 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileReader;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
-import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
 
 import javax.imageio.ImageIO;
@@ -51,7 +51,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class DatFileTester {
-	private static final int DAT_FILE_INDEX = 0;
+	private static final int DAT_FILE_INDEX = 13;
 	private static final DatFileType TYPE = DatFileType.RGB565;
 
 	private static final String FILE_NAME_PATTERN = "siedler3_%02d" + TYPE.getFileSuffix();

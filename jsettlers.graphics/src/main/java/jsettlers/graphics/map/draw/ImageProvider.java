@@ -37,8 +37,8 @@ import jsettlers.graphics.reader.DatFileReader;
 import jsettlers.graphics.reader.DatFileSet;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.EmptyDatFile;
-import jsettlers.graphics.sequence.ArraySequence;
-import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.image.sequence.ArraySequence;
+import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.common.images.TextureMap;
 
 /**

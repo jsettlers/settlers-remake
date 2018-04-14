@@ -46,7 +46,7 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
-import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.sound.SoundManager;
 
 /**

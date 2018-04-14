@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -34,8 +34,8 @@ import jsettlers.graphics.reader.translator.LandscapeTranslator;
 import jsettlers.graphics.reader.translator.SettlerTranslator;
 import jsettlers.graphics.reader.translator.ShadowTranslator;
 import jsettlers.graphics.reader.translator.TorsoTranslator;
-import jsettlers.graphics.sequence.ArraySequence;
-import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.image.sequence.ArraySequence;
+import jsettlers.graphics.image.sequence.Sequence;
 
 /**
  * This is an advanced dat file reader. It can read the file, but it only reads needed sequences.
