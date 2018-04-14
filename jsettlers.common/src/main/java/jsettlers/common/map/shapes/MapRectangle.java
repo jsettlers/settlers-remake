@@ -145,17 +145,17 @@ public final class MapRectangle implements IMapArea {
 
 		@Override
 		public boolean hasNext() {
-			return relativeY < height && width > 0;
+			return relativeY <= height && relativeX <= width;
 		}
 
 		@Override
 		public ShortPoint2D next() {
-			if (relativeY < height && width > 0) {
-				int x = getLineStartX(relativeY) + relativeX;
-				int y = getLineY(relativeY);
+			if (hasNext()) {
+				int x = minX + relativeX;
+				int y = minY + relativeY;
 				ShortPoint2D pos = new ShortPoint2D(x, y);
 				relativeX++;
-				if (relativeX >= width) {
+				if (relativeX > width) {
 					relativeX = 0;
 					relativeY++;
 				}
