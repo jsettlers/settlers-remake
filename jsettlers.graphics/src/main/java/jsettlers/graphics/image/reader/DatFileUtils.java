@@ -32,7 +32,9 @@ public class DatFileUtils {
 		File[] gfxDatFiles = gfxDirectory.listFiles();
 		List<File> distinctGfxDatFiles = distinctFileNames(gfxDatFiles);
 
-		List<Long> allHashes = stream(distinctGfxDatFiles).map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile))).map(reader -> {
+		List<Long> allHashes = stream(distinctGfxDatFiles)
+				.filter(file -> file.getName().endsWith(".dat"))
+				.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile))).map(reader -> {
 			List<Long> hashes = new ArrayList<>();
 			hashes.addAll(reader.getSettlersHashes());
 			hashes.addAll(reader.getGuiHashes());
