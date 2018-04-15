@@ -33,7 +33,7 @@ public class DatFileUtils {
 		List<File> distinctGfxDatFiles = distinctFileNames(gfxDatFiles);
 
 		List<Long> allHashes = stream(distinctGfxDatFiles)
-				.filter(file -> file.getName().endsWith(".dat"))
+				.filter(file -> file.getName().toLowerCase().endsWith(".dat"))
 				.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile))).map(reader -> {
 			List<Long> hashes = new ArrayList<>();
 			hashes.addAll(reader.getSettlersHashes());
