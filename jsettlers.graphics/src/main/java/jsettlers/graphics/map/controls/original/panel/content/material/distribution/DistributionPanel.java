@@ -111,7 +111,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 			float probability = distributionSettings.getDistributionProbability(buildingType);
 			float userBarValue = distributionSettings.getUserConfiguredDistributionValue(buildingType);
 
-			lblPercentage.setText(Integer.toString((int) (probability * 100)) + "%");
+			lblPercentage.setText(Math.round(probability * 100) + "%");
 			barFill.setBarFill(userBarValue, probability);
 		}
 	}
