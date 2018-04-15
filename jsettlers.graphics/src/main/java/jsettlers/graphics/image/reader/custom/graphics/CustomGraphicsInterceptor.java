@@ -27,13 +27,13 @@ import jsettlers.graphics.image.reader.DatFileReader;
  *
  * @author michael
  */
-public class DatFileIndexUtils {
+public class CustomGraphicsInterceptor {
 
-	private DatFileIndexUtils() {
+	private CustomGraphicsInterceptor() {
 	}
 
 	/**
-	 * Returns a reader that uses gold version indexes
+	 * Returns a reader that uses our custom graphics if available.
 	 *
 	 * @param fileIndex
 	 * @param reader

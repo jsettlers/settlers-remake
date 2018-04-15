@@ -14,6 +14,25 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import jsettlers.common.images.DirectImageLink;
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.images.TextureMap;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.ImageIndexFile;
+import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.NullImage;
+import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileReader;
+import jsettlers.graphics.image.reader.DatFileSet;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.reader.EmptyDatFile;
+import jsettlers.graphics.image.reader.custom.graphics.CustomGraphicsInterceptor;
+import jsettlers.graphics.image.sequence.ArraySequence;
+import jsettlers.graphics.image.sequence.Sequence;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -21,25 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import jsettlers.common.images.DirectImageLink;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.ImageIndexFile;
-import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.NullImage;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.image.reader.AdvancedDatFileReader;
-import jsettlers.graphics.image.reader.custom.graphics.DatFileIndexUtils;
-import jsettlers.graphics.image.reader.DatFileReader;
-import jsettlers.graphics.image.reader.DatFileSet;
-import jsettlers.graphics.image.reader.DatFileType;
-import jsettlers.graphics.image.reader.EmptyDatFile;
-import jsettlers.graphics.image.sequence.ArraySequence;
-import jsettlers.graphics.image.sequence.Sequence;
-import jsettlers.common.images.TextureMap;
 
 /**
  * This is the main image provider. It provides access to all images.
@@ -288,7 +288,8 @@ public final class ImageProvider {
 				break;
 			}
 		}
-		return DatFileIndexUtils.autoTranslate(fileIndex, reader, this);
+
+		return CustomGraphicsInterceptor.autoTranslate(fileIndex, reader, this);
 	}
 
 	/**
