@@ -84,7 +84,7 @@ public class TextureIndex {
 			textureIndexOut.writeShort(offsetY);
 			textureIndexOut.writeShort(width);
 			textureIndexOut.writeShort(height);
-			textureIndexOut.writeShort(hasTorso ? textureFile | 0x8000 : textureFile);
+			textureIndexOut.writeShort((hasTorso ? 0x8000 : 0) | textureFile);
 
 			textureIndexOut.writeShort(toShort(position.getLeft()));
 			textureIndexOut.writeShort(toShort(position.getTop()));

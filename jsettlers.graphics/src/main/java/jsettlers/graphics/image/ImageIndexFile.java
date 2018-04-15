@@ -70,24 +70,47 @@ public class ImageIndexFile {
 
 		images = new ImageIndexImage[length];
 		for (int i = 0; i < length; i++) {
-			int offsetX = in.readShort();
-			int offsetY = in.readShort();
-			short width = in.readShort();
-			short height = in.readShort();
-			int textureFileNumber = in.readShort() & Short.MAX_VALUE; // < TODO: torso
-
-			float umin = (float) in.readShort() / Short.MAX_VALUE;
-			float vmin = (float) in.readShort() / Short.MAX_VALUE;
-			float umax = (float) in.readShort() / Short.MAX_VALUE;
-			float vmax = (float) in.readShort() / Short.MAX_VALUE;
-
-			while (textureFileNumber >= textures.size()) {
-				InputStream inputStream = getResource("images_" + textures.size());
-				textures.add(new ImageIndexTexture(inputStream));
+			ImageIndexImage image = readNextImage(in, textures, true);
+			images[i] = image;
+			if (image.getImageType() == EImageType.PRIMARY_WITH_TORSO) {
+				ImageIndexImage torso = readNextImage(in, textures, false);
+				image.setTorso(torso);
+				i++;
 			}
-
-			images[i] = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, umin, vmin, umax, vmax);
 		}
+	}
+
+	private ImageIndexImage readNextImage(final DataInputStream in, ArrayList<ImageIndexTexture> textures, boolean primaryImage)
+			throws IOException {
+		int offsetX = in.readShort();
+		int offsetY = in.readShort();
+		short width = in.readShort();
+		short height = in.readShort();
+		short texture = in.readShort();
+		int textureFileNumber = texture & Short.MAX_VALUE;
+		boolean withTorso = (texture & 0x8000) != 0;
+
+		float umin = (float) in.readShort() / Short.MAX_VALUE;
+		float vmin = (float) in.readShort() / Short.MAX_VALUE;
+		float umax = (float) in.readShort() / Short.MAX_VALUE;
+		float vmax = (float) in.readShort() / Short.MAX_VALUE;
+
+		while (textureFileNumber >= textures.size()) {
+			InputStream inputStream = getResource("images_" + textures.size());
+			textures.add(new ImageIndexTexture(inputStream));
+		}
+
+		EImageType type;
+		if (primaryImage) {
+			if (withTorso) {
+				type = EImageType.PRIMARY_WITH_TORSO;
+			} else {
+				type = EImageType.PRIMARY;
+			}
+		} else {
+			type = EImageType.TORSO;
+		}
+		return new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, umin, vmin, umax, vmax, type);
 	}
 
 	private InputStream getResource(String string) {
