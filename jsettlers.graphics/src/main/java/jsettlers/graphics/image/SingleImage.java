@@ -414,4 +414,15 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
 		return rendered;
 	}
+
+	public Long hash() {
+		long hashCode = 1L;
+		long multiplier = 1L;
+		while (data.hasRemaining()) {
+			multiplier *= 31L;
+			hashCode += (data.get() + 27L) * multiplier;
+		}
+		data.rewind();
+		return hashCode;
+	}
 }

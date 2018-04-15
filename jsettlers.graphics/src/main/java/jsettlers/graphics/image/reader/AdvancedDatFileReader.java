@@ -14,6 +14,8 @@
  */
 package jsettlers.graphics.image.reader;
 
+import java8.util.stream.Collectors;
+import java8.util.stream.IntStreams;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
@@ -37,6 +39,7 @@ import jsettlers.graphics.image.sequence.SequenceList;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
 
 /**
  * This is an advanced dat file reader. It can read the file, but it only reads needed sequences.
@@ -249,6 +252,27 @@ public class AdvancedDatFileReader implements DatFileReader {
 		guiTranslator = new GuiTranslator(type);
 	}
 
+	public List<Long> getSettlersHashes() {
+		SequenceList<Image> settlers = getSettlers();
+
+		return IntStreams.range(0, settlers.size())
+				.mapToObj(settlers::get)
+				.map(sequence -> sequence.getImage(0))
+				.filter(image -> image instanceof SingleImage)
+				.map(image -> (SingleImage) image)
+				.map(SingleImage::hash)
+				.collect(Collectors.toList());
+	}
+
+	public List<Long> getGuiHashes() {
+		Sequence<GuiImage> sequence = getGuis();
+
+		return IntStreams.range(0, sequence.length())
+				.mapToObj(sequence::getImage)
+				.map(SingleImage::hash)
+				.collect(Collectors.toList());
+	}
+
 	/**
 	 * Initializes the reader, reads the index.
 	 */
@@ -298,24 +322,20 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 	}
 
-	private void initFromReader(File file, ByteReader reader)
-			throws IOException {
-		int[] sequenceIndexStarts =
-				readSequenceIndexStarts(file.length(), reader);
+	private void initFromReader(File file, ByteReader reader) throws IOException {
+		int[] sequenceIndexStarts = readSequenceIndexStarts(file.length(), reader);
 
 		for (int i = 0; i < SEQUENCE_TYPE_COUNT; i++) {
 			try {
 				readSequencesAt(reader, sequenceIndexStarts[i]);
 			} catch (IOException e) {
-				System.err.println("Error while loading sequence" + ": "
-						+ e.getMessage());
+				System.err.println("Error while loading sequence" + ": " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private int[] readSequenceIndexStarts(long filelength,
-			ByteReader reader) throws IOException {
+	private int[] readSequenceIndexStarts(long filelength, ByteReader reader) throws IOException {
 		reader.assumeToRead(FILE_START1);
 		reader.assumeToRead(type.getFileStartMagic());
 		reader.assumeToRead(FILE_START2);
@@ -431,8 +451,6 @@ public class AdvancedDatFileReader implements DatFileReader {
 			if (settlersequences[index] == null) {
 				settlersequences[index] = NULL_SETTLER_SEQUENCE;
 				try {
-					System.out.println("Loading Sequence number " + index);
-
 					loadSettlers(index);
 				} catch (Exception e) {
 				}
@@ -652,4 +670,5 @@ public class AdvancedDatFileReader implements DatFileReader {
 	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
 		return landscapeTranslator;
 	}
+
 }

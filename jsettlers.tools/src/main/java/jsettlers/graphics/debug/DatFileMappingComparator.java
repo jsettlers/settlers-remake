@@ -1,22 +1,22 @@
 package jsettlers.graphics.debug;
 
+import jsettlers.common.utils.Tuple;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.reader.DatFileUtils;
+import jsettlers.graphics.image.reader.versions.mapper.DatFileMapping;
+import jsettlers.graphics.image.reader.versions.mapper.GfxFolderMapping;
+
 import java.io.File;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import jsettlers.common.utils.Tuple;
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.image.reader.AdvancedDatFileReader;
-import jsettlers.graphics.image.reader.DatFileType;
-import jsettlers.graphics.image.sequence.SequenceList;
-import jsettlers.graphics.image.sequence.Sequence;
+import static jsettlers.graphics.image.reader.DatFileUtils.distinctFileNames;
+import static jsettlers.graphics.image.reader.DatFileUtils.getDatFileIndex;
+import static jsettlers.graphics.image.reader.DatFileUtils.getDatFileName;
 
 /**
  * Small application that finds the mapping differences between dat files.
@@ -28,8 +28,8 @@ import jsettlers.graphics.image.sequence.Sequence;
  */
 public class DatFileMappingComparator {
 	public static void main(String[] args) {
-		if (args.length != 2) {
-			usage();
+		if (args.length < 2) {
+			printUsage();
 		}
 		File file1 = new File(args[0]);
 		File file2 = new File(args[1]);
@@ -38,14 +38,18 @@ public class DatFileMappingComparator {
 		ensureReadable(file2);
 
 		if (file1.isDirectory() || file2.isDirectory()) {
-			processGfxDictionaries(file1, file2);
+			if (args.length < 3) {
+				printUsage();
+			}
+
+			processGfxDictionaries(file1, file2, args[2]);
 
 		} else {
 			compareDatFiles(file1, file2);
 		}
 	}
 
-	private static void processGfxDictionaries(File gfxFolder1, File gfxFolder2) {
+	private static void processGfxDictionaries(File gfxFolder1, File gfxFolder2, String settlersVersionName) {
 		List<File> datFiles1 = distinctFileNames(gfxFolder1.listFiles());
 		List<File> datFiles2 = distinctFileNames(gfxFolder2.listFiles());
 
@@ -53,43 +57,43 @@ public class DatFileMappingComparator {
 			throw new IllegalArgumentException("At least one of the given paths is no directory.");
 		}
 
+		Long settlersVersionHash = DatFileUtils.generateOriginalVersionId(gfxFolder2);
+
 		Map<String, File> datFiles2ByName = datFiles1.stream().map(file -> new Tuple<>(getDatFileName(file), file)).collect(Collectors.toMap(Tuple::getE1, Tuple::getE2));
+
+		int highestIndex = datFiles1.stream().mapToInt(DatFileUtils::getDatFileIndex).max().orElse(0);
+		DatFileMapping[] datFileMappings = new DatFileMapping[highestIndex + 1];
 
 		for (File file1 : datFiles1) {
 			File file2 = datFiles2ByName.get(getDatFileName(file1));
+
 			try {
-				compareDatFiles(file1, file2);
+				int index = getDatFileIndex(file1);
+				datFileMappings[index] = compareDatFiles(file1, file2);
 			} catch (Exception e) {
-				System.err.println("Error comparing files " + file1 + " and " + file2 + " : " + e.getMessage());
+				System.err.println("Error comparing files " + file1 + " and " + file2 + " :");
+				e.printStackTrace();
 			}
+		}
+
+		try {
+			String fileName = "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/mapper/" + settlersVersionName + ".json";
+			new GfxFolderMapping(settlersVersionHash, datFileMappings).serializeToFile(new FileOutputStream(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private static List<File> distinctFileNames(File[] files) {
-		Arrays.sort(files);
-		LinkedList<File> distinct = new LinkedList<>();
-		for (File file : files) {
-			if (distinct.isEmpty() || !getDatFileName(distinct.getLast()).equals(getDatFileName(file))) {
-				distinct.add(file);
-			}
-		}
-		return distinct;
-	}
-
-	private static String getDatFileName(File file) {
-		return file.getName().split("\\.")[0];
-	}
-
-	private static void compareDatFiles(File file1, File file2) {
+	private static DatFileMapping compareDatFiles(File file1, File file2) {
 		AdvancedDatFileReader reader1 = new AdvancedDatFileReader(file1, DatFileType.getForPath(file1));
 		AdvancedDatFileReader reader2 = new AdvancedDatFileReader(file2, DatFileType.getForPath(file2));
 
 		System.out.println("Comparing settlers hashes for files " + file1 + " and " + file2);
-		int[] settlersMapping = compareHashes(getSettlersHashes(reader1), getSettlersHashes(reader2));
+		int[] settlersMapping = compareHashes(reader1.getSettlersHashes(), reader2.getSettlersHashes());
 		System.out.println("Comparing gui hashes for files " + file1 + " and " + file2);
-		int[] guiMapping = compareHashes(getGuiHashes(reader1), getGuiHashes(reader2));
+		int[] guiMapping = compareHashes(reader1.getGuiHashes(), reader2.getGuiHashes());
 
-
+		return new DatFileMapping(settlersMapping, guiMapping);
 	}
 
 	private static int[] compareHashes(List<Long> hashes1, List<Long> hashes2) {
@@ -105,49 +109,17 @@ public class DatFileMappingComparator {
 		return mapping;
 	}
 
-	private static List<Long> getSettlersHashes(AdvancedDatFileReader reader) {
-		SequenceList<Image> settlers = reader.getSettlers();
-
-		return IntStream.range(0, settlers.size())
-				.mapToObj(settlers::get)
-				.map(sequence -> sequence.getImage(0))
-				.map(DatFileMappingComparator::hash)
-				.collect(Collectors.toList());
-	}
-
-	private static List<Long> getGuiHashes(AdvancedDatFileReader reader) {
-		Sequence<GuiImage> sequence = reader.getGuis();
-
-		return IntStream.range(0, sequence.length())
-				.mapToObj(sequence::getImage)
-				.map(DatFileMappingComparator::hash)
-				.collect(Collectors.toList());
-	}
-
-	private static Long hash(Image image) {
-		if (image instanceof SingleImage) {
-			ShortBuffer data = ((SingleImage) image).getData();
-			long hashCode = 1L;
-			long multiplier = 1L;
-			while (data.hasRemaining()) {
-				multiplier *= 31L;
-				hashCode += (data.get() + 27L) * multiplier;
-			}
-			return hashCode;
-		} else {
-			return 0L;
-		}
-	}
-
 	private static void ensureReadable(File f2) {
 		if (!f2.canRead()) {
 			throw new IllegalArgumentException("Cannot read file " + f2);
 		}
 	}
 
-	private static void usage() {
+	private static void printUsage() {
 		System.err.println("Compares two GFX folders or two dat files:");
-		System.err.println("./gradlew compareDatFiles -PF1=path1 -PF2=path2");
+		System.err.println("To compare two dat files, start the program with the paths of the two files as arguments");
+		System.err.println("To compare two dat gfx folders, start the program with the paths of the two gfx folders and the name of the settlers version. A mapping file will be created"
+				+ " in the resources of jsettlers.graphics");
 		System.exit(1);
 	}
 }

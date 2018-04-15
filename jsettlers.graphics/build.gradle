@@ -18,6 +18,7 @@ clean {
 dependencies {
     implementation project(':jsettlers.common')
     implementation project(':go.graphics')
+    implementation 'com.google.code.gson:gson:2.8.2'
 }
 
 
