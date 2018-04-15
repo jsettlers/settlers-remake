@@ -32,6 +32,7 @@ import jsettlers.graphics.image.reader.translator.LandscapeTranslator;
 import jsettlers.graphics.image.reader.translator.SettlerTranslator;
 import jsettlers.graphics.image.reader.translator.ShadowTranslator;
 import jsettlers.graphics.image.reader.translator.TorsoTranslator;
+import jsettlers.graphics.image.reader.versions.DefaultGfxFolderMapping.DefaultDatFileMapping;
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.image.sequence.SequenceList;
@@ -40,6 +41,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
+
+import static jsettlers.graphics.image.reader.versions.GfxFolderMapping.DatFileMapping;
 
 /**
  * This is an advanced dat file reader. It can read the file, but it only reads needed sequences.
@@ -186,14 +189,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private static final int ID_GUIS = 0x11306;
 
 	private final DatBitmapTranslator<SettlerImage> settlerTranslator;
-
 	private final DatBitmapTranslator<TorsoImage> torsoTranslator;
-
 	private final DatBitmapTranslator<LandscapeImage> landscapeTranslator;
-
 	private final DatBitmapTranslator<ShadowImage> shadowTranslator;
-
 	private final DatBitmapTranslator<GuiImage> guiTranslator;
+
+	private final DatFileMapping mapping;
 
 	private ByteReader reader = null;
 	private final File file;
@@ -236,8 +237,13 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private final DatFileType type;
 
 	public AdvancedDatFileReader(File file, DatFileType type) {
+		this(file, type, new DefaultDatFileMapping());
+	}
+
+	public AdvancedDatFileReader(File file, DatFileType type, DatFileMapping mapping) {
 		this.file = file;
 		this.type = type;
+		this.mapping = mapping;
 
 		directSettlerList = new DirectSettlerSequenceList();
 		settlerTranslator = new SettlerTranslator(type);
@@ -593,13 +599,14 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 	}
 
-	private void loadGuiImage(int index) {
+	private void loadGuiImage(int goldIndex) {
 		try {
-			reader.skipTo(guiStarts[index]);
+			int theseGraphicsFilesIndex = mapping.mapGuiImage(goldIndex);
+			reader.skipTo(guiStarts[theseGraphicsFilesIndex]);
 			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader);
-			guiImages[index] = image;
-		} catch (IOException e) {
-			guiImages[index] = NullImage.getForGui();
+			guiImages[goldIndex] = image;
+		} catch (IOException | ArrayIndexOutOfBoundsException e) {
+			guiImages[goldIndex] = NullImage.getForGui();
 		}
 	}
 

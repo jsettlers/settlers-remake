@@ -23,9 +23,9 @@ import jsettlers.graphics.image.reader.ImageMetadata;
 /**
  * This interfaces defines methods that a reader for bitmaps in dat files must provide to convert the dat files to opengl images.
  *
- * @author Michael Zangl
  * @param <T>
- *            The image type this translator translates.
+ * 		The image type this translator translates.
+ * @author Michael Zangl
  */
 public interface DatBitmapTranslator<T extends Image> {
 
@@ -40,13 +40,12 @@ public interface DatBitmapTranslator<T extends Image> {
 	 * Reads a color from the reader and progresses the reader so that it stands after the color.
 	 *
 	 * @param reader
-	 *            The reader to read from
+	 * 		The reader to read from
 	 * @return A short indicating the color, e.g. in 5-5-5-1 RGBA format.
 	 * @throws IOException
-	 *             If an error occurred.
+	 * 		If an error occurred.
 	 */
-	short readUntransparentColor(ByteReader reader)
-			throws IOException;
+	short readUntransparentColor(ByteReader reader) throws IOException;
 
 	/**
 	 * gets the color that is used as transparent.
@@ -59,9 +58,9 @@ public interface DatBitmapTranslator<T extends Image> {
 	 * Creates a image of the given type.
 	 *
 	 * @param metadata
-	 *            The image metadata
+	 * 		The image metadata
 	 * @param array
-	 *            The array of image pixels.
+	 * 		The array of image pixels.
 	 * @return The image
 	 */
 	T createImage(ImageMetadata metadata, short[] array);

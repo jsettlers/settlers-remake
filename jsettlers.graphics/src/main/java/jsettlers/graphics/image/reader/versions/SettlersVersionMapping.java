@@ -43,7 +43,7 @@ public class SettlersVersionMapping {
 		if (mappingFilesByVersionHash.containsKey(settlersVersionHash)) {
 			String mappingFileName = mappingFilesByVersionHash.get(settlersVersionHash);
 			InputStream mappingFileStream = getClass().getResourceAsStream(mappingFileName);
-			return GfxFolderIndexMapping.readFromStream(mappingFileStream);
+			return IndexingGfxFolderMapping.readFromStream(mappingFileStream);
 		} else {
 			return new DefaultGfxFolderMapping();
 		}

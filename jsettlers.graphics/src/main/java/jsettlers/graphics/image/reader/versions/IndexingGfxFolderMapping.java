@@ -25,27 +25,23 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 
-public class GfxFolderIndexMapping implements GfxFolderMapping {
+public class IndexingGfxFolderMapping implements GfxFolderMapping {
 	private final Long settlersVersionHash;
-	private final DatFileMapping[] datFileMappings;
+	private final IndexingDatFileMapping[] datFileMappings;
 
-	public GfxFolderIndexMapping(Long settlersVersionHash, DatFileMapping[] datFileMappings) {
+	public IndexingGfxFolderMapping(Long settlersVersionHash, IndexingDatFileMapping[] datFileMappings) {
 		this.settlersVersionHash = settlersVersionHash;
 		this.datFileMappings = datFileMappings;
 	}
 
-	@Override
-	public int mapSettlersSequence(int fileIndex, int sequenceIndex) {
-		return datFileMappings[fileIndex].settlersMapping[sequenceIndex];
-	}
-
-	@Override
-	public int mapGuiImage(int fileIndex, int guiImageIndex) {
-		return datFileMappings[fileIndex].guiMapping[guiImageIndex];
-	}
-
 	public Long getSettlersVersionHash() {
 		return settlersVersionHash;
+	}
+
+	@Override
+	public DatFileMapping getDatFileMapping(int fileIndex) {
+		IndexingDatFileMapping mapping = datFileMappings[fileIndex];
+		return mapping == null ? new DefaultGfxFolderMapping.DefaultDatFileMapping() : mapping;
 	}
 
 	public void serializeToStream(OutputStream out) throws IOException {
@@ -57,10 +53,10 @@ public class GfxFolderIndexMapping implements GfxFolderMapping {
 		}
 	}
 
-	public static GfxFolderIndexMapping readFromStream(InputStream in) throws IOException {
+	public static IndexingGfxFolderMapping readFromStream(InputStream in) throws IOException {
 		try (Reader reader = new InputStreamReader(in, "utf-8")) {
 			Gson gson = new GsonBuilder().create();
-			return gson.fromJson(reader, GfxFolderIndexMapping.class);
+			return gson.fromJson(reader, IndexingGfxFolderMapping.class);
 		}
 	}
 }

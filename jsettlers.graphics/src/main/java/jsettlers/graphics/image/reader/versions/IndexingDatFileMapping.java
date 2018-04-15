@@ -15,12 +15,22 @@
 
 package jsettlers.graphics.image.reader.versions;
 
-public class DatFileMapping {
-	final int[] settlersMapping;
-	final int[] guiMapping;
+import jsettlers.graphics.image.reader.versions.GfxFolderMapping.DatFileMapping;
 
-	public DatFileMapping(int[] settlersMapping, int[] guiMapping) {
+public class IndexingDatFileMapping implements DatFileMapping {
+	private final int[] settlersMapping;
+	private final int[] guiMapping;
+
+	public IndexingDatFileMapping(int[] settlersMapping, int[] guiMapping) {
 		this.settlersMapping = settlersMapping;
 		this.guiMapping = guiMapping;
+	}
+
+	public int mapSettlersSequence(int sequenceIndex) {
+		return settlersMapping[sequenceIndex];
+	}
+
+	public int mapGuiImage(int guiImageIndex) {
+		return guiMapping[guiImageIndex];
 	}
 }

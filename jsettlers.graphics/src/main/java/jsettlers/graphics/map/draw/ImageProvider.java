@@ -28,8 +28,12 @@ import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.DatFileSet;
 import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.reader.DatFileUtils;
 import jsettlers.graphics.image.reader.EmptyDatFile;
 import jsettlers.graphics.image.reader.custom.graphics.CustomGraphicsInterceptor;
+import jsettlers.graphics.image.reader.versions.DefaultGfxFolderMapping;
+import jsettlers.graphics.image.reader.versions.GfxFolderMapping;
+import jsettlers.graphics.image.reader.versions.SettlersVersionMapping;
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
 
@@ -65,6 +69,8 @@ public final class ImageProvider {
 	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<>();
 	private final Hashtable<Integer, DatFileReader> readers = new Hashtable<>();
 
+	private GfxFolderMapping gfxFolderMapping = new DefaultGfxFolderMapping();
+
 	private Thread preloadingThread;
 	private ImageIndexFile indexFile = null;
 
@@ -91,6 +97,8 @@ public final class ImageProvider {
 	 */
 	public static void setLookupPath(File path) {
 		ImageProvider.lookupPath = path;
+		Long settlersVersionHash = DatFileUtils.generateOriginalVersionId(path);
+		getInstance().gfxFolderMapping = SettlersVersionMapping.getMappingForVersionHash(settlersVersionHash);
 		getInstance().startPreloading();
 	}
 
@@ -284,12 +292,12 @@ public final class ImageProvider {
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
-				reader = new AdvancedDatFileReader(file, type);
+				reader = new AdvancedDatFileReader(file, type, gfxFolderMapping.getDatFileMapping(fileIndex));
 				break;
 			}
 		}
 
-		return CustomGraphicsInterceptor.autoTranslate(fileIndex, reader, this);
+		return CustomGraphicsInterceptor.prependCustomGraphics(fileIndex, reader, this);
 	}
 
 	/**

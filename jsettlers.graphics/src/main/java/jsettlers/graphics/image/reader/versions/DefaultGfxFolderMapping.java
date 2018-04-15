@@ -16,13 +16,21 @@
 package jsettlers.graphics.image.reader.versions;
 
 public class DefaultGfxFolderMapping implements GfxFolderMapping {
-	@Override
-	public int mapSettlersSequence(int fileIndex, int sequenceIndex) {
-		return sequenceIndex;
-	}
 
 	@Override
-	public int mapGuiImage(int fileIndex, int guiImageIndex) {
-		return guiImageIndex;
+	public DatFileMapping getDatFileMapping(int fileIndex) {
+		return new DefaultDatFileMapping();
+	}
+
+	public static class DefaultDatFileMapping implements DatFileMapping {
+		@Override
+		public int mapSettlersSequence(int sequenceIndex) {
+			return sequenceIndex;
+		}
+
+		@Override
+		public int mapGuiImage(int guiImageIndex) {
+			return guiImageIndex;
+		}
 	}
 }

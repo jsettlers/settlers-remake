@@ -16,7 +16,11 @@
 package jsettlers.graphics.image.reader.versions;
 
 public interface GfxFolderMapping {
-	int mapSettlersSequence(int fileIndex, int sequenceIndex);
+	DatFileMapping getDatFileMapping(int fileIndex);
 
-	int mapGuiImage(int fileIndex, int guiImageIndex);
+	interface DatFileMapping {
+		int mapSettlersSequence(int sequenceIndex);
+
+		int mapGuiImage(int guiImageIndex);
+	}
 }

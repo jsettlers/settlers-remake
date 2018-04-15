@@ -27,7 +27,7 @@ public class SettlersVersionMappingTest {
 		GfxFolderMapping mapping = SettlersVersionMapping.getMappingForVersionHash(-1282419180527137435L);
 
 		assertNotNull(mapping);
-		assertTrue(mapping instanceof GfxFolderIndexMapping);
+		assertTrue(mapping instanceof IndexingGfxFolderMapping);
 	}
 
 	@Test

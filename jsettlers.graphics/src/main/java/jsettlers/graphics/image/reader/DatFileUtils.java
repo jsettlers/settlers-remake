@@ -52,7 +52,7 @@ public class DatFileUtils {
 		Arrays.sort(files);
 		LinkedList<File> distinct = new LinkedList<>();
 		for (File file : files) {
-			if (distinct.isEmpty() || !getDatFileName(distinct.getLast()).equals(getDatFileName(file))) {
+			if (distinct.isEmpty() || !getDatFileName(distinct.getLast()).equalsIgnoreCase(getDatFileName(file))) {
 				distinct.add(file);
 			}
 		}
@@ -60,7 +60,7 @@ public class DatFileUtils {
 	}
 
 	public static String getDatFileName(File file) {
-		return file.getName().split("\\.")[0];
+		return file.getName().split("\\.")[0].toLowerCase();
 	}
 
 	public static int getDatFileIndex(File datFile) {

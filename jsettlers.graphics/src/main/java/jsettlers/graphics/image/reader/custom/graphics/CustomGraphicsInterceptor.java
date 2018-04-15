@@ -36,11 +36,12 @@ public class CustomGraphicsInterceptor {
 	 * Returns a reader that uses our custom graphics if available.
 	 *
 	 * @param fileIndex
+	 * 		file index
 	 * @param reader
 	 * 		The reader, using any index (auto-detected)
-	 * @return
+	 * @return DatFileReader preferring the custom graphics
 	 */
-	public static DatFileReader autoTranslate(int fileIndex, DatFileReader reader, ImageProvider imageProvider) {
+	public static DatFileReader prependCustomGraphics(int fileIndex, DatFileReader reader, ImageProvider imageProvider) {
 		if (fileIndex == 36) { // use our own ships
 			return new CustomShipsDatFile(reader, imageProvider);
 		}

@@ -4,8 +4,8 @@ import jsettlers.common.utils.Tuple;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileType;
 import jsettlers.graphics.image.reader.DatFileUtils;
-import jsettlers.graphics.image.reader.versions.DatFileMapping;
-import jsettlers.graphics.image.reader.versions.GfxFolderIndexMapping;
+import jsettlers.graphics.image.reader.versions.IndexingDatFileMapping;
+import jsettlers.graphics.image.reader.versions.IndexingGfxFolderMapping;
 import jsettlers.graphics.image.reader.versions.SettlersVersionMapping;
 
 import java.io.File;
@@ -63,13 +63,18 @@ public class DatFileMappingComparator {
 
 		Long settlersVersionHash = DatFileUtils.generateOriginalVersionId(gfxFolder2);
 
-		Map<String, File> datFiles2ByName = datFiles1.stream().map(file -> new Tuple<>(getDatFileName(file), file)).collect(Collectors.toMap(Tuple::getE1, Tuple::getE2));
+		Map<String, File> datFiles2ByName = datFiles2.stream().map(file -> new Tuple<>(getDatFileName(file), file)).collect(Collectors.toMap(Tuple::getE1, Tuple::getE2));
 
 		int highestIndex = datFiles1.stream().mapToInt(DatFileUtils::getDatFileIndex).max().orElse(0);
-		DatFileMapping[] datFileMappings = new DatFileMapping[highestIndex + 1];
+		IndexingDatFileMapping[] datFileMappings = new IndexingDatFileMapping[highestIndex + 1];
 
 		for (File file1 : datFiles1) {
 			File file2 = datFiles2ByName.get(getDatFileName(file1));
+
+			if (file2 == null) {
+				System.out.println("Could not find partner for file " + file1);
+				continue;
+			}
 
 			try {
 				int index = getDatFileIndex(file1);
@@ -83,7 +88,7 @@ public class DatFileMappingComparator {
 		try {
 			String fileName = settlersVersionName + ".json";
 			String filePath = GRAPHICS_RESOURCE_DIRECTORY + fileName;
-			new GfxFolderIndexMapping(settlersVersionHash, datFileMappings).serializeToStream(new FileOutputStream(filePath));
+			new IndexingGfxFolderMapping(settlersVersionHash, datFileMappings).serializeToStream(new FileOutputStream(filePath));
 
 			SettlersVersionMapping settlersVersionMapping = SettlersVersionMapping.readFromDirectory(GRAPHICS_RESOURCE_DIRECTORY);
 			settlersVersionMapping.putMapping(settlersVersionHash, fileName);
@@ -93,7 +98,7 @@ public class DatFileMappingComparator {
 		}
 	}
 
-	private static DatFileMapping compareDatFiles(File file1, File file2) {
+	private static IndexingDatFileMapping compareDatFiles(File file1, File file2) {
 		AdvancedDatFileReader reader1 = new AdvancedDatFileReader(file1, DatFileType.getForPath(file1));
 		AdvancedDatFileReader reader2 = new AdvancedDatFileReader(file2, DatFileType.getForPath(file2));
 
@@ -102,7 +107,7 @@ public class DatFileMappingComparator {
 		System.out.println("Comparing gui hashes for files " + file1 + " and " + file2);
 		int[] guiMapping = compareHashes(reader1.getGuiHashes(), reader2.getGuiHashes());
 
-		return new DatFileMapping(settlersMapping, guiMapping);
+		return new IndexingDatFileMapping(settlersMapping, guiMapping);
 	}
 
 	private static int[] compareHashes(List<Long> hashes1, List<Long> hashes2) {
