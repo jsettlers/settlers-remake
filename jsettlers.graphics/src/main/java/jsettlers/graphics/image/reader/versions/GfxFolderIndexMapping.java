@@ -13,7 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.graphics.image.reader.versions.mapper;
+package jsettlers.graphics.image.reader.versions;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,19 +25,21 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 
-public class GfxFolderMapping {
+public class GfxFolderIndexMapping implements GfxFolderMapping {
 	private final Long settlersVersionHash;
 	private final DatFileMapping[] datFileMappings;
 
-	public GfxFolderMapping(Long settlersVersionHash, DatFileMapping[] datFileMappings) {
+	public GfxFolderIndexMapping(Long settlersVersionHash, DatFileMapping[] datFileMappings) {
 		this.settlersVersionHash = settlersVersionHash;
 		this.datFileMappings = datFileMappings;
 	}
 
+	@Override
 	public int mapSettlersSequence(int fileIndex, int sequenceIndex) {
 		return datFileMappings[fileIndex].settlersMapping[sequenceIndex];
 	}
 
+	@Override
 	public int mapGuiImage(int fileIndex, int guiImageIndex) {
 		return datFileMappings[fileIndex].guiMapping[guiImageIndex];
 	}
@@ -46,7 +48,7 @@ public class GfxFolderMapping {
 		return settlersVersionHash;
 	}
 
-	public void serializeToFile(OutputStream out) throws IOException {
+	public void serializeToStream(OutputStream out) throws IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String jsonString = gson.toJson(this);
 
@@ -55,10 +57,10 @@ public class GfxFolderMapping {
 		}
 	}
 
-	public static GfxFolderMapping readFromFile(InputStream in) throws IOException {
+	public static GfxFolderIndexMapping readFromStream(InputStream in) throws IOException {
 		try (Reader reader = new InputStreamReader(in, "utf-8")) {
 			Gson gson = new GsonBuilder().create();
-			return gson.fromJson(reader, GfxFolderMapping.class);
+			return gson.fromJson(reader, GfxFolderIndexMapping.class);
 		}
 	}
 }

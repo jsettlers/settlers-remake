@@ -13,14 +13,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.graphics.image.reader.versions.mapper;
+package jsettlers.graphics.image.reader.versions;
 
-public class DatFileMapping {
-	final int[] settlersMapping;
-	final int[] guiMapping;
+public interface GfxFolderMapping {
+	int mapSettlersSequence(int fileIndex, int sequenceIndex);
 
-	public DatFileMapping(int[] settlersMapping, int[] guiMapping) {
-		this.settlersMapping = settlersMapping;
-		this.guiMapping = guiMapping;
-	}
+	int mapGuiImage(int fileIndex, int guiImageIndex);
 }

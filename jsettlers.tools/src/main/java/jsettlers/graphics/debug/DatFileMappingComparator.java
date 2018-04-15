@@ -4,8 +4,9 @@ import jsettlers.common.utils.Tuple;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileType;
 import jsettlers.graphics.image.reader.DatFileUtils;
-import jsettlers.graphics.image.reader.versions.mapper.DatFileMapping;
-import jsettlers.graphics.image.reader.versions.mapper.GfxFolderMapping;
+import jsettlers.graphics.image.reader.versions.DatFileMapping;
+import jsettlers.graphics.image.reader.versions.GfxFolderIndexMapping;
+import jsettlers.graphics.image.reader.versions.SettlersVersionMapping;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +28,9 @@ import static jsettlers.graphics.image.reader.DatFileUtils.getDatFileName;
  * @author Michael Zangl
  */
 public class DatFileMappingComparator {
+
+	public static final String GRAPHICS_RESOURCE_DIRECTORY = "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/";
+
 	public static void main(String[] args) {
 		if (args.length < 2) {
 			printUsage();
@@ -77,8 +81,13 @@ public class DatFileMappingComparator {
 		}
 
 		try {
-			String fileName = "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/mapper/" + settlersVersionName + ".json";
-			new GfxFolderMapping(settlersVersionHash, datFileMappings).serializeToFile(new FileOutputStream(fileName));
+			String fileName = settlersVersionName + ".json";
+			String filePath = GRAPHICS_RESOURCE_DIRECTORY + fileName;
+			new GfxFolderIndexMapping(settlersVersionHash, datFileMappings).serializeToStream(new FileOutputStream(filePath));
+
+			SettlersVersionMapping settlersVersionMapping = SettlersVersionMapping.readFromDirectory(GRAPHICS_RESOURCE_DIRECTORY);
+			settlersVersionMapping.putMapping(settlersVersionHash, fileName);
+			settlersVersionMapping.serializeToDirectory(GRAPHICS_RESOURCE_DIRECTORY);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
