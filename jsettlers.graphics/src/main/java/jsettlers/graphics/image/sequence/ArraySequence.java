@@ -29,7 +29,7 @@ import jsettlers.graphics.image.SingleImage;
  *            The image type images of this sequence are of.
  */
 public final class ArraySequence<T extends Image> implements Iterable<T>, Sequence<T> {
-	private static Sequence<SingleImage> nullSequence;
+	private static Sequence<Image> nullSequence;
 	private final T[] images;
 
 	/**
@@ -87,7 +87,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 * 
 	 * @return The emepty sequence.
 	 */
-	public static Sequence<SingleImage> getNullSequence() {
+	public static Sequence<Image> getNullSequence() {
 		if (nullSequence == null) {
 			nullSequence = new ArraySequence<>(new SingleImage[0]);
 		}

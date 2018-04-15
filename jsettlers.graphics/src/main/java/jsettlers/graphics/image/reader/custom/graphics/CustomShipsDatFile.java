@@ -16,6 +16,7 @@ package jsettlers.graphics.image.reader.custom.graphics;
 
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.image.reader.DatFileReader;
@@ -59,8 +60,10 @@ class CustomShipsDatFile extends EmptyDatFile {
 				} else if (index == 29) {
 					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_sail_sail", 0, 6));
 
-				} else {
+				} else if (index < fallbackSequence.size()) {
 					return fallbackSequence.get(index);
+				} else {
+					return ArraySequence.getNullSequence();
 				}
 			}
 		};
