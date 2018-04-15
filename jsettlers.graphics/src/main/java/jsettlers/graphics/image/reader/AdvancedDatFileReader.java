@@ -460,8 +460,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 	}
 
-	private synchronized void loadSettlers(int index) throws IOException {
-		int position = settlerStarts[index];
+	private synchronized void loadSettlers(int goldIndex) throws IOException {
+		int theseGraphicsFilesIndex = mapping.mapSettlersSequence(goldIndex);
+
+		int position = settlerStarts[theseGraphicsFilesIndex];
 		long[] framePositions = readSequenceHeader(position);
 
 		SettlerImage[] images = new SettlerImage[framePositions.length];
@@ -470,7 +472,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			images[i] = DatBitmapReader.getImage(settlerTranslator, reader);
 		}
 
-		int torsoPosition = torsoStarts[index];
+		int torsoPosition = torsoStarts[theseGraphicsFilesIndex];
 		if (torsoPosition >= 0) {
 			long[] torsoPositions = readSequenceHeader(torsoPosition);
 			for (int i = 0; i < torsoPositions.length && i < framePositions.length; i++) {
@@ -480,7 +482,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			}
 		}
 
-		settlerSequences[index] = new ArraySequence<>(images);
+		settlerSequences[goldIndex] = new ArraySequence<>(images);
 	}
 
 	private long[] readSequenceHeader(int position) throws IOException {
