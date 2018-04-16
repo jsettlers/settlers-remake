@@ -145,6 +145,7 @@ public class MapObjectDrawer {
 	private static final int SHIP_IMAGE_FILE = 36;
 	private static final int FERRY_BASE_SEQUENCE = 4;
 	private static final int CARGO_SHIP_BASE_SEQUENCE = 0;
+	private static final float SHIPS_Z = 0.89f;
 
 	private static final int SMOKE_HEIGHT = 30;
 
@@ -366,11 +367,15 @@ public class MapObjectDrawer {
 		}
 	}
 
-	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl,
-			DrawBuffer db, float viewX, float viewY, Color color, float shade) {
+	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, DrawBuffer db, float viewX, float viewY, Color color, float shade) {
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(SHIPS_Z);
+
 		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
 		Image image = imageProvider.getImage(shipLink);
 		image.drawAt(gl, db, viewX, viewY, color, shade);
+
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawObject(int x, int y, IMapObject object, float color) {
