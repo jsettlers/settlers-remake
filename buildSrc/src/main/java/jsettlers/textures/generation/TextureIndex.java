@@ -74,7 +74,7 @@ public class TextureIndex {
 		System.out.println("Opened texture index");
 	}
 
-	public void registerTexture(String name, int textureFile, int offsetX, int offsetY, int width, int height, boolean hasTorso, TexturePosition position) throws IOException {
+	public int registerTexture(String name, int textureFile, int offsetX, int offsetY, int width, int height, Integer torsoIndex, boolean isTorso, TexturePosition position) throws IOException {
 		synchronized (imageIndexMutex) {
 			String safename = name.replaceAll("[^a-zA-Z0-9._]", "_");
 
@@ -84,7 +84,9 @@ public class TextureIndex {
 			textureIndexOut.writeShort(offsetY);
 			textureIndexOut.writeShort(width);
 			textureIndexOut.writeShort(height);
-			textureIndexOut.writeShort((hasTorso ? 0x8000 : 0) | textureFile);
+			textureIndexOut.writeShort(textureFile);
+			textureIndexOut.writeInt(torsoIndex == null ? -1 : torsoIndex);
+			textureIndexOut.writeShort(isTorso ? 1 : 0);
 
 			textureIndexOut.writeShort(toShort(position.getLeft()));
 			textureIndexOut.writeShort(toShort(position.getTop()));
@@ -93,7 +95,7 @@ public class TextureIndex {
 
 			System.out.println("Added image " + imageIndexCounter + " to texture " + textureFile + " and added to constant index as " + safename);
 
-			imageIndexCounter++;
+			return imageIndexCounter++;
 		}
 	}
 

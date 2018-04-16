@@ -26,6 +26,8 @@ import jsettlers.graphics.map.draw.DrawBuffer;
  */
 public class ImageIndexImage extends Image {
 	private static final float IMAGE_DRAW_OFFSET = .5f;
+	private static final float[] tempBuffer = new float[5 * 6];
+
 	private final short width;
 	private final short height;
 	private final float[] geometry;
@@ -36,10 +38,9 @@ public class ImageIndexImage extends Image {
 	private final float vmin;
 	private final float umax;
 	private final float vmax;
-	private final EImageType imageType;
-	private ImageIndexImage torso;
+	private final boolean isTorso;
 
-	private static final float[] tempBuffer = new float[5 * 6];
+	private ImageIndexImage torso;
 
 	/**
 	 * Constructs a new image in an image index.
@@ -63,7 +64,7 @@ public class ImageIndexImage extends Image {
 	 * @param vmax
 	 * 		The bounds of the image on the texture (0..1).
 	 */
-	ImageIndexImage(ImageIndexTexture texture, int offsetX, int offsetY, short width, short height, float umin, float vmin, float umax, float vmax, EImageType imageType) {
+	ImageIndexImage(ImageIndexTexture texture, int offsetX, int offsetY, short width, short height, float umin, float vmin, float umax, float vmax, boolean isTorso) {
 		this.texture = texture;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
@@ -73,7 +74,7 @@ public class ImageIndexImage extends Image {
 		this.vmin = vmin;
 		this.umax = umax;
 		this.vmax = vmax;
-		this.imageType = imageType;
+		this.isTorso = isTorso;
 
 		geometry = createGeometry(offsetX, offsetY, width, height, umin, vmin, umax, vmax);
 	}
@@ -95,7 +96,7 @@ public class ImageIndexImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-		if (color == null || !imageType.useColor()) {
+		if (color == null || !isTorso) {
 			gl.color(multiply, multiply, multiply, 1);
 		} else {
 			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply, color.getAlpha());
@@ -137,12 +138,11 @@ public class ImageIndexImage extends Image {
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
 		try {
-			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin, umax, vmax, 
-						imageType.useColor() ? iColor : 0xffffffff);
+			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin, umax, vmax, isTorso ? iColor : 0xffffffff);
 			if (torso != null) {
 				torso.drawAt(gl, buffer, viewX, viewY, iColor);
 			}
-			
+
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -213,11 +213,7 @@ public class ImageIndexImage extends Image {
 			torso.drawImageAtRect(gl, minX, minY, maxX, maxY);
 		}
 	}
-	
-	public EImageType getImageType() {
-		return imageType;
-	}
-	
+
 	public void setTorso(ImageIndexImage torso) {
 		this.torso = torso;
 	}

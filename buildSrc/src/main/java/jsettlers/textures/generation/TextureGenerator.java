@@ -100,20 +100,33 @@ public final class TextureGenerator {
 	}
 
 	private void storeImageData(ImageData imageData) {
-		storeImage(imageData.name, imageData.data, imageData.torso != null);
-		if (imageData.torso != null) {
-			storeImage(imageData.name, imageData.torso, false);
-		}
+		storeImage(imageData.name, imageData.data, imageData.torso);
 	}
 
-	private void storeImage(String name, ProvidedImage data, boolean hasTorso) {
+	private void storeImage(String name, ProvidedImage data, ProvidedImage torso) {
 		try {
 			if (data != null) {
+				Integer torsoIndex = null;
+
+				if (torso != null) {
+					int texture = textureIndex.getNextTextureIndex();
+					TexturePosition position = addAsNewImage(torso, texture);
+					torsoIndex = textureIndex.registerTexture(name + "_torso", texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), null, true, position);
+					System.out.println(
+							"Texture file #" + texture + ": add name=" + name + "_torso using offsets x=" + data.getOffsetX() + ".." + (data.getOffsetX() + data.getWidth()) + ", y=" + data
+									.getOffsetY() + ".."
+									+ (data.getOffsetY() + data.getHeight())
+									+ " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".." + position.getBottom());
+				}
+
 				int texture = textureIndex.getNextTextureIndex();
 				TexturePosition position = addAsNewImage(data, texture);
-				System.out.println("Texture file #" + texture + ": add name=" + name + " using offsets x=" + data.getOffsetX() + ".." + (data.getOffsetX() + data.getWidth()) + ", y=" + data.getOffsetY() + ".." + (data.getOffsetY() + data.getHeight())
-					+ " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".." + position.getBottom());
-				textureIndex.registerTexture(name, texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), hasTorso, position);
+				System.out.println(
+						"Texture file #" + texture + ": add name=" + name + " using offsets x=" + data.getOffsetX() + ".." + (data.getOffsetX() + data.getWidth()) + ", y=" + data.getOffsetY() + ".."
+								+ (data.getOffsetY() + data.getHeight())
+								+ " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".." + position.getBottom());
+				textureIndex.registerTexture(name, texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), torsoIndex, false, position);
+
 			}
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem writing image " + name + ". Problem was: " + t.getMessage());

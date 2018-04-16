@@ -27,7 +27,7 @@ import java.nio.ShortBuffer;
 
 /**
  * This is a texture that is part of the {@link ImageIndexFile}.
- * 
+ *
  * @author Michael Zangl
  */
 public final class ImageIndexTexture {
@@ -36,9 +36,9 @@ public final class ImageIndexTexture {
 
 	/**
 	 * Creates a new {@link ImageIndexTexture} from an input stream.
-	 * 
+	 *
 	 * @param inputStream
-	 *            The stream.
+	 * 		The stream.
 	 */
 	public ImageIndexTexture(InputStream inputStream) {
 		this.file = inputStream;
@@ -46,9 +46,9 @@ public final class ImageIndexTexture {
 
 	/**
 	 * Generates the gl texture handle used for drawing this texture.
-	 * 
+	 *
 	 * @param gl
-	 *            The gl context.
+	 * 		The gl context.
 	 * @return The texture handle.
 	 */
 	public TextureHandle getTextureIndex(GLDrawContext gl) {
@@ -60,9 +60,7 @@ public final class ImageIndexTexture {
 
 	private void loadTexture(GLDrawContext gl) {
 		try {
-			final DataInputStream in =
-					new DataInputStream(new BufferedInputStream(
-							file));
+			final DataInputStream in = new DataInputStream(new BufferedInputStream(file));
 			int i = in.available() / 2;
 			final int height = nextLowerPOT(Math.sqrt(i));
 			final int width = nextLowerPOT(i / height);
