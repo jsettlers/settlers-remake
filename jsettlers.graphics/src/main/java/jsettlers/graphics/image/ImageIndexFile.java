@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -82,16 +82,16 @@ public class ImageIndexFile {
 		int torsoIndex = in.readInt();
 		boolean isTorso = in.readShort() > 0;
 
-		float umin = (float) in.readShort() / Short.MAX_VALUE;
-		float vmin = (float) in.readShort() / Short.MAX_VALUE;
-		float umax = (float) in.readShort() / Short.MAX_VALUE;
-		float vmax = (float) in.readShort() / Short.MAX_VALUE;
+		float uMin = (float) in.readShort() / Short.MAX_VALUE;
+		float vMin = (float) in.readShort() / Short.MAX_VALUE;
+		float uMax = (float) in.readShort() / Short.MAX_VALUE;
+		float vMax = (float) in.readShort() / Short.MAX_VALUE;
 
 		while (textureFileNumber >= textures.size()) {
 			textures.add(new ImageIndexTexture(getResource("images_" + textures.size())));
 		}
 
-		ImageIndexImage primaryImage = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, umin, vmin, umax, vmax, isTorso);
+		ImageIndexImage primaryImage = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, uMin, vMin, uMax, vMax, isTorso);
 
 		if (torsoIndex >= 0) {
 			primaryImage.setTorso(images[torsoIndex]);

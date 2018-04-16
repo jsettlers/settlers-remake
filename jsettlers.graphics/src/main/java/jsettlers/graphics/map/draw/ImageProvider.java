@@ -98,7 +98,7 @@ public final class ImageProvider {
 	public static void setLookupPath(File path) {
 		ImageProvider.lookupPath = path;
 		Long settlersVersionHash = DatFileUtils.generateOriginalVersionId(path);
-		getInstance().gfxFolderMapping = SettlersVersionMapping.getMappingForVersionHash(settlersVersionHash);
+		getInstance().gfxFolderMapping = SettlersVersionMapping.getMappingForVersionId(settlersVersionHash);
 		getInstance().startPreloading();
 	}
 

@@ -24,7 +24,7 @@ public class SettlersVersionMappingTest {
 
 	@Test
 	public void testGetAmazonDemoMapping() {
-		GfxFolderMapping mapping = SettlersVersionMapping.getMappingForVersionHash(-1282419180527137435L);
+		GfxFolderMapping mapping = SettlersVersionMapping.getMappingForVersionId(-1282419180527137435L);
 
 		assertNotNull(mapping);
 		assertTrue(mapping instanceof IndexingGfxFolderMapping);
@@ -32,7 +32,7 @@ public class SettlersVersionMappingTest {
 
 	@Test
 	public void testGetMappingForUnknownHash() {
-		GfxFolderMapping mapping = SettlersVersionMapping.getMappingForVersionHash(-1L);
+		GfxFolderMapping mapping = SettlersVersionMapping.getMappingForVersionId(-1L);
 
 		assertNotNull(mapping);
 		assertTrue(mapping instanceof DefaultGfxFolderMapping);

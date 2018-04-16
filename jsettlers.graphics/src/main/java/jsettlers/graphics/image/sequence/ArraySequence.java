@@ -55,7 +55,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see Sequence#getImage(int)
+	 * @see Sequence#getImageLink(int)
 	 */
 	@Override
 	public T getImage(int index) {

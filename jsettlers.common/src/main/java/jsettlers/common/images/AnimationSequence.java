@@ -71,7 +71,7 @@ public final class AnimationSequence {
 	 *            The relative index in this sequence.
 	 * @return The image link to that image.
 	 */
-	public ImageLink getImage(int index) {
+	public ImageLink getImageLink(int index) {
 		if (index >= length || index < 0) {
 			throw new IllegalArgumentException();
 		}

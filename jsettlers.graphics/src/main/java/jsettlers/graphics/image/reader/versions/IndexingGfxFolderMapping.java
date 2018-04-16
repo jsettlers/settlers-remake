@@ -26,16 +26,16 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 
 public class IndexingGfxFolderMapping implements GfxFolderMapping {
-	private final Long settlersVersionHash;
+	private final Long settlersVersionId;
 	private final IndexingDatFileMapping[] datFileMappings;
 
-	public IndexingGfxFolderMapping(Long settlersVersionHash, IndexingDatFileMapping[] datFileMappings) {
-		this.settlersVersionHash = settlersVersionHash;
+	public IndexingGfxFolderMapping(Long settlersVersionId, IndexingDatFileMapping[] datFileMappings) {
+		this.settlersVersionId = settlersVersionId;
 		this.datFileMappings = datFileMappings;
 	}
 
-	public Long getSettlersVersionHash() {
-		return settlersVersionHash;
+	public Long getSettlersVersionId() {
+		return settlersVersionId;
 	}
 
 	@Override

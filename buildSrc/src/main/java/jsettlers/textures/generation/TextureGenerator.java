@@ -77,12 +77,13 @@ public final class TextureGenerator {
 		imageData.data = getImage(imageFile);
 
 		File torsoFile = new File(imageFile.getPath().replace(".png", ".t.png"));
+
 		if (torsoFile.exists()) {
 			imageData.torso = getImage(torsoFile);
 		}
 
 		if (imageData.data == null) {
-			System.err.println("WATNING: loading image " + name + ": No image file found.");
+			System.err.println("WARNING: loading image " + name + ": No image file found.");
 		}
 		return imageData;
 	}
@@ -109,28 +110,24 @@ public final class TextureGenerator {
 				Integer torsoIndex = null;
 
 				if (torso != null) {
-					int texture = textureIndex.getNextTextureIndex();
-					TexturePosition position = addAsNewImage(torso, texture);
-					torsoIndex = textureIndex.registerTexture(name + "_torso", texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), null, true, position);
-					System.out.println(
-							"Texture file #" + texture + ": add name=" + name + "_torso using offsets x=" + data.getOffsetX() + ".." + (data.getOffsetX() + data.getWidth()) + ", y=" + data
-									.getOffsetY() + ".."
-									+ (data.getOffsetY() + data.getHeight())
-									+ " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".." + position.getBottom());
+					torsoIndex = storeImage(name + "_torso", torso, null, true);
 				}
 
-				int texture = textureIndex.getNextTextureIndex();
-				TexturePosition position = addAsNewImage(data, texture);
-				System.out.println(
-						"Texture file #" + texture + ": add name=" + name + " using offsets x=" + data.getOffsetX() + ".." + (data.getOffsetX() + data.getWidth()) + ", y=" + data.getOffsetY() + ".."
-								+ (data.getOffsetY() + data.getHeight())
-								+ " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".." + position.getBottom());
-				textureIndex.registerTexture(name, texture, data.getOffsetX(), data.getOffsetY(), data.getWidth(), data.getHeight(), torsoIndex, false, position);
-
+				storeImage(name, data, torsoIndex, false);
 			}
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem writing image " + name + ". Problem was: " + t.getMessage());
 		}
+	}
+
+	private int storeImage(String name, ProvidedImage image, Integer torsoIndex, boolean isTorso) throws IOException {
+		int texture = textureIndex.getNextTextureIndex();
+		TexturePosition position = addAsNewImage(image, texture);
+		int index = textureIndex.registerTexture(name, texture, image.getOffsetX(), image.getOffsetY(), image.getWidth(), image.getHeight(), torsoIndex, isTorso, position);
+		System.out.println("Texture file #" + texture + ": add name=" + name + " using offsets x=" + image.getOffsetX() + ".." + (image.getOffsetX() + image.getWidth()) + ", y=" + image
+				.getOffsetY() + ".." + (image.getOffsetY() + image.getHeight()) + " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".."
+				+ position.getBottom());
+		return index;
 	}
 
 	// This is slow.

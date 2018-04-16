@@ -280,19 +280,17 @@ public class AdvancedDatFileReader implements DatFileReader {
 	@SuppressWarnings("unchecked")
 	public void initialize() {
 		try {
-			try {
-				reader = new ByteReader(new RandomAccessFile(file, "r"));
-				initFromReader(file, reader);
+			reader = new ByteReader(new RandomAccessFile(file, "r"));
+			initFromReader(file, reader);
 
-			} catch (IOException e) {
-				if (reader != null) {
+		} catch (IOException e) {
+			if (reader != null) {
+				try {
 					reader.close();
-					reader = null;
-				}
-				throw e;
+				} catch (IOException ex) { /* nothing to do */ }
+				reader = null;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Could not read dat file " + file + " due to: " + e.getMessage());
 		}
 		initializeNullFile();
 

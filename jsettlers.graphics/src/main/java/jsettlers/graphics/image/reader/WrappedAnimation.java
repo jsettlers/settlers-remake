@@ -44,7 +44,7 @@ public class WrappedAnimation implements Sequence<Image> {
 
 	@Override
 	public Image getImage(int index) {
-		return imageProvider.getImage(sequence.getImage(index));
+		return imageProvider.getImage(sequence.getImageLink(index));
 	}
 
 	@Override
