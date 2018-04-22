@@ -17,6 +17,8 @@ package jsettlers.graphics.image.reader;
 
 import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,18 +30,18 @@ import static java8.util.stream.StreamSupport.stream;
 
 public class DatFileUtils {
 
-	public static Long generateOriginalVersionId(File gfxDirectory) {
+	public static String generateOriginalVersionId(File gfxDirectory) {
 		File[] gfxDatFiles = gfxDirectory.listFiles();
 		List<File> distinctGfxDatFiles = distinctFileNames(gfxDatFiles);
 
 		List<Long> allHashes = stream(distinctGfxDatFiles)
 				.filter(file -> file.getName().toLowerCase().endsWith(".dat"))
 				.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile))).map(reader -> {
-			List<Long> hashes = new ArrayList<>();
-			hashes.addAll(reader.getSettlersHashes());
-			hashes.addAll(reader.getGuiHashes());
-			return hashes;
-		}).flatMap(StreamSupport::stream).collect(Collectors.toList());
+					List<Long> hashes = new ArrayList<>();
+					hashes.addAll(reader.getSettlersHashes());
+					hashes.addAll(reader.getGuiHashes());
+					return hashes;
+				}).flatMap(StreamSupport::stream).collect(Collectors.toList());
 
 		long hashCode = 1L;
 		long multiplier = 1L;
@@ -47,7 +49,7 @@ public class DatFileUtils {
 			multiplier *= 31L;
 			hashCode += (hash + 27L) * multiplier;
 		}
-		return hashCode;
+		return Long.toString(hashCode);
 	}
 
 	public static List<File> distinctFileNames(File[] files) {

@@ -30,3 +30,5 @@ release
 save
 logs
 /replayForSavegame.log
+
+out/

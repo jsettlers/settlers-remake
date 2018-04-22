@@ -21,7 +21,6 @@ import jsettlers.TestToolUtils;
 import jsettlers.common.Color;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.logic.map.loading.MapLoadException;
-import jsettlers.common.utils.MainUtils;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.list.MapList;
@@ -33,7 +32,7 @@ import jsettlers.network.synchronic.timer.NetworkTimer;
 public class TestExecutionWithDebugDisplay {
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
-		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args));
+		SwingManagedJSettlers.setupResources(true, args);
 		MatchConstants.init(new NetworkTimer(true), 0);
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").loadMainGrid(null).getMainGrid();

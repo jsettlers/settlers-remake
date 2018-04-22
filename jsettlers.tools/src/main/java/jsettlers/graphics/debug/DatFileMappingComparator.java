@@ -61,7 +61,7 @@ public class DatFileMappingComparator {
 			throw new IllegalArgumentException("At least one of the given paths is no directory.");
 		}
 
-		Long settlersVersionHash = DatFileUtils.generateOriginalVersionId(gfxFolder2);
+		String settlersVersionHash = DatFileUtils.generateOriginalVersionId(gfxFolder2);
 
 		Map<String, File> datFiles2ByName = datFiles2.stream().map(file -> new Tuple<>(getDatFileName(file), file)).collect(Collectors.toMap(Tuple::getE1, Tuple::getE2));
 

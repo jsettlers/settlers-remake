@@ -15,37 +15,36 @@
 package jsettlers.main.replay;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.map.loading.MapLoadException;
-import jsettlers.common.utils.MainUtils;
-import jsettlers.common.utils.OptionableProperties;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.resources.SwingResourceLoader;
+import jsettlers.main.swing.resources.SwingResourceProvider;
+import jsettlers.main.swing.settings.SettingsManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * 
  * @author Andreas Eberle
- * 
  */
 public class ReplayToolApp {
 
 	public static void main(String[] args) throws IOException, InterruptedException, MapLoadException, SwingResourceLoader.ResourceSetupException {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 
-		OptionableProperties options = MainUtils.loadOptions(args);
-		SwingManagedJSettlers.loadOptionalSettings(options);
-		SwingResourceLoader.setup(options);
+		ResourceManager.setProvider(new SwingResourceProvider());
+		SettingsManager.setup(args);
+		SwingResourceLoader.setup();
 
-		int targetGameTimeMinutes = Integer.valueOf(options.getProperty("targetTime"));
-		String replayFileString = options.getProperty("replayFile");
-		if (replayFileString == null)
-			throw new IllegalArgumentException("Replay file needs to be specified with --replayFile=<FILE>");
+		int targetGameTimeMinutes = SettingsManager.getInstance().getTargetTime().orElseThrow(() -> new IllegalArgumentException("Please specify target time"));
+		String replayFileString = SettingsManager.getInstance().getReplayFile().orElseThrow(() -> new IllegalArgumentException("Replay file needs to be specified with --replayFile=<FILE>"));
+
 		File replayFile = new File(replayFileString);
-		if (!replayFile.exists())
+		if (!replayFile.exists()) {
 			throw new FileNotFoundException("Found replayFile parameter, but file can not be found: " + replayFile);
+		}
 
 		ReplayUtils.replayAndCreateSavegame(new ReplayUtils.ReplayFile(replayFile), targetGameTimeMinutes, "replayForSavegame.log");
 

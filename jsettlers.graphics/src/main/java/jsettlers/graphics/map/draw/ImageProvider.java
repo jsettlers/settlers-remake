@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,7 +28,6 @@ import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.DatFileSet;
 import jsettlers.graphics.image.reader.DatFileType;
-import jsettlers.graphics.image.reader.DatFileUtils;
 import jsettlers.graphics.image.reader.EmptyDatFile;
 import jsettlers.graphics.image.reader.custom.graphics.CustomGraphicsInterceptor;
 import jsettlers.graphics.image.reader.versions.DefaultGfxFolderMapping;
@@ -95,10 +94,9 @@ public final class ImageProvider {
 	 * @param path
 	 * 		The directory. It may not exist, but must not be null.
 	 */
-	public static void setLookupPath(File path) {
+	public static void setLookupPath(File path, String settlersVersionId) {
 		ImageProvider.lookupPath = path;
-		Long settlersVersionHash = DatFileUtils.generateOriginalVersionId(path);
-		getInstance().gfxFolderMapping = SettlersVersionMapping.getMappingForVersionId(settlersVersionHash);
+		getInstance().gfxFolderMapping = SettlersVersionMapping.getMappingForVersionId(settlersVersionId);
 		getInstance().startPreloading();
 	}
 

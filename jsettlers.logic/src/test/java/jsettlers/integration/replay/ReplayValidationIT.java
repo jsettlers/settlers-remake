@@ -51,7 +51,6 @@ public class ReplayValidationIT {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 		CommonConstants.USE_SAVEGAME_COMPRESSION = false;
-		CommonConstants.ALL_AI = true;
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 
 		TestUtils.setupTempResourceManager();

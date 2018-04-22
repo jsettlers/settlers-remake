@@ -33,13 +33,13 @@ import java.util.Map;
 public class SettlersVersionMapping {
 	private static final String MAPPING_FILE_NAME = "mapping.json";
 
-	private Map<Long, String> mappingFilesByVersionId = new HashMap<>();
+	private Map<String, String> mappingFilesByVersionId = new HashMap<>();
 
-	public void putMapping(Long settlersVersionId, String fileName) {
+	public void putMapping(String settlersVersionId, String fileName) {
 		mappingFilesByVersionId.put(settlersVersionId, fileName);
 	}
 
-	private GfxFolderMapping getMapping(Long settlersVersionId) throws IOException {
+	private GfxFolderMapping getMapping(String settlersVersionId) throws IOException {
 		if (mappingFilesByVersionId.containsKey(settlersVersionId)) {
 			String mappingFileName = mappingFilesByVersionId.get(settlersVersionId);
 			InputStream mappingFileStream = getClass().getResourceAsStream(mappingFileName);
@@ -78,7 +78,7 @@ public class SettlersVersionMapping {
 		}
 	}
 
-	public static GfxFolderMapping getMappingForVersionId(long settlersVersionId) {
+	public static GfxFolderMapping getMappingForVersionId(String settlersVersionId) {
 		try {
 			SettlersVersionMapping mappingFile = readFromStream(SettlersVersionMapping.class.getResourceAsStream(MAPPING_FILE_NAME));
 			return mappingFile.getMapping(settlersVersionId);
