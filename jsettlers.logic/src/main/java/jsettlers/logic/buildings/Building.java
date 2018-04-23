@@ -30,7 +30,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.buildings.military.Barrack;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.others.TempleBuilding;
@@ -45,6 +45,7 @@ import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
+import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
@@ -57,7 +58,9 @@ import jsettlers.logic.timer.RescheduleTimer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,10 +107,15 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		allBuildings.add(this);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		allBuildings.clear();
+		allBuildings.addAll((Collection<? extends Building>) ois.readObject());
+	}
 
-	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		ois.defaultReadObject();
-		allBuildings.add(this);
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(allBuildings);
 	}
 
 	@Override
@@ -216,7 +224,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	 * Used to set or clear the small red flag atop a building to indicate it is occupied.
 	 *
 	 * @param place
-	 *            specifies whether the flag should appear or not.
+	 * 		specifies whether the flag should appear or not.
 	 */
 	protected void showFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
@@ -331,15 +339,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return type;
 	}
 
-	@Override
-	public byte getPlayerId() {
-		return player.playerId;
-	}
-
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
 
+	@Override
 	public final Player getPlayer() {
 		return player;
 	}
@@ -669,7 +673,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case LUMBERJACK:
 		case PIG_FARM:
 		case SAWMILL:
-		case SLAUGHTERHOUSE:
 		case STONECUTTER:
 		case TOOLSMITH:
 		case WEAPONSMITH:
@@ -679,6 +682,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case MILL:
 			return new MillBuilding(type, player, position, buildingsGrid);
+
+		case SLAUGHTERHOUSE:
+			return new SlaughterhouseBuilding(type, player, position, buildingsGrid);
 
 		case TOWER:
 		case BIG_TOWER:

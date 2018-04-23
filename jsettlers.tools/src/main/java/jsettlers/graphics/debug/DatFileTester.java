@@ -14,17 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -34,7 +23,6 @@ import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
 import jsettlers.common.Color;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.utils.FileUtils;
@@ -49,11 +37,20 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
-import jsettlers.graphics.swing.utils.ImageUtils;
 import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
 
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+
 public class DatFileTester {
-	private static final int DAT_FILE_INDEX = 14;
+	private static final int DAT_FILE_INDEX = 0;
 	private static final DatFileType TYPE = DatFileType.RGB565;
 
 	private static final String FILE_NAME_PATTERN = "siedler3_%02d" + TYPE.getFileSuffix();
@@ -65,29 +62,13 @@ public class DatFileTester {
 	private final Region region;
 
 	private DatFileTester() throws IOException {
-		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
-		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
-		File settlersGfxFolder = settlersFolderInfo.gfxFolder;
+		File settlersGfxFolder = getSettlersGfxFolder();
 
 		File file = findFileIgnoringCase(settlersGfxFolder, FILE_NAME);
 		reader = new AdvancedDatFileReader(file, TYPE);
 
 		region = new Region(Region.POSITION_CENTER);
 		region.setContent(new Content());
-	}
-
-	private File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
-		String fileNameLowercase = fileName.toLowerCase();
-
-		Mutable<File> graphicsFile = new Mutable<>();
-
-		FileUtils.iterateChildren(settlersGfxFolder, currentFile -> {
-			if(currentFile.isFile() && fileNameLowercase.equalsIgnoreCase(currentFile.getName())){
-				graphicsFile.object = currentFile;
-			}
-		});
-
-		return graphicsFile.object;
 	}
 
 	/**
@@ -142,7 +123,11 @@ public class DatFileTester {
 				} else if ("E".equalsIgnoreCase(keyCode)) {
 					export();
 				} else if ("W".equalsIgnoreCase(keyCode)) {
-					exportAll();
+					try {
+						exportAll();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				region.requestRedraw();
 			}
@@ -231,7 +216,8 @@ public class DatFileTester {
 		}
 	}
 
-	private static void exportAll() {
+	private static void exportAll() throws IOException {
+		File settlersGfxFolder = getSettlersGfxFolder();
 		final JFileChooser fc = new JFileChooser();
 
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -239,9 +225,10 @@ public class DatFileTester {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
 			for (int i = 0; i <= 99; i++) {
-				File file = new File(FILE_NAME_PATTERN.replace("%", String.format(Locale.ENGLISH, "%02d", i)));
+				String fileName = String.format(Locale.ENGLISH, FILE_NAME_PATTERN, i);
+				File file = findFileIgnoringCase(settlersGfxFolder, fileName);
 
-				if (file.exists()) {
+				if (file != null && file.exists()) {
 					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);
 					exportTo(new File(dir, "" + i), reader);
 				}
@@ -282,7 +269,7 @@ public class DatFileTester {
 
 	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
-		BufferedImage rendered = ImageUtils.convertToBufferedImage(image);
+		BufferedImage rendered = image.convertToBufferedImage();
 		if (rendered == null) {
 			return;
 		}
@@ -292,5 +279,25 @@ public class DatFileTester {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static File getSettlersGfxFolder() throws IOException {
+		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
+		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
+		return settlersFolderInfo.gfxFolder;
+	}
+
+	private static File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
+		String fileNameLowercase = fileName.toLowerCase();
+
+		Mutable<File> graphicsFile = new Mutable<>();
+
+		FileUtils.iterateChildren(settlersGfxFolder, currentFile -> {
+			if (currentFile.isFile() && fileNameLowercase.equalsIgnoreCase(currentFile.getName())) {
+				graphicsFile.object = currentFile;
+			}
+		});
+
+		return graphicsFile.object;
 	}
 }

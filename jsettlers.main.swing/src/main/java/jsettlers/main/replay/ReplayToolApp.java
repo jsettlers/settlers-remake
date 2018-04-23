@@ -15,7 +15,7 @@
 package jsettlers.main.replay;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.main.swing.SwingManagedJSettlers;

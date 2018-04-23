@@ -19,7 +19,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 
 public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 
@@ -87,6 +87,6 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	public String toString() {
 		return "SetTradingWaypointGuiTask [waypointType=" + waypointType + ", position=" + position + ", getBuildingPos()=" + getBuildingPos()
-				+ ", getGuiAction()=" + getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
+				+ ", getGuiAction()=" + getGuiAction() + ", getPlayer()=" + getPlayerId() + "]";
 	}
 }

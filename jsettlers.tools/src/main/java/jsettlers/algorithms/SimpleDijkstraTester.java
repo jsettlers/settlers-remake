@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.algorithms;
 
+import java.util.Set;
+
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.algorithms.path.astar.BucketQueueAStar;
@@ -21,9 +23,8 @@ import jsettlers.algorithms.path.astar.DummyEmptyAStarMap;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
-
-import java.util.Set;
 
 public class SimpleDijkstraTester {
 	private static final short WIDTH = (short) 200;
@@ -56,16 +57,14 @@ public class SimpleDijkstraTester {
 		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new BucketQueueAStar(aStarMap, WIDTH, HEIGHT), WIDTH, HEIGHT);
 
 		IPathCalculatable requester = new IPathCalculatable() {
-			private static final long serialVersionUID = 8994674255605105284L;
-
 			@Override
 			public ShortPoint2D getPos() {
 				return new ShortPoint2D(100, 100);
 			}
 
 			@Override
-			public byte getPlayerId() {
-				return 0;
+			public IPlayer getPlayer() {
+				return new IPlayer.DummyPlayer();
 			}
 
 			@Override

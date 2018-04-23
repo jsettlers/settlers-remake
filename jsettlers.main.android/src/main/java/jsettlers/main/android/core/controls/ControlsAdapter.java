@@ -25,12 +25,12 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
@@ -52,7 +52,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
 	private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
 	private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
+	private final LinkedList<DrawListener> infrequentDrawListeners = new LinkedList<>();
 	private final LinkedList<PositionChangedListener> positionChangedListeners = new LinkedList<>();
+
+	private final int fireDrawListenerFrequency = 15;
+	private int fireDrawListenerCounter = -1;
 
 	private ISelectionSet selection;
 	private ShortPoint2D displayCenter;
@@ -109,6 +113,14 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		synchronized (drawListeners) {
 			stream(drawListeners).forEach(DrawListener::draw);
 		}
+
+		fireDrawListenerCounter = (fireDrawListenerCounter + 1) % fireDrawListenerFrequency;
+
+		if (fireDrawListenerCounter == 0) {
+			synchronized (infrequentDrawListeners) {
+				stream(infrequentDrawListeners).forEach(DrawListener::draw);
+			}
+		}
 	}
 
 	public void onPositionChanged(MapRectangle screenArea, ShortPoint2D displayCenter) {
@@ -160,6 +172,20 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	public void removeDrawListener(DrawListener drawListener) {
 		synchronized (drawListeners) {
 			drawListeners.remove(drawListener);
+		}
+	}
+
+	@Override
+	public void addInfrequentDrawListener(DrawListener drawListener) {
+		synchronized (infrequentDrawListeners) {
+			infrequentDrawListeners.add(drawListener);
+		}
+	}
+
+	@Override
+	public void removeInfrequentDrawListener(DrawListener drawListener) {
+		synchronized (infrequentDrawListeners) {
+			infrequentDrawListeners.remove(drawListener);
 		}
 	}
 
@@ -222,6 +248,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	@Override
 	public IPartitionData getCurrentPartitionData() {
 		return graphicsGrid.getPartitionData(displayCenter.x, displayCenter.y);
+	}
+
+	@Override
+	public ShortPoint2D getCurrentPosition() {
+		return displayCenter;
 	}
 
 	@Override

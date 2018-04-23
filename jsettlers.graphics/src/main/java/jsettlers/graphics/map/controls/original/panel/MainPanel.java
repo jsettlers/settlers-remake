@@ -18,17 +18,17 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.SetTradingWaypointAction;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -50,7 +50,7 @@ public class MainPanel extends UIPanel {
 
 	private final Button button_build = new TabButton(ContentType.BUILD_NORMAL, BUTTONS_FILE, 51, 60, "");
 	private final Button button_goods = new TabButton(ContentType.STOCK, BUTTONS_FILE, 54, 63, "");
-	private final Button button_settlers = new TabButton(ContentType.SETTLERSTATISTIC, BUTTONS_FILE, 57, 66, "");
+	private final Button button_settlers = new TabButton(ContentType.SETTLER_STATISTIC, BUTTONS_FILE, 57, 66, "");
 
 	private final TabButton[] buildButtons = new TabButton[] {
 			new TabButton(ContentType.BUILD_NORMAL, BUTTONS_FILE, 69, 81, ""),
@@ -67,7 +67,7 @@ public class MainPanel extends UIPanel {
 	};
 
 	private final TabButton[] settlerButtons = new TabButton[] {
-			new TabButton(ContentType.SETTLERSTATISTIC, BUTTONS_FILE, 234, 246, ""),
+			new TabButton(ContentType.SETTLER_STATISTIC, BUTTONS_FILE, 234, 246, ""),
 			new TabButton(ContentType.PROFESSION, BUTTONS_FILE, 237, 249, ""),
 			new TabButton(ContentType.WARRIORS, BUTTONS_FILE, 240, 252, ""),
 			new TabButton(ContentType.PRODUCTION, BUTTONS_FILE, 243, 255, ""),
@@ -132,7 +132,7 @@ public class MainPanel extends UIPanel {
 	public MainPanel(ActionFireable actionFireable, IInGamePlayer player) {
 		this.actionFireable = actionFireable;
 		ContentType.WARRIORS.setPlayer(player);
-		ContentType.SETTLERSTATISTIC.setPlayer(player);
+		ContentType.SETTLER_STATISTIC.setPlayer(player);
 
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}

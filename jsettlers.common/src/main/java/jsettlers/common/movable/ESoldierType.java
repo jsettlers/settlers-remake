@@ -19,28 +19,18 @@ package jsettlers.common.movable;
  * @author Andreas Eberle
  */
 public enum ESoldierType {
-	BOWMAN,
-	SWORDSMAN,
-	PIKEMAN;
+	BOWMAN(ESoldierClass.BOWMAN),
+	SWORDSMAN(ESoldierClass.INFANTRY),
+	PIKEMAN(ESoldierClass.INFANTRY);
 
 	public static final ESoldierType[] VALUES = ESoldierType.values();
 	public static final int NUMBER_OF_VALUES = VALUES.length;
 
 	public final int ordinal;
+	public final ESoldierClass soldierClass;
 
-	ESoldierType() {
+	ESoldierType(ESoldierClass soldierClass) {
+		this.soldierClass = soldierClass;
 		this.ordinal = ordinal();
-	}
-
-	public ESoldierClass getSoldierClass() {
-		switch (this) {
-		case BOWMAN:
-			return ESoldierClass.BOWMAN;
-		case SWORDSMAN:
-		case PIKEMAN:
-			return ESoldierClass.INFANTRY;
-		default:
-			return null;
-		}
 	}
 }

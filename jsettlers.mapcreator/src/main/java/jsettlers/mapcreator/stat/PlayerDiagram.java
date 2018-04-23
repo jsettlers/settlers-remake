@@ -20,9 +20,9 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
@@ -98,10 +98,10 @@ public class PlayerDiagram extends JPanel {
 		}
 	}
 
-	private static int getType(MapObject mapObject) {
+	private static int getType(MapDataObject mapObject) {
 		if (mapObject instanceof MapTreeObject) {
 			return 0;
-		} else if (mapObject instanceof MapStoneObject) {
+		} else if (mapObject instanceof StoneMapDataObject) {
 			return 1;
 		}
 		return -1;

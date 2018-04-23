@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,6 +22,8 @@ import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.player.IPlayer;
+import jsettlers.common.player.IPlayer.DummyPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
@@ -31,7 +33,8 @@ import jsettlers.common.selectable.ESelectionType;
  * @author ?
  *
  */
-public class PlacementBuilding implements IBuilding, IBuilding.IMill {
+public class PlacementBuilding implements IBuilding, IBuilding.IMill, IBuilding.ISoundRequestable {
+	private final DummyPlayer player = new DummyPlayer();
 	private final EBuildingType typeToPlace;
 
 	/**
@@ -75,8 +78,8 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	}
 
 	@Override
-	public byte getPlayerId() {
-		return 0;
+	public IPlayer getPlayer() {
+		return player;
 	}
 
 	@Override
@@ -134,5 +137,15 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	@Override
 	public boolean cannotWork() {
 		return false;
+	}
+
+	@Override
+	public boolean isSoundRequested() {
+		return false;
+	}
+
+	@Override
+	public void requestSound() {
+
 	}
 }

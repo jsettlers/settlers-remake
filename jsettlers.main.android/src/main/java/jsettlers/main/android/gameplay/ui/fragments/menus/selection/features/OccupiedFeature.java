@@ -20,11 +20,11 @@ import java.util.List;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.SoldierAction;
+import jsettlers.common.action.SoldierAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
@@ -117,13 +117,13 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
 		removePikemanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_LESS, ESoldierType.PIKEMAN));
 
 		update();
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
 	}
 
 	@Override
 	public void finish() {
 		super.finish();
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	@Override

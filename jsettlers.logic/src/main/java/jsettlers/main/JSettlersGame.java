@@ -24,10 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import java8.util.Optional;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IGameExitListener;
@@ -38,7 +38,6 @@ import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IGameTimeProvider;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
@@ -49,6 +48,7 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.IGameCreator;
 import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
@@ -134,15 +134,29 @@ public class JSettlersGame {
 		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, playerSettings, CommonConstants.CONTROL_ALL, false, null);
 	}
 
-	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector,
-			ReplayStartInformation replayStartInformation) throws MapLoadException {
+	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
+			throws MapLoadException {
 		try {
 			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
 			replayStartInformation.deserialize(replayFileInputStream);
 
 			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
-			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-					(byte) replayStartInformation.getPlayerId(), replayStartInformation.getReplayablePlayerSettings(), true, false, replayFileInputStream);
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
+					replayStartInformation.getReplayablePlayerSettings(), true, false, replayFileInputStream);
+		} catch (IOException e) {
+			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
+		}
+	}
+
+	public static JSettlersGame loadFromReplayFileAllAi(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
+			throws MapLoadException {
+		try {
+			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
+			replayStartInformation.deserialize(replayFileInputStream);
+
+			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings(),
+					true, false, null);
 		} catch (IOException e) {
 			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
 		}
@@ -199,6 +213,9 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
+				if (startingGameListener != null) {
+					startingGameListener.startingLoadingGame();
+				}
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
 				clearState();
@@ -211,7 +228,6 @@ public class JSettlersGame {
 				}
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
-				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
 				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(playerSettings);
 				mainGrid = gridWithUiState.getMainGrid();
@@ -225,10 +241,9 @@ public class JSettlersGame {
 				mainGrid.initForPlayer(playerId, playerState.getFogOfWar());
 				mainGrid.startThreads();
 
-				if (imagePreloader != null)
-					imagePreloader.join(); // Wait for ImageProvider to finish loading the images
-
 				waitForStartingGameListener();
+				startingGameListener.waitForPreloading();
+
 				updateProgressListener(EProgressState.WAITING_FOR_OTHER_PLAYERS, 0.98f);
 
 				if (replayFileInputStream != null) {
@@ -321,13 +336,13 @@ public class JSettlersGame {
 			}
 		}
 
-		private void updateProgressListener(EProgressState progressState,
-				float progress) {
+		private void updateProgressListener(EProgressState progressState, float progress) {
 			this.progressState = progressState;
 			this.progress = progress;
 
-			if (startingGameListener != null)
+			if (startingGameListener != null) {
 				startingGameListener.startProgressChanged(progressState, progress);
+			}
 		}
 
 		private void reportFail(EGameError gameError, Exception e) {

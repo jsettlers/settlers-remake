@@ -83,16 +83,25 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 
 	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
-	 * 
+	 *
 	 * @author michael
 	 */
 	interface IMill extends IBuilding, ISoundable {
 		/**
 		 * If the woking animation of the mill should be shown.
-		 * 
+		 *
 		 * @return True if the mill is working.
 		 */
 		boolean isRotating();
+	}
+
+	/**
+	 * This building can request a sound.
+	 *
+	 */
+	interface ISoundRequestable extends IBuilding {
+		boolean isSoundRequested();
+		void requestSound();
 	}
 
 	/**
@@ -109,20 +118,20 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		List<? extends IBuildingOccupier> getOccupiers();
 
 		/**
-		 * Gets the number of currently searched soldiers.
+		 * Gets the number of currently searched SOLDIERS.
 		 * 
 		 * @param soldierClass
 		 *            The class of soldier.
-		 * @return The number of soldiers currently searched.
+		 * @return The number of SOLDIERS currently searched.
 		 */
 		int getSearchedSoldiers(ESoldierClass soldierClass);
 
 		/**
-		 * Gets the number of soldiers that are currently comming.
+		 * Gets the number of SOLDIERS that are currently comming.
 		 * 
 		 * @param soldierClass
 		 *            The class of soldier
-		 * @return The number of soldiers comming.
+		 * @return The number of SOLDIERS comming.
 		 */
 		int getComingSoldiers(ESoldierClass soldierClass);
 	}
