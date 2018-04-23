@@ -45,6 +45,7 @@ import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
+import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
@@ -672,7 +673,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case LUMBERJACK:
 		case PIG_FARM:
 		case SAWMILL:
-		case SLAUGHTERHOUSE:
 		case STONECUTTER:
 		case TOOLSMITH:
 		case WEAPONSMITH:
@@ -682,6 +682,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case MILL:
 			return new MillBuilding(type, player, position, buildingsGrid);
+
+		case SLAUGHTERHOUSE:
+			return new SlaughterhouseBuilding(type, player, position, buildingsGrid);
 
 		case TOWER:
 		case BIG_TOWER:

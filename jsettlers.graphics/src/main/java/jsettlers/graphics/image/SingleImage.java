@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ShortBuffer;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.geometry;
 
+import java.awt.geom.AffineTransform;
+
 import go.graphics.UIPoint;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -21,15 +23,13 @@ import jsettlers.common.map.shapes.Parallelogram;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 
-import java.awt.geom.AffineTransform;
-
 /**
  * This class converts map coordinates to e.g. draw coordinates.
  * <p>
  * For the conversion formulas used and what the witdh/height parameters mean, see:
  * <p>
  * <img src="doc-files/MapCoordinateConverter.png">
- * 
+ *
  * @author michael
  */
 public final class MapCoordinateConverter {
@@ -52,6 +52,8 @@ public final class MapCoordinateConverter {
 	private float[] heightmatrix = new float[4 * 4];
 
 	private float[] inverse = new float[4 * 4];
+
+	private float[] heightinverse = new float[4 * 4];
 	/**
 	 * The width of a tile in view space.
 	 */
@@ -63,7 +65,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Creates a new converter.
-	 * 
+	 *
 	 * @param mapwidth
 	 *            The map width
 	 * @param mapheight
@@ -74,7 +76,7 @@ public final class MapCoordinateConverter {
 	 *            The view height
 	 */
 	public MapCoordinateConverter(short mapwidth, short mapheight,
-			float viewwidth, float viewheight) {
+								  float viewwidth, float viewheight) {
 		if (mapwidth <= 1 || mapheight <= 1) {
 			throw new IllegalArgumentException("Map size too small");
 		}
@@ -109,11 +111,16 @@ public final class MapCoordinateConverter {
 		this.inverse[M_12] = realMapHeight;
 		this.inverse[2 + 2 * 4] = 1;
 		this.inverse[3 + 3 * 4] = 1;
+
+		System.arraycopy(this.inverse, 0, this.heightinverse, 0,
+				this.inverse.length);
+		this.heightinverse[M_HX] = 1 / this.yscale;
+		this.heightinverse[M_HY] = 2 / this.yscale;
 	}
 
 	/**
 	 * Gets the x coordinate of a point in view space.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate in map space.
 	 * @param y
@@ -129,7 +136,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets the y coordinate of a point in view space.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate in map space.
 	 * @param y
@@ -148,9 +155,14 @@ public final class MapCoordinateConverter {
 				+ this.inverse[M_02];
 	}
 
+	public float getExactMapXwithHeight(float x, float y, float height) {
+		return x * this.heightinverse[M_00] + y * this.heightinverse[M_01]
+				+ height * this.heightinverse[M_HX] + this.heightinverse[M_02];
+	}
+
 	/**
 	 * Gets the closest map coordinates of a given pixel.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate in draw space
 	 * @param y
@@ -167,9 +179,14 @@ public final class MapCoordinateConverter {
 				+ this.inverse[M_12];
 	}
 
+	public float getExactMapYwithHeight(float x, float y, float height) {
+		return x * this.heightinverse[M_10] + y * this.heightinverse[M_11]
+				+ height * this.heightinverse[M_HY] + this.heightinverse[M_12];
+	}
+
 	/**
 	 * Gets the closest map coordinates of a given pixel.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate in draw space
 	 * @param y
@@ -182,7 +199,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets the matrix for the conversion from map coordinates to screen coordinates. The matrix must not be changed.
-	 * 
+	 *
 	 * @return The opengl-compatibel matrix.
 	 */
 	public float[] getMatrix() {
@@ -195,7 +212,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets all tiles that are mapped to the given pixel.
-	 * 
+	 *
 	 * @param x
 	 *            the x pixel pos.
 	 * @param y
@@ -218,7 +235,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets the position of a map point on the screen
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate
 	 * @param y
@@ -231,7 +248,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets the closest position on the map for a position.
-	 * 
+	 *
 	 * @param x
 	 *            The x position in draw space.
 	 * @param y
@@ -244,7 +261,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets the x distance between two tile origins.
-	 * 
+	 *
 	 * @return The distance.
 	 */
 	public float getTileXDistance() {
@@ -253,7 +270,7 @@ public final class MapCoordinateConverter {
 
 	/**
 	 * Gets the y disntance between two tiles.
-	 * 
+	 *
 	 * @return The distance in y direction.
 	 */
 	public float getTileYDistance() {
@@ -264,23 +281,23 @@ public final class MapCoordinateConverter {
 	 * Gets a rectangle that is almost covered by the given int rectangle.
 	 * <p>
 	 * No assumptions can be made about the rect.
-	 * 
+	 *
 	 * @param screen
 	 *            The screen positions
 	 * @return A MapRectangle
 	 */
 	public MapRectangle getMapForScreen(FloatRectangle screen) {
-		float width = screen.getWidth() * this.inverse[M_00];
 		float maxMountainHeight = HEIGHT_Y_DISPLACEMENT * Byte.MAX_VALUE;
-		float height = -(screen.getHeight() + maxMountainHeight) * this.inverse[M_11];
-		float minX = getMapX(screen.getMinX(), screen.getMaxY());
-		float minY = getMapY(screen.getMinX(), screen.getMaxY());
-		return new MapRectangle((short) minX, (short) minY, (short) Math.max(Math.ceil(width), 0), (short) Math.max(Math.ceil(height + 10), 0));
+		float minX = getExactMapXwithHeight(screen.getMinX(), screen.getMaxY(), 0);
+		float maxX = getExactMapXwithHeight(screen.getMaxX(), screen.getMinY(), maxMountainHeight);
+		float minY = getExactMapYwithHeight(screen.getMaxX(), screen.getMaxY(), 0);
+		float maxY = getExactMapYwithHeight(screen.getMinX(), screen.getMinY(), maxMountainHeight);
+		return new MapRectangle((short) minX, (short) minY, (short) (maxX - minX), (short) (maxY - minY));
 	}
 
 	/**
 	 * Gets a coordinate converter by the width and the height of the map, rathe than by the final size of the draw space.
-	 * 
+	 *
 	 * @param xTileDistance
 	 *            The x distance between two tiles in the same row.
 	 * @param yTileDistance
@@ -292,7 +309,7 @@ public final class MapCoordinateConverter {
 	 * @return The new created converter.
 	 */
 	public static MapCoordinateConverter get(int xTileDistance,
-			int yTileDistance, short mapWidth, short mapHeight) {
+											 int yTileDistance, short mapWidth, short mapHeight) {
 		return new MapCoordinateConverter(mapWidth, mapHeight, (mapWidth - 1)
 				* xTileDistance, (mapHeight - 1) * yTileDistance);
 	}
