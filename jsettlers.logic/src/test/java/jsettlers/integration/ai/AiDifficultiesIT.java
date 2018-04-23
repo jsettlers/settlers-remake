@@ -59,7 +59,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void hardShouldConquerEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 65 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 75 * MINUTES);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class AiDifficultiesIT {
 
 		MatchConstants.clock().fastForwardTo(90 * MINUTES);
 
-		short expectedMinimalProducedSoldiers = 1000;
+		short expectedMinimalProducedSoldiers = 920;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			stopAndFail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " soldiers within 90 minutes.\nOnly " + producedSoldiers
@@ -146,7 +146,7 @@ public class AiDifficultiesIT {
 		}
 
 		MapLoader mapCreator = MapUtils.getSpezialSumpf();
-		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), playerId, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapCreator, 0L, new OfflineNetworkConnector(), playerId, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 
