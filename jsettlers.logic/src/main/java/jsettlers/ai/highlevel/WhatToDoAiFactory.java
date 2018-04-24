@@ -40,7 +40,7 @@ class WhatToDoAiFactory {
 	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
 		switch (type) {
 		case AI_VERY_EASY:
-			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 8F, 1F / 4F, true);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 10F, 1F / 5F, true);
 		case AI_EASY:
 			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 4F, 1F / 2F, false);
 		case AI_HARD:
