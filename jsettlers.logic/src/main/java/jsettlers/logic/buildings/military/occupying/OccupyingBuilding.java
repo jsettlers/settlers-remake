@@ -430,6 +430,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		emptyPlaces.clear();
 	}
 
+	public boolean isSetToBeFullyOccupied() {
+		return emptyPlaces.isEmpty();
+	}
+
 	public void requestSoldier(ESoldierType soldierType) {
 		OccupierPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierType.soldierClass);
 		if (emptyPlace != null) {

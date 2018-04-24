@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,6 +20,7 @@ import jsettlers.ai.economy.BuildingListEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
@@ -29,8 +30,6 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  * @author codingberlin
  */
 class WhatToDoAiFactory {
-
-	private static float[] ATTACKER_COUNT_FACTOR = { 1.1F, 1F, 0.9F, 0.8F, 0F };
 
 	IWhatToDoAi buildWhatToDoAi(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MainGrid mainGrid, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
@@ -51,8 +50,8 @@ class WhatToDoAiFactory {
 		}
 	}
 
-	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+	private ArmyGeneral determineArmyGeneral(EPlayerType playerType, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		// TODO: use civilisation to determine different general when there is more than ROMAN
-		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, ATTACKER_COUNT_FACTOR[type.ordinal()]);
+		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, playerType);
 	}
 }
