@@ -86,7 +86,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		final OccupierPlace[] occupierPlaces = super.getBuildingType().getOccupierPlaces();
 		if (occupierPlaces.length > 0) {
 			emptyPlaces.addAll(Arrays.asList(occupierPlaces));
-			requestSoldier(ESoldierType.SWORDSMAN);
+			requestSoldier(ESoldierClass.INFANTRY);
 		}
 	}
 
