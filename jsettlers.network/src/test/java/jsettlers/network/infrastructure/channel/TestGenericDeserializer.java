@@ -59,7 +59,7 @@ public class TestGenericDeserializer {
 		TestPacket packet2 = new TestPacket("sdfsUHUHIhdsjfno09�23#23l4poi09987)(/)(/�&(/&\"$'_�l�2", -345234);
 		c2.sendPacket(ENetworkKey.TEST_PACKET, packet2);
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		List<TestPacket> packets = listener.popBufferedPackets();
 		assertEquals(2, packets.size());
