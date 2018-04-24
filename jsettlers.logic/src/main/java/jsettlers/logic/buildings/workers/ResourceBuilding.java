@@ -49,6 +49,6 @@ public class ResourceBuilding extends WorkerBuilding implements IBuilding.IResou
 	}
 
 	protected void productivityActionExecuted(boolean successfully) {
-		movingAverage.inserValue(successfully);
+		movingAverage.insertValue(successfully);
 	}
 }

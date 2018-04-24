@@ -95,7 +95,7 @@ public final class GameServerThread extends Thread {
 
 			for (int i = 0; i < 2 * seconds && !serverAddressReceiver.hasFoundServer(); i++) { // wait at max 5 sek
 				try {
-					Thread.sleep(500);
+					Thread.sleep(500L);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
