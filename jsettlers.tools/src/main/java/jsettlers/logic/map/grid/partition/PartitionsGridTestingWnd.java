@@ -63,7 +63,7 @@ public class PartitionsGridTestingWnd {
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
 
-		Thread.sleep(1500);
+		Thread.sleep(1500L);
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
 		MilliStopWatch watch = new MilliStopWatch();
