@@ -2,14 +2,9 @@ package jsettlers.algorithms.datastructures;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BooleanMovingAverageTest {
-
-
-    @Test
-    public void insertValue() {
-    }
 
     @Test
     public void testGetAverageDefaultFalse() {
@@ -53,5 +48,4 @@ public class BooleanMovingAverageTest {
 
         assertEquals("One out of three values should be false", 2f/3, average, 0.0);
     }
-
 }
