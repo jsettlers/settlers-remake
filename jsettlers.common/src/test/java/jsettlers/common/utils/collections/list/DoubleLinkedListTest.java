@@ -16,6 +16,7 @@ package jsettlers.common.utils.collections.list;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -121,7 +122,12 @@ public class DoubleLinkedListTest {
 
 		list.remove(handles[4]);
 		list.remove(handles[7]);
-		assertEquals(TEST_NUMBERS - 2, list.size());
+		assertEquals("incorrect size after removing 2 values", TEST_NUMBERS - 2, list.size());
+
+		assertNull("the removed item should not hold a 'next' reference", handles[4].next);
+		assertNull("the removed item should not hold a 'prev' reference", handles[4].prev);
+		assertNull("the removed item should not hold a 'next' reference", handles[7].next);
+		assertNull("the removed item should not hold a 'prev' reference", handles[7].prev);
 
 		for (int i = TEST_NUMBERS - 1; i >= 0; i--) {
 			if (i == 4 || i == 7) { // skip the removed values
@@ -130,7 +136,7 @@ public class DoubleLinkedListTest {
 			assertEquals(i, list.popFront().value);
 		}
 
-		assertEquals(0, list.size());
+		assertEquals("incorrect size after popFront all values", 0, list.size());
 	}
 
 	@Test
