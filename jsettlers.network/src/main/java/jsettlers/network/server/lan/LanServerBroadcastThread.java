@@ -47,7 +47,7 @@ public final class LanServerBroadcastThread extends Thread {
 
 			while (!canceled) {
 				try {
-					Thread.sleep(500);
+					Thread.sleep(500L);
 
 					byte[] data = NetworkConstants.Server.BROADCAST_MESSAGE.getBytes();
 

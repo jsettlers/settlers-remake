@@ -66,7 +66,7 @@ public class ChannelTest {
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 		c2.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
-		Thread.sleep(80);
+		Thread.sleep(80L);
 
 		assertEquals(1, listener1.packets.size());
 		assertEquals(testPackage, listener1.packets.get(0));
@@ -86,7 +86,7 @@ public class ChannelTest {
 			c1.sendPacket(ENetworkKey.TEST_PACKET, new TestPacket(i));
 		}
 
-		Thread.sleep(30);
+		Thread.sleep(30L);
 
 		assertEquals(NUMBER_OF_PACKETS, listener.packets.size());
 
@@ -97,7 +97,7 @@ public class ChannelTest {
 
 	@Test
 	public void testRoundTripTime() throws InterruptedException {
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		assertNotNull(c1.getRoundTripTime());
 		assertNotNull(c2.getRoundTripTime());
@@ -105,7 +105,7 @@ public class ChannelTest {
 		assertTrue(c1.getRoundTripTime().getLastUpdated() - System.currentTimeMillis() < 5);
 		assertTrue(c2.getRoundTripTime().getLastUpdated() - System.currentTimeMillis() < 5);
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 
 		assertTrue(c1.getRoundTripTime().getLastUpdated() - System.currentTimeMillis() < 5);
 		assertTrue(c2.getRoundTripTime().getLastUpdated() - System.currentTimeMillis() < 5);
@@ -119,7 +119,7 @@ public class ChannelTest {
 		c1.close();
 		assertTrue(c1.isClosed());
 
-		Thread.sleep(40);
+		Thread.sleep(40L);
 		assertTrue(c2.isClosed());
 	}
 
@@ -131,7 +131,7 @@ public class ChannelTest {
 		c2.close();
 		assertTrue(c2.isClosed());
 
-		Thread.sleep(40);
+		Thread.sleep(40L);
 		assertTrue(c1.isClosed());
 	}
 
@@ -144,10 +144,10 @@ public class ChannelTest {
 		assertEquals(0, closed[0]);
 		c1.close();
 
-		Thread.sleep(30);
+		Thread.sleep(30L);
 		assertEquals(1, closed[0]);
 
-		Thread.sleep(150);
+		Thread.sleep(150L);
 		assertEquals(1, closed[0]);
 	}
 
@@ -175,7 +175,7 @@ public class ChannelTest {
 		c1.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("sdfsf���", -2342));
 		c2.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("dsfs", 4234)); // test both channels
 
-		Thread.sleep(40);
+		Thread.sleep(40L);
 
 		testConnection(); // now the normal test should still work.
 	}
@@ -188,7 +188,7 @@ public class ChannelTest {
 		TestPacket testPackage = new TestPacket("dsfs", 2332);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
-		Thread.sleep(80);
+		Thread.sleep(80L);
 
 		assertEquals(1, listener.packets.size());
 		assertEquals(testPackage, listener.packets.get(0));
@@ -196,7 +196,7 @@ public class ChannelTest {
 		c2.removeListener(listener.getKeys()[0]);
 
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
-		Thread.sleep(80);
+		Thread.sleep(80L);
 		assertEquals(1, listener.packets.size());
 	}
 
@@ -213,7 +213,7 @@ public class ChannelTest {
 		TestPacket testPacket = new TestPacket("dfsdufh", 4);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPacket);
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(1, listener.popBufferedPackets().size());
 
 		testConnection(); // test if connection is still ok
@@ -237,7 +237,7 @@ public class ChannelTest {
 		TestPacket testPacket = new TestPacket("dfsdufh", 4);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPacket);
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 
 		testConnection(); // test if connection is still ok
 	}
@@ -252,7 +252,7 @@ public class ChannelTest {
 		c1.sendPacket(ENetworkKey.TEST_PACKET, new EmptyPacket());
 		assertEquals(0, c1RejectListener.popBufferedPackets().size());
 
-		Thread.sleep(30);
+		Thread.sleep(30L);
 		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
 		assertEquals(1, rejects.size());
 		assertEquals(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, rejects.get(0).getErrorMessageId());
@@ -270,7 +270,7 @@ public class ChannelTest {
 		c2.sendPacket(ENetworkKey.TEST_PACKET, new EmptyPacket());
 		assertEquals(0, c1RejectListener.popBufferedPackets().size());
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
 		assertEquals(0, rejects.size());
 	}
