@@ -67,7 +67,7 @@ public class TaskPacketListenerTest {
 
 		c2.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, syncTasksPacket);
 
-		Thread.sleep(30);
+		Thread.sleep(30L);
 		List<SyncTasksPacket> packets = taskReceiver.popBufferedPackets();
 		assertEquals(1, packets.size());
 		assertEquals(lockstep, packets.get(0).getLockstepNumber());

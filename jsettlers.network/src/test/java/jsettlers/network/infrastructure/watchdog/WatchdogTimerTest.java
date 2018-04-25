@@ -48,7 +48,7 @@ public class WatchdogTimerTest {
 		timer.start();
 
 		assertEquals(0, observer.callCtr);
-		Thread.sleep(110);
+		Thread.sleep(110L);
 
 		assertEquals(1, observer.callCtr);
 	}
@@ -61,12 +61,12 @@ public class WatchdogTimerTest {
 		timer.start();
 
 		assertEquals(0, observer.callCtr);
-		Thread.sleep(60);
+		Thread.sleep(60L);
 		assertEquals(0, observer.callCtr);
 		timer.cancel();
 		assertEquals(0, observer.callCtr);
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(0, observer.callCtr);
 	}
 
@@ -81,11 +81,11 @@ public class WatchdogTimerTest {
 		for (int i = 0; i < 5; i++) {
 			timer.reset();
 			assertEquals(0, observer.callCtr);
-			Thread.sleep(90);
+			Thread.sleep(90L);
 			assertEquals(0, observer.callCtr);
 		}
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(1, observer.callCtr);
 	}
 
@@ -97,17 +97,17 @@ public class WatchdogTimerTest {
 		timer.start();
 		assertEquals(0, observer.callCtr);
 
-		Thread.sleep(110);
+		Thread.sleep(110L);
 		assertEquals(1, observer.callCtr);
 
 		for (int i = 0; i < 3; i++) {
 			timer.reset();
 			assertEquals(1, observer.callCtr);
-			Thread.sleep(90);
+			Thread.sleep(90L);
 			assertEquals(1, observer.callCtr);
 		}
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(2, observer.callCtr);
 	}
 
@@ -120,14 +120,14 @@ public class WatchdogTimerTest {
 		t.start();
 
 		assertEquals(0, observer.callCtr);
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		t.interrupt(); // interrupt and check that the time doesn't change
 
-		Thread.sleep(20);
+		Thread.sleep(20L);
 		assertEquals(0, observer.callCtr);
 
-		Thread.sleep(80);
+		Thread.sleep(80L);
 
 		assertEquals(1, observer.callCtr);
 	}
