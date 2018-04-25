@@ -14,14 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
-
+import java8.util.Optional;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -31,8 +24,15 @@ import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.original.data.EOriginalMapFilePartType;
 import jsettlers.logic.map.loading.original.data.EOriginalMapFileVersion;
+import jsettlers.logic.player.PlayerSetting;
 
-import java8.util.Optional;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
 
 /**
  * @author Thomas Zeugner
@@ -135,7 +135,7 @@ class OriginalMapFileContentReader {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			byte[] buffer = new byte[0xFFFF];
 
-			for (int len; (len = is.read(buffer)) != -1;) {
+			for (int len; (len = is.read(buffer)) != -1; ) {
 				os.write(buffer, 0, len);
 			}
 			os.flush();
@@ -696,7 +696,11 @@ class OriginalMapFileContentReader {
 		}
 	}
 
-	void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
+	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
+		addStartTowerMaterialsAndSettlers(startResources, null);
+	}
+
+	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources, PlayerSetting[] playerSettings) {
 		// - only if there are no buildings
 		if (hasBuildings) {
 			return;
@@ -705,6 +709,8 @@ class OriginalMapFileContentReader {
 		int playerCount = mapData.getPlayerCount();
 
 		for (byte playerId = 0; playerId < playerCount; playerId++) {
+			if (playerSettings != null && !playerSettings[playerId].isAvailable())
+				continue;
 			ShortPoint2D startPoint = mapData.getStartPoint(playerId);
 
 			// - add the start Tower for this player
