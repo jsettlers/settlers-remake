@@ -72,13 +72,13 @@ public class ServerClientSideInteroperabilityTest {
 		TestTaskPacket clientTestTask = new TestTaskPacket("sodjfsoj2983", 234, (byte) -23);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, clientTestTask);
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		List<ServersideTaskPacket> serverPackets = serverListener.popBufferedPackets();
 		assertEquals(1, serverPackets.size());
 		c2.sendPacket(ENetworkKey.TEST_PACKET, serverPackets.get(0));
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		List<TaskPacket> clientPackets = clientListener.popBufferedPackets();
 		assertEquals(1, clientPackets.size());
@@ -96,13 +96,13 @@ public class ServerClientSideInteroperabilityTest {
 		SyncTasksPacket clientTestTask = new SyncTasksPacket(234, Arrays.asList(new TestTaskPacket("dsfdsdf", 23, (byte) -3), new TestTaskPacket("iuz)(Z(/TZ�OJ�Jdf", 987875, (byte) -5)));
 		c1.sendPacket(ENetworkKey.TEST_PACKET, clientTestTask);
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		List<ServersideSyncTasksPacket> serverPackets = serverListener.popBufferedPackets();
 		assertEquals(1, serverPackets.size());
 		c2.sendPacket(ENetworkKey.TEST_PACKET, serverPackets.get(0));
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		List<SyncTasksPacket> clientPackets = clientListener.popBufferedPackets();
 		assertEquals(1, clientPackets.size());

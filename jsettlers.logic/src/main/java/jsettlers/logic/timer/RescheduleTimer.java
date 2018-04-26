@@ -51,7 +51,7 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 			}
 			uniIns = null;
 			try {
-				Thread.sleep(100); // stopping takes some time
+				Thread.sleep(100L); // stopping takes some time
 			} catch (InterruptedException e) {
 			}
 		}

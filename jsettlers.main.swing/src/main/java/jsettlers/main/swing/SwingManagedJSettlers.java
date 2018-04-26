@@ -194,7 +194,7 @@ public class SwingManagedJSettlers {
 			if (targetGameTime > 0) {
 				while (!game.isStartupFinished()) {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(100L);
 					} catch (InterruptedException e) {
 					}
 				}

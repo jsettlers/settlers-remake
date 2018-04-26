@@ -56,7 +56,7 @@ public class TestExecutionWithDebugDisplay {
 			}
 		});
 
-		Thread.sleep(5000);
+		Thread.sleep(5000L);
 		grid.startThreads();
 	}
 }
