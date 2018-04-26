@@ -11,7 +11,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
-import go.graphics.swing.opengl.JOGLDrawContext;
+import go.graphics.swing.opengl.LWJGLDrawContext;
 
 import javax.swing.JPanel;
 import java.awt.GridBagConstraints;
@@ -23,7 +23,7 @@ import java.awt.GridBagLayout;
 public class GLSurface extends JPanel implements GOEventHandlerProvider {
 
 	private GLJPanel canvas;
-	private JOGLDrawContext context;
+	private LWJGLDrawContext context;
 
 	public GLSurface() {
 		this.setLayout(new GridBagLayout());
@@ -69,7 +69,7 @@ public class GLSurface extends JPanel implements GOEventHandlerProvider {
 				gl2.glLoadIdentity();
 
 				if (context == null || context.getGl2() != gl2) {
-					context = new JOGLDrawContext(gl2);
+					context = new LWJGLDrawContext(gl2);
 				}
 				context.startFrame();
 
