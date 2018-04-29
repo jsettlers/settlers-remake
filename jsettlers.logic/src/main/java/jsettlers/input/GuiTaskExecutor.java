@@ -244,7 +244,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 
 		switch (soldierTask.getTaskType()) {
 		case FULL:
-			occupyingBuilding.requestSoldiers();
+			occupyingBuilding.requestFullSoldiers();
 			break;
 		case MORE:
 			occupyingBuilding.requestSoldier(soldierTask.getSoldierType());
