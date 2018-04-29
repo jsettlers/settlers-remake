@@ -46,6 +46,14 @@ class CustomShipsDatFile extends EmptyDatFile {
 
 			@Override
 			public Sequence<Image> get(int index) {
+				if (index < fallbackSequence.size()) {
+					Sequence<Image> sequence = fallbackSequence.get(index);
+
+					if (sequence != null) {
+						return sequence;
+					}
+				}
+
 				if (index == 0) {
 					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_hull_hull", 0, 6));
 				} else if (index == 2) {
@@ -60,8 +68,6 @@ class CustomShipsDatFile extends EmptyDatFile {
 				} else if (index == 29) {
 					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_sail_sail", 0, 6));
 
-				} else if (index < fallbackSequence.size()) {
-					return fallbackSequence.get(index);
 				} else {
 					return ArraySequence.getNullSequence();
 				}
