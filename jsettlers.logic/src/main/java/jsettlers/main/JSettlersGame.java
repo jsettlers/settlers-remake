@@ -307,7 +307,7 @@ public class JSettlersGame {
 		private void waitForStartingGameListener() {
 			while (startingGameListener == null) {
 				try {
-					Thread.sleep(5);
+					Thread.sleep(5L);
 				} catch (InterruptedException e) {
 				}
 			}
@@ -316,7 +316,7 @@ public class JSettlersGame {
 		private void waitForAllPlayersStartFinished(INetworkConnector networkConnector) {
 			while (!networkConnector.haveAllPlayersStartFinished()) {
 				try {
-					Thread.sleep(5);
+					Thread.sleep(5L);
 				} catch (InterruptedException e) {
 				}
 			}
