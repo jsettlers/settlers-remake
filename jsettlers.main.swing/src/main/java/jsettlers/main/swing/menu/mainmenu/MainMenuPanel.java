@@ -106,7 +106,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private void showNewMultiplayerGamePanel(MapLoader map) {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		UiPlayer uiPlayer = settingsManager.getPlayer();
-		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER),
+		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.getServer(),
 				uiPlayer.getId(), uiPlayer.getName());
 		settlersFrame.showNewMultiPlayerGameMenu(map, connector);
 	}

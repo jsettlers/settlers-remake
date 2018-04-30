@@ -1,5 +1,7 @@
 # this is a map:
 # type, action, material, direction = file, sequence index, start, duration
+# See 
+
 *,*,*,*=10, 0, 0, 1
 
 ###

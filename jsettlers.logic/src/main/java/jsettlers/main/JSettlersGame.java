@@ -151,20 +151,6 @@ public class JSettlersGame {
 		}
 	}
 
-	public static JSettlersGame loadFromReplayFileAllAi(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
-			throws MapLoadException {
-		try {
-			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
-			replayStartInformation.deserialize(replayFileInputStream);
-
-			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
-			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings(),
-					true, false, null);
-		} catch (IOException e) {
-			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
-		}
-	}
-
 	/**
 	 * Starts the game in a new thread. Returns immediately.
 	 *

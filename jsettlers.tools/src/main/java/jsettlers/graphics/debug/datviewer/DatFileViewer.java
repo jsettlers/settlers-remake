@@ -14,6 +14,30 @@
  *******************************************************************************/
 package jsettlers.graphics.debug.datviewer;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
@@ -30,44 +54,21 @@ import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatFileType;
-import jsettlers.graphics.reader.SequenceList;
-import jsettlers.graphics.sequence.Sequence;
-
-import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.graphics.image.sequence.SequenceList;
 
 public class DatFileViewer extends JFrame implements ListSelectionListener {
-	private JLabel lblDatType;
-	private JLabel lblNumUiSeqs;
-	private JLabel lblNumSettlerSeqs;
-	private JLabel lblNumLandscapeSeqs;
-	private JList listView;
-	private Surface glCanvas;
-	private File gfxDirectory;
+	private JLabel                   lblDatType;
+	private JLabel                   lblNumUiSeqs;
+	private JLabel                   lblNumSettlerSeqs;
+	private JLabel                   lblNumLandscapeSeqs;
+	private JList                    listView;
+	private Surface                  glCanvas;
+	private File                     gfxDirectory;
 	private DefaultListModel<String> listItems;
-	private AdvancedDatFileReader reader;
+	private AdvancedDatFileReader    reader;
 
 	private enum ImageSet {
 		SETTLERS,

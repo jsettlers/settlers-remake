@@ -19,7 +19,7 @@ import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * This is an image inside a multi image map.
