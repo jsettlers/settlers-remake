@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,11 +19,12 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.map.loading.MapLoadException;
-import jsettlers.common.utils.MainUtils;
-import jsettlers.common.utils.OptionableProperties;
 import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.resources.SwingResourceProvider;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.mapcreator.control.EditorControl;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFilePanel;
@@ -95,16 +96,13 @@ public class MapCreatorApp {
 
 	/**
 	 * Main
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		try {
 			ExceptionHandler.setupDefaultExceptionHandler();
-
-			OptionableProperties options = MainUtils.loadOptions(args);
-			SwingManagedJSettlers.setupResourceManagers(options);
-			SwingManagedJSettlers.loadOptionalSettings(options);
+			SwingManagedJSettlers.setupResources(true, args);
 			loadLookAndFeel();
 
 			startWithSelectionDialog();
