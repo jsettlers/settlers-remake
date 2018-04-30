@@ -43,11 +43,8 @@ public class SettingsManager implements ISoundSettingsProvider {
 	private static final String PROPERTIES_PREFIX = "settlers.";
 
 	public static final String SETTING_UUID = "gid";
-	public static final String SETTING_USERNAME = "name";
-	public static final String SETTING_SERVER = "server";
-	public static final String SETTING_VOLUME = "volume";
+
 	public static final String SETTING_BACKEND = "backend";
-	public static final String FULL_SCREEN_MODE = "fullScreenMode";
 	public static final String SETTING_FPS_LIMIT = "fpsLimit";
   
 	private static final String SETTING_SETTLERS_FOLDER = "settlers-folder";
@@ -107,20 +104,6 @@ public class SettingsManager implements ISoundSettingsProvider {
 			String key = e.getKey().toString().substring(envPrefix.length()).toLowerCase(Locale.ENGLISH);
 			runtimeProperties.put(key, e.getValue().toString());
 			System.out.println("Argument: " + key + " -> " + e.getValue().toString());
-		}
-	}
-
-	private String getDefault(String key) {
-		if (SETTING_USERNAME.equals(key)) {
-			return System.getProperty("user.name");
-		} else if (SETTING_SERVER.equals(key)) {
-			return CommonConstants.DEFAULT_SERVER_ADDRESS;
-		} else if (SETTING_VOLUME.equals(key)) {
-			return 0.7f + "";
-		} else if(SETTING_FPS_LIMIT.equals(key)) {
-			return "60";
-		} else if(SETTING_BACKEND.equals(key)) {
-			return BackendSelector.DEFAULT_BACKEND.cc_name;
 		}
 	}
 	
@@ -204,7 +187,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 	public int getFpsLimit() {
 		String fpsLimitString = get(SETTING_FPS_LIMIT);
 		try {
-			int fps_limit = Integer.parseInt(fpsLimitString);
+			int fps_limit = fpsLimitString != null ? Integer.parseInt(fpsLimitString) : 60;
 			return Math.max(Math.min(fps_limit, 240), 1);
 		} catch (NumberFormatException e) {
 		}
@@ -212,11 +195,15 @@ public class SettingsManager implements ISoundSettingsProvider {
 	}
 
 	public BackendSelector.BackendItem getBackend() {
-		return BackendSelector.getBackendByName(get(SETTING_BACKEND));
+		return BackendSelector.getBackendByName(getOrDefault(SETTING_BACKEND, () -> BackendSelector.DEFAULT_BACKEND.cc_name));
   }
 	public void setVolume(float volume) {
 		set(SETTING_VOLUME, Float.toString(volume));
 	}
+
+	public void setFpsLimit(int fpsLimit) {set(SETTING_FPS_LIMIT,Integer.toString(fpsLimit));}
+
+	public void setBackend(String backend) {set(SETTING_BACKEND, backend);}
 
 	public void setFullScreenMode(boolean fullScreenMode) {
 		set(SETTING_FULL_SCREEN_MODE, "" + fullScreenMode);

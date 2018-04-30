@@ -104,8 +104,8 @@ public class SettingsMenuPanel extends JPanel {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			settingsManager.setUserName(playerNameField.getText());
 			settingsManager.setVolume(volumeSlider.getValue() / 100f);
-			settingsManager.set(SettingsManager.SETTING_FPS_LIMIT, fpsLimitSlider.getValue() + "");
-			settingsManager.set(SettingsManager.SETTING_BACKEND, backendSelector.getSelectedItem() + "");
+			settingsManager.setFpsLimit(fpsLimitSlider.getValue());
+			settingsManager.setBackend(backendSelector.getSelectedItem().toString());
 			mainMenuPanel.reset();
 		});
 		cancelButton.addActionListener(e -> mainMenuPanel.reset());

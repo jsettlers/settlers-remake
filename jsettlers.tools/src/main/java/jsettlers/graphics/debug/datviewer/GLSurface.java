@@ -7,6 +7,9 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
+
+import org.lwjgl.opengl.GL;
+
 import go.graphics.GLDrawContext;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
@@ -68,8 +71,8 @@ public class GLSurface extends JPanel implements GOEventHandlerProvider {
 				gl2.glClear(GL2.GL_COLOR_BUFFER_BIT);
 				gl2.glLoadIdentity();
 
-				if (context == null || context.getGl2() != gl2) {
-					context = new LWJGLDrawContext(gl2);
+				if (context == null) {
+					context = new LWJGLDrawContext(GL.createCapabilities());
 				}
 				context.startFrame();
 
