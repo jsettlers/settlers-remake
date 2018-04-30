@@ -14,23 +14,34 @@
  */
 package jsettlers.main.swing.settings;
 
+import go.graphics.swing.sound.ISoundSettingsProvider;
+import java8.util.Maps;
+import java8.util.Optional;
+import java8.util.function.Supplier;
+import jsettlers.common.CommonConstants;
+import jsettlers.common.resources.ResourceManager;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.GLFWContextCreator;
 import go.graphics.swing.sound.ISoundSettingsProvider;
 
-import jsettlers.common.CommonConstants;
-import jsettlers.common.resources.ResourceManager;
-
 public class SettingsManager implements ISoundSettingsProvider {
-	private static final String FILE = ".jsettlers";
+	private static final String CONFIGURATION_FILE = ".jsettlers";
+
+	private static final String ENV_PREFIX = "SETTLERS_";
+	private static final String PROPERTIES_PREFIX = "settlers.";
+
 	public static final String SETTING_UUID = "gid";
 	public static final String SETTING_USERNAME = "name";
 	public static final String SETTING_SERVER = "server";
@@ -38,29 +49,65 @@ public class SettingsManager implements ISoundSettingsProvider {
 	public static final String SETTING_BACKEND = "backend";
 	public static final String FULL_SCREEN_MODE = "fullScreenMode";
 	public static final String SETTING_FPS_LIMIT = "fpsLimit";
+  
+	private static final String SETTING_SETTLERS_FOLDER = "settlers-folder";
+	private static final String SETTING_SETTLERS_VERSION_ID = "settlers-folder-version-id";
 
-	private static Reference<SettingsManager> manager;
+	private static final String SETTING_USERNAME = "name";
+	private static final String SETTING_LOCALE = "locale";
+	private static final String SETTING_SERVER = "server";
+	private static final String SETTING_VOLUME = "volume";
+	private static final String SETTING_FULL_SCREEN_MODE = "fullScreenMode";
 
-	private Properties settings;
+	private static final String SETTING_CONTROL_ALL = "control-all";
+	private static final String SETTING_ACTIVATE_ALL_PLAYERS = "activate-all-players";
+	private static final String SETTING_ENABLE_CONSOLE_LOGGING = "console-output";
+	private static final String SETTING_DISABLE_ORIGINAL_MAPS = "disable-original-maps";
+	private static final String SETTING_MAPFILE = "map-file";
+	private static final String SETTING_RANDOM = "random";
+	private static final String SETTING_REPLAY_FILE = "replay-file";
+	private static final String SETTING_TARGET_TIME = "target-time";
+	private static final String SETTING_MAPS = "maps";
 
-	private SettingsManager() {
+	private static SettingsManager manager;
+
+	private final Properties storedSettings = new Properties();
+	private final Map<String, String> runtimeProperties = new HashMap<>();
+
+	public static void setup(String... args) throws IOException {
+		manager = new SettingsManager(args);
 	}
 
-	private Properties getSettingsFile() {
-		if (settings == null) {
-			settings = new Properties();
-			try {
-				InputStream in = ResourceManager.getResourcesFileStream(FILE);
-				settings.load(in);
-			} catch (IOException e) {
-			}
+	public static SettingsManager getInstance() {
+		return manager;
+	}
+
+	private SettingsManager(String[] args) throws IOException {
+		storedSettings.load(ResourceManager.getResourcesFileStream(CONFIGURATION_FILE));
+		loadRuntimeProperties(args);
+	}
+
+	private void loadRuntimeProperties(String[] args) {
+		loadFromEnvironment();
+		loadArguments(args);
+	}
+
+	private void loadFromEnvironment() {
+		for (Map.Entry<String, String> e : System.getenv().entrySet()) {
+			loadEntry(e, ENV_PREFIX);
 		}
-		return settings;
+
+		for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+			loadEntry(e, PROPERTIES_PREFIX);
+		}
 	}
 
-	public synchronized String get(String key) {
-		String property = getSettingsFile().getProperty(key);
-		return property == null ? getDefault(key) : property;
+	private void loadEntry(Map.Entry<?, ?> e, String envPrefix) {
+		if (e.getKey().toString().startsWith(envPrefix)) {
+			String key = e.getKey().toString().substring(envPrefix.length()).toLowerCase(Locale.ENGLISH);
+			runtimeProperties.put(key, e.getValue().toString());
+			System.out.println("Argument: " + key + " -> " + e.getValue().toString());
+		}
 	}
 
 	private String getDefault(String key) {
@@ -75,40 +122,79 @@ public class SettingsManager implements ISoundSettingsProvider {
 		} else if(SETTING_BACKEND.equals(key)) {
 			return BackendSelector.DEFAULT_BACKEND.cc_name;
 		}
-		return null;
+	}
+	
+	private void loadArguments(String[] args) {
+		Pattern parameterPattern = Pattern.compile("--(.*?)=(.*?)");
+		Pattern optionPattern = Pattern.compile("--(.*?)");
+
+		for (String arg : args) {
+			Matcher parameterMatcher = parameterPattern.matcher(arg);
+			if (parameterMatcher.matches()) {
+				String parameter = parameterMatcher.group(1);
+				String value = parameterMatcher.group(2);
+				runtimeProperties.put(parameter, value);
+			} else {
+				Matcher optionMatcher = optionPattern.matcher(arg);
+				if (optionMatcher.matches()) {
+					String option = optionMatcher.group(1);
+					runtimeProperties.put(option, "true");
+				}
+			}
+		}
 	}
 
-	public synchronized void set(String key, String value) {
-		getSettingsFile().setProperty(key, value);
+	private String get(String key) {
+		return Maps.computeIfAbsent(runtimeProperties, key, storedSettings::getProperty);
+	}
+
+	private boolean getOptional(String key) {
+		return get(key) != null;
+	}
+
+	private Optional<String> getAsOptional(String key) {
+		return Optional.ofNullable(get(key));
+	}
+
+	private String getOrDefault(String key, Supplier<String> defaultProvider) {
+		String value = get(key);
+		return value != null ? value : defaultProvider.get();
+	}
+
+	private synchronized void set(String key, String value) {
+		storedSettings.setProperty(key, value);
 		try {
-			settings.store(ResourceManager.writeConfigurationFile(FILE), new Date().toString());
+			storedSettings.store(ResourceManager.writeConfigurationFile(CONFIGURATION_FILE), new Date().toString());
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public static SettingsManager getInstance() {
-		SettingsManager man = manager == null ? null : manager.get();
-		if (man == null) {
-			man = new SettingsManager();
-			manager = new SoftReference<>(man);
-		}
-		return man;
+	public String getServer() {
+		return getOrDefault(SETTING_SERVER, () -> CommonConstants.DEFAULT_SERVER_ADDRESS);
 	}
 
-	public synchronized UiPlayer getPlayer() {
-		String username = get(SETTING_USERNAME);
+	public String getUserName() {
+		return getOrDefault(SETTING_USERNAME, () -> System.getProperty("user.name"));
+	}
+
+	public synchronized String getUUID() {
 		String id = get(SETTING_UUID);
 		if (id == null) {
 			id = UUID.randomUUID().toString();
 			set(SETTING_UUID, id);
 		}
-		return new UiPlayer(id, username);
+		return id;
+	}
+
+	public UiPlayer getPlayer() {
+		return new UiPlayer(getUUID(), getUserName());
 	}
 
 	public float getVolume() {
 		String volumeString = get(SETTING_VOLUME);
 		try {
-			float volume = Float.parseFloat(volumeString);
+			float volume = volumeString != null ? Float.parseFloat(volumeString) : 0.7f;
 			return Math.min(Math.max(volume, 0), 1);
 		} catch (NumberFormatException e) {
 		}
@@ -127,13 +213,84 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	public BackendSelector.BackendItem getBackend() {
 		return BackendSelector.getBackendByName(get(SETTING_BACKEND));
+  }
+	public void setVolume(float volume) {
+		set(SETTING_VOLUME, Float.toString(volume));
 	}
 
 	public void setFullScreenMode(boolean fullScreenMode) {
-		set(FULL_SCREEN_MODE, "" + fullScreenMode);
+		set(SETTING_FULL_SCREEN_MODE, "" + fullScreenMode);
 	}
 
 	public boolean getFullScreenMode() {
-		return Boolean.valueOf(get(FULL_SCREEN_MODE));
+		return Boolean.valueOf(get(SETTING_FULL_SCREEN_MODE));
+	}
+
+	public String getSettlersFolder() {
+		return get(SETTING_SETTLERS_FOLDER);
+	}
+
+	public void setSettlersFolder(File settlersFolder) {
+		set(SETTING_SETTLERS_FOLDER, settlersFolder.getAbsolutePath());
+	}
+
+	public String getSettlersVersionId() {
+		return get(SETTING_SETTLERS_VERSION_ID);
+	}
+
+	public void setSettlersVersionId(String settlersVersionId) {
+		set(SETTING_SETTLERS_VERSION_ID, settlersVersionId);
+	}
+
+	public boolean isControllAll() {
+		return getOptional(SETTING_CONTROL_ALL);
+	}
+
+	public boolean isActivateAllPlayers() {
+		return getOptional(SETTING_ACTIVATE_ALL_PLAYERS);
+	}
+
+	public boolean useConsoleOutput() {
+		return getOptional(SETTING_ENABLE_CONSOLE_LOGGING);
+	}
+
+	public boolean areOriginalMapsDisabled() {
+		return getOptional(SETTING_DISABLE_ORIGINAL_MAPS);
+	}
+
+	public Locale getLocale() {
+		return Optional.ofNullable(get(SETTING_LOCALE)).map(localeString -> {
+			String[] localeParts = localeString.split("_");
+			if (localeParts.length == 2) {
+				return new Locale(localeParts[0], localeParts[1]);
+			} else {
+				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us). Using default locale.");
+				return Locale.getDefault();
+			}
+		}).orElse(Locale.getDefault());
+	}
+
+	public String getMapFile() {
+		return get(SETTING_MAPFILE);
+	}
+
+	public Optional<Long> getRandom() {
+		return getAsOptional(SETTING_RANDOM).map(Long::valueOf);
+	}
+
+	public Optional<String> getReplayFile() {
+		return getAsOptional(SETTING_REPLAY_FILE);
+	}
+
+	public Optional<Integer> getTargetTime() {
+		return getAsOptional(SETTING_TARGET_TIME).map(Integer::valueOf).map(targetTime -> targetTime * 60 * 1000);
+	}
+
+	public String getAdditionalMapsDirectory() {
+		return get(SETTING_MAPS);
+	}
+
+	public void setUserName(String userName) {
+		set(SETTING_USERNAME, userName);
 	}
 }

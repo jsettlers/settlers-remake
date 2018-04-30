@@ -31,10 +31,10 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.map.MapDrawContext;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatBitmapReader;
-import jsettlers.graphics.reader.ImageArrayProvider;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.DatBitmapReader;
+import jsettlers.graphics.image.reader.DatFileReader;
+import jsettlers.graphics.image.reader.ImageArrayProvider;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * The map background.
@@ -942,7 +942,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @throws IOException
 	 */
 	private static void addTextures(short[] data) throws IOException {
-		AdvancedDatFileReader reader = ImageProvider.getInstance().getFileReader(LAND_FILE);
+		DatFileReader reader = ImageProvider.getInstance().getFileReader(LAND_FILE);
 		if (reader == null) {
 			throw new IOException("Could not get a file reader for the file.");
 		}

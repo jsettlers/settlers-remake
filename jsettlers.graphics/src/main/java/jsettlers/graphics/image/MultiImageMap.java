@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,13 +28,13 @@ import java.nio.ShortBuffer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.GLPreloadTask;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatBitmapReader;
-import jsettlers.graphics.reader.ImageArrayProvider;
-import jsettlers.graphics.reader.ImageMetadata;
-import jsettlers.graphics.reader.bytereader.ByteReader;
-import jsettlers.graphics.sequence.ArraySequence;
-import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatBitmapReader;
+import jsettlers.graphics.image.reader.ImageArrayProvider;
+import jsettlers.graphics.image.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.sequence.ArraySequence;
+import jsettlers.graphics.image.sequence.Sequence;
 
 /**
  * This is a map of multiple images of one sequence. It always contains the settler image and the torso. This class allows packing the settler images

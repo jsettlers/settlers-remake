@@ -72,7 +72,7 @@ public class JSettlersFrame extends JFrame {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 
 		UiPlayer uiPlayer = settingsManager.getPlayer();
-		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), uiPlayer.getId(), uiPlayer.getName());
+		multiPlayerConnector = new MultiplayerConnector(settingsManager.getServer(), uiPlayer.getId(), uiPlayer.getName());
 		mainPanel = new MainMenuPanel(this, multiPlayerConnector);
 
 		showMainMenu();

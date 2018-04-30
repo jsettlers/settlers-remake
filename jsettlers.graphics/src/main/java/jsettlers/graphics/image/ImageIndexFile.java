@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,29 +14,28 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import jsettlers.common.images.TextureMap;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import jsettlers.common.resources.ResourceManager;
-
 /**
  * This class loads the image index from a file.
- * 
+ *
  * @author Michael Zangl
  */
 public class ImageIndexFile {
-	private static final int SHORTS_PER_IMAGE = 9;
-	private static final int COLOR_MASK = 0x7fff;
+	private static final int SHORTS_PER_IMAGE = 12;
 	private ImageIndexImage[] images = null;
 
 	/**
 	 * Gets the image reference with the given index.
-	 * 
+	 *
 	 * @param index
-	 *            The index of the image in the file.
+	 * 		The index of the image in the file.
 	 * @return The image.
 	 */
 	public Image getImage(int index) {
@@ -56,7 +55,7 @@ public class ImageIndexFile {
 	}
 
 	private void load() throws IOException {
-		final DataInputStream in = new DataInputStream(new BufferedInputStream(ResourceManager.getResourcesFileStream("images/texturemap")));
+		final DataInputStream in = new DataInputStream(new BufferedInputStream(getResource("texturemap")));
 
 		ArrayList<ImageIndexTexture> textures = new ArrayList<>();
 
@@ -70,23 +69,37 @@ public class ImageIndexFile {
 
 		images = new ImageIndexImage[length];
 		for (int i = 0; i < length; i++) {
-			int offsetX = in.readShort();
-			int offsetY = in.readShort();
-			short width = in.readShort();
-			short height = in.readShort();
-			int textureFileNumber = in.readShort() & COLOR_MASK; // < TODO: torso
-
-			float umin = (float) in.readShort() / COLOR_MASK;
-			float vmin = (float) in.readShort() / COLOR_MASK;
-			float umax = (float) in.readShort() / COLOR_MASK;
-			float vmax = (float) in.readShort() / COLOR_MASK;
-
-			while (textureFileNumber >= textures.size()) {
-				InputStream inputStream = ResourceManager.getResourcesFileStream("images/" + textures.size());
-				textures.add(new ImageIndexTexture(inputStream));
-			}
-
-			images[i] = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, umin, vmin, umax, vmax);
+			images[i] = readNextImage(in, textures);
 		}
+	}
+
+	private ImageIndexImage readNextImage(final DataInputStream in, ArrayList<ImageIndexTexture> textures) throws IOException {
+		int offsetX = in.readShort();
+		int offsetY = in.readShort();
+		short width = in.readShort();
+		short height = in.readShort();
+		short textureFileNumber = in.readShort();
+		int torsoIndex = in.readInt();
+		boolean isTorso = in.readShort() > 0;
+
+		float uMin = (float) in.readShort() / Short.MAX_VALUE;
+		float vMin = (float) in.readShort() / Short.MAX_VALUE;
+		float uMax = (float) in.readShort() / Short.MAX_VALUE;
+		float vMax = (float) in.readShort() / Short.MAX_VALUE;
+
+		while (textureFileNumber >= textures.size()) {
+			textures.add(new ImageIndexTexture(getResource("images_" + textures.size())));
+		}
+
+		ImageIndexImage primaryImage = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, uMin, vMin, uMax, vMax, isTorso);
+
+		if (torsoIndex >= 0) {
+			primaryImage.setTorso(images[torsoIndex]);
+		}
+		return primaryImage;
+	}
+
+	private InputStream getResource(String string) {
+		return TextureMap.class.getResourceAsStream(string);
 	}
 }

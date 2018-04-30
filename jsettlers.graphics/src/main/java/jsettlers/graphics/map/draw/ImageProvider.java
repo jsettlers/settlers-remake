@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,28 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import jsettlers.common.images.DirectImageLink;
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.images.TextureMap;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.ImageIndexFile;
+import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.NullImage;
+import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileReader;
+import jsettlers.graphics.image.reader.DatFileSet;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.reader.EmptyDatFile;
+import jsettlers.graphics.image.reader.custom.graphics.CustomGraphicsInterceptor;
+import jsettlers.graphics.image.reader.versions.DefaultGfxFolderMapping;
+import jsettlers.graphics.image.reader.versions.GfxFolderMapping;
+import jsettlers.graphics.image.reader.versions.SettlersVersionMapping;
+import jsettlers.graphics.image.sequence.ArraySequence;
+import jsettlers.graphics.image.sequence.Sequence;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -21,23 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import jsettlers.common.images.DirectImageLink;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.ImageIndexFile;
-import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.NullImage;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatFileSet;
-import jsettlers.graphics.reader.DatFileType;
-import jsettlers.graphics.reader.SequenceList;
-import jsettlers.graphics.sequence.ArraySequence;
-import jsettlers.graphics.sequence.Sequence;
 
 /**
  * This is the main image provider. It provides access to all images.
@@ -56,37 +61,14 @@ public final class ImageProvider {
 	 */
 	private static File lookupPath;
 
-	private static final DatFileSet EMPTY_SET = new DatFileSet() {
-		@Override
-		public SequenceList<Image> getSettlers() {
-			return new SequenceList<Image>() {
-				@Override
-				public Sequence<Image> get(int index) {
-					return null;
-				}
-
-				@Override
-				public int size() {
-					return 0;
-				}
-			};
-		}
-
-		@Override
-		public Sequence<LandscapeImage> getLandscapes() {
-			return new ArraySequence<>(new LandscapeImage[0]);
-		}
-
-		@Override
-		public Sequence<GuiImage> getGuis() {
-			return new ArraySequence<>(new GuiImage[0]);
-		}
-	};
+	private static final DatFileReader EMPTY_DAT_FILE = new EmptyDatFile();
 
 	private static ImageProvider instance;
 
 	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<>();
-	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<>();
+	private final Hashtable<Integer, DatFileReader> readers = new Hashtable<>();
+
+	private GfxFolderMapping gfxFolderMapping = new DefaultGfxFolderMapping();
 
 	private Thread preloadingThread;
 	private ImageIndexFile indexFile = null;
@@ -112,8 +94,9 @@ public final class ImageProvider {
 	 * @param path
 	 * 		The directory. It may not exist, but must not be null.
 	 */
-	public static void setLookupPath(File path) {
+	public static void setLookupPath(File path, String settlersVersionId) {
 		ImageProvider.lookupPath = path;
+		getInstance().gfxFolderMapping = SettlersVersionMapping.getMappingForVersionId(settlersVersionId);
 		getInstance().startPreloading();
 	}
 
@@ -124,25 +107,18 @@ public final class ImageProvider {
 	 * 		The file number to search for.
 	 * @return The content as set or <code> null </code>
 	 */
-	public synchronized AdvancedDatFileReader getFileReader(int file) {
+	public synchronized DatFileReader getFileReader(int file) {
 		Integer integer = file;
-		AdvancedDatFileReader set = this.readers.get(integer);
+		DatFileReader set = this.readers.get(integer);
 		if (set == null) {
 			set = createFileReader(file);
-			if (set != null) {
-				this.readers.put(integer, set);
-			}
+			this.readers.put(integer, set);
 		}
 		return set;
 	}
 
 	public synchronized DatFileSet getFileSet(int file) {
-		AdvancedDatFileReader set = getFileReader(file);
-		if (set != null) {
-			return set;
-		} else {
-			return EMPTY_SET;
-		}
+		return getFileReader(file);
 	}
 
 	/**
@@ -225,7 +201,7 @@ public final class ImageProvider {
 			indexFile = new ImageIndexFile();
 		}
 
-		int index = 0; // TextureMap.getIndex(link.getName());
+		int index = TextureMap.getIndex(link.getName());
 		return indexFile.getImage(index);
 	}
 
@@ -274,14 +250,14 @@ public final class ImageProvider {
 	 *
 	 * @param file
 	 * 		The file of the sequence.
-	 * @param seqnumber
+	 * @param sequenceNumber
 	 * 		The number of the sequence in the file.
 	 * @return The settler sequence.
 	 */
-	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
+	public Sequence<? extends Image> getSettlerSequence(int file, int sequenceNumber) {
 		DatFileSet set = getFileSet(file);
-		if (set != null && set.getSettlers().size() > seqnumber) {
-			return set.getSettlers().get(seqnumber);
+		if (set != null && set.getSettlers().size() > sequenceNumber) {
+			return set.getSettlers().get(sequenceNumber);
 		} else {
 			return ArraySequence.getNullSequence();
 		}
@@ -305,19 +281,21 @@ public final class ImageProvider {
 		return null;
 	}
 
-	private AdvancedDatFileReader createFileReader(int fileIndex) {
+	private DatFileReader createFileReader(int fileIndex) {
 		String numberString = String.format(Locale.ENGLISH, "%02d", fileIndex);
+		DatFileReader reader = EMPTY_DAT_FILE;
 		for (DatFileType type : DatFileType.values()) {
 			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
 
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
-				return new AdvancedDatFileReader(file, type);
+				reader = new AdvancedDatFileReader(file, type, gfxFolderMapping.getDatFileMapping(fileIndex));
+				break;
 			}
 		}
-		System.err.println("Could not find/load graphic file " + numberString);
-		return null;
+
+		return CustomGraphicsInterceptor.prependCustomGraphics(fileIndex, reader, this);
 	}
 
 	/**

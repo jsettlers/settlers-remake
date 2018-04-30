@@ -332,7 +332,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (timeDifference > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			ImageLink image = GOTO_ANIMATION.getImage(timeDifference < GOTO_MARK_TIME / 2 ? 0 : 1);
+			ImageLink image = GOTO_ANIMATION.getImageLink(timeDifference < GOTO_MARK_TIME / 2 ? 0 : 1);
 			objectDrawer.drawGotoMarker(scrollMarker, ImageProvider.getInstance().getImage(image));
 		}
 	}
