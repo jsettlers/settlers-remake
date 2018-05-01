@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,12 @@
  *******************************************************************************/
 package jsettlers.testutils;
 
+import jsettlers.common.resources.ResourceManager;
+import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
+import jsettlers.main.swing.resources.SwingResourceProvider;
+import jsettlers.testutils.map.DebugMapLister;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,14 +27,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
-
-import jsettlers.common.resources.ResourceManager;
-import jsettlers.common.utils.OptionableProperties;
-import jsettlers.logic.map.loading.list.MapList;
-import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
-import jsettlers.main.swing.resources.SwingResourceLoader;
-import jsettlers.main.swing.resources.SwingResourceProvider;
-import jsettlers.testutils.map.DebugMapLister;
 
 /**
  * Utility class holding methods needed by serveral test classes.
@@ -54,21 +52,13 @@ public class TestUtils {
 		return readList;
 	}
 
-	public static synchronized void setupResourceManager() {
-		try {
-			SwingResourceLoader.setup(new OptionableProperties());
-		} catch (SwingResourceLoader.ResourceSetupException e) {
-			throw new RuntimeException("Config file not found!", e);
-		}
-	}
-
 	public static void setupTempResourceManager() {
 		try {
 			File tempDirectory = Files.createTempDirectory("saves").toFile();
 			tempDirectory.deleteOnExit();
 			System.out.println("Using temp resource manager with directory: " + tempDirectory);
 
-			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
+			ResourceManager.setProvider(new SwingResourceProvider());
 
 			DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
 			mapListFactory.addResourcesDirectory(tempDirectory);
