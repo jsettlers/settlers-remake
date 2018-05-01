@@ -1100,8 +1100,10 @@ public final class Movable implements ILogicMovable {
 		if (this.getMovableType() != EMovableType.FERRY || position == null) {
 			return;
 		}
-
 		this.unloadingPosition = grid.getFerryUnloadPosition(position);
+		if (this.unloadingPosition == null) {
+			return;
+		}
 		if (this.passengers.size() > 0 && this.state == EMovableState.DOING_NOTHING) {
 			setState(EMovableState.UNLOADING);
 		}
