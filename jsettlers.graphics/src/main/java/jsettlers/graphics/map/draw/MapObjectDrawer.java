@@ -205,6 +205,9 @@ public class MapObjectDrawer {
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
 		byte fogOfWarVisibleStatus = context.getVisibleStatus(x, y);
 
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(SHIPS_Z); // draw ship on top of water
+
 		EDirection direction = ship.getDirection();
 		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
 		EMapObjectType shipType = ship.getObjectType();
@@ -216,6 +219,7 @@ public class MapObjectDrawer {
 		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, SHIP_IMAGE_FILE, baseSequence + 3, shipImageDirection.ordinal);
 		Image image = imageProvider.getImage(shipLink);
 		drawWithConstructionMask(x, y, state, image, shade);
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawShip(IMovable ship, int x, int y) {
@@ -225,6 +229,9 @@ public class MapObjectDrawer {
 		if (fogOfWarVisibleStatus == 0) {
 			return;
 		}
+
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(SHIPS_Z); // draw ship on top of water
 
 		EDirection direction = ship.getDirection();
 		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
@@ -365,17 +372,13 @@ public class MapObjectDrawer {
 		if (ship.isSelected()) {
 			drawSelectionMark(viewX, viewY, ship.getHealth() / DEFAULT_HEALTH);
 		}
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, DrawBuffer db, float viewX, float viewY, Color color, float shade) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(SHIPS_Z);
-
 		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
 		Image image = imageProvider.getImage(shipLink);
 		image.drawAt(gl, db, viewX, viewY, color, shade);
-
-		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawObject(int x, int y, IMapObject object, float color) {
