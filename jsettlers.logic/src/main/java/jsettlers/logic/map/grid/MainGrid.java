@@ -1574,7 +1574,6 @@ public final class MainGrid implements Serializable {
 				ShortPoint2D point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
 				mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
 				flagsGrid.setBlockedAndProtected(point.x, point.y, true);
-				landscapeGrid.setBlockedPartition(point.x, point.y, LandscapeGrid.SEA_BLOCKED_PARTITION);
 			}
 		}
 

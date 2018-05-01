@@ -43,6 +43,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -93,6 +94,7 @@ public final class Movable implements ILogicMovable {
 
 	// the following block of data only for ships
 	private ArrayList<IMovable> passengers = new ArrayList<>();
+	private static final int maxNumberOfPassengers = 7;
 	private ShortPoint2D unloadingPosition = null;
 	private final int cargoStacks = 3;
 	private EMaterialType cargoType[] = new EMaterialType[cargoStacks];
@@ -693,6 +695,9 @@ public final class Movable implements ILogicMovable {
 
 		Path path = grid.calculatePathTo(this, targetPos);
 		if (path == null) {
+			if (ferryToEnter != null) {
+				followPath(path);
+			}
 			return false;
 		} else {
 			followPath(path);
@@ -1085,7 +1090,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	public boolean addPassenger(Movable movable) {
-		if (passengers.size() < 7) {
+		if (passengers.size() < maxNumberOfPassengers) {
 			this.passengers.add(movable);
 			return true;
 		}
