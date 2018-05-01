@@ -145,7 +145,7 @@ public class MapObjectDrawer {
 	private static final int SHIP_IMAGE_FILE = 36;
 	private static final int FERRY_BASE_SEQUENCE = 4;
 	private static final int CARGO_SHIP_BASE_SEQUENCE = 0;
-	private static final float SHIPS_Z = 0.89f;
+	private static final float WAVES_Z = -0.1f;
 
 	private static final int SMOKE_HEIGHT = 30;
 
@@ -204,22 +204,15 @@ public class MapObjectDrawer {
 
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
 		byte fogOfWarVisibleStatus = context.getVisibleStatus(x, y);
-
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(SHIPS_Z); // draw ship on top of water
-
 		EDirection direction = ship.getDirection();
 		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
 		EMapObjectType shipType = ship.getObjectType();
 		float shade = getColor(fogOfWarVisibleStatus);
 		float state = ship.getStateProgress();
 		int baseSequence = (shipType == EMapObjectType.FERRY) ? FERRY_BASE_SEQUENCE : CARGO_SHIP_BASE_SEQUENCE;
-
-		// draw ship under construction
 		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, SHIP_IMAGE_FILE, baseSequence + 3, shipImageDirection.ordinal);
 		Image image = imageProvider.getImage(shipLink);
 		drawWithConstructionMask(x, y, state, image, shade);
-		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawShip(IMovable ship, int x, int y) {
@@ -229,10 +222,6 @@ public class MapObjectDrawer {
 		if (fogOfWarVisibleStatus == 0) {
 			return;
 		}
-
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(SHIPS_Z); // draw ship on top of water
-
 		EDirection direction = ship.getDirection();
 		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
 		EMovableType shipType = ship.getMovableType();
@@ -372,7 +361,6 @@ public class MapObjectDrawer {
 		if (ship.isSelected()) {
 			drawSelectionMark(viewX, viewY, ship.getHealth() / DEFAULT_HEALTH);
 		}
-		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, DrawBuffer db, float viewX, float viewY, Color color, float shade) {
@@ -948,12 +936,15 @@ public class MapObjectDrawer {
 	}
 
 	private void drawWaves(int x, int y, float color) {
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(WAVES_Z); // waves must not be drawn on top of other things than water
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WAVES);
 		int len = seq.length();
 		int step = (animationStep / 2 + x / 2 + y / 2) % len;
 		if (step < len) {
 			draw(seq.getImageSafe(step), x, y, color);
 		}
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawGrowingCorn(int x, int y, IMapObject object, float color) {
