@@ -302,8 +302,8 @@ public class MapObjectDrawer {
 				if (yShift >= 0) {
 					float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 					IMovable passenger = passengerList.get(j);
-					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(),
-							EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, direction, 0);
+					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
+							EMaterialType.NO_MATERIAL, direction.rotateRight(passenger.getPassengerRotation()), 0);
 					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
 			}
@@ -334,8 +334,8 @@ public class MapObjectDrawer {
 				if (yShift < 0) {
 					float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 					IMovable passenger = passengerList.get(j);
-					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(),
-							EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, direction, 0);
+					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
+							EMaterialType.NO_MATERIAL, direction.rotateRight(passenger.getPassengerRotation()), 0);
 					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
 			}
