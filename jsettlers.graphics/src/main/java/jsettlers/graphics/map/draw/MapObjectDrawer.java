@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
@@ -42,15 +46,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
-import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.sound.SoundManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ConcurrentModificationException;
 
 import static jsettlers.common.movable.EMovableType.DEFAULT_HEALTH;
 
@@ -222,6 +222,7 @@ public class MapObjectDrawer {
 		if (fogOfWarVisibleStatus == 0) {
 			return;
 		}
+		float height = context.getMap().getHeightAt(x, y);
 		EDirection direction = ship.getDirection();
 		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
 		EMovableType shipType = ship.getMovableType();
@@ -243,8 +244,8 @@ public class MapObjectDrawer {
 			viewX = betweenTilesX(originX, originY, x, y, ship.getMoveProgress());
 			viewY = betweenTilesY;
 		} else {
-			viewX = mapCoordinateConverter.getViewX(x, y, 0);
-			viewY = mapCoordinateConverter.getViewY(x, y, 0);
+			viewX = mapCoordinateConverter.getViewX(x, y, height);
+			viewY = mapCoordinateConverter.getViewY(x, y, height);
 		}
 		// draw ship body
 		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
@@ -252,14 +253,14 @@ public class MapObjectDrawer {
 		ArrayList<IMovable> passengerList = ship.getPassengers();
 		byte[] dx = EDirection.getXDeltaArray();
 		byte[] dy = EDirection.getYDeltaArray();
-		float baseViewX = mapCoordinateConverter.getViewX(x, y, 0);
-		float baseViewY = mapCoordinateConverter.getViewY(x, y, 0);
-		float xShiftForward = mapCoordinateConverter.getViewX(x + dx[direction.ordinal], y + dy[direction.ordinal], 0) - baseViewX;
-		float yShiftForward = mapCoordinateConverter.getViewY(x + dx[direction.ordinal], y + dy[direction.ordinal], 0) - baseViewY;
+		float baseViewX = mapCoordinateConverter.getViewX(x, y, height);
+		float baseViewY = mapCoordinateConverter.getViewY(x, y, height);
+		float xShiftForward = mapCoordinateConverter.getViewX(x + dx[direction.ordinal], y + dy[direction.ordinal], height) - baseViewX;
+		float yShiftForward = mapCoordinateConverter.getViewY(x + dx[direction.ordinal], y + dy[direction.ordinal], height) - baseViewY;
 		int xRight = x + dx[direction.rotateRight(1).ordinal] + dx[direction.rotateRight(2).ordinal];
 		int yRight = y + dy[direction.rotateRight(1).ordinal] + dy[direction.rotateRight(2).ordinal];
-		float xShiftRight = (mapCoordinateConverter.getViewX(xRight, yRight, 0) - baseViewX) / 2;
-		float yShiftRight = (mapCoordinateConverter.getViewY(xRight, yRight, 0) - baseViewY) / 2;
+		float xShiftRight = (mapCoordinateConverter.getViewX(xRight, yRight, height) - baseViewX) / 2;
+		float yShiftRight = (mapCoordinateConverter.getViewY(xRight, yRight, height) - baseViewY) / 2;
 		ArrayList<FloatIntObject> freightY = new ArrayList<>();
 		int numberOfFreight;
 		// get freight positions
