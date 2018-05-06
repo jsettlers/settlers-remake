@@ -14,12 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -28,7 +24,7 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
-import jsettlers.graphics.messages.SimpleMessage;
+import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
@@ -45,7 +41,6 @@ import jsettlers.logic.timer.RescheduleTimer;
  * Central Movable class of JSettlers.
  *
  * @author Andreas Eberle
- *
  */
 public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
@@ -98,24 +93,9 @@ public final class Movable implements ILogicMovable {
 		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
 
 		this.id = MovableDataManager.getNextID();
-		MovableDataManager.movablesByID().put(this.id, this);
-		MovableDataManager.allMovables().offer(this);
+		MovableDataManager.add( this);
 
 		grid.enterPosition(position, this, true);
-	}
-
-	/**
-	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
-	 *
-	 * @param ois
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		MovableDataManager.movablesByID().put(this.id, this);
-		MovableDataManager.allMovables().add(this);
-		MovableDataManager.setNextID(this.id + 1);
 	}
 
 	/**
@@ -392,9 +372,9 @@ public final class Movable implements ILogicMovable {
 	 * A call to this method indicates this movable that it shall leave it's position to free the position for another movable.
 	 *
 	 * @param pushingMovable
-	 *            The movable pushing at this movable. This should be the movable that want's to get the position!
+	 * 		The movable pushing at this movable. This should be the movable that want's to get the position!
 	 * @return true if this movable will move out of it's way in the near future <br>
-	 *         false if this movable doesn't move.
+	 * false if this movable doesn't move.
 	 */
 	@Override
 	public boolean push(ILogicMovable pushingMovable) {
@@ -522,9 +502,9 @@ public final class Movable implements ILogicMovable {
 	 * Lets this movable execute the given action with given duration.
 	 *
 	 * @param movableAction
-	 *            action to be animated.
+	 * 		action to be animated.
 	 * @param duration
-	 *            duration the animation should last (in seconds). // TODO change to milliseconds
+	 * 		duration the animation should last (in seconds). // TODO change to milliseconds
 	 */
 	final void playAction(EMovableAction movableAction, float duration) {
 		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
@@ -541,7 +521,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-	 *
 	 * @param materialToTake
 	 * @return true if the animation will be executed.
 	 */
@@ -565,9 +544,8 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-	 *
 	 * @param sleepTime
-	 *            time to sleep in milliseconds
+	 * 		time to sleep in milliseconds
 	 */
 	final void sleep(short sleepTime) {
 		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
@@ -589,9 +567,9 @@ public final class Movable implements ILogicMovable {
 	 * Lets this movable go to the given position.
 	 *
 	 * @param targetPos
-	 *            position to move to.
+	 * 		position to move to.
 	 * @return true if it was possible to calculate a path to the given position<br>
-	 *         false if it wasn't possible to get a path.
+	 * false if it wasn't possible to get a path.
 	 */
 	final boolean goToPos(ShortPoint2D targetPos) {
 		assert state == EMovableState.DOING_NOTHING : "can't do goToPos() if state isn't DOING_NOTHING. curr state: " + state;
@@ -609,11 +587,11 @@ public final class Movable implements ILogicMovable {
 	 * Tries to go a step in the given direction.
 	 *
 	 * @param direction
-	 *            direction to go
+	 * 		direction to go
 	 * @param mode
-	 *            Use the given mode to go.<br>
+	 * 		Use the given mode to go.<br>
 	 * @return true if the step can and will immediately be executed. <br>
-	 *         false if the target position is generally blocked or a movable occupies that position.
+	 * false if the target position is generally blocked or a movable occupies that position.
 	 */
 	final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
 		ShortPoint2D targetPosition = direction.getNextHexPoint(position);
@@ -666,10 +644,9 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-	 *
 	 * @param dijkstra
-	 *            if true, dijkstra algorithm is used<br>
-	 *            if false, in area finder is used.
+	 * 		if true, dijkstra algorithm is used<br>
+	 * 		if false, in area finder is used.
 	 * @param centerX
 	 * @param centerY
 	 * @param radius
@@ -723,7 +700,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-
 	 * kills this movable.
 	 */
 	@Override
@@ -738,8 +714,7 @@ public final class Movable implements ILogicMovable {
 		this.state = EMovableState.DEAD;
 		this.selected = false;
 
-		MovableDataManager.movablesByID().remove(this.getID());
-		MovableDataManager.allMovables().remove(this);
+		MovableDataManager.remove(this);
 
 		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
@@ -766,6 +741,11 @@ public final class Movable implements ILogicMovable {
 	@Override
 	public final void stopOrStartWorking(boolean stop) {
 		strategy.stopOrStartWorking(stop);
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return this.strategy.getBuildingType();
 	}
 
 	@Override
@@ -892,7 +872,7 @@ public final class Movable implements ILogicMovable {
 	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
 	 *
 	 * @param other
-	 *            The other movable.
+	 * 		The other movable.
 	 */
 	@Override
 	public final void informAboutAttackable(IAttackable other) {

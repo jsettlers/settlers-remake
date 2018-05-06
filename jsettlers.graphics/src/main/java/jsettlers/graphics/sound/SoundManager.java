@@ -26,7 +26,7 @@ import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.graphics.map.MapDrawContext;
-import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
 
 /*
  * This class manages reading and playing of the sound file.
@@ -39,11 +39,11 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 2 (3 times): digger <br>
  * 3 (twice): stonecutter <br>
  * 5: sawmiller <br>
- * 6: smith <br>
- * 7: smith <br>
- * 8 and 12: farmer <br>
- * 14: donkey <br>
- * 15: fisherman
+ * 6/7 smith <br>
+ * 8/9 and 12: farmer <br>
+ * 13: fire
+ * 14: dying pig <br>
+ * 15/16/17: fisherman
  * 20: shipyard
  * 21: healer
  * 24: geologist
@@ -51,13 +51,16 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 30: sword Soldier <br>
  * 31/32 (soldier ?) <br>
  * 33 Bowman <br>
+ * 34 Pikeman
  * 35 soldier killed <br>
  * 36: falling tree <br>
- * 39: pigs or brewer? <br>
- * 40: donkey or dying pig (butcher) <br>
- * 41: donkey <br>
- * 42: wind/mill: 2.5s <br>
- * 45: charcoal burner
+ * 37/38 molten metal
+ * 39: pigs <br>
+ * 40/41: donkey <br>
+ * 42: wind/mill: 5s <br>
+ * 43/44: distillery
+ * 45: charcoal burner coughing
+ * 46-50 no sound
  * 51: trigger for building destruction
  * 56: lock <br>
  * 57-59: notification sounds<br>
@@ -88,7 +91,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 113: (4 times): amazone killed
  * 116: refused center of work displacement
  * 117: bees
- * 
+ *
  * @author michael
  */
 public class SoundManager {
@@ -122,7 +125,7 @@ public class SoundManager {
 	private static File lookupPath;
 
 	private final SoundPlayer soundPlayer;
-	private final Random random = new Random();
+	public final Random random = new Random();
 
 	/**
 	 * The start positions of all the playable sounds.
@@ -136,7 +139,7 @@ public class SoundManager {
 	 * Creates a new sound manager.
 	 *
 	 * @param soundPlayer
-	 *            The soundPlayer to play sounds at.
+	 * 		The soundPlayer to play sounds at.
 	 */
 	public SoundManager(SoundPlayer soundPlayer) {
 		this.soundPlayer = soundPlayer;
@@ -147,10 +150,10 @@ public class SoundManager {
 	 * Reads the start indexes of the sounds.
 	 *
 	 * @param reader
-	 *            The reader to read from.
+	 * 		The reader to read from.
 	 * @return An array of start indexes for each sound and it's variants.
 	 * @throws IOException
-	 *             If the file could not be read.
+	 * 		If the file could not be read.
 	 */
 	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
 		int[] sequenceHeaderStarts = new int[SEQUENCE_N];
@@ -177,7 +180,7 @@ public class SoundManager {
 	 *
 	 * @return The file reader.
 	 * @throws IOException
-	 *             If the file could not be opened,
+	 * 		If the file could not be opened,
 	 */
 	protected static ByteReader openSoundFile() throws IOException {
 		File sndFile = getSoundFile();
@@ -203,9 +206,9 @@ public class SoundManager {
 	 * Plays a given sound.
 	 *
 	 * @param soundId
-	 *            The sound id to play.
+	 * 		The sound id to play.
 	 * @param volume
-	 *            The volume
+	 * 		The volume
 	 */
 	public void playSound(int soundId, float volume) {
 		initialize();
@@ -227,13 +230,13 @@ public class SoundManager {
 	 * Plays a given sound at a given coordinate
 	 *
 	 * @param soundId
-	 *            The sound id to play
+	 * 		The sound id to play
 	 * @param volume
-	 *            The volume
+	 * 		The volume
 	 * @param x
-	 *            The x coordinate of the sound
+	 * 		The x coordinate of the sound
 	 * @param y
-	 *            The y coordinate of the sound
+	 * 		The y coordinate of the sound
 	 */
 	public void playSound(int soundId, float volume, int x, int y) {
 		if (map == null || map.getVisibleStatus(x, y) <= CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
@@ -252,6 +255,7 @@ public class SoundManager {
 				int b = y - area.getMinY();
 				int a = x - area.getLineStartX(b);
 				float leftVolume, rightVolume;
+
 				if (a < 0) { // volume depending on position right or left
 					leftVolume = 0;
 					rightVolume = 0;
@@ -263,24 +267,28 @@ public class SoundManager {
 					rightVolume = volume * (2f * (maxA - a) / maxA - .5f);
 				} else if (a < maxA) {
 					leftVolume = 0;
-					rightVolume = volume* 4f * (maxA - a) / maxA;
+					rightVolume = volume * 4f * (maxA - a) / maxA;
 				} else {
 					leftVolume = 0;
 					rightVolume = 0;
 				}
+
 				float distanceVolume = Z_STEPS_FOR_MAX_VOLUME;
-				if (b < 0) // volume depending on position up or down
+				if (b < 0) { // volume depending on position up or down
 					distanceVolume = 0;
-				else if (b < maxB / 4)
+				} else if (b < maxB / 4) {
 					distanceVolume = 4f * Z_STEPS_FOR_MAX_VOLUME * b / maxB;
-				else if (b >= maxB)
+				} else if (b >= maxB) {
 					distanceVolume = 0;
-				else if (b >= 3 * maxB / 4)
+				} else if (b >= 3 * maxB / 4) {
 					distanceVolume = 4f * Z_STEPS_FOR_MAX_VOLUME * (maxB - b) / maxB;
+				}
+
 				distanceVolume /= maxA; // volume depending on zoom level
 				if (distanceVolume > 1) {
 					distanceVolume = 1;
 				}
+
 				leftVolume *= distanceVolume;
 				rightVolume *= distanceVolume;
 				soundPlayer.playSound(alternatives[rand], leftVolume, rightVolume);
@@ -314,7 +322,7 @@ public class SoundManager {
 	 * Sets the sound file lookup path.
 	 *
 	 * @param lookupPath
-	 *            The file path.
+	 * 		The file path.
 	 */
 	public static void setLookupPath(File lookupPath) {
 		SoundManager.lookupPath = lookupPath;
@@ -332,7 +340,7 @@ public class SoundManager {
 		 * Create a new {@link SoundDataRetriever}.
 		 *
 		 * @param reader
-		 *            The byte reader.
+		 * 		The byte reader.
 		 */
 		SoundDataRetriever(ByteReader reader) {
 			this.reader = reader;
@@ -348,12 +356,12 @@ public class SoundManager {
 	 * Reads the sound data from a byte reader.
 	 *
 	 * @param reader
-	 *            The reader to read.
+	 * 		The reader to read.
 	 * @param start
-	 *            The sound start position.
+	 * 		The sound start position.
 	 * @return The read sound data.
 	 * @throws IOException
-	 *             If that sound could not be read.
+	 * 		If that sound could not be read.
 	 */
 	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
 		reader.skipTo(start);

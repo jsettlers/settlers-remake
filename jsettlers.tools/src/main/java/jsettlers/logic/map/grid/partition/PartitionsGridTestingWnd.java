@@ -32,11 +32,11 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
@@ -63,7 +63,7 @@ public class PartitionsGridTestingWnd {
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
 
-		Thread.sleep(1500);
+		Thread.sleep(1500L);
 		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
 		MilliStopWatch watch = new MilliStopWatch();

@@ -14,10 +14,27 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java8.util.Comparators;
+import jsettlers.buildingcreator.editor.map.BuildingtestMap;
+import jsettlers.buildingcreator.editor.map.PseudoTile;
+import jsettlers.common.Color;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.RelativeBricklayer;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.FakeMapGame;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,32 +46,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-
-import jsettlers.buildingcreator.editor.map.BuildingtestMap;
-import jsettlers.buildingcreator.editor.map.PseudoTile;
-import jsettlers.common.Color;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.stacks.ConstructionStack;
-import jsettlers.common.buildings.stacks.RelativeStack;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.menu.FakeMapGame;
-import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IMapInterfaceListener;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
-import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.RelativePoint;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.MainUtils;
-import jsettlers.common.utils.OptionableProperties;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.main.swing.SwingManagedJSettlers;
-import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
-import jsettlers.main.swing.resources.SwingResourceLoader.ResourceSetupException;
-
-import java8.util.Comparators;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is the main building creator class.
@@ -68,10 +64,6 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private ToolType tool = ToolType.SET_BLOCKED;
 	private JLabel positionDisplayer;
 	private JFrame window;
-
-	private BuildingCreatorApp(OptionableProperties options) throws ResourceSetupException {
-		SwingManagedJSettlers.setupResourceManagers(options);
-	}
 
 	@Override
 	public void run() {
@@ -145,8 +137,9 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null, buildingTypes, null);
 	}
 
-	public static void main(String[] args) throws ResourceSetupException, InvocationTargetException, InterruptedException {
-		SwingUtilities.invokeAndWait(new BuildingCreatorApp(MainUtils.loadOptions(args)));
+	public static void main(String[] args) throws InvocationTargetException, InterruptedException, IOException {
+		SwingManagedJSettlers.setupResources(true, args);
+		SwingUtilities.invokeAndWait(new BuildingCreatorApp());
 	}
 
 	@Override

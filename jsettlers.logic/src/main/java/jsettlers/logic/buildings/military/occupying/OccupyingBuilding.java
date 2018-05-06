@@ -39,7 +39,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.map.ArrayListMap;
 import jsettlers.common.utils.collections.map.ArrayListMap.Entry;
-import jsettlers.graphics.messages.SimpleMessage;
+import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
@@ -86,7 +86,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		final OccupierPlace[] occupierPlaces = super.getBuildingType().getOccupierPlaces();
 		if (occupierPlaces.length > 0) {
 			emptyPlaces.addAll(Arrays.asList(occupierPlaces));
-			requestSoldiers();
+			requestSoldier(ESoldierClass.INFANTRY);
 		}
 	}
 
@@ -423,11 +423,15 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		comingSoldiers.put(occupier, new SoldierRequest(soldierClass, emptyPlace));
 	}
 
-	public void requestSoldiers() {
+	public void requestFullSoldiers() {
 		for (OccupierPlace emptyPlace : emptyPlaces) {
 			addSoldierToSearch(new SoldierRequest(emptyPlace.getSoldierClass(), emptyPlace));
 		}
 		emptyPlaces.clear();
+	}
+
+	public boolean isSetToBeFullyOccupied() {
+		return emptyPlaces.isEmpty();
 	}
 
 	public void requestSoldier(ESoldierType soldierType) {

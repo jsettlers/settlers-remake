@@ -24,7 +24,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.SetMaterialProductionAction;
+import jsettlers.common.action.SetMaterialProductionAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.BarFill;

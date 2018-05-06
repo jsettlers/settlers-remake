@@ -133,7 +133,8 @@
 	<job name="walk5" 		type="WALK" 			successjob="look1" 			failjob="hide" 		direction="WEST"/>
 
 	<job name="look1" 		type="LOOK_AT" 			successjob="take1" 			failjob="hide" 		direction="NORTH_EAST"/>
-	<job name="take1" 		type="TAKE" 			successjob="walk6" 			failjob="hide" 		material="TRUNK"/>
+	<job name="take1" 		type="TAKE" 			successjob="set1" 			failjob="hide" 		material="TRUNK"/>
+	<job name="set1" 		type="SET_MATERIAL"		successjob="walk6" 			failjob="hide" 		material="TRUNK"/>
 
 	<job name="walk6" 		type="WALK" 			successjob="walk7" 			failjob="hide" 		direction="NORTH_WEST"/>
 	<job name="walk7" 		type="WALK" 			successjob="saw1" 			failjob="hide" 		direction="NORTH_WEST"/>

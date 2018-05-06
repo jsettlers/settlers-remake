@@ -6,7 +6,6 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.EGoInDirectionMode;
@@ -189,7 +188,7 @@ public class SteeringComponent extends Component {
                 }
             }
         } else { // step not possible, so try it next time (push not supported)
-            blockingMovable.push(movC.getaMovableWrapper());
+            blockingMovable.push(movC.getMovableWrapper());
         }
     }
 

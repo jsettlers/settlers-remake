@@ -24,9 +24,8 @@ import jsettlers.graphics.map.IGLProvider;
 
 /**
  * This class buffers triangle draw calls and sends them to opengl in bratches. It should only be used during one frame.
- * 
- * @author Michael Zangl
  *
+ * @author Michael Zangl
  */
 public class DrawBuffer {
 
@@ -40,9 +39,8 @@ public class DrawBuffer {
 
 	/**
 	 * This is a buffer for a single texture.
-	 * 
-	 * @author Michael Zangl
 	 *
+	 * @author Michael Zangl
 	 */
 	public class Buffer {
 		/**
@@ -139,33 +137,31 @@ public class DrawBuffer {
 
 	/**
 	 * Add a new image to this buffer
-	 * 
+	 *
 	 * @param texture
-	 *            The texture. May be null.
+	 * 		The texture. May be null.
 	 * @param x1
-	 *            The lower, bottom corner on the screen.
+	 * 		The lower, bottom corner on the screen.
 	 * @param y1
-	 *            The lower, bottom corner on the screen.
+	 * 		The lower, bottom corner on the screen.
 	 * @param x2
-	 *            The upper upper corner on the screen.
+	 * 		The upper upper corner on the screen.
 	 * @param y2
-	 *            The upper upper corner on the screen.
+	 * 		The upper upper corner on the screen.
 	 * @param u1
-	 *            u-coordinate for bottom left corner on the screen.
+	 * 		u-coordinate for bottom left corner on the screen.
 	 * @param v1
-	 *            v-coordinate for bottom left corner on the screen.
+	 * 		v-coordinate for bottom left corner on the screen.
 	 * @param u2
-	 *            u-coordinate for upper right corner on the screen.
+	 * 		u-coordinate for upper right corner on the screen.
 	 * @param v2
-	 *            v-coordinate for upper right corner on the screen.
+	 * 		v-coordinate for upper right corner on the screen.
 	 * @param activeColor
-	 *            The color the image should be premultiplied with.
+	 * 		The color the image should be premultiplied with.
 	 * @throws IllegalBufferException
-	 *             If the texture could not be used.
+	 * 		If the texture could not be used.
 	 */
-	public void addImage(TextureHandle texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2,
-			int activeColor)
-			throws IllegalBufferException {
+	public void addImage(TextureHandle texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) throws IllegalBufferException {
 		Buffer buffer = getBuffer(texture); // get first to make it fail.
 		setZ(getZ() + Z_OFFSET_PER_ITEM);
 		buffer.addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
@@ -173,12 +169,12 @@ public class DrawBuffer {
 
 	/**
 	 * Gets a buffer to use for the given texture.
-	 * 
+	 *
 	 * @param texture
-	 *            The texture.
+	 * 		The texture.
 	 * @return The buffer.
 	 * @throws IllegalBufferException
-	 *             If the texture could not be used.
+	 * 		If the texture could not be used.
 	 */
 	public Buffer getBuffer(TextureHandle texture) throws IllegalBufferException {
 		for (int i = 0; i < BUFFERS; i++) {
@@ -209,7 +205,7 @@ public class DrawBuffer {
 
 	/**
 	 * Gets the Z coordinate to add new images at.
-	 * 
+	 *
 	 * @return z
 	 */
 	public float getZ() {
@@ -218,9 +214,9 @@ public class DrawBuffer {
 
 	/**
 	 * Sets the Z coordinate to add new images at.
-	 * 
+	 *
 	 * @param z
-	 *            z
+	 * 		z
 	 */
 	public void setZ(float z) {
 		this.z = z;

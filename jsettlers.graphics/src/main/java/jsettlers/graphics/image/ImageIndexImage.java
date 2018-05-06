@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,12 +21,13 @@ import jsettlers.graphics.map.draw.DrawBuffer;
 
 /**
  * This is an image that is stored in the image index file.
- * 
- * @author Michael Zangl
  *
+ * @author Michael Zangl
  */
 public class ImageIndexImage extends Image {
 	private static final float IMAGE_DRAW_OFFSET = .5f;
+	private static final float[] tempBuffer = new float[5 * 6];
+
 	private final short width;
 	private final short height;
 	private final float[] geometry;
@@ -37,34 +38,33 @@ public class ImageIndexImage extends Image {
 	private final float vmin;
 	private final float umax;
 	private final float vmax;
+	private final boolean isTorso;
 
-	private static final float[] tempBuffer = new float[5 * 6];
+	private ImageIndexImage torso;
 
 	/**
 	 * Constructs a new image in an image index.
-	 * 
+	 *
 	 * @param texture
-	 *            The texture this image is part of.
+	 * 		The texture this image is part of.
 	 * @param offsetX
-	 *            The x-offset to the center of the image.
+	 * 		The x-offset to the center of the image.
 	 * @param offsetY
-	 *            The y-offset to the center of the image.
+	 * 		The y-offset to the center of the image.
 	 * @param width
-	 *            The width of the image
+	 * 		The width of the image
 	 * @param height
-	 *            The height of the image.
+	 * 		The height of the image.
 	 * @param umin
-	 *            The bounds of the image on the texture (0..1).
+	 * 		The bounds of the image on the texture (0..1).
 	 * @param vmin
-	 *            The bounds of the image on the texture (0..1).
+	 * 		The bounds of the image on the texture (0..1).
 	 * @param umax
-	 *            The bounds of the image on the texture (0..1).
+	 * 		The bounds of the image on the texture (0..1).
 	 * @param vmax
-	 *            The bounds of the image on the texture (0..1).
+	 * 		The bounds of the image on the texture (0..1).
 	 */
-	protected ImageIndexImage(ImageIndexTexture texture, int offsetX,
-			int offsetY, short width, short height, float umin, float vmin,
-			float umax, float vmax) {
+	ImageIndexImage(ImageIndexTexture texture, int offsetX, int offsetY, short width, short height, float umin, float vmin, float umax, float vmax, boolean isTorso) {
 		this.texture = texture;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
@@ -74,10 +74,9 @@ public class ImageIndexImage extends Image {
 		this.vmin = vmin;
 		this.umax = umax;
 		this.vmax = vmax;
+		this.isTorso = isTorso;
 
-		geometry =
-				createGeometry(offsetX, offsetY, width, height, umin, vmin,
-						umax, vmax);
+		geometry = createGeometry(offsetX, offsetY, width, height, umin, vmin, umax, vmax);
 	}
 
 	@Override
@@ -97,15 +96,16 @@ public class ImageIndexImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-		if (color == null) {
+		if (color == null || !isTorso) {
 			gl.color(multiply, multiply, multiply, 1);
 		} else {
-			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply,
-					color.getAlpha());
+			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply, color.getAlpha());
 		}
 
-		float[] geometryBuffer = geometry;
-		draw(gl, geometryBuffer);
+		draw(gl, geometry);
+		if (torso != null) {
+			torso.draw(gl, color, multiply);
+		}
 	}
 
 	private void draw(GLDrawContext gl, float[] geometryBuffer) {
@@ -138,16 +138,17 @@ public class ImageIndexImage extends Image {
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
 		try {
-			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin,
-					vmin,
-					umax, vmax, iColor);
+			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin, umax, vmax, isTorso ? iColor : 0xffffffff);
+			if (torso != null) {
+				torso.drawAt(gl, buffer, viewX, viewY, iColor);
+			}
+
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
 	}
 
-	private static float[] createGeometry(int offsetX, int offsetY, int width,
-			int height, float umin, float vmin, float umax, float vmax) {
+	private static float[] createGeometry(int offsetX, int offsetY, int width, int height, float umin, float vmin, float umax, float vmax) {
 		return new float[] {
 				// top left
 				-offsetX + IMAGE_DRAW_OFFSET,
@@ -188,13 +189,11 @@ public class ImageIndexImage extends Image {
 				0,
 				umax,
 				vmax,
-
 		};
 	}
 
 	@Override
-	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
-			float maxX, float maxY) {
+	public void drawImageAtRect(GLDrawContext gl, float minX, float minY, float maxX, float maxY) {
 		System.arraycopy(geometry, 0, tempBuffer, 0, 4 * 5);
 		tempBuffer[0] = minX + IMAGE_DRAW_OFFSET;
 		tempBuffer[1] = maxY + IMAGE_DRAW_OFFSET;
@@ -210,6 +209,12 @@ public class ImageIndexImage extends Image {
 		tempBuffer[26] = minY + IMAGE_DRAW_OFFSET;
 
 		draw(gl, tempBuffer);
+		if (torso != null) {
+			torso.drawImageAtRect(gl, minX, minY, maxX, maxY);
+		}
 	}
 
+	public void setTorso(ImageIndexImage torso) {
+		this.torso = torso;
+	}
 }

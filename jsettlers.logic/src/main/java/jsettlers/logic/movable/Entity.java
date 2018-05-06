@@ -200,11 +200,6 @@ public class Entity implements Serializable, IScheduledTimerable {
         }
     }
 
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        ois.defaultReadObject();
-        MovableDataManager.setNextID(id+1);
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder(30);
         sb.append("Entity");

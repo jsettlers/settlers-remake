@@ -27,7 +27,7 @@ import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
+import jsettlers.common.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -111,7 +111,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 			float probability = distributionSettings.getDistributionProbability(buildingType);
 			float userBarValue = distributionSettings.getUserConfiguredDistributionValue(buildingType);
 
-			lblPercentage.setText(Integer.toString((int) (probability * 100)) + "%");
+			lblPercentage.setText(Math.round(probability * 100) + "%");
 			barFill.setBarFill(userBarValue, probability);
 		}
 	}

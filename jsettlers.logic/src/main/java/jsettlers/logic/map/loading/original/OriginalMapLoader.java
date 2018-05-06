@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -172,7 +172,7 @@ public class OriginalMapLoader extends MapLoader {
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
 
-		loadMapContent(startResources);
+		loadMapContent(startResources, playerSettings);
 
 		OriginalMapFileContent mapData = mapContent.mapData;
 		mapData.calculateBlockedPartitions();
@@ -202,8 +202,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public IMapData getMapData() throws MapLoadException {
-
-		loadMapContent(EMapStartResources.HIGH_GOODS);
+		loadMapContent(EMapStartResources.HIGH_GOODS, null);
 
 		OriginalMapFileContent mapData = mapContent.mapData;
 		mapData.calculateBlockedPartitions();
@@ -211,7 +210,7 @@ public class OriginalMapLoader extends MapLoader {
 		return mapData;
 	}
 
-	private void loadMapContent(EMapStartResources startResources) throws MapLoadException {
+	private void loadMapContent(EMapStartResources startResources, PlayerSetting[] playerSettings) throws MapLoadException {
 		try {
 			// - the map buffer of the class may is closed and need to reopen!
 			mapContent.reOpen(this.listedMap.getInputStream());
@@ -232,6 +231,6 @@ public class OriginalMapLoader extends MapLoader {
 		// - read the buildings
 		mapContent.readBuildings();
 		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers(startResources);
+		mapContent.addStartTowerMaterialsAndSettlers(startResources, playerSettings);
 	}
 }

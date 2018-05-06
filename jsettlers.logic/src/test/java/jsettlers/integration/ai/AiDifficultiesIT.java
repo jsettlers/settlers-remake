@@ -54,21 +54,21 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 130 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 75 * MINUTES);
 	}
 
 	@Test
 	public void hardShouldConquerEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 130 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 75 * MINUTES);
 	}
 
 	@Test
 	public void veryHardShouldConquerHard() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 100 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 75 * MINUTES);
 	}
 
 	@Test
-	public void veryHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() throws MapLoadException {
+	public void veryHardShouldProduceCertainAmountOfSoldiersWithin90Minutes() throws MapLoadException {
 		byte playerId = (byte) 0;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
 		playerSettings[playerId] = new PlayerSetting(EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, playerId);
@@ -76,9 +76,9 @@ public class AiDifficultiesIT {
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
-		MatchConstants.clock().fastForwardTo(86 * MINUTES);
+		MatchConstants.clock().fastForwardTo(90 * MINUTES);
 
-		short expectedMinimalProducedSoldiers = 950;
+		short expectedMinimalProducedSoldiers = 920;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			stopAndFail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " soldiers within 90 minutes.\nOnly " + producedSoldiers
@@ -89,8 +89,8 @@ public class AiDifficultiesIT {
 	}
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) throws MapLoadException {
-		byte expectedWinnerSlotId = 7;
-		byte expectedLooserSlotId = 9;
+		byte expectedWinnerSlotId = 9;
+		byte expectedLooserSlotId = 7;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
 		playerSettings[expectedWinnerSlotId] = new PlayerSetting(expectedWinner, ECivilisation.ROMAN, (byte) 0);
 		playerSettings[expectedLooserSlotId] = new PlayerSetting(expectedLooser, ECivilisation.ROMAN, (byte) 1);
@@ -146,7 +146,7 @@ public class AiDifficultiesIT {
 		}
 
 		MapLoader mapCreator = MapUtils.getSpezialSumpf();
-		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), playerId, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapCreator, 0L, new OfflineNetworkConnector(), playerId, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 

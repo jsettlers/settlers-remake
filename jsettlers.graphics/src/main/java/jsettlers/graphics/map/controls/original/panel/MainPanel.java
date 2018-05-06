@@ -18,17 +18,17 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.SetTradingWaypointAction;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -98,7 +98,7 @@ public class MainPanel extends UIPanel {
 
 	private final Button btnSystem = new TabButton(quitPrompt,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
-			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), Labels.getString("game-quit-description"));
 
 	private final Button btnScroll = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
 	private final Button btnSwords = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 114, 102, "");

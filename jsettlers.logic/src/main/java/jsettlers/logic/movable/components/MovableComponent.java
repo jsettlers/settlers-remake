@@ -19,13 +19,13 @@ import jsettlers.logic.constants.Constants;
 
 @Requires({GameFieldComponent.class})
 public class MovableComponent extends Component implements IPathCalculatable{
-    private static final long serialVersionUID = -7615132582559956988L;
+    private static final long  serialVersionUID = -7615132582559956988L;
     private final EMovableType movableType;
-    private Player player;
-    private ShortPoint2D position;
-    private EDirection viewDirection;
-    //TODO: make @aMovableWrapper not necessary
-    private MovableWrapper aMovableWrapper;
+    private Player             player;
+    private ShortPoint2D       position;
+    private EDirection         viewDirection;
+    //TODO: make @movableWrapper not necessary
+    private MovableWrapper     movableWrapper;
 
     private GameFieldComponent gameC;
 
@@ -39,20 +39,17 @@ public class MovableComponent extends Component implements IPathCalculatable{
     @Override
     protected void onAwake() {
         gameC = entity.get(GameFieldComponent.class);
-        aMovableWrapper = new MovableWrapper(entity);
+        movableWrapper = new MovableWrapper(entity);
     }
 
     @Override
     protected void onEnable() {
-        gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
-        gameC.getAllMovables().offer(aMovableWrapper);
-        gameC.getMovableGrid().enterPosition(position, aMovableWrapper, true);
+        gameC.addNewMovable(movableWrapper);
+        gameC.getMovableGrid().enterPosition(position, movableWrapper, true);
     }
 
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-        gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
-        gameC.getAllMovables().offer(aMovableWrapper);
     }
 
     @Override
@@ -60,8 +57,7 @@ public class MovableComponent extends Component implements IPathCalculatable{
         // TODO: refactor leavePosition to not use the instance
         gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
 
-        gameC.getAllMovables().remove(gameC.getMovableMap().get(entity.getID()));
-        gameC.getMovableMap().remove(entity.getID());
+        gameC.removeMovable(getMovableWrapper());
     }
 
     @Override
@@ -69,8 +65,8 @@ public class MovableComponent extends Component implements IPathCalculatable{
         gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
     }
 
-    public MovableWrapper getaMovableWrapper() {
-        return aMovableWrapper;
+    public MovableWrapper getMovableWrapper() {
+        return movableWrapper;
     }
 
     public void setViewDirection(EDirection viewDirection) {
@@ -96,9 +92,9 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     public void setPos(ShortPoint2D position) {
-        gameC.getMovableGrid().leavePosition(this.position, aMovableWrapper);
+        gameC.getMovableGrid().leavePosition(this.position, movableWrapper);
         this.position = position;
-        gameC.getMovableGrid().enterPosition(this.position, aMovableWrapper, false);
+        gameC.getMovableGrid().enterPosition(this.position, movableWrapper, false);
     }
 
     public void setPlayer(Player player) {

@@ -29,13 +29,12 @@ sourceSets {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
-    testCompile project(':go.graphics')
-    testCompile project(':go.graphics.swing')
-    testCompile project(':jsettlers.common')
-    testCompile project(':jsettlers.graphics')
-    testCompile project(':jsettlers.graphics.swing')
-    testCompile project(':jsettlers.logic')
-    testCompile project(':jsettlers.main.swing')
-    testCompile project(':jsettlers.network')
+    testImplementation 'junit:junit:4.12'
+    testImplementation project(':go.graphics')
+    testImplementation project(':go.graphics.swing')
+    testImplementation project(':jsettlers.common')
+    testImplementation project(':jsettlers.graphics')
+    testImplementation project(':jsettlers.logic')
+    testImplementation project(':jsettlers.main.swing')
+    testImplementation project(':jsettlers.network')
 }
