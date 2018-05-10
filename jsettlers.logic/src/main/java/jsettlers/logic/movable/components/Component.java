@@ -1,18 +1,21 @@
 package jsettlers.logic.movable.components;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
+import java8.util.Optional;
+import java8.util.function.Consumer;
+import java8.util.stream.Stream;
 import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.Notification;
 
+import static java8.util.stream.StreamSupport.stream;
+
 public abstract class Component implements Serializable {
-	private static final long                  serialVersionUID      = -3071296154652495126L;
-	public               Entity                entity;
-	private              HashSet<Notification> consumedNotifications = new HashSet<>();
+	private static final long serialVersionUID = -3071296154652495126L;
+
+	public  Entity                entity;
+	private HashSet<Notification> consumedNotifications = new HashSet<>();
 
 	/**
 	 * Called once when the entity gets enabled for the first time
@@ -55,67 +58,35 @@ public abstract class Component implements Serializable {
 
 	protected void onDestroy() {}
 
-	public <T extends Notification> List<T> getNotifications(Class<T> type) {
-		Iterator<T> it = getNotificationsIterator(type);
-		List<T> result = new ArrayList<T>();
-		while (it.hasNext()) {
-			result.add(it.next());
+	<T extends Notification> Optional<T> getNextNotification(Class<T> type, boolean consume) {
+		Optional<T> result = getNotificationsOfType(type).findFirst();
+		if (consume) {
+			result.ifPresent(this::consumeNotification);
 		}
 		return result;
 	}
 
-	public <T extends Notification> T getNextNotification(Class<T> type, boolean consume) {
-		Iterator<T> it = getNotificationsIterator(type);
-		T note = it.next();
-		if (note != null) {
-			if (consume) { consumeNotification(note); }
-		}
-		return null;
+	public <T extends Notification> boolean hasNotificationOfType(Class<T> type) {
+		return getNotificationsOfType(type).findAny().isPresent();
 	}
 
-	public <T extends Notification> boolean containsNotification(Class<T> type) {
-		return getNotificationsIterator(type).hasNext();
+	public <T extends Notification> boolean hasNotificationOfType(Class<T> type, boolean consume) { // this implementation uses findFirst to guarantee determinism
+		return getNextNotification(type, consume).isPresent();
 	}
 
-	public <T extends Notification> Iterator<T> getNotificationsIterator(Class<T> type) {
-		class NotificationIterator implements Iterator<T> {
-			private T                      nextItem;
-			private Iterator<Notification> it       = entity.getAllNotifications().iterator();
-			private boolean                consumed = false;
-
-			private NotificationIterator() {
-				findNext();
-			}
-
-			private void findNext() {
-				consumed = false;
-				nextItem = null;
-				while (it.hasNext()) {
-					Notification n = it.next();
-					if (type.isInstance(n) && !consumedNotifications.contains(n)) {
-						nextItem = (T) n;
-						return;
-					}
-					nextItem = null;
-				}
-			}
-
-			@Override
-			public boolean hasNext() {
-				if (consumed) { findNext(); }
-				return nextItem != null;
-			}
-
-			@Override
-			public T next() {
-				consumed = true;
-				return nextItem;
-			}
-		}
-		return new NotificationIterator();
+	private <T extends Notification> Stream<T> getNotificationsOfType(Class<T> type) {
+		//noinspection unchecked
+		return stream(entity.getAllNotifications())
+			.parallel()
+			.filter(notification -> !consumedNotifications.contains(notification))
+			.filter(type::isInstance).map(notification -> (T) notification);
 	}
 
-	public boolean consumeNotification(Notification notification) {
+	<T extends Notification> void forFirstNotificationOfType(Class<T> type, Consumer<T> consumer) {
+		getNotificationsOfType(type).findFirst().ifPresent(consumer);
+	}
+
+	boolean consumeNotification(Notification notification) {
 		if (entity.getAllNotifications().contains(notification)) {
 			consumedNotifications.add(notification);
 			return true;

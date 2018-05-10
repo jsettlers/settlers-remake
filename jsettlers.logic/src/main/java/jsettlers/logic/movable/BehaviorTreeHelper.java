@@ -129,7 +129,7 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static Guard<Context> triggerGuard(Class<? extends Notification> type, Node<Context> child) {
-		return new Guard<>(entity -> entity.component.getNotificationsIterator(type).hasNext(), true, child);
+		return new Guard<>(entity -> entity.component.hasNotificationOfType(type), true, child);
 	}
 
 	public static Action<Context> startAnimation(EMovableAction animation, short duration) {

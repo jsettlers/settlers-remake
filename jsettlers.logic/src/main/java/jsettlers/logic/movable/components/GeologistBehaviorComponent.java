@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.components;
 
+import java8.util.Optional;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
@@ -94,7 +95,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 			guard(c -> c.entity.specC().isWorking(), true,
 				selector(
 					BehaviorTreeHelper.debug("find a place and work there", memSequence(
-						Find_GoToWorkablePosition(),
+						new FindGoToWorkablePosition(),
 						waitForTargetReachedAndFailIfNotReachable(),
 						WorkOnPosIfPossible(),
 						startAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
@@ -130,16 +131,11 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 		);
 	}
 
-	private static Find_GoToWorkablePosition Find_GoToWorkablePosition() {
-		return new Find_GoToWorkablePosition();
-	}
-
-	private static class Find_GoToWorkablePosition extends Action<Context> {
-
+	private static class FindGoToWorkablePosition extends Action<Context> {
 		private static final long serialVersionUID = -5393050237159114345L;
 
-		public Find_GoToWorkablePosition() {
-			super(Find_GoToWorkablePosition::run);
+		FindGoToWorkablePosition() {
+			super(FindGoToWorkablePosition::run);
 		}
 
 		private static ShortPoint2D getCloseWorkablePos(Context c) {
@@ -196,8 +192,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 		}
 	}
 
-	private static void setTargetWorkPos(Context c) {
-		PlayerCmdComponent.LeftClickCommand cmd = c.component.getNotificationsIterator(PlayerCmdComponent.LeftClickCommand.class).next();
-		c.entity.specC().setTargetWorkPos(cmd.pos);
+	private static void setTargetWorkPos(Context context) {
+		context.component.forFirstNotificationOfType(PlayerCmdComponent.LeftClickCommand.class, command -> context.entity.specC().setTargetWorkPos(command.pos));
 	}
 }

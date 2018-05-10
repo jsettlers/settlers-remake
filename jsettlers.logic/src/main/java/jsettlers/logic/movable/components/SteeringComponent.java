@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.components;
 
+import java8.util.Optional;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
@@ -109,9 +110,9 @@ public class SteeringComponent extends Component {
 					selector(
 						BehaviorTreeHelper.debug("if LeavePositionRequest", triggerGuard(LeavePositionRequest.class,
 							BehaviorTreeHelper.debug("try go in random direction", action(context -> {
-								LeavePositionRequest note = context.component.getNextNotification(LeavePositionRequest.class, false);
-								if (note != null && goToRandomDirection(note.sender)) {
-									context.component.consumeNotification(note);
+								Optional<LeavePositionRequest> note = context.component.getNextNotification(LeavePositionRequest.class, false);
+								if (note.isPresent() && goToRandomDirection(note.get().sender)) {
+									context.component.consumeNotification(note.get());
 									return NodeStatus.SUCCESS;
 								}
 								return NodeStatus.FAILURE;

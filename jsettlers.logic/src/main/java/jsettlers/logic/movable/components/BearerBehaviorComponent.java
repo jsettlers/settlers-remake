@@ -156,26 +156,27 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 	}
 
 	private static Action<Context> accept_SaveDeliveryJob() {
-		return new Action<>(c -> {
-			BearerComponent.DeliveryJob job = c.component.getNotificationsIterator(BearerComponent.DeliveryJob.class).next();
-			job.offer.distributionAccepted();
-			job.request.deliveryAccepted();
-			c.entity.bearerC().setDeliveryJob(job);
+		return new Action<>(context -> {
+			context.component.forFirstNotificationOfType(BearerComponent.DeliveryJob.class, job -> {
+				job.offer.distributionAccepted();
+				job.request.deliveryAccepted();
+				context.entity.bearerC().setDeliveryJob(job);
+			});
 		});
 	}
 
 	private static Action<Context> accept_SaveBecomeSoldierJob() {
-		return new Action<>(c -> {
-			BearerComponent.BecomeSoldierJob job = c.component.getNotificationsIterator(BearerComponent.BecomeSoldierJob.class).next();
-			c.entity.bearerC().setBecomeSoldierJob(job);
+		return new Action<>(context -> {
+			context.component.forFirstNotificationOfType(BearerComponent.BecomeSoldierJob.class, context.entity.bearerC()::setBecomeSoldierJob);
 		});
 	}
 
 	private static Action<Context> accept_SaveBecomeWorkerJob() {
-		return new Action<>(c -> {
-			BearerComponent.BecomeWorkerJob job = c.component.getNotificationsIterator(BearerComponent.BecomeWorkerJob.class).next();
-			job.offer.distributionAccepted();
-			c.entity.bearerC().setBecomeWorkerJob(job);
+		return new Action<>(context -> {
+			context.component.forFirstNotificationOfType(BearerComponent.BecomeWorkerJob.class, job -> {
+				job.offer.distributionAccepted();
+				context.entity.bearerC().setBecomeWorkerJob(job);
+			});
 		});
 	}
 

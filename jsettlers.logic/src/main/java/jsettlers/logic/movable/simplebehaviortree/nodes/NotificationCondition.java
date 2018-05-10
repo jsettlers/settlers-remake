@@ -1,7 +1,5 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
 
-import java.util.Iterator;
-
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Notification;
 
@@ -13,15 +11,6 @@ public class NotificationCondition extends Condition<Context> {
 	}
 
 	public NotificationCondition(Class<? extends Notification> type, boolean consume) {
-		super((context) -> {
-			Iterator<? extends Notification> it = context.component.getNotificationsIterator(type);
-			if (it.hasNext()) {
-				if (consume) {
-					context.component.consumeNotification(it.next());
-				}
-				return true;
-			}
-			return false;
-		});
+		super((context) -> context.component.hasNotificationOfType(type, consume));
 	}
 }
