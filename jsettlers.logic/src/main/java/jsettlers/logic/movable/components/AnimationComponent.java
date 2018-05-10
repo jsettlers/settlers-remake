@@ -7,70 +7,69 @@ import jsettlers.logic.movable.Notification;
 /**
  * @author homoroselaps
  */
-
 public class AnimationComponent extends Component {
-    private static final long serialVersionUID = 8064683552580286008L;
-    private EMovableAction animation = EMovableAction.NO_ACTION;
-    private int animationStartTime;
-    private short animationDuration;
-    private boolean isSoundPlayed = false;
-    private boolean isRightStep = false;
+	private static final long serialVersionUID = 8064683552580286008L;
 
-    public static class AnimationFinishedTrigger extends Notification {}
+	private EMovableAction animation     = EMovableAction.NO_ACTION;
+	private int            animationStartTime;
+	private short          animationDuration;
+	private boolean        isSoundPlayed = false;
+	private boolean        isRightStep   = false;
 
-    public AnimationComponent() { }
+	public static class AnimationFinishedTrigger extends Notification {}
 
-    @Override
-    protected void onUpdate() {
-        if (!isAnimating()) stopAnimation();
-    }
+	public AnimationComponent() { }
 
-    @Override
-    protected void onLateUpdate() {
-        if (isAnimating())
-            entity.setInvocationDelay(getRemainingTime());
-    }
+	@Override
+	protected void onUpdate() {
+		if (!isAnimating()) { stopAnimation(); }
+	}
 
-    public EMovableAction getAnimation() {
-        return animation;
-    }
+	@Override
+	protected void onLateUpdate() {
+		if (isAnimating()) { entity.setInvocationDelay(getRemainingTime()); }
+	}
 
-    public float getAnimationProgress() {
-        return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
-    }
+	public EMovableAction getAnimation() {
+		return animation;
+	}
 
-    public boolean isAnimating() {
-        return animationStartTime + animationDuration > MatchConstants.clock().getTime();
-    }
+	public float getAnimationProgress() {
+		return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
+	}
 
-    public void startAnimation(EMovableAction animation, short duration) {
-        this.animationStartTime = MatchConstants.clock().getTime();
-        this.animationDuration = duration;
-        this.animation = animation;
-        isSoundPlayed = false;
-    }
+	public boolean isAnimating() {
+		return animationStartTime + animationDuration > MatchConstants.clock().getTime();
+	}
 
-    private void stopAnimation() {
-        this.animation = EMovableAction.NO_ACTION;
-    }
+	public void startAnimation(EMovableAction animation, short duration) {
+		this.animationStartTime = MatchConstants.clock().getTime();
+		this.animationDuration = duration;
+		this.animation = animation;
+		isSoundPlayed = false;
+	}
 
-    public boolean isRightStep() {
-        return isRightStep;
-    }
+	private void stopAnimation() {
+		this.animation = EMovableAction.NO_ACTION;
+	}
 
-    public void switchStep() {
-        isRightStep = !isRightStep;
-    }
+	public boolean isRightStep() {
+		return isRightStep;
+	}
 
-    public void setSoundPlayed() {
-        isSoundPlayed = true;
-    }
+	public void switchStep() {
+		isRightStep = !isRightStep;
+	}
 
-    public boolean isSoundPlayed() {
-        return isSoundPlayed;
-    }
+	public void setSoundPlayed() {
+		isSoundPlayed = true;
+	}
 
-    public int getRemainingTime() {
-        return animationStartTime + animationDuration - MatchConstants.clock().getTime();
-    }
+	public boolean isSoundPlayed() {
+		return isSoundPlayed;
+	}
+
+	public int getRemainingTime() {
+		return animationStartTime + animationDuration - MatchConstants.clock().getTime();
+	}
 }

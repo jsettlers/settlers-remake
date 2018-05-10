@@ -7,5 +7,5 @@ import java.io.Serializable;
  */
 @FunctionalInterface
 public interface IGetPropertyProducer<T, PropertyType> extends Serializable {
-    PropertyType apply(T entity);
+	PropertyType apply(T entity);
 }

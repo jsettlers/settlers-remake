@@ -16,60 +16,61 @@ import jsettlers.logic.movable.strategies.trading.IDonkeyMarket;
 
 @Requires({MovableComponent.class})
 public class DonkeyComponent extends Component {
-    private static final long serialVersionUID = -4747039405397703303L;
-    private IDonkeyMarket market;
-    private Iterator<ShortPoint2D> waypoints;
-    private ShortPoint2D nextWaypoint;
+	private static final long serialVersionUID = -4747039405397703303L;
 
-    public IDonkeyMarket getMarket() {
-        return market;
-    }
+	private IDonkeyMarket          market;
+	private Iterator<ShortPoint2D> waypoints;
+	private ShortPoint2D           nextWaypoint;
 
-    public void setMarket(IDonkeyMarket market) {
-        assert market != null: "market should not be null, use reset() instead";
-        this.market = market;
-        this.waypoints = market.getWaypointsIterator();
-        this.nextWaypoint = waypoints != null ? waypoints.next() : null;
-    }
+	public IDonkeyMarket getMarket() {
+		return market;
+	}
 
-    public void resetMarket() {
-        this.market = null;
-        this.waypoints = null;
-    }
+	public void setMarket(IDonkeyMarket market) {
+		assert market != null : "market should not be null, use reset() instead";
+		this.market = market;
+		this.waypoints = market.getWaypointsIterator();
+		this.nextWaypoint = waypoints != null ? waypoints.next() : null;
+	}
 
-    public ShortPoint2D getNextWaypoint() {
-        ShortPoint2D last = nextWaypoint;
-        this.nextWaypoint = waypoints != null ? waypoints.next() : null;
-        return last;
-    }
+	public void resetMarket() {
+		this.market = null;
+		this.waypoints = null;
+	}
 
-    public boolean hasNextWaypoint() {
-        return nextWaypoint != null;
-    }
+	public ShortPoint2D getNextWaypoint() {
+		ShortPoint2D last = nextWaypoint;
+		this.nextWaypoint = waypoints != null ? waypoints.next() : null;
+		return last;
+	}
 
-    public ShortPoint2D peekNextWaypoint() {
-        return nextWaypoint;
-    }
+	public boolean hasNextWaypoint() {
+		return nextWaypoint != null;
+	}
 
-    public IDonkeyMarket findNextMarketNeedingDonkey() {
-        if (this.market != null && this.market.needsDonkey()) {
-            return this.market;
-        }
+	public ShortPoint2D peekNextWaypoint() {
+		return nextWaypoint;
+	}
 
-        Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(entity.movC().getPlayer());
-        List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<>();
+	public IDonkeyMarket findNextMarketNeedingDonkey() {
+		if (this.market != null && this.market.needsDonkey()) {
+			return this.market;
+		}
 
-        for (IDonkeyMarket currMarket : markets) {
-            if (currMarket.needsDonkey()) {
-                marketsNeedingDonkeys.add(currMarket);
-            }
-        }
+		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(entity.movC().getPlayer());
+		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<>();
 
-        if (!marketsNeedingDonkeys.isEmpty()) {
-            // randomly distribute the donkeys onto the markets needing them
-            return marketsNeedingDonkeys.get(MatchConstants.random().nextInt(marketsNeedingDonkeys.size()));
-        } else {
-            return null;
-        }
-    }
+		for (IDonkeyMarket currMarket : markets) {
+			if (currMarket.needsDonkey()) {
+				marketsNeedingDonkeys.add(currMarket);
+			}
+		}
+
+		if (!marketsNeedingDonkeys.isEmpty()) {
+			// randomly distribute the donkeys onto the markets needing them
+			return marketsNeedingDonkeys.get(MatchConstants.random().nextInt(marketsNeedingDonkeys.size()));
+		} else {
+			return null;
+		}
+	}
 }

@@ -109,7 +109,7 @@ public class StrokenSlider extends JProgressBar {
 	}
 
 	/**
-	 * Update the displayed string
+	 * update the displayed string
 	 */
 	private void updateString() {
 		setString(displayName + " " + getValue());

@@ -204,7 +204,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	}
 
 	/**
-	 * Update the player selection combobox
+	 * update the player selection combobox
 	 */
 	private void updatePlayerCombobox() {
 		// create a new model, because a swing bug there are sometimes problems updating an existing model

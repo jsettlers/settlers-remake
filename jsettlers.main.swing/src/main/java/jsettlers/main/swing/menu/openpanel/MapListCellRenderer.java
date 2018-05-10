@@ -168,7 +168,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		iconLabel.setOpaque(false);
 		iconLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
 
-		// Update UI
+		// update UI
 		SwingUtilities.updateComponentTreeUI(contentsPanel);
 	}
 

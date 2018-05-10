@@ -231,7 +231,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	@Override
 	public void moveTo(ShortPoint2D targetPosition) {
 		if (!entity.containsComponent(PlayerCmdComponent.class)) { return; }
-		entity.get(PlayerCmdComponent.class).send_AltLeftClick(targetPosition);
+		entity.get(PlayerCmdComponent.class).sendAltLeftClick(targetPosition);
 	}
 
 	@Override

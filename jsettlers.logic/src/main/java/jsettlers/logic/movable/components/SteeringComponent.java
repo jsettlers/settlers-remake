@@ -17,13 +17,12 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
-import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.condition;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
+import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 
 /**
  * @author homoroselaps
@@ -37,9 +36,9 @@ public class SteeringComponent extends Component {
 	private static final long serialVersionUID = 8281773945922792414L;
 
 	private Path               path;
-	private GameFieldComponent gameC;
-	private MovableComponent   movC;
-	private AnimationComponent aniC;
+	private GameFieldComponent gameFieldComponent;
+	private MovableComponent   movableComponent;
+	private AnimationComponent animationComponent;
 	private Tick<Context>      tick;
 	private boolean            isIdleBehaviorActive = false;
 
@@ -60,19 +59,19 @@ public class SteeringComponent extends Component {
 	}
 
 	@Override
-	protected void onAwake() {
-		gameC = entity.get(GameFieldComponent.class);
-		movC = entity.get(MovableComponent.class);
-		aniC = entity.get(AnimationComponent.class);
+	protected void onWakeUp() {
+		gameFieldComponent = entity.get(GameFieldComponent.class);
+		movableComponent = entity.get(MovableComponent.class);
+		animationComponent = entity.get(AnimationComponent.class);
 		tick = new Tick<>(new Context(entity, this), CreateBehaviorTree());
 	}
 
 	public boolean setTarget(ShortPoint2D targetPos) {
-		if (movC.getPos().equals(targetPos)) {
+		if (movableComponent.getPos().equals(targetPos)) {
 			entity.raiseNotification(new TargetReachedTrigger());
 			return true;
 		}
-		path = gameC.getMovableGrid().calculatePathTo(movC, targetPos);
+		path = gameFieldComponent.getMovableGrid().calculatePathTo(movableComponent, targetPos);
 		return path != null;
 	}
 
@@ -81,15 +80,15 @@ public class SteeringComponent extends Component {
 	}
 
 	public void setPath(Path path) {
-		assert path != null : "path mustn't be null";
+		assert path != null : "path must not be null";
 		this.path = path;
 	}
 
 	public Path preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		if (dijkstra) {
-			return gameC.getMovableGrid().searchDijkstra(movC, centerX, centerY, radius, searchType);
+			return gameFieldComponent.getMovableGrid().searchDijkstra(movableComponent, centerX, centerY, radius, searchType);
 		} else {
-			return gameC.getMovableGrid().searchInArea(movC, centerX, centerY, radius, searchType);
+			return gameFieldComponent.getMovableGrid().searchInArea(movableComponent, centerX, centerY, radius, searchType);
 		}
 	}
 
@@ -101,7 +100,7 @@ public class SteeringComponent extends Component {
 						followPath();
 					})
 				),
-				guard(c -> gameC.getMovableGrid().isBlockedOrProtected(movC.getPos().x, movC.getPos().y), true,
+				guard(c -> gameFieldComponent.getMovableGrid().isBlockedOrProtected(movableComponent.getPos().x, movableComponent.getPos().y), true,
 					BehaviorTreeHelper.action(c -> {
 						goToNonBlockedOrProtectedPosition();
 					})
@@ -113,9 +112,9 @@ public class SteeringComponent extends Component {
 								LeavePositionRequest note = context.component.getNextNotification(LeavePositionRequest.class, false);
 								if (note != null && goToRandomDirection(note.sender)) {
 									context.component.consumeNotification(note);
-									return NodeStatus.Success;
+									return NodeStatus.SUCCESS;
 								}
-								return NodeStatus.Failure;
+								return NodeStatus.FAILURE;
 							}))
 						)),
 						BehaviorTreeHelper.debug("move away from other movables", memSequence(
@@ -141,7 +140,7 @@ public class SteeringComponent extends Component {
 
 	private boolean goToRandomDirection(ILocatable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-		EDirection pushedFromDir = EDirection.getDirection(movC.getPos(), pushingMovable.getPos());
+		EDirection pushedFromDir = EDirection.getDirection(movableComponent.getPos(), pushingMovable.getPos());
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
@@ -161,33 +160,34 @@ public class SteeringComponent extends Component {
 			return;
 		}
 
-		ILogicMovable blockingMovable = gameC.getMovableGrid().getMovableAt(path.nextX(), path.nextY());
+		ILogicMovable blockingMovable = gameFieldComponent.getMovableGrid().getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
-			if (gameC.getMovableGrid().isValidNextPathPosition(movC, path.getNextPos(), path.getTargetPos())) { // next position is valid
+			if (gameFieldComponent.getMovableGrid().isValidNextPathPosition(movableComponent, path.getNextPos(), path.getTargetPos())) { // next position is valid
 				goSingleStep(path.getNextPos());
 				path.goToNextStep();
 			} else { // next position is invalid
 
-				Path newPath = gameC.getMovableGrid().calculatePathTo(movC, path.getTargetPos()); // try to find a new path
+				Path newPath = gameFieldComponent.getMovableGrid().calculatePathTo(movableComponent, path.getTargetPos()); // try to find a new path
 
 				if (newPath == null) { // no path found
 					path = null;
 					entity.raiseNotification(new TargetNotReachedTrigger());
 				} else {
 					this.path = newPath; // continue with new path
-					if (gameC.getMovableGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+					if (gameFieldComponent.getMovableGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
 						goSingleStep(path.getNextPos());
 						path.goToNextStep();
 					}
 				}
 			}
 		} else { // step not possible, so try it next time (push not supported)
-			blockingMovable.push(movC.getMovableWrapper());
+			blockingMovable.push(movableComponent.getMovableWrapper());
 		}
 	}
 
 	private void goToNonBlockedOrProtectedPosition() {
-		Path newPath = gameC.getMovableGrid().searchDijkstra(movC, movC.getPos().x, movC.getPos().y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
+		Path newPath = gameFieldComponent.getMovableGrid().searchDijkstra(movableComponent, movableComponent.getPos().x, movableComponent.getPos().y, (short) 50, ESearchType
+			.NON_BLOCKED_OR_PROTECTED);
 		if (newPath == null) {
 			entity.kill();
 		} else {
@@ -198,15 +198,15 @@ public class SteeringComponent extends Component {
 	private void turnInRandomDirection() {
 		int turnDirection = MatchConstants.random().nextInt(-8, 8);
 		if (Math.abs(turnDirection) <= 1) {
-			movC.setViewDirection(movC.getViewDirection().getNeighbor(turnDirection));
+			movableComponent.setViewDirection(movableComponent.getViewDirection().getNeighbor(turnDirection));
 		}
 	}
 
 	private void goSingleStep(ShortPoint2D targetPosition) {
-		movC.setViewDirection(EDirection.getDirection(movC.getPos(), targetPosition));
-		movC.setPos(targetPosition);
-		aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
-		aniC.switchStep();
+		movableComponent.setViewDirection(EDirection.getDirection(movableComponent.getPos(), targetPosition));
+		movableComponent.setPos(targetPosition);
+		animationComponent.startAnimation(EMovableAction.WALKING, movableComponent.getMovableType().getStepDurationMs());
+		animationComponent.switchStep();
 	}
 
 	/**
@@ -215,9 +215,9 @@ public class SteeringComponent extends Component {
 	 * @return true if the movable moves to flock, false if no flocking is required.
 	 */
 	private boolean flockToDecentralize() {
-		ShortPoint2D decentVector = gameC.getMovableGrid().calcDecentralizeVector(movC.getPos().x, movC.getPos().y);
+		ShortPoint2D decentVector = gameFieldComponent.getMovableGrid().calcDecentralizeVector(movableComponent.getPos().x, movableComponent.getPos().y);
 
-		EDirection randomDirection = movC.getViewDirection().getNeighbor(MatchConstants.random().nextInt(-1, 1));
+		EDirection randomDirection = movableComponent.getViewDirection().getNeighbor(MatchConstants.random().nextInt(-1, 1));
 		int dx = randomDirection.gridDeltaX + decentVector.x;
 		int dy = randomDirection.gridDeltaY + decentVector.y;
 
@@ -239,23 +239,24 @@ public class SteeringComponent extends Component {
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
 	final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
-		ShortPoint2D targetPosition = direction.getNextHexPoint(movC.getPos());
+		ShortPoint2D targetPosition = direction.getNextHexPoint(movableComponent.getPos());
 
 		switch (mode) {
 			case GO_IF_ALLOWED_WAIT_TILL_FREE: {
-				movC.setViewDirection(direction);
+				movableComponent.setViewDirection(direction);
 				this.setPath(new Path(targetPosition));
 				return true;
 			}
 			case GO_IF_ALLOWED_AND_FREE:
-				if ((gameC.getMovableGrid().isValidPosition(movC, targetPosition.x, targetPosition.y) && gameC.getMovableGrid().hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+				if ((gameFieldComponent.getMovableGrid().isValidPosition(movableComponent, targetPosition.x, targetPosition.y)
+					&& gameFieldComponent.getMovableGrid().hasNoMovableAt(targetPosition.x, targetPosition.y))) {
 					goSingleStep(targetPosition);
 					return true;
 				} else {
 					break;
 				}
 			case GO_IF_FREE:
-				if (gameC.getMovableGrid().isFreePosition(targetPosition)) {
+				if (gameFieldComponent.getMovableGrid().isFreePosition(targetPosition)) {
 					goSingleStep(targetPosition);
 					return true;
 				} else {

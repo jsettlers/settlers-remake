@@ -8,7 +8,7 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Debug extends Decorator<Context> {
-	private static final long    serialVersionUID = 9019598003328102086L;
+	private static final long serialVersionUID = 9019598003328102086L;
 
 	private final String message;
 
@@ -32,6 +32,6 @@ public class Debug extends Decorator<Context> {
 			}
 			return result;
 		}
-		return NodeStatus.Success;
+		return NodeStatus.SUCCESS;
 	}
 }

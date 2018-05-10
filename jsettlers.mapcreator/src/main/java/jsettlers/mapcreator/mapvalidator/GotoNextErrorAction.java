@@ -65,7 +65,7 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 	}
 
 	/**
-	 * Update the error text and icon, if an error or not
+	 * update the error text and icon, if an error or not
 	 */
 	@Override
 	public void validationFinished(ValidationListModel list) {

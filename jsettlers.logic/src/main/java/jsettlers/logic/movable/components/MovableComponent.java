@@ -5,105 +5,105 @@ import java.io.ObjectInputStream;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.movable.MovableWrapper;
-import jsettlers.logic.movable.Requires;
-import jsettlers.logic.player.Player;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.movable.MovableWrapper;
+import jsettlers.logic.movable.Requires;
+import jsettlers.logic.player.Player;
 
 /**
  * @author homoroselaps
  */
-
 @Requires({GameFieldComponent.class})
-public class MovableComponent extends Component implements IPathCalculatable{
-    private static final long  serialVersionUID = -7615132582559956988L;
-    private final EMovableType movableType;
-    private Player             player;
-    private ShortPoint2D       position;
-    private EDirection         viewDirection;
-    //TODO: make @movableWrapper not necessary
-    private MovableWrapper     movableWrapper;
+public class MovableComponent extends Component implements IPathCalculatable {
+	private static final long serialVersionUID = -7615132582559956988L;
 
-    private GameFieldComponent gameC;
+	private final EMovableType   movableType;
+	private       Player         player;
+	private       ShortPoint2D   position;
+	private       EDirection     viewDirection;
+	//TODO: make @movableWrapper not necessary
+	private       MovableWrapper movableWrapper;
 
-    public MovableComponent(EMovableType movableType, Player player, ShortPoint2D position, EDirection viewDirection) {
-        this.movableType = movableType;
-        this.player = player;
-        this.position = position;
-        this.viewDirection = viewDirection;
-    }
+	private GameFieldComponent gameC;
 
-    @Override
-    protected void onAwake() {
-        gameC = entity.get(GameFieldComponent.class);
-        movableWrapper = new MovableWrapper(entity);
-    }
+	public MovableComponent(EMovableType movableType, Player player, ShortPoint2D position, EDirection viewDirection) {
+		this.movableType = movableType;
+		this.player = player;
+		this.position = position;
+		this.viewDirection = viewDirection;
+	}
 
-    @Override
-    protected void onEnable() {
-        gameC.addNewMovable(movableWrapper);
-        gameC.getMovableGrid().enterPosition(position, movableWrapper, true);
-    }
+	@Override
+	protected void onWakeUp() {
+		gameC = entity.get(GameFieldComponent.class);
+		movableWrapper = new MovableWrapper(entity);
+	}
 
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        ois.defaultReadObject();
-    }
+	@Override
+	protected void onEnable() {
+		gameC.addNewMovable(movableWrapper);
+		gameC.getMovableGrid().enterPosition(position, movableWrapper, true);
+	}
 
-    @Override
-    protected void onDisable() {
-        // TODO: refactor leavePosition to not use the instance
-        gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+	}
 
-        gameC.removeMovable(getMovableWrapper());
-    }
+	@Override
+	protected void onDisable() {
+		// TODO: refactor leavePosition to not use the instance
+		gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
 
-    @Override
-    protected void onDestroy() {
-        gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
-    }
+		gameC.removeMovable(getMovableWrapper());
+	}
 
-    public MovableWrapper getMovableWrapper() {
-        return movableWrapper;
-    }
+	@Override
+	protected void onDestroy() {
+		gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
+	}
 
-    public void setViewDirection(EDirection viewDirection) {
-        this.viewDirection = viewDirection;
-    }
+	public MovableWrapper getMovableWrapper() {
+		return movableWrapper;
+	}
 
-    public EDirection getViewDirection() {
-        return viewDirection;
-    }
+	public void setViewDirection(EDirection viewDirection) {
+		this.viewDirection = viewDirection;
+	}
 
-    public short getViewDistance() {
-        return Constants.MOVABLE_VIEW_DISTANCE;
-    }
+	public EDirection getViewDirection() {
+		return viewDirection;
+	}
 
-    @Override
-    public boolean needsPlayersGround() {
-        return movableType.needsPlayersGround();
-    }
+	public short getViewDistance() {
+		return Constants.MOVABLE_VIEW_DISTANCE;
+	}
 
-    @Override
-    public ShortPoint2D getPos() {
-        return position;
-    }
+	@Override
+	public boolean needsPlayersGround() {
+		return movableType.needsPlayersGround();
+	}
 
-    public void setPos(ShortPoint2D position) {
-        gameC.getMovableGrid().leavePosition(this.position, movableWrapper);
-        this.position = position;
-        gameC.getMovableGrid().enterPosition(this.position, movableWrapper, false);
-    }
+	@Override
+	public ShortPoint2D getPos() {
+		return position;
+	}
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
+	public void setPos(ShortPoint2D position) {
+		gameC.getMovableGrid().leavePosition(this.position, movableWrapper);
+		this.position = position;
+		gameC.getMovableGrid().enterPosition(this.position, movableWrapper, false);
+	}
 
-    public Player getPlayer() {return this.player;}
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
 
-    public EMovableType getMovableType() {
-        return movableType;
-    }
+	public Player getPlayer() {return this.player;}
+
+	public EMovableType getMovableType() {
+		return movableType;
+	}
 }

@@ -24,74 +24,73 @@ import jsettlers.logic.player.Player;
 /**
  * @author homoroselaps
  */
-
 public final class EntityFactory {
-    private EntityFactory() {}
+	private EntityFactory() {}
 
-    public static ILogicMovable CreateMovable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
-        switch (movableType) {
-            //case GEOLOGIST:
-            //case BEARER:
-            case DONKEY:
-                return new MovableWrapper(CreateEntity(grid, movableType, position, player));
-            default:
-                return new Movable(grid, movableType, position, player);
-        }
-    }
+	public static ILogicMovable createMovable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		switch (movableType) {
+			//case GEOLOGIST:
+			//case BEARER:
+			case DONKEY:
+				return new MovableWrapper(createEntity(grid, movableType, position, player));
+			default:
+				return new Movable(grid, movableType, position, player);
+		}
+	}
 
-    public static Entity CreateEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
-        Entity entity = null;
-        switch (movableType) {
-            //case BEARER:
-            //case GEOLOGIST:
-            case DONKEY:
-                entity = CreateDonkey(grid, movableType, position, player);
-                break;
-        }
-        assert entity != null: "Type not found by EntityFactory";
-        assert entity.checkComponentDependencies(): "Not all Component dependencies are resolved.";
-        entity.setActive(true);
-        return entity;
-    }
+	public static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = null;
+		switch (movableType) {
+			//case BEARER:
+			//case GEOLOGIST:
+			case DONKEY:
+				entity = createDonkey(grid, movableType, position, player);
+				break;
+		}
+		assert entity != null : "Type not found by EntityFactory";
+		assert entity.checkComponentDependencies() : "Not all Component dependencies are resolved.";
+		entity.setActive(true);
+		return entity;
+	}
 
-    public static Entity CreateDonkey(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
-        Entity entity = new Entity();
-        entity.add(new MultiMaterialComponent());
-        entity.add(new DonkeyBehaviorComponent());
-        entity.add(new AnimationComponent());
-        entity.add(new AttackableComponent());
-        EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
-        entity.add(new MovableComponent(movableType, player, position, dir));
-        entity.add(new SteeringComponent());
-        entity.add(new GameFieldComponent(grid));
-        entity.add(new DonkeyComponent());
-        return entity;
-    }
+	public static Entity createDonkey(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = new Entity();
+		entity.add(new MultiMaterialComponent());
+		entity.add(new DonkeyBehaviorComponent());
+		entity.add(new AnimationComponent());
+		entity.add(new AttackableComponent());
+		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+		entity.add(new MovableComponent(movableType, player, position, dir));
+		entity.add(new SteeringComponent());
+		entity.add(new GameFieldComponent(grid));
+		entity.add(new DonkeyComponent());
+		return entity;
+	}
 
-    public static Entity CreateGeologist(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
-        Entity entity = new Entity();
-        entity.add(new GeologistBehaviorComponent());
-        entity.add(new SpecialistComponent());
-        entity.add(new AnimationComponent());
-        entity.add(new AttackableComponent());
-        entity.add(new MaterialComponent());
-        EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
-        entity.add(new MovableComponent(movableType, player, position, dir));
-        entity.add(new SteeringComponent());
-        entity.add(new GameFieldComponent(grid));
-        return entity;
-    }
+	public static Entity createGeologist(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = new Entity();
+		entity.add(new GeologistBehaviorComponent());
+		entity.add(new SpecialistComponent());
+		entity.add(new AnimationComponent());
+		entity.add(new AttackableComponent());
+		entity.add(new MaterialComponent());
+		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+		entity.add(new MovableComponent(movableType, player, position, dir));
+		entity.add(new SteeringComponent());
+		entity.add(new GameFieldComponent(grid));
+		return entity;
+	}
 
-    public static Entity CreateBearer(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
-        Entity entity = new Entity();
-        entity.add(new BearerBehaviorComponent());
-        entity.add(new BearerComponent());
-        entity.add(new AnimationComponent());
-        entity.add(new MaterialComponent());
-        EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
-        entity.add(new MovableComponent(movableType, player, position, dir));
-        entity.add(new SteeringComponent());
-        entity.add(new GameFieldComponent(grid));
-        return entity;
-    }
+	public static Entity createBearer(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = new Entity();
+		entity.add(new BearerBehaviorComponent());
+		entity.add(new BearerComponent());
+		entity.add(new AnimationComponent());
+		entity.add(new MaterialComponent());
+		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+		entity.add(new MovableComponent(movableType, player, position, dir));
+		entity.add(new SteeringComponent());
+		entity.add(new GameFieldComponent(grid));
+		return entity;
+	}
 }

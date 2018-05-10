@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 
 @FunctionalInterface
-public interface ISetPropertyConsumer<T,PropertyType> extends Serializable {
-    void accept(T entity, PropertyType value);
+public interface ISetPropertyConsumer<T, PropertyType> extends Serializable {
+	void accept(T entity, PropertyType value);
 }
 

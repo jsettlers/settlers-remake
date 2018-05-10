@@ -17,7 +17,8 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 public final class MovableDataManager {
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
-	private static       int                                  nextID       = Integer.MIN_VALUE;
+
+	private static int nextID = Integer.MIN_VALUE;
 
 	/**
 	 * Used for networking to identify movables over the network.

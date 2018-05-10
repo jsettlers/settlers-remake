@@ -10,15 +10,15 @@ public class Parallel<T> extends Composite<T> {
 
     /*
         Run each child until it's completed
-        Return Success when
+        Return SUCCESS when
         | ONE -> one child was successful
         | ALL -> all children were successful
 
-        Return Running when
+        Return RUNNING when
         | preemptive = true -> successPolicy not fullfilled && any child of it's children still running
         | preemptive = false -> if any of it's children is still running
 
-        Return Failure in all other cases
+        Return FAILURE in all other cases
     */
 
 	public enum Policy {
@@ -43,14 +43,14 @@ public class Parallel<T> extends Composite<T> {
 	protected NodeStatus onTick(Tick<T> tick) {
 		boolean anyRunning = false;
 		for (int index = 0; index < children.size(); index++) {
-			if (!childStatus[index].equals(NodeStatus.Running)) {
+			if (!childStatus[index].equals(NodeStatus.RUNNING)) {
 				continue;
 			}
 			NodeStatus status = children.get(index).execute(tick);
 			childStatus[index] = status;
-			if (status.equals(NodeStatus.Success)) {
+			if (status.equals(NodeStatus.SUCCESS)) {
 				successCount++;
-			} else if (status.equals(NodeStatus.Running)) {
+			} else if (status.equals(NodeStatus.RUNNING)) {
 				anyRunning = true;
 			}
 		}
@@ -58,22 +58,22 @@ public class Parallel<T> extends Composite<T> {
 		boolean successCondition = successPolicy == Policy.ONE && successCount >= 1 || successPolicy == Policy.ALL && successCount == children.size();
 
 		if (anyRunning && preemptive && !successCondition) {
-			return NodeStatus.Running;
+			return NodeStatus.RUNNING;
 		} else if (anyRunning && !preemptive) {
-			return NodeStatus.Running;
+			return NodeStatus.RUNNING;
 		}
 
 		if (successCondition) {
-			return NodeStatus.Success;
+			return NodeStatus.SUCCESS;
 		} else {
-			return NodeStatus.Failure;
+			return NodeStatus.FAILURE;
 		}
 	}
 
 	@Override
 	protected void onOpen(Tick<T> tick) {
 		for (int i = 0; i < childStatus.length; i++) {
-			childStatus[i] = NodeStatus.Running;
+			childStatus[i] = NodeStatus.RUNNING;
 		}
 		successCount = 0;
 	}

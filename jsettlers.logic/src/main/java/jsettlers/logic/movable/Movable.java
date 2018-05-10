@@ -45,7 +45,6 @@ import jsettlers.logic.timer.RescheduleTimer;
 public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 
-
 	protected final AbstractMovableGrid grid;
 	private final int id;
 

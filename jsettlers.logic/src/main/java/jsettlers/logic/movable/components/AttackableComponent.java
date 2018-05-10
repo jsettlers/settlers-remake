@@ -9,30 +9,32 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
  */
 
 public class AttackableComponent extends Component {
-    public static class ReceivedHit extends Notification { }
+	public static class ReceivedHit extends Notification {}
 
-    private static final long serialVersionUID = -5453513130369184993L;
-    private float health;
+	private static final long serialVersionUID = -5453513130369184993L;
 
-    private boolean isAttackable = false;
-    public boolean IsAttackable() { return isAttackable; }
-    public void IsAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
+	private float   health;
+	private boolean isAttackable = false;
 
-    public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
-        health -= strength;
-        entity.raiseNotification(new ReceivedHit());
-    }
+	public boolean IsAttackable() { return isAttackable; }
 
-    public float getHealth() {
-        return health;
-    }
+	public void IsAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
 
-    public void informAboutAttackable(ILogicMovable other) {
-        assert false: "Not implemented";
-    }
+	public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
+		health -= strength;
+		entity.raiseNotification(new ReceivedHit());
+	}
 
-    @Override
-    protected void onDestroy() {
-        health = -200;
-    }
+	public float getHealth() {
+		return health;
+	}
+
+	public void informAboutAttackable(ILogicMovable other) {
+		assert false : "Not implemented";
+	}
+
+	@Override
+	protected void onDestroy() {
+		health = -200;
+	}
 }

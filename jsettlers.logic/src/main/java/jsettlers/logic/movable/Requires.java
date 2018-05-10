@@ -10,9 +10,8 @@ import jsettlers.logic.movable.components.Component;
 /**
  * @author homoroselaps
  */
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Requires {
-    Class<? extends Component>[] value();
+	Class<? extends Component>[] value();
 }

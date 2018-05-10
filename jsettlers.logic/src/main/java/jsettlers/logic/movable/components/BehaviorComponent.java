@@ -12,8 +12,8 @@ public abstract class BehaviorComponent extends Component {
 	private              Tick<Context> tick;
 
 	@Override
-	protected void onAwake() {
-		tick = new Tick<>(new Context(entity, this), CreateBehaviorTree());
+	protected void onWakeUp() {
+		tick = new Tick<>(new Context(entity, this), createBehaviorTree());
 	}
 
 	@Override
@@ -21,5 +21,5 @@ public abstract class BehaviorComponent extends Component {
 		tick.tick();
 	}
 
-	protected abstract Root<Context> CreateBehaviorTree();
+	protected abstract Root<Context> createBehaviorTree();
 }

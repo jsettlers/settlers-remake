@@ -5,34 +5,34 @@ import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-public class Property<T, PropertyType> extends Decorator<T>
-{
-    private static final long serialVersionUID = 6714370606784586530L;
-    private PropertyType oldValue;
-    private final PropertyType newValue;
-    private final ISetPropertyConsumer<T, PropertyType> setter;
-    private final IGetPropertyProducer<T, PropertyType> getter;
+public class Property<T, PropertyType> extends Decorator<T> {
+	private static final long serialVersionUID = 6714370606784586530L;
 
-    public Property(ISetPropertyConsumer<T, PropertyType> setter, IGetPropertyProducer<T, PropertyType> getter, PropertyType value, Node<T> child) {
-        super(child);
-        this.newValue = value;
-        this.setter = setter;
-        this.getter = getter;
-    }
+	private       PropertyType                          oldValue;
+	private final PropertyType                          newValue;
+	private final ISetPropertyConsumer<T, PropertyType> setter;
+	private final IGetPropertyProducer<T, PropertyType> getter;
 
-    @Override
-    protected void onEnter(Tick<T> tick) {
-        oldValue = getter.apply(tick.target);
-        setter.accept(tick.target, newValue);
-    }
+	public Property(ISetPropertyConsumer<T, PropertyType> setter, IGetPropertyProducer<T, PropertyType> getter, PropertyType value, Node<T> child) {
+		super(child);
+		this.newValue = value;
+		this.setter = setter;
+		this.getter = getter;
+	}
 
-    @Override
-    protected void onClose(Tick<T> tick) {
-        setter.accept(tick.target, oldValue);
-    }
+	@Override
+	protected void onEnter(Tick<T> tick) {
+		oldValue = getter.apply(tick.target);
+		setter.accept(tick.target, newValue);
+	}
 
-    @Override
-    protected NodeStatus onTick(Tick<T> tick) {
-        return child.execute(tick);
-    }
+	@Override
+	protected void onClose(Tick<T> tick) {
+		setter.accept(tick.target, oldValue);
+	}
+
+	@Override
+	protected NodeStatus onTick(Tick<T> tick) {
+		return child.execute(tick);
+	}
 }

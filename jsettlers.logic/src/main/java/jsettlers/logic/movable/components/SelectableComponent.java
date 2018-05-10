@@ -7,26 +7,29 @@ import jsettlers.common.selectable.ESelectionType;
  */
 
 public class SelectableComponent extends Component {
-    private static final long serialVersionUID = 665477836143096339L;
-    private final ESelectionType _selectionType;
-    public ESelectionType getSelectionType() {
-        return _selectionType;
-    }
+	private static final long serialVersionUID = 665477836143096339L;
 
-    private boolean _isSelected;
-    public boolean isSelected() {
-        return _isSelected;
-    }
-    public void setSelected(boolean selected) {
-        _isSelected = selected;
-    }
+	private final ESelectionType selectionType;
+	private       boolean        selected;
 
-    SelectableComponent(ESelectionType selectionType) {
-        _selectionType = selectionType;
-    }
+	SelectableComponent(ESelectionType selectionType) {
+		this.selectionType = selectionType;
+	}
 
-    @Override
-    protected void onDisable() {
-        setSelected(false);
-    }
+	public ESelectionType getSelectionType() {
+		return selectionType;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	@Override
+	protected void onDisable() {
+		setSelected(false);
+	}
 }

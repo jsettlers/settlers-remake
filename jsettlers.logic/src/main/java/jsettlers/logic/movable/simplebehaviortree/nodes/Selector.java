@@ -16,9 +16,9 @@ public class Selector<T> extends Composite<T> {
 	protected NodeStatus onTick(Tick<T> tick) { 
 		for (Node<T> node : children) {
 			NodeStatus status = node.execute(tick);
-			if (!status.equals(NodeStatus.Failure)) 
+			if (!status.equals(NodeStatus.FAILURE))
 				return status;
 		}
-		return NodeStatus.Failure;
+		return NodeStatus.FAILURE;
 	}
 }

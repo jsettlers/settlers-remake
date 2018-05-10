@@ -17,6 +17,6 @@ public class Condition<T> extends Node<T> {
 
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
-		return condition.test(tick.target) ? NodeStatus.Success : NodeStatus.Failure;
+		return condition.test(tick.target) ? NodeStatus.SUCCESS : NodeStatus.FAILURE;
 	}
 }

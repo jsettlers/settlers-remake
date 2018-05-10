@@ -189,7 +189,7 @@ public abstract class EditorFrame extends JFrame {
 	}
 
 	/**
-	 * Enable / disable an action
+	 * enable / disable an action
 	 * 
 	 * @param actionName
 	 *            action name

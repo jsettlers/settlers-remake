@@ -18,7 +18,7 @@ public enum EBuildingJobType {
 	/**
 	 * Waits a given time.
 	 * <p>
-	 * Success: The time elapsed.
+	 * SUCCESS: The time elapsed.
 	 * <p>
 	 * Fail: impossible.
 	 * 
@@ -30,7 +30,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: direction
 	 * <p>
-	 * Success: The settler is at the position
+	 * SUCCESS: The settler is at the position
 	 * <p>
 	 * Fail: Should not happen normally.
 	 */
@@ -40,7 +40,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: dx, dy
 	 * <p>
-	 * Success: The settler appeared.
+	 * SUCCESS: The settler appeared.
 	 * <p>
 	 * Fail: The settler could not appear at the given position.
 	 */
@@ -50,7 +50,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: none
 	 * <p>
-	 * Success: The settler disappeared instantly.
+	 * SUCCESS: The settler disappeared instantly.
 	 * <p>
 	 * Fail: impossible
 	 */
@@ -61,7 +61,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: good
+	 * SUCCESS: good
 	 * <p>
 	 * Fail: There was no given material at that position.
 	 */
@@ -72,7 +72,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: There was a material at that position, one item was removed.
+	 * SUCCESS: There was a material at that position, one item was removed.
 	 * <p>
 	 * Fail: There was no given material at that position.
 	 */
@@ -82,7 +82,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: When the settler dropped the material.
+	 * SUCCESS: When the settler dropped the material.
 	 * <p>
 	 * Fail: If the drop is impossible.
 	 */
@@ -92,7 +92,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Uses the special {@link BuildingSearchJob} class.
 	 * <p>
-	 * Success: The settler found the thing he should search and went to it.
+	 * SUCCESS: The settler found the thing he should search and went to it.
 	 * <p>
 	 * Fail: If the searched thing was not found. The settler does not need to go back.
 	 * 
@@ -102,7 +102,7 @@ public enum EBuildingJobType {
 	/**
 	 * Goes to the position relative to the building.
 	 * <p>
-	 * Success: The settler is at the position
+	 * SUCCESS: The settler is at the position
 	 * <p>
 	 * Fail: The position is unreachable.
 	 */
@@ -111,7 +111,7 @@ public enum EBuildingJobType {
 	/**
 	 * Look at
 	 * <p>
-	 * Success: The settler looks at the given new direction.
+	 * SUCCESS: The settler looks at the given new direction.
 	 * <p>
 	 * Fail: impossible
 	 */
@@ -121,7 +121,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: time - the time the action should take.
 	 * <p>
-	 * Success: The animation was played.
+	 * SUCCESS: The animation was played.
 	 * <p>
 	 * Fail: something was wrong...
 	 */

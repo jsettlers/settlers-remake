@@ -423,7 +423,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	final ILogicMovable createNewMovableAt(ShortPoint2D pos, EMovableType type, Player player) {
-		return EntityFactory.CreateMovable(movablePathfinderGrid, type, pos, player);
+		return EntityFactory.createMovable(movablePathfinderGrid, type, pos, player);
 	}
 
 	/**
@@ -928,7 +928,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void spawnDonkey(ShortPoint2D position, Player player) {
 			Player realPlayer = partitionsGrid.getPlayer(player.getPlayerId());
-			ILogicMovable donkey = EntityFactory.CreateMovable(movablePathfinderGrid, EMovableType.DONKEY, position, realPlayer);
+			ILogicMovable donkey = EntityFactory.createMovable(movablePathfinderGrid, EMovableType.DONKEY, position, realPlayer);
 			donkey.leavePosition();
 		}
 

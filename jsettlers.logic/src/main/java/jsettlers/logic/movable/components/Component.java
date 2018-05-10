@@ -17,41 +17,41 @@ public abstract class Component implements Serializable {
 	/**
 	 * Called once when the entity gets enabled for the first time
 	 */
-	public final void Awake() {
-		onAwake();
+	public final void wakeUp() {
+		onWakeUp();
 	}
 
-	protected void onAwake() {}
+	protected void onWakeUp() {}
 
-	public final void Update() {
+	public final void update() {
 		consumedNotifications.clear();
 		onUpdate();
 	}
 
 	protected void onUpdate() {}
 
-	public final void LateUpdate() { onLateUpdate(); }
+	public final void lateUpdate() { onLateUpdate(); }
 
 	protected void onLateUpdate() {}
 
 	/**
 	 *  Called when the entity is set to active
 	 */
-	public final void Enable() { onEnable(); }
+	public final void enable() { onEnable(); }
 
 	protected void onEnable() {}
 
 	/**
 	 *  Called when the entity is set to inactive
 	 */
-	public final void Disable() { onDisable(); }
+	public final void disable() { onDisable(); }
 
 	protected void onDisable() {}
 
 	/**
 	 *  Called before the entity gets destroyed/killed
 	 */
-	public final void Destroy() { onDestroy(); }
+	public final void destroy() { onDestroy(); }
 
 	protected void onDestroy() {}
 

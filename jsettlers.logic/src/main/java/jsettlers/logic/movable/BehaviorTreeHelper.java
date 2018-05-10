@@ -139,7 +139,7 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static void convertTo(Entity entity, EMovableType type) {
-		Entity blueprint = EntityFactory.CreateEntity(entity.gameC().getMovableGrid(), type, entity.movC().getPos(), entity.movC().getPlayer());
+		Entity blueprint = EntityFactory.createEntity(entity.gameC().getMovableGrid(), type, entity.movC().getPos(), entity.movC().getPlayer());
 		entity.convertTo(blueprint);
 	}
 
@@ -164,9 +164,9 @@ public final class BehaviorTreeHelper {
 		@Override
 		public NodeStatus onTick(Tick<Context> tick) {
 			int remaining = endTime - MatchConstants.clock().getTime();
-			if (remaining <= 0) { return NodeStatus.Success; }
+			if (remaining <= 0) { return NodeStatus.SUCCESS; }
 			tick.target.entity.setInvocationDelay(remaining);
-			return NodeStatus.Running;
+			return NodeStatus.RUNNING;
 		}
 
 		@Override

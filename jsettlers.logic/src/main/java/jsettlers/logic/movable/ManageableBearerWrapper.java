@@ -13,36 +13,37 @@ import jsettlers.logic.movable.components.MovableComponent;
 /**
  * @author homoroselaps
  */
-
 public final class ManageableBearerWrapper implements IManageableBearer {
-    private static final long serialVersionUID = 2252932151684965586L;
-    private final Entity entity;
-    public ManageableBearerWrapper(Entity entity) {
-        this.entity = entity;
-    }
+	private static final long serialVersionUID = 2252932151684965586L;
 
-    @Override
-    public ShortPoint2D getPos() {
-        return entity.get(MovableComponent.class).getPos();
-    }
+	private final Entity entity;
 
-    @Override
-    public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request) {
-        return entity.get(BearerComponent.class).becomeWorker(requester, request);
-    }
+	public ManageableBearerWrapper(Entity entity) {
+		this.entity = entity;
+	}
 
-    @Override
-    public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, IMaterialOffer offer) {
-        return entity.get(BearerComponent.class).becomeWorker(requester, request, offer);
-    }
+	@Override
+	public ShortPoint2D getPos() {
+		return entity.get(MovableComponent.class).getPos();
+	}
 
-    @Override
-    public boolean becomeSoldier(IBarrack barrack) {
-        return entity.get(BearerComponent.class).becomeSoldier(barrack);
-    }
+	@Override
+	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request) {
+		return entity.get(BearerComponent.class).becomeWorker(requester, request);
+	}
 
-    @Override
-    public void deliver(EMaterialType materialType, IMaterialOffer offer, IMaterialRequest request) {
-        entity.get(BearerComponent.class).deliver(materialType, offer, request);
-    }
+	@Override
+	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, IMaterialOffer offer) {
+		return entity.get(BearerComponent.class).becomeWorker(requester, request, offer);
+	}
+
+	@Override
+	public boolean becomeSoldier(IBarrack barrack) {
+		return entity.get(BearerComponent.class).becomeSoldier(barrack);
+	}
+
+	@Override
+	public void deliver(EMaterialType materialType, IMaterialOffer offer, IMaterialRequest request) {
+		entity.get(BearerComponent.class).deliver(materialType, offer, request);
+	}
 }

@@ -16,11 +16,11 @@ public class Inverter<T> extends Decorator<T> {
 	protected NodeStatus onTick(Tick<T> tick) {
 		NodeStatus result = child.execute(tick);
 		switch (result) {
-			case Success:
-				return NodeStatus.Failure;
-			case Failure:
-				return NodeStatus.Success;
-			case Running:
+			case SUCCESS:
+				return NodeStatus.FAILURE;
+			case FAILURE:
+				return NodeStatus.SUCCESS;
+			case RUNNING:
 				return result;
 			default:
 				throw new IllegalStateException("Unknown NodeStatus: " + result);

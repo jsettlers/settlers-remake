@@ -13,10 +13,6 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 
-import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
-import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
-import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
-import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.condition;
 import static jsettlers.logic.movable.BehaviorTreeHelper.convertTo;
@@ -25,6 +21,9 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
 import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
+import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
+import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAndFailIfNotReachable;
 
 /**
@@ -43,7 +42,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 	private static final long serialVersionUID = -4581600901753172458L;
 
 	@Override
-	protected Root<Context> CreateBehaviorTree() {
+	protected Root<Context> createBehaviorTree() {
 		return new Root<>(selector(
 			triggerGuard(BearerComponent.DeliveryJob.class,
 				guard(c -> c.entity.bearerC().hasJob(), false,
@@ -186,9 +185,9 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 			if (c.entity.gameC().getMovableGrid().takeMaterial(c.entity.movC().getPos(), materialToTake)) {
 				c.entity.matC().setMaterial(materialToTake);
 				c.entity.bearerC().materialOffer.offerTaken();
-				return NodeStatus.Success;
+				return NodeStatus.SUCCESS;
 			}
-			return NodeStatus.Failure;
+			return NodeStatus.FAILURE;
 		});
 	}
 
@@ -200,9 +199,9 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 				convertTo(c.entity, type);
 				c.entity.steerC().setTarget(targetPosition);
 				c.entity.movC().getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
-				return NodeStatus.Success;
+				return NodeStatus.SUCCESS;
 			}
-			return NodeStatus.Failure;
+			return NodeStatus.FAILURE;
 		});
 	}
 
@@ -212,9 +211,9 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 				c.entity.gameC().getMovableGrid().dropMaterial(c.entity.movC().getPos(), c.entity.bearerC().materialType, false, false);
 				c.entity.bearerC().deliveryRequest.deliveryFulfilled();
 				c.entity.matC().setMaterial(EMaterialType.NO_MATERIAL);
-				return NodeStatus.Success;
+				return NodeStatus.SUCCESS;
 			}
-			return NodeStatus.Failure;
+			return NodeStatus.FAILURE;
 		});
 	}
 

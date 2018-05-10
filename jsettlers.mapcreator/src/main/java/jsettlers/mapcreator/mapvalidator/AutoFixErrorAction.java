@@ -77,7 +77,7 @@ public class AutoFixErrorAction extends AbstractAction implements ValidationResu
 	}
 
 	/**
-	 * Update the error text and icon, if an error or not
+	 * update the error text and icon, if an error or not
 	 */
 	@Override
 	public void validationFinished(ValidationListModel list) {

@@ -27,7 +27,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: time (in seconds)
 	 * <p>
-	 * Success: The time elapsed.
+	 * SUCCESS: The time elapsed.
 	 * <p>
 	 * Fail: impossible.
 	 * 
@@ -40,7 +40,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: direction
 	 * <p>
-	 * Success: The settler is at the position
+	 * SUCCESS: The settler is at the position
 	 * <p>
 	 * Fail: Should not happen normally.
 	 */
@@ -51,7 +51,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: dx, dy
 	 * <p>
-	 * Success: The settler appeared.
+	 * SUCCESS: The settler appeared.
 	 * <p>
 	 * Fail: The settler could not appear at the given position.
 	 */
@@ -62,7 +62,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: none
 	 * <p>
-	 * Success: The settler disappeared instantly.
+	 * SUCCESS: The settler disappeared instantly.
 	 * <p>
 	 * Fail: impossible
 	 */
@@ -73,7 +73,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: always
+	 * SUCCESS: always
 	 * <p>
 	 * Fail: never
 	 */
@@ -84,7 +84,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: There was a material at that position, one item was removed.
+	 * SUCCESS: There was a material at that position, one item was removed.
 	 * <p>
 	 * Fail: There was no given material at that position.
 	 */
@@ -98,7 +98,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: When the settler dropped the material.
+	 * SUCCESS: When the settler dropped the material.
 	 * <p>
 	 * Fail: If the drop is impossible, e.g. because there is already material at that position.
 	 */
@@ -113,7 +113,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * This job always fails if the working radius is 0.
 	 * <p>
-	 * Success: A path to the searched thing has been found.
+	 * SUCCESS: A path to the searched thing has been found.
 	 * <p>
 	 * Fail: If the searched thing was not found.
 	 * <p>
@@ -133,7 +133,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * This job always fails if the working radius is 0.
 	 * <p>
-	 * Success: A path to the searched thing has been found.
+	 * SUCCESS: A path to the searched thing has been found.
 	 * <p>
 	 * Fail: If the searched thing was not found.
 	 * 
@@ -150,7 +150,7 @@ public enum EBuildingJobType {
 	/**
 	 * Goes to the position relative to the building.
 	 * <p>
-	 * Success: The settler is at the position
+	 * SUCCESS: The settler is at the position
 	 * <p>
 	 * Fail: The position is unreachable.
 	 */
@@ -161,7 +161,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: direction
 	 * <p>
-	 * Success: The settler looks at the given new direction.
+	 * SUCCESS: The settler looks at the given new direction.
 	 * <p>
 	 * Fail: impossible
 	 */
@@ -172,7 +172,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: time (the time the action should take)
 	 * <p>
-	 * Success: The animation was played.
+	 * SUCCESS: The animation was played.
 	 * <p>
 	 * Fail: should not happen.
 	 */
@@ -193,7 +193,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameters: type ({@link jsettlers.common.material.ESearchType})
 	 * <p>
-	 * Success: the given search type has been executed
+	 * SUCCESS: the given search type has been executed
 	 * <p>
 	 * Fail: the given search type couldn't be executed
 	 */
@@ -204,7 +204,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameters: dx, dy, material
 	 * <p>
-	 * Success: There is material at that position.
+	 * SUCCESS: There is material at that position.
 	 * <p>
 	 * Fail: There is no matching material at that position
 	 */
@@ -215,7 +215,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameters: dx, dy, material
 	 * <p>
-	 * Success: The material may be placed at the given position
+	 * SUCCESS: The material may be placed at the given position
 	 * <p>
 	 * Fail: There is a full stack at that position, a wrong stack or it is blocked otherwise.
 	 */

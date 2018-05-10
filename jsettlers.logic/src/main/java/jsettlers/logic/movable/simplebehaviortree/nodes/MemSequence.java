@@ -19,11 +19,11 @@ public class MemSequence<T> extends Composite<T> {
 	protected NodeStatus onTick(Tick<T> tick) {
 		for (; index < children.size(); index++) {
 			NodeStatus status = children.get(index).execute(tick);
-			if (status != NodeStatus.Success) {
+			if (status != NodeStatus.SUCCESS) {
 				return status;
 			}
 		}
-		return NodeStatus.Success;
+		return NodeStatus.SUCCESS;
 	}
 
 	@Override

@@ -19,11 +19,11 @@ public class MemSelector<T> extends Composite<T> {
 	protected NodeStatus onTick(Tick<T> tick) {
 		for (; index < children.size(); index++) {
 			NodeStatus status = children.get(index).execute(tick);
-			if (status != NodeStatus.Failure) {
+			if (status != NodeStatus.FAILURE) {
 				return status;
 			}
 		}
-		return NodeStatus.Failure;
+		return NodeStatus.FAILURE;
 	}
 
 	@Override

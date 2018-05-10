@@ -117,7 +117,7 @@ public class ShapeSelectionPanel extends Box {
 	}
 
 	/**
-	 * Update the property slider
+	 * update the property slider
 	 */
 	private void updateStrokeProperties() {
 		for (StrokenSlider s : properties.values()) {
@@ -137,7 +137,7 @@ public class ShapeSelectionPanel extends Box {
 	}
 
 	/**
-	 * Enable / Disable tool buttons
+	 * enable / disable tool buttons
 	 * 
 	 * @param tool
 	 *            Tool

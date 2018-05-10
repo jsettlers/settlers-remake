@@ -8,6 +8,6 @@ public final class Succeeder<T> extends Node<T> {
 
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
-		return NodeStatus.Success;
+		return NodeStatus.SUCCESS;
 	}
 }

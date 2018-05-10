@@ -17,10 +17,10 @@ public class Sequence<T> extends Composite<T> {
 	protected NodeStatus onTick(Tick<T> tick) {
 		for (Node<T> node : children) {
 			NodeStatus status = node.execute(tick);
-			if (status != NodeStatus.Success) {
+			if (status != NodeStatus.SUCCESS) {
 				return status;
 			}
 		}
-		return NodeStatus.Success;
+		return NodeStatus.SUCCESS;
 	}
 }

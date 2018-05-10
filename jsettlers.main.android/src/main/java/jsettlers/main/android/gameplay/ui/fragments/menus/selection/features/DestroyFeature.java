@@ -66,7 +66,7 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
 	@Override
 	public void actionFired(IAction action) {
 		if (action.getActionType() == EActionType.ASK_DESTROY) {
-			Snackbar.make(getView(), "Destroy this building?", Snackbar.LENGTH_SHORT)
+			Snackbar.make(getView(), "destroy this building?", Snackbar.LENGTH_SHORT)
 					.setAction("Yes", view -> {
 						actionControls.fireAction(new Action(EActionType.DESTROY));
 						getMenuNavigator().dismissMenu();
