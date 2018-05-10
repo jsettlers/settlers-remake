@@ -24,26 +24,26 @@ public final class ManageableBearerWrapper implements IManageableBearer {
 
 	@Override
 	public ShortPoint2D getPos() {
-		return entity.get(MovableComponent.class).getPos();
+		return entity.getComponent(MovableComponent.class).getPos();
 	}
 
 	@Override
 	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request) {
-		return entity.get(BearerComponent.class).becomeWorker(requester, request);
+		return entity.getComponent(BearerComponent.class).becomeWorker(requester, request);
 	}
 
 	@Override
 	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, IMaterialOffer offer) {
-		return entity.get(BearerComponent.class).becomeWorker(requester, request, offer);
+		return entity.getComponent(BearerComponent.class).becomeWorker(requester, request, offer);
 	}
 
 	@Override
 	public boolean becomeSoldier(IBarrack barrack) {
-		return entity.get(BearerComponent.class).becomeSoldier(barrack);
+		return entity.getComponent(BearerComponent.class).becomeSoldier(barrack);
 	}
 
 	@Override
 	public void deliver(EMaterialType materialType, IMaterialOffer offer, IMaterialRequest request) {
-		entity.get(BearerComponent.class).deliver(materialType, offer, request);
+		entity.getComponent(BearerComponent.class).deliver(materialType, offer, request);
 	}
 }

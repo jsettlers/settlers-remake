@@ -27,10 +27,10 @@ import jsettlers.logic.player.Player;
 /**
  * @author homoroselaps
  */
-
 public final class MovableWrapper implements ILogicMovable, Serializable {
-	private static final long   serialVersionUID = -2853861825853788354L;
-	private final        Entity entity;
+	private static final long serialVersionUID = -2853861825853788354L;
+
+	private final Entity entity;
 
 	public MovableWrapper(Entity entity) {
 		this.entity = entity;
@@ -39,60 +39,52 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	//region Interface Implementations
 	@Override
 	public short getViewDistance() {
-		if (!entity.containsComponent(MovableComponent.class)) { return 0; }
-		return entity.get(MovableComponent.class).getViewDistance();
+		return entity.getComponentOptional(MovableComponent.class).map(MovableComponent::getViewDistance).orElse((short) 0);
 	}
 
 	@Override
 	public boolean needsPlayersGround() {
-		if (!entity.containsComponent(MovableComponent.class)) { return false; }
-		return entity.get(MovableComponent.class).needsPlayersGround();
+		return entity.getComponentOptional(MovableComponent.class).map(MovableComponent::needsPlayersGround).orElse(false);
 	}
 
 	@Override
 	public EDirection getDirection() {
-		if (!entity.containsComponent(MovableComponent.class)) { return EDirection.NORTH_EAST; }
-		return entity.get(MovableComponent.class).getViewDirection();
+		return entity.getComponentOptional(MovableComponent.class).map(MovableComponent::getViewDirection).orElse(EDirection.NORTH_EAST);
 	}
 
 	@Override
 	public EMovableAction getAction() {
-		if (!entity.containsComponent(AnimationComponent.class)) { return EMovableAction.NO_ACTION; }
-		return entity.get(AnimationComponent.class).getAnimation();
+		return entity.getComponentOptional(AnimationComponent.class).map(AnimationComponent::getAnimation).orElse(EMovableAction.NO_ACTION);
 	}
 
 	@Override
 	public float getMoveProgress() {
-		if (!entity.containsComponent(AnimationComponent.class)) { return 0; }
-		return entity.get(AnimationComponent.class).getAnimationProgress();
+		return entity.getComponentOptional(AnimationComponent.class).map(AnimationComponent::getAnimationProgress).orElse(0f);
 	}
 
 	@Override
 	public EMaterialType getMaterial() {
-		if (!entity.containsComponent(MaterialComponent.class)) { return EMaterialType.NO_MATERIAL; }
-		return entity.get(MaterialComponent.class).getMaterial();
+		return entity.getComponentOptional(MaterialComponent.class).map(MaterialComponent::getMaterial).orElse(EMaterialType.NO_MATERIAL);
 	}
 
 	@Override
 	public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
-		if (!entity.containsComponent(AttackableComponent.class)) { return; }
-		entity.get(AttackableComponent.class).receiveHit(strength, attackerPos, attackingPlayer);
+		entity.getComponentOptional(AttackableComponent.class).ifPresent(component -> component.receiveHit(strength, attackerPos, attackingPlayer));
 	}
 
 	@Override
 	public float getHealth() {
-		return entity.get(AttackableComponent.class).getHealth();
+		return entity.getComponent(AttackableComponent.class).getHealth();
 	}
 
 	@Override
 	public boolean isRightstep() {
-		return entity.get(AnimationComponent.class).isRightStep();
+		return entity.getComponent(AnimationComponent.class).isRightStep();
 	}
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
-		if (!entity.containsComponent(SpecialistComponent.class)) { return; }
-		entity.get(SpecialistComponent.class).setIsWorking(!stop);
+		entity.getComponentOptional(SpecialistComponent.class).ifPresent(component -> component.setIsWorking(!stop));
 	}
 
 	@Override
@@ -102,46 +94,42 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public ShortPoint2D getPos() {
-		return entity.get(MovableComponent.class).getPos();
+		return entity.getComponent(MovableComponent.class).getPos();
 	}
 
 	@Override
 	public boolean isSelected() {
-		if (entity.get(SelectableComponent.class) == null) { return false; }
-		return entity.get(SelectableComponent.class).isSelected();
+		return entity.getComponentOptional(SelectableComponent.class).map(SelectableComponent::isSelected).orElse(false);
 	}
 
 	@Override
 	public void setSelected(boolean selected) {
-		if (entity.get(SelectableComponent.class) == null) { return; }
-		entity.get(SelectableComponent.class).setSelected(selected);
+		entity.getComponentOptional(SelectableComponent.class).ifPresent(component -> component.setSelected(selected));
 	}
 
 	@Override
 	public ESelectionType getSelectionType() {
-		if (!entity.containsComponent(PlayerCmdComponent.class)) { return ESelectionType.PEOPLE; }
-		return entity.get(SelectableComponent.class).getSelectionType();
+		return entity.getComponentOptional(SelectableComponent.class).map(SelectableComponent::getSelectionType).orElse(ESelectionType.PEOPLE);
 	}
 
 	@Override
 	public boolean isAttackable() {
-		if (!entity.containsComponent(AttackableComponent.class)) { return false; }
-		return entity.get(AttackableComponent.class).IsAttackable();
+		return entity.getComponentOptional(AttackableComponent.class).map(AttackableComponent::IsAttackable).orElse(false);
 	}
 
 	@Override
 	public void setSoundPlayed() {
-		entity.get(AnimationComponent.class).setSoundPlayed();
+		entity.getComponent(AnimationComponent.class).setSoundPlayed();
 	}
 
 	@Override
 	public boolean isSoundPlayed() {
-		return entity.get(AnimationComponent.class).isSoundPlayed();
+		return entity.getComponent(AnimationComponent.class).isSoundPlayed();
 	}
 
 	@Override
 	public EMovableType getMovableType() {
-		return entity.get(MovableComponent.class).getMovableType();
+		return entity.getComponent(MovableComponent.class).getMovableType();
 	}
 
 	@Override
@@ -156,7 +144,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public void informAboutAttackable(IAttackable attackable) {
-		entity.get(AttackableComponent.class).informAboutAttackable((ILogicMovable) attackable);
+		entity.getComponent(AttackableComponent.class).informAboutAttackable((ILogicMovable) attackable);
 	}
 
 	@Override
@@ -202,7 +190,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	public boolean canOccupyBuilding() {
 		//TODO: this method has no right to exist, refactor together with @setOccupyableBuilding
 		return false;
-		//return entity.get(SelectableComponent.class).getSelectionType() == ESelectionType.SOLDIERS;
+		//return entity.getComponent(SelectableComponent.class).getSelectionType() == ESelectionType.SOLDIERS;
 	}
 
 	@Override
@@ -225,13 +213,12 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	@Override
 	public Player getPlayer() {
 		//TODO: switch to playerID or player everywhere
-		return entity.get(MovableComponent.class).getPlayer();
+		return entity.getComponent(MovableComponent.class).getPlayer();
 	}
 
 	@Override
 	public void moveTo(ShortPoint2D targetPosition) {
-		if (!entity.containsComponent(PlayerCmdComponent.class)) { return; }
-		entity.get(PlayerCmdComponent.class).sendAltLeftClick(targetPosition);
+		entity.getComponentOptional(PlayerCmdComponent.class).ifPresent(component -> component.sendAltLeftClick(targetPosition));
 	}
 
 	@Override

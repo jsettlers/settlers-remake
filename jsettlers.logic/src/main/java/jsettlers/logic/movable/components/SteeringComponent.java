@@ -61,9 +61,9 @@ public class SteeringComponent extends Component {
 
 	@Override
 	protected void onWakeUp() {
-		gameFieldComponent = entity.get(GameFieldComponent.class);
-		movableComponent = entity.get(MovableComponent.class);
-		animationComponent = entity.get(AnimationComponent.class);
+		gameFieldComponent = entity.getComponent(GameFieldComponent.class);
+		movableComponent = entity.getComponent(MovableComponent.class);
+		animationComponent = entity.getComponent(AnimationComponent.class);
 		tick = new Tick<>(new Context(entity, this), CreateBehaviorTree());
 	}
 

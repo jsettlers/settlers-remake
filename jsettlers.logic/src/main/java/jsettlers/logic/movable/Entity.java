@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java8.util.Optional;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
@@ -166,8 +167,13 @@ public class Entity implements Serializable, IScheduledTimerable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <C extends Component> C get(Class<C> c) {
+	public <C extends Component> C getComponent(Class<C> c) {
 		return (C) componentLookup.get(c);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <C extends Component> Optional<C> getComponentOptional(Class<C> c) {
+		return Optional.ofNullable((C) componentLookup.get(c));
 	}
 
 	public boolean containsComponent(Class<? extends Component> c) {
@@ -188,7 +194,7 @@ public class Entity implements Serializable, IScheduledTimerable {
 		for (Class<? extends Component> cls : blueprint.components.keySet()) {
 			// ignore components we already have
 			if (components.containsKey(cls)) { continue; }
-			Component c = blueprint.get(cls);
+			Component c = blueprint.getComponent(cls);
 			blueprint.remove(cls);
 			newComponents.add(c);
 			add(c);
@@ -242,34 +248,34 @@ public class Entity implements Serializable, IScheduledTimerable {
 	}
 
 	public final AnimationComponent getAnimationComponent() {
-		return get(AnimationComponent.class);
+		return getComponent(AnimationComponent.class);
 	}
 
 	public final SteeringComponent steerC() {
-		return get(SteeringComponent.class);
+		return getComponent(SteeringComponent.class);
 	}
 
 	public final MovableComponent movC() {
-		return get(MovableComponent.class);
+		return getComponent(MovableComponent.class);
 	}
 
 	public final BearerComponent bearerC() {
-		return get(BearerComponent.class);
+		return getComponent(BearerComponent.class);
 	}
 
 	public final SpecialistComponent specC() {
-		return get(SpecialistComponent.class);
+		return getComponent(SpecialistComponent.class);
 	}
 
 	public final GameFieldComponent gameC() {
-		return get(GameFieldComponent.class);
+		return getComponent(GameFieldComponent.class);
 	}
 
-	public final MaterialComponent matC() { return get(MaterialComponent.class); }
+	public final MaterialComponent matC() { return getComponent(MaterialComponent.class); }
 
-	public final MultiMaterialComponent mmatC() { return get(MultiMaterialComponent.class); }
+	public final MultiMaterialComponent mmatC() { return getComponent(MultiMaterialComponent.class); }
 
-	public final DonkeyComponent donkeyC() { return get(DonkeyComponent.class); }
+	public final DonkeyComponent donkeyC() { return getComponent(DonkeyComponent.class); }
 
-	public final AttackableComponent attC() { return get(AttackableComponent.class); }
+	public final AttackableComponent attC() { return getComponent(AttackableComponent.class); }
 }

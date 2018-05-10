@@ -27,7 +27,7 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	//TODO: make @movableWrapper not necessary
 	private       MovableWrapper movableWrapper;
 
-	private GameFieldComponent gameC;
+	private GameFieldComponent gameComponent;
 
 	public MovableComponent(EMovableType movableType, Player player, ShortPoint2D position, EDirection viewDirection) {
 		this.movableType = movableType;
@@ -38,14 +38,14 @@ public class MovableComponent extends Component implements IPathCalculatable {
 
 	@Override
 	protected void onWakeUp() {
-		gameC = entity.get(GameFieldComponent.class);
+		gameComponent = entity.getComponent(GameFieldComponent.class);
 		movableWrapper = new MovableWrapper(entity);
 	}
 
 	@Override
 	protected void onEnable() {
-		gameC.addNewMovable(movableWrapper);
-		gameC.getMovableGrid().enterPosition(position, movableWrapper, true);
+		gameComponent.addNewMovable(movableWrapper);
+		gameComponent.getMovableGrid().enterPosition(position, movableWrapper, true);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -55,14 +55,13 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	@Override
 	protected void onDisable() {
 		// TODO: refactor leavePosition to not use the instance
-		gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
-
-		gameC.removeMovable(getMovableWrapper());
+		gameComponent.getMovableGrid().leavePosition(position, gameComponent.getMovableGrid().getMovableAt(position.x, position.y));
+		gameComponent.removeMovable(getMovableWrapper());
 	}
 
 	@Override
 	protected void onDestroy() {
-		gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
+		gameComponent.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
 
 	public MovableWrapper getMovableWrapper() {
@@ -92,9 +91,9 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	}
 
 	public void setPos(ShortPoint2D position) {
-		gameC.getMovableGrid().leavePosition(this.position, movableWrapper);
+		gameComponent.getMovableGrid().leavePosition(this.position, movableWrapper);
 		this.position = position;
-		gameC.getMovableGrid().enterPosition(this.position, movableWrapper, false);
+		gameComponent.getMovableGrid().enterPosition(this.position, movableWrapper, false);
 	}
 
 	public void setPlayer(Player player) {
