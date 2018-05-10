@@ -22,13 +22,13 @@ public class Property<T, PropertyType> extends Decorator<T>
 
     @Override
     protected void onEnter(Tick<T> tick) {
-        oldValue = getter.apply(tick.Target);
-        setter.accept(tick.Target, newValue);
+        oldValue = getter.apply(tick.target);
+        setter.accept(tick.target, newValue);
     }
 
     @Override
     protected void onClose(Tick<T> tick) {
-        setter.accept(tick.Target, oldValue);
+        setter.accept(tick.target, oldValue);
     }
 
     @Override

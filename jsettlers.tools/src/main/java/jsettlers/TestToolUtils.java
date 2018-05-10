@@ -47,9 +47,9 @@ public class TestToolUtils extends TestUtils {
 		mapInterfaceConnector.addListener(action -> {
 			if (action.getActionType() == EActionType.SELECT_POINT) {
 				PointAction selectAction = (PointAction) action;
-				System.out.println("Action preformed: " + action.getActionType() + " at: " + selectAction.getPosition());
+				System.out.println("action preformed: " + action.getActionType() + " at: " + selectAction.getPosition());
 			} else {
-				System.out.println("Action preformed: " + action.getActionType());
+				System.out.println("action preformed: " + action.getActionType());
 			}
 		});
 

@@ -26,7 +26,7 @@ public class Guard<T> extends Node<T> {
 	
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
-		boolean result = condition.apply(tick.Target);
+		boolean result = condition.test(tick.target);
 		if (result == value) 
 			return child.execute(tick);
 		else 

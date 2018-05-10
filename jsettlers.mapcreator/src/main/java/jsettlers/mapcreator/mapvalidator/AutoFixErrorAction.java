@@ -25,7 +25,7 @@ import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
 /**
- * Action to fix all errors automatically, if clear what to do
+ * action to fix all errors automatically, if clear what to do
  * 
  * @author Andreas Butti
  */

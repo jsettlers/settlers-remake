@@ -56,7 +56,7 @@ public abstract class Component implements Serializable {
 	protected void onDestroy() {}
 
 	public <T extends Notification> List<T> getNotifications(Class<T> type) {
-		Iterator<T> it = getNotificationsIt(type);
+		Iterator<T> it = getNotificationsIterator(type);
 		List<T> result = new ArrayList<T>();
 		while (it.hasNext()) {
 			result.add(it.next());
@@ -65,7 +65,7 @@ public abstract class Component implements Serializable {
 	}
 
 	public <T extends Notification> T getNextNotification(Class<T> type, boolean consume) {
-		Iterator<T> it = getNotificationsIt(type);
+		Iterator<T> it = getNotificationsIterator(type);
 		T note = it.next();
 		if (note != null) {
 			if (consume) { consumeNotification(note); }
@@ -74,10 +74,10 @@ public abstract class Component implements Serializable {
 	}
 
 	public <T extends Notification> boolean containsNotification(Class<T> type) {
-		return getNotificationsIt(type).hasNext();
+		return getNotificationsIterator(type).hasNext();
 	}
 
-	public <T extends Notification> Iterator<T> getNotificationsIt(Class<T> type) {
+	public <T extends Notification> Iterator<T> getNotificationsIterator(Class<T> type) {
 		class NotificationIterator implements Iterator<T> {
 			private T                      nextItem;
 			private Iterator<Notification> it       = entity.getAllNotifications().iterator();

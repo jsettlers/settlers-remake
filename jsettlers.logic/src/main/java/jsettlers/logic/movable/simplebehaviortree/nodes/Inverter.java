@@ -1,4 +1,5 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
+
 import jsettlers.logic.movable.simplebehaviortree.Decorator;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
@@ -14,12 +15,15 @@ public class Inverter<T> extends Decorator<T> {
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
 		NodeStatus result = child.execute(tick);
-		if (result.equals(NodeStatus.Success)) {
-			return NodeStatus.Failure;
-		} else if (result.equals(NodeStatus.Failure)) {
-			return NodeStatus.Success; 
-		} else {
-			return result;
+		switch (result) {
+			case Success:
+				return NodeStatus.Failure;
+			case Failure:
+				return NodeStatus.Success;
+			case Running:
+				return result;
+			default:
+				throw new IllegalStateException("Unknown NodeStatus: " + result);
 		}
 	}
 }

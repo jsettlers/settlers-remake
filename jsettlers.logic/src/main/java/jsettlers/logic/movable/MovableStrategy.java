@@ -208,7 +208,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * Checks preconditions before the next path step can be gone.
 	 *
 	 * @param pathTarget
-	 * 		Target of the current path.
+	 * 		target of the current path.
 	 * @param step
 	 * 		The number of the current step where 1 means the first step.
 	 * @return true if the path should be continued<br>

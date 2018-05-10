@@ -70,8 +70,8 @@ public class Repeat<T> extends Decorator<T> {
 
 /*
 
-Repeat
-    Condition
-    Action
-    Wait
+repeat
+    condition
+    action
+    wait
  */

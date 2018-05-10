@@ -9,14 +9,14 @@ import jsettlers.logic.movable.components.Component;
  */
 public final class Context implements Serializable {
 	public final Entity    entity;
-	public final Component comp;
+	public final Component component;
 
 	public Entity getEntity() { return entity; }
 
-	public Component getComponent() { return comp; }
+	public Component getComponent() { return component; }
 
 	public Context(Entity entity, Component component) {
 		this.entity = entity;
-		this.comp = component;
+		this.component = component;
 	}
 }

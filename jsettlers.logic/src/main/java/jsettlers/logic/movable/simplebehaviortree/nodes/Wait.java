@@ -13,7 +13,7 @@ public class Wait<T> extends Decorator<T> {
     private static final long serialVersionUID = -6025244799010530015L;
 
     /*
-    Wait for a condition to become true,
+    wait for a condition to become true,
      */
 
     public Wait(Node<T> condition) {

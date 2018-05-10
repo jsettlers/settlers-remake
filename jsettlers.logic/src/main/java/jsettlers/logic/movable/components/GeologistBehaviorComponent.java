@@ -7,24 +7,23 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableDouble;
-import jsettlers.logic.movable.BehaviorTreeHelper.*;
+import jsettlers.logic.movable.BehaviorTreeHelper;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Requires;
-import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 
-import static jsettlers.logic.movable.BehaviorTreeHelper.$;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Action;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Guard;
-import static jsettlers.logic.movable.BehaviorTreeHelper.MemSequence;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Selector;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Sequence;
-import static jsettlers.logic.movable.BehaviorTreeHelper.StartAnimation;
-import static jsettlers.logic.movable.BehaviorTreeHelper.TriggerGuard;
-import static jsettlers.logic.movable.BehaviorTreeHelper.WaitForNotification;
-import static jsettlers.logic.movable.BehaviorTreeHelper.WaitForTargetReached_FailIfNotReachable;
+import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
+import static jsettlers.logic.movable.BehaviorTreeHelper.action;
+import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
+import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
+import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
+import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
+import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
+import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAndFailIfNotReachable;
 
 /**
  * @author homoroselaps
@@ -46,53 +45,53 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
         final short ACTION1_DURATION = 1400;
         final short ACTION2_DURATION = 1500;
 
-        return new Root<>(Selector(
-            TriggerGuard(PlayerCmdComponent.LeftClickCommand.class,
-                MemSequence(
-                    Action(c->{c.entity.specC().setIsWorking(false);}),
-                    Action(GeologistBehaviorComponent::setTargetWorkPos)
-                )
+        return new Root<>(selector(
+                triggerGuard(PlayerCmdComponent.LeftClickCommand.class,
+                             memSequence(
+						BehaviorTreeHelper.action(c->{c.entity.specC().setIsWorking(false);}),
+						BehaviorTreeHelper.action(GeologistBehaviorComponent::setTargetWorkPos)
+                                        )
             ),
-            TriggerGuard(PlayerCmdComponent.AltLeftClickCommand.class,
-                MemSequence(
-                    Action(c->{c.entity.specC().setIsWorking(true);}),
-                    Action(GeologistBehaviorComponent::setTargetWorkPos)
-                )
+                triggerGuard(PlayerCmdComponent.AltLeftClickCommand.class,
+                             memSequence(
+						BehaviorTreeHelper.action(c->{c.entity.specC().setIsWorking(true);}),
+						BehaviorTreeHelper.action(GeologistBehaviorComponent::setTargetWorkPos)
+                                        )
             ),
-            TriggerGuard(PlayerCmdComponent.StartWorkCommand.class,
-                Sequence(
-                    Action(c->{c.entity.specC().setIsWorking(true);}),
-                    Action(c->{c.entity.specC().resetTargetWorkPos();})
-                )
+                triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
+                             sequence(
+						BehaviorTreeHelper.action(c->{c.entity.specC().setIsWorking(true);}),
+						BehaviorTreeHelper.action(c->{c.entity.specC().resetTargetWorkPos();})
+                                     )
             ),
-            Guard(c -> c.entity.specC().getTargetWorkPos() != null, true,
-                Selector(
-                    MemSequence(
-                        Action(c->{c.entity.steerC().setTarget(c.entity.specC().getTargetWorkPos());}),
-                        WaitForTargetReached_FailIfNotReachable(),
-                        Action(c->{c.entity.specC().resetTargetWorkPos();})
-                    ),
-                    Sequence(
-                        Action(c->{c.entity.specC().resetTargetWorkPos();}),
-                        Action(c->{c.entity.specC().setIsWorking(false);})
-                    )
-                )
-            ),
-            Guard(c -> c.entity.specC().isWorking(), true,
-                Selector(
-                    $("find a place and work there", MemSequence(
-                        Find_GoToWorkablePosition(),
-                        WaitForTargetReached_FailIfNotReachable(),
-                        WorkOnPosIfPossible(),
-                        StartAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
-                        WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
-                        StartAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
-                        WaitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
-                    )),
-                    $("on failure: stop working", Action(c -> { c.entity.specC().setIsWorking(false);}))
-                )
-            )
-        ));
+                guard(c -> c.entity.specC().getTargetWorkPos() != null, true,
+                      selector(
+                              memSequence(
+							BehaviorTreeHelper.action(c->{c.entity.steerC().setTarget(c.entity.specC().getTargetWorkPos());}),
+							waitForTargetReachedAndFailIfNotReachable(),
+							BehaviorTreeHelper.action(c->{c.entity.specC().resetTargetWorkPos();})
+                                         ),
+                              sequence(
+							BehaviorTreeHelper.action(c->{c.entity.specC().resetTargetWorkPos();}),
+							BehaviorTreeHelper.action(c->{c.entity.specC().setIsWorking(false);})
+                                      )
+                              )
+                     ),
+                guard(c -> c.entity.specC().isWorking(), true,
+                      selector(
+                    BehaviorTreeHelper.debug("find a place and work there", memSequence(
+							Find_GoToWorkablePosition(),
+							waitForTargetReachedAndFailIfNotReachable(),
+							WorkOnPosIfPossible(),
+							startAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
+							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+							startAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
+							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
+                                                                )),
+                    BehaviorTreeHelper.debug("on failure: stop working", BehaviorTreeHelper.action(c -> { c.entity.specC().setIsWorking(false);}))
+                              )
+                     )
+                                  ));
     }
 
     private static Action<Context> WorkOnPosIfPossible() {
@@ -182,7 +181,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
     }
 
     private static void setTargetWorkPos(Context c) {
-        PlayerCmdComponent.LeftClickCommand cmd = c.comp.getNotificationsIt(PlayerCmdComponent.LeftClickCommand.class).next();
+        PlayerCmdComponent.LeftClickCommand cmd = c.component.getNotificationsIterator(PlayerCmdComponent.LeftClickCommand.class).next();
         c.entity.specC().setTargetWorkPos(cmd.pos);
     }
 }

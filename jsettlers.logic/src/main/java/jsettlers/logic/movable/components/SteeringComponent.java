@@ -7,6 +7,7 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.BehaviorTreeHelper;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Notification;
@@ -16,258 +17,251 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-import static jsettlers.logic.movable.BehaviorTreeHelper.$;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Action;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Condition;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Guard;
-import static jsettlers.logic.movable.BehaviorTreeHelper.MemSequence;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Selector;
-import static jsettlers.logic.movable.BehaviorTreeHelper.Sleep;
-import static jsettlers.logic.movable.BehaviorTreeHelper.TriggerGuard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
+import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.action;
+import static jsettlers.logic.movable.BehaviorTreeHelper.condition;
+import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
+import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
+import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
 
 /**
  * @author homoroselaps
  */
-@Requires({GameFieldComponent.class, MovableComponent.class, AnimationComponent.class})
+@Requires({
+	GameFieldComponent.class,
+	MovableComponent.class,
+	AnimationComponent.class
+})
 public class SteeringComponent extends Component {
-    private static final long serialVersionUID = 8281773945922792414L;
-    private Path path;
-    private GameFieldComponent gameC;
-    private MovableComponent movC;
-    private AnimationComponent aniC;
-    private Tick<Context> tick;
+	private static final long serialVersionUID = 8281773945922792414L;
 
-    private boolean isIdleBehaviorActive = false;
-    public boolean IsIdleBehaviorActive() { return isIdleBehaviorActive; }
-    public void IsIdleBehaviorActive(boolean value) { isIdleBehaviorActive = value; }
+	private Path               path;
+	private GameFieldComponent gameC;
+	private MovableComponent   movC;
+	private AnimationComponent aniC;
+	private Tick<Context>      tick;
+	private boolean            isIdleBehaviorActive = false;
 
-    public static class TargetReachedTrigger extends Notification {}
-    public static class TargetNotReachedTrigger extends Notification {}
-    public static class LeavePositionRequest extends Notification {
-        public final ILocatable sender;
-        public LeavePositionRequest(ILocatable sender) {
-            this.sender = sender;
-        }
-    }
+	public boolean IsIdleBehaviorActive() { return isIdleBehaviorActive; }
 
-    @Override
-    protected void onAwake() {
-        gameC = entity.get(GameFieldComponent.class);
-        movC = entity.get(MovableComponent.class);
-        aniC = entity.get(AnimationComponent.class);
-        tick = new Tick<>(new Context(entity,this), CreateBehaviorTree());
-    }
+	public void IsIdleBehaviorActive(boolean value) { isIdleBehaviorActive = value; }
 
-    public boolean setTarget(ShortPoint2D targetPos) {
-        if (movC.getPos().equals(targetPos)) {
-            entity.raiseNotification(new TargetReachedTrigger());
-            return true;
-        }
-        path = gameC.getMovableGrid().calculatePathTo(movC, targetPos);
-        return path != null;
-    }
+	public static class TargetReachedTrigger extends Notification {}
 
-    public void resetTarget() {
-        path = null;
-    }
+	public static class TargetNotReachedTrigger extends Notification {}
 
-    public void setPath(Path path) {
-        assert path != null: "path mustn't be null";
-        this.path = path;
-    }
+	public static class LeavePositionRequest extends Notification {
+		public final ILocatable sender;
 
-    public Path preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
-        if (dijkstra) {
-            return gameC.getMovableGrid().searchDijkstra(movC, centerX, centerY, radius, searchType);
-        } else {
-            return gameC.getMovableGrid().searchInArea(movC, centerX, centerY, radius, searchType);
-        }
-    }
+		public LeavePositionRequest(ILocatable sender) {
+			this.sender = sender;
+		}
+	}
 
-    /*
-    if (goToRandomDirection(pushingMovable)) { // try to find free direction
-				return true; // if we found a free direction, go there and tell the pushing one we'll move
+	@Override
+	protected void onAwake() {
+		gameC = entity.get(GameFieldComponent.class);
+		movC = entity.get(MovableComponent.class);
+		aniC = entity.get(AnimationComponent.class);
+		tick = new Tick<>(new Context(entity, this), CreateBehaviorTree());
+	}
 
-			} else { // if we didn't find a direction, check if it's possible to exchange positions
-				if (pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
-					return false; // the other movable just pushed to get space, we can't do anything for it here.
+	public boolean setTarget(ShortPoint2D targetPos) {
+		if (movC.getPos().equals(targetPos)) {
+			entity.raiseNotification(new TargetReachedTrigger());
+			return true;
+		}
+		path = gameC.getMovableGrid().calculatePathTo(movC, targetPos);
+		return path != null;
+	}
 
-				} else if (pushingMovable.getMovableType().isPlayerControllable()
-						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
-					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
-					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
-					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
-					return true;
+	public void resetTarget() {
+		path = null;
+	}
 
-				} else { // exchange not possible, as the location is not valid.
-					return false;
+	public void setPath(Path path) {
+		assert path != null : "path mustn't be null";
+		this.path = path;
+	}
+
+	public Path preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
+		if (dijkstra) {
+			return gameC.getMovableGrid().searchDijkstra(movC, centerX, centerY, radius, searchType);
+		} else {
+			return gameC.getMovableGrid().searchInArea(movC, centerX, centerY, radius, searchType);
+		}
+	}
+
+	private Root<Context> CreateBehaviorTree() {
+		return new Root<>(BehaviorTreeHelper.debug("==<root>==",
+			selector(
+				guard(c -> path != null, true,
+					BehaviorTreeHelper.action(c -> {
+						followPath();
+					})
+				),
+				guard(c -> gameC.getMovableGrid().isBlockedOrProtected(movC.getPos().x, movC.getPos().y), true,
+					BehaviorTreeHelper.action(c -> {
+						goToNonBlockedOrProtectedPosition();
+					})
+				),
+				BehaviorTreeHelper.guard(c -> isIdleBehaviorActive,
+					selector(
+						BehaviorTreeHelper.debug("if LeavePositionRequest", triggerGuard(LeavePositionRequest.class,
+							BehaviorTreeHelper.debug("try go in random direction", action(context -> {
+								LeavePositionRequest note = context.component.getNextNotification(LeavePositionRequest.class, false);
+								if (note != null && goToRandomDirection(note.sender)) {
+									context.component.consumeNotification(note);
+									return NodeStatus.Success;
+								}
+								return NodeStatus.Failure;
+							}))
+						)),
+						BehaviorTreeHelper.debug("move away from other movables", memSequence(
+							condition(c -> this.flockToDecentralize()),
+							BehaviorTreeHelper.sleep(500)
+						)),
+						BehaviorTreeHelper.debug("turn in a random direction", memSequence(
+							BehaviorTreeHelper.action(c -> {
+								turnInRandomDirection();
+							}),
+							BehaviorTreeHelper.sleep(1000)
+						))
+					)
+				)
+			)
+		));
+	}
+
+	@Override
+	protected void onUpdate() {
+		tick.tick();
+	}
+
+	private boolean goToRandomDirection(ILocatable pushingMovable) {
+		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
+		EDirection pushedFromDir = EDirection.getDirection(movC.getPos(), pushingMovable.getPos());
+
+		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+			if (currDir != pushedFromDir && goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private void followPath() {
+		// if path is finished
+		if (!path.hasNextStep()) {
+			path = null;
+			entity.raiseNotification(new TargetReachedTrigger());
+			return;
+		}
+
+		ILogicMovable blockingMovable = gameC.getMovableGrid().getMovableAt(path.nextX(), path.nextY());
+		if (blockingMovable == null) { // if we can go on to the next step
+			if (gameC.getMovableGrid().isValidNextPathPosition(movC, path.getNextPos(), path.getTargetPos())) { // next position is valid
+				goSingleStep(path.getNextPos());
+				path.goToNextStep();
+			} else { // next position is invalid
+
+				Path newPath = gameC.getMovableGrid().calculatePathTo(movC, path.getTargetPos()); // try to find a new path
+
+				if (newPath == null) { // no path found
+					path = null;
+					entity.raiseNotification(new TargetNotReachedTrigger());
+				} else {
+					this.path = newPath; // continue with new path
+					if (gameC.getMovableGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+						goSingleStep(path.getNextPos());
+						path.goToNextStep();
+					}
 				}
 			}
-     */
+		} else { // step not possible, so try it next time (push not supported)
+			blockingMovable.push(movC.getMovableWrapper());
+		}
+	}
 
-    private Root<Context> CreateBehaviorTree() {
-        return new Root<Context>($("==<Root>==",
-            Selector(
-                Guard(c->path != null, true,
-                    Action(c->{ followPath(); })
-                ),
-                Guard(c->gameC.getMovableGrid().isBlockedOrProtected(movC.getPos().x, movC.getPos().y),true,
-                    Action(c->{ goToNonBlockedOrProtectedPosition(); })
-                ),
-                Guard(c->isIdleBehaviorActive,
-                    Selector(
-                        $("if LeavePositionRequest", TriggerGuard(LeavePositionRequest.class,
-                            $("try go in random direction", Action(context->{
-                                LeavePositionRequest note = context.comp.getNextNotification(LeavePositionRequest.class, false);
-                                if (note != null && goToRandomDirection(note.sender)) {
-                                    context.comp.consumeNotification(note);
-                                    return NodeStatus.Success;
-                                }
-                                return NodeStatus.Failure;
-                            }))
-                        )),
-                        $("move away from other movables", MemSequence(
-                            Condition(c->this.flockToDecentralize()),
-                            Sleep(500)
-                        )),
-                        $("turn in a random direction", MemSequence(
-                            Action(c->{ turnInRandomDirection(); }),
-                            Sleep(1000)
-                        ))
-                    )
-                )
-            )
-        ));
-    }
+	private void goToNonBlockedOrProtectedPosition() {
+		Path newPath = gameC.getMovableGrid().searchDijkstra(movC, movC.getPos().x, movC.getPos().y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
+		if (newPath == null) {
+			entity.kill();
+		} else {
+			setPath(newPath);
+		}
+	}
 
-    @Override
-    protected void onUpdate() {
-        tick.Tick();
-    }
+	private void turnInRandomDirection() {
+		int turnDirection = MatchConstants.random().nextInt(-8, 8);
+		if (Math.abs(turnDirection) <= 1) {
+			movC.setViewDirection(movC.getViewDirection().getNeighbor(turnDirection));
+		}
+	}
 
-    private boolean goToRandomDirection(ILocatable pushingMovable) {
-        int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-        EDirection pushedFromDir = EDirection.getDirection(movC.getPos(), pushingMovable.getPos());
+	private void goSingleStep(ShortPoint2D targetPosition) {
+		movC.setViewDirection(EDirection.getDirection(movC.getPos(), targetPosition));
+		movC.setPos(targetPosition);
+		aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
+		aniC.switchStep();
+	}
 
-        for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-            EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-            if (currDir != pushedFromDir && goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
-                return true;
-            }
-        }
+	/**
+	 * Tries to walk the movable into a position where it has a minimum distance to others.
+	 *
+	 * @return true if the movable moves to flock, false if no flocking is required.
+	 */
+	private boolean flockToDecentralize() {
+		ShortPoint2D decentVector = gameC.getMovableGrid().calcDecentralizeVector(movC.getPos().x, movC.getPos().y);
 
-        return false;
-    }
+		EDirection randomDirection = movC.getViewDirection().getNeighbor(MatchConstants.random().nextInt(-1, 1));
+		int dx = randomDirection.gridDeltaX + decentVector.x;
+		int dy = randomDirection.gridDeltaY + decentVector.y;
 
-    private void followPath() {
-        // if path is finished
-        if (!path.hasNextStep()) {
-            path = null;
-            entity.raiseNotification(new TargetReachedTrigger());
-            return;
-        }
+		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
+			return goInDirection(EDirection.getApproxDirection(0, 0, dx, dy), EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
+		} else {
+			return false;
+		}
+	}
 
-        ILogicMovable blockingMovable = gameC.getMovableGrid().getMovableAt(path.nextX(), path.nextY());
-        if (blockingMovable == null) { // if we can go on to the next step
-            if (gameC.getMovableGrid().isValidNextPathPosition(movC, path.getNextPos(), path.getTargetPos())) { // next position is valid
-                goSingleStep(path.getNextPos());
-                path.goToNextStep();
-            } else { // next position is invalid
+	/**
+	 * Tries to go a step in the given direction.
+	 *
+	 * @param direction
+	 *            direction to go
+	 * @param mode
+	 *            Use the given mode to go.<br>
+	 * @return true if the step can and will immediately be executed. <br>
+	 *         false if the target position is generally blocked or a movable occupies that position.
+	 */
+	final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
+		ShortPoint2D targetPosition = direction.getNextHexPoint(movC.getPos());
 
-                Path newPath = gameC.getMovableGrid().calculatePathTo(movC, path.getTargetPos()); // try to find a new path
-
-                if (newPath == null) { // no path found
-                    path = null;
-                    entity.raiseNotification(new TargetNotReachedTrigger());
-                } else {
-                    this.path = newPath; // continue with new path
-                    if (gameC.getMovableGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
-                        goSingleStep(path.getNextPos());
-                        path.goToNextStep();
-                    }
-                }
-            }
-        } else { // step not possible, so try it next time (push not supported)
-            blockingMovable.push(movC.getMovableWrapper());
-        }
-    }
-
-    private void goToNonBlockedOrProtectedPosition() {
-        Path newPath = gameC.getMovableGrid().searchDijkstra(movC, movC.getPos().x, movC.getPos().y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
-        if (newPath == null) {
-            entity.kill();
-        } else {
-            setPath(newPath);
-        }
-    }
-
-    private void turnInRandomDirection() {
-        int turnDirection = MatchConstants.random().nextInt(-8, 8);
-        if (Math.abs(turnDirection) <= 1) {
-            movC.setViewDirection(movC.getViewDirection().getNeighbor(turnDirection));
-        }
-    }
-
-    private void goSingleStep(ShortPoint2D targetPosition) {
-        movC.setViewDirection(EDirection.getDirection(movC.getPos(), targetPosition));
-        movC.setPos(targetPosition);
-        aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
-        aniC.switchStep();
-    }
-
-    /**
-     * Tries to walk the movable into a position where it has a minimum distance to others.
-     *
-     * @return true if the movable moves to flock, false if no flocking is required.
-     */
-    private boolean flockToDecentralize() {
-        ShortPoint2D decentVector = gameC.getMovableGrid().calcDecentralizeVector(movC.getPos().x, movC.getPos().y);
-
-        EDirection randomDirection = movC.getViewDirection().getNeighbor(MatchConstants.random().nextInt(-1, 1));
-        int dx = randomDirection.gridDeltaX + decentVector.x;
-        int dy = randomDirection.gridDeltaY + decentVector.y;
-
-        if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
-            return goInDirection(EDirection.getApproxDirection(0, 0, dx, dy), EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Tries to go a step in the given direction.
-     *
-     * @param direction
-     *            direction to go
-     * @param mode
-     *            Use the given mode to go.<br>
-     * @return true if the step can and will immediately be executed. <br>
-     *         false if the target position is generally blocked or a movable occupies that position.
-     */
-    final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
-        ShortPoint2D targetPosition = direction.getNextHexPoint(movC.getPos());
-
-        switch (mode) {
-            case GO_IF_ALLOWED_WAIT_TILL_FREE: {
-                movC.setViewDirection(direction);
-                this.setPath(new Path(targetPosition));
-                return true;
-            }
-            case GO_IF_ALLOWED_AND_FREE:
-                if ((gameC.getMovableGrid().isValidPosition(movC, targetPosition.x, targetPosition.y) && gameC.getMovableGrid().hasNoMovableAt(targetPosition.x, targetPosition.y))) {
-                    goSingleStep(targetPosition);
-                    return true;
-                } else {
-                    break;
-                }
-            case GO_IF_FREE:
-                if (gameC.getMovableGrid().isFreePosition(targetPosition)) {
-                    goSingleStep(targetPosition);
-                    return true;
-                } else {
-                    break;
-                }
-        }
-        return false;
-    }
+		switch (mode) {
+			case GO_IF_ALLOWED_WAIT_TILL_FREE: {
+				movC.setViewDirection(direction);
+				this.setPath(new Path(targetPosition));
+				return true;
+			}
+			case GO_IF_ALLOWED_AND_FREE:
+				if ((gameC.getMovableGrid().isValidPosition(movC, targetPosition.x, targetPosition.y) && gameC.getMovableGrid().hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+					goSingleStep(targetPosition);
+					return true;
+				} else {
+					break;
+				}
+			case GO_IF_FREE:
+				if (gameC.getMovableGrid().isFreePosition(targetPosition)) {
+					goSingleStep(targetPosition);
+					return true;
+				} else {
+					break;
+				}
+		}
+		return false;
+	}
 }

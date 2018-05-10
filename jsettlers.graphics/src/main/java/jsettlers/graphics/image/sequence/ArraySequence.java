@@ -45,7 +45,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see Sequence#length()
+	 * @see sequence#length()
 	 */
 	@Override
 	public int length() {
@@ -55,7 +55,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see Sequence#getImageLink(int)
+	 * @see sequence#getImageLink(int)
 	 */
 	@Override
 	public T getImage(int index) {
@@ -66,7 +66,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see Sequence#getImageSafe(int)
+	 * @see sequence#getImageSafe(int)
 	 */
 	@Override
 	public Image getImageSafe(int index) {

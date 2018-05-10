@@ -1,4 +1,5 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
+
 import jsettlers.logic.movable.simplebehaviortree.Composite;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
@@ -24,22 +25,20 @@ public class Parallel<T> extends Composite<T> {
 		ONE,
 		ALL
 	}
-	public static Policy ONE = Policy.ONE;
-	public static Policy ALL = Policy.ALL;
-	
-	private final Policy successPolicy;
+
+	private final Policy       successPolicy;
 	private final NodeStatus[] childStatus;
-    private final boolean preemptive;
-	private int successCount;
+	private final boolean      preemptive;
+	private       int          successCount;
 
 	@SafeVarargs
 	public Parallel(Policy successPolicy, boolean preemptive, Node<T>... children) {
 		super(children);
 		childStatus = new NodeStatus[this.children.size()];
 		this.successPolicy = successPolicy;
-        this.preemptive = preemptive;
+		this.preemptive = preemptive;
 	}
-	
+
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
 		boolean anyRunning = false;
@@ -49,26 +48,28 @@ public class Parallel<T> extends Composite<T> {
 			}
 			NodeStatus status = children.get(index).execute(tick);
 			childStatus[index] = status;
-			if (status.equals(NodeStatus.Success)) successCount++;
-			else if (status.equals(NodeStatus.Running)) anyRunning = true;
+			if (status.equals(NodeStatus.Success)) {
+				successCount++;
+			} else if (status.equals(NodeStatus.Running)) {
+				anyRunning = true;
+			}
 		}
-		boolean successCondition =
-            successPolicy == Policy.ONE && successCount >= 1 ||
-            successPolicy == Policy.ALL && successCount == children.size();
 
-        if (anyRunning && preemptive && !successCondition) {
-                return NodeStatus.Running;
-        } else if (anyRunning && !preemptive) {
-            return NodeStatus.Running;
-        }
+		boolean successCondition = successPolicy == Policy.ONE && successCount >= 1 || successPolicy == Policy.ALL && successCount == children.size();
 
-		if (successCondition)  {
-				return NodeStatus.Success;
+		if (anyRunning && preemptive && !successCondition) {
+			return NodeStatus.Running;
+		} else if (anyRunning && !preemptive) {
+			return NodeStatus.Running;
+		}
+
+		if (successCondition) {
+			return NodeStatus.Success;
 		} else {
 			return NodeStatus.Failure;
 		}
 	}
-	
+
 	@Override
 	protected void onOpen(Tick<T> tick) {
 		for (int i = 0; i < childStatus.length; i++) {

@@ -49,7 +49,7 @@ public class ConvertPropertiesToStandardEncoding {
 	 * @param contents
 	 *            Contents to write out
 	 * @param f
-	 *            Target file
+	 *            target file
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */

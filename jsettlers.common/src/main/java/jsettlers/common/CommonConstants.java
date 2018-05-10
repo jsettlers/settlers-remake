@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.common;
 
-import jsettlers.common.ai.EPlayerType;
-
 public abstract class CommonConstants {
 	/**
 	 * A byte value indicating that the given position is visible.
@@ -69,8 +67,15 @@ public abstract class CommonConstants {
 	 * Option to disable the loading of original maps.
 	 */
 	public static boolean DISABLE_ORIGINAL_MAPS = false;
+
 	/**
 	 * Disables the checksum test for original maps.
 	 */
 	public static boolean DISABLE_ORIGINAL_MAPS_CHECKSUM = false;
+
+	/**
+	 * Enables debugging of behavior trees
+	 */
+	public static boolean DEBUG_BEHAVIOR_TREES = false;
+
 }

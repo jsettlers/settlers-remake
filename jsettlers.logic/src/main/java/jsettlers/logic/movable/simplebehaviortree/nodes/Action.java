@@ -21,6 +21,6 @@ public class Action<T> extends Node<T> {
 	
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
-		return action.apply(tick.Target);
+		return action.apply(tick.target);
 	}
 }

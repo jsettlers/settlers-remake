@@ -26,7 +26,7 @@ import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
- * Action to display errors, display error count as text (always enabled, always clickable)
+ * action to display errors, display error count as text (always enabled, always clickable)
  * 
  * @author Andreas Butti
  */

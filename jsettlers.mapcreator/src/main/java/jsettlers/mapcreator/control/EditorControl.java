@@ -161,7 +161,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	private final Timer redrawTimer = new Timer(true);
 
 	/**
-	 * Action to fix all errors automatically, if clear what to do
+	 * action to fix all errors automatically, if clear what to do
 	 */
 	private AutoFixErrorAction autoFixErrorAction;
 

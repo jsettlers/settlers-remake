@@ -32,7 +32,7 @@ public class Node<T> implements Serializable {
 	}
 
 	private void enter(Tick<T> tick) {
-		tick.VisitNode(this);
+		tick.visitNode(this);
 		onEnter(tick);
 	}
 
@@ -42,13 +42,13 @@ public class Node<T> implements Serializable {
 	}
 	
 	private NodeStatus tick(Tick<T> tick) {
-		tick.TickNode(this);
+		tick.tickNode(this);
 		return onTick(tick);
 	}
 
 	public void close(Tick<T> tick) {
 		if (isOpen) {
-			tick.LeaveNode(this);
+			tick.leaveNode(this);
 			isOpen = false;
 			onClose(tick);
 		}

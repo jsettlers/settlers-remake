@@ -17,7 +17,7 @@ package jsettlers.common.action;
 /**
  * This is a action the user has requested.
  * <p>
- * Each Action has an active status, that indicates that it is currently executed. When the execution of the action is begun, the flag should be set
+ * Each action has an active status, that indicates that it is currently executed. When the execution of the action is begun, the flag should be set
  * so that the user interface enters a blocking mode, and goes back to normal mode when the action is finished. It is not guaranteed that there is no
  * other action being sent during that time, e.g. an cancel-action.
  * <p>
