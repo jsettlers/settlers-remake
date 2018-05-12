@@ -11,9 +11,10 @@ import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
+import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysRunning;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Condition;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Debug;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Failer;
+import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysFail;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Guard;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Inverter;
 import jsettlers.logic.movable.simplebehaviortree.nodes.MemSelector;
@@ -22,10 +23,9 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.NotificationCondition;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Parallel;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Property;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Repeat;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Runner;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Sequence;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Succeeder;
+import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysSucceed;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Wait;
 
 public final class BehaviorTreeHelper {
@@ -44,12 +44,12 @@ public final class BehaviorTreeHelper {
 		return new Condition<>(condition);
 	}
 
-	public static Failer<Context> failer() {
-		return new Failer<>();
+	public static AlwaysFail<Context> failer() {
+		return new AlwaysFail<>();
 	}
 
-	public static Succeeder<Context> succeeder() {
-		return new Succeeder<>();
+	public static AlwaysSucceed<Context> succeeder() {
+		return new AlwaysSucceed<>();
 	}
 
 	public static Guard<Context> guard(IBooleanConditionFunction<Context> condition, Node<Context> child) {
@@ -120,12 +120,19 @@ public final class BehaviorTreeHelper {
 		);
 	}
 
-	public static Node<Context> waitForTargetReached(Node<Context> targetReachedChild, Node<Context> targetNotReachedChild) {
-		return debug("waitForTargetReached", selector(
+	public static Node<Context> waitForPathFinished(Node<Context> targetReachedChild, Node<Context> targetNotReachedChild) {
+		return debug("waitForPathFinished", selector(
 			triggerGuard(SteeringComponent.TargetReachedNotification.class, debug("TargetReachedNotification", targetReachedChild)),
 			triggerGuard(SteeringComponent.TargetNotReachedNotification.class, debug("TargetNotReachedNotification", targetNotReachedChild)),
-			debug("path not finished yet", new Runner<>())
+			debug("path not finished yet", new AlwaysRunning<>())
 		));
+	}
+
+	public static Node<Context> waitForPathFinished(Node<Context> targetReachedChild, Node<Context> targetNotReachedChild, Node<Context> whenPathFinished) {
+		return sequence(
+			waitForPathFinished(targetReachedChild, targetNotReachedChild),
+			debug("path finished", whenPathFinished)
+		);
 	}
 
 	public static Property<Context, Boolean> setAttackableWhile(boolean value, Node<Context> child) {
@@ -158,7 +165,7 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static <T> Node<T> alwaysSucceed(Node<T> child) {
-		return new Selector<>(child, new Succeeder<>());
+		return new Selector<>(child, new AlwaysSucceed<>());
 	}
 
 	public static Sleep sleep(int milliseconds) {

@@ -18,11 +18,11 @@ import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-public final class Runner<T> extends Node<T> {
+public final class AlwaysSucceed<T> extends Node<T> {
 	private static final long serialVersionUID = -216524395248690797L;
 
 	@Override
 	protected NodeStatus onTick(Tick<T> tick) {
-		return NodeStatus.RUNNING;
+		return NodeStatus.SUCCESS;
 	}
 }

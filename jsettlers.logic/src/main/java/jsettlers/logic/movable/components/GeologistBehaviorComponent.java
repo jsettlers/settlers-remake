@@ -19,12 +19,11 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
-import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.succeeder;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
-import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReached;
+import static jsettlers.logic.movable.BehaviorTreeHelper.waitForPathFinished;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAndFailIfNotReachable;
 
 /**
@@ -55,6 +54,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 				debug("MoveToCommand", action(c -> {
 					c.component.forFirstNotificationOfType(PlayerCmdComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
 					goingToPlayerCommandLocation = true;
+					c.entity.specialistComponent().setIsWorking(true);
 				}))
 			),
 			triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
@@ -63,12 +63,9 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 				)
 			),
 			guard(c -> goingToPlayerCommandLocation, true,
-				sequence(
-					waitForTargetReached(setIsWorkingAction(true), setIsWorkingAction(false)),
-					action(c -> {
-						goingToPlayerCommandLocation = false;
-					})
-				)
+				waitForPathFinished(null, setIsWorkingAction(false), action(c -> {
+					goingToPlayerCommandLocation = false;
+				}))
 			),
 			guard(c -> c.entity.specialistComponent().isWorking(), true,
 				debug("isWorking",
@@ -91,6 +88,13 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 			),
 			guard(c -> true, debug("no action", succeeder()))
 		);
+	}
+
+	@Override
+	protected void onLateUpdate() {
+		if (!entity.specialistComponent().isWorking()) {
+			entity.setInvocationDelay(500);
+		}
 	}
 
 	private Action<Context> setIsWorkingAction(boolean isWorking) {
