@@ -109,22 +109,27 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static Node<Context> waitForTargetReachedAndFailIfNotReachable() {
-		return sequence(inverter(notificationCondition(SteeringComponent.TargetNotReachedTrigger.class, true)),
-			wait(notificationCondition(SteeringComponent.TargetReachedTrigger.class, true))
+		return sequence(
+			inverter(
+				notificationCondition(SteeringComponent.TargetNotReachedNotification.class, true)
+			),
+			wait(
+				notificationCondition(SteeringComponent.TargetReachedNotification.class, true)
+			)
 		);
 	}
 
 	public static Property<Context, Boolean> setAttackableWhile(boolean value, Node<Context> child) {
 		return new Property<>(
-			(context, v) -> context.entity.attC().IsAttackable(v),
-			(context) -> context.entity.attC().IsAttackable(), value, child
+			(context, v) -> context.entity.attackableComponent().IsAttackable(v),
+			(context) -> context.entity.attackableComponent().IsAttackable(), value, child
 		);
 	}
 
 	public static Property<Context, Boolean> setIdleBehaviorActiveWhile(boolean value, Node<Context> child) {
 		return new Property<>(
-			(context, v) -> context.entity.steerC().IsIdleBehaviorActive(v),
-			(context) -> context.entity.steerC().IsIdleBehaviorActive(), value, child
+			(context, v) -> context.entity.steeringComponent().IsIdleBehaviorActive(v),
+			(context) -> context.entity.steeringComponent().IsIdleBehaviorActive(), value, child
 		);
 	}
 
@@ -139,7 +144,7 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static void convertTo(Entity entity, EMovableType type) {
-		Entity blueprint = EntityFactory.createEntity(entity.gameC().getMovableGrid(), type, entity.movC().getPos(), entity.movC().getPlayer());
+		Entity blueprint = EntityFactory.createEntity(entity.gameFieldComponent().movableGrid, type, entity.movableComponent().getPos(), entity.movableComponent().getPlayer());
 		entity.convertTo(blueprint);
 	}
 

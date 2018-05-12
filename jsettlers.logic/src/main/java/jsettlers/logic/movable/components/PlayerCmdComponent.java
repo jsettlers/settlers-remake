@@ -18,10 +18,10 @@ public class PlayerCmdComponent extends Component {
 		}
 	}
 
-	public static class AltLeftClickCommand extends Notification {
+	public static class MoveToCommand extends Notification {
 		public final ShortPoint2D pos;
 
-		AltLeftClickCommand(ShortPoint2D pos) {
+		MoveToCommand(ShortPoint2D pos) {
 			this.pos = pos;
 		}
 	}
@@ -32,8 +32,8 @@ public class PlayerCmdComponent extends Component {
 		entity.raiseNotification(new LeftClickCommand(pos));
 	}
 
-	public void sendAltLeftClick(ShortPoint2D pos) {
-		entity.raiseNotification(new AltLeftClickCommand(pos));
+	public void moveTo(ShortPoint2D pos) {
+		entity.raiseNotification(new MoveToCommand(pos));
 	}
 
 	public void sendStartWorkCommand() {

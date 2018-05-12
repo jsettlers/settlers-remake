@@ -50,57 +50,57 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
 						triggerGuard(AttackableComponent.ReceivedHit.class,
 							debug("received hit", sequence(
 								debug("unassign market", action(c -> {
-									c.entity.donkeyC().resetMarket();
+									c.entity.donkeyComponent().resetMarket();
 								})),
 								debug("stop going to market", action(c -> {
-									c.entity.steerC().resetTarget();
+									c.entity.steeringComponent().resetTarget();
 								})),
-								debug("drop all materials", repeat(condition(c -> !c.entity.mmatC().isEmpty()), alwaysSucceed(tryDropMaterial())))
+								debug("drop all materials", repeat(condition(c -> !c.entity.multiMaterialComponent().isEmpty()), alwaysSucceed(tryDropMaterial())))
 							))
 						),
 						guard(DonkeyBehaviorComponent::hasValidMarket, true,
 							selector(
 								debug("fulfill request", memSequence(
 									debug("go to market", action(c -> {
-										c.entity.steerC().setTarget(c.entity.donkeyC().getMarket().getDoor());
+										c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().getMarket().getDoor());
 									})),
 									debug("wait for target reached", waitForTargetReachedAndFailIfNotReachable()),
-									debug("check for pending transport jobs", condition(c -> c.entity.donkeyC().getMarket().needsDonkey())),
+									debug("check for pending transport jobs", condition(c -> c.entity.donkeyComponent().getMarket().needsDonkey())),
 									debug("take material", tryTakeMaterialFromMarket()),
 									debug("optionally take a second material", alwaysSucceed(tryTakeMaterialFromMarket())),
 									setAttackableWhile(true,
 										debug("follow waypoints", repeat(Repeat.Policy.NONPREEMPTIVE,
-											condition(c -> c.entity.donkeyC().hasNextWaypoint()),
+											condition(c -> c.entity.donkeyComponent().hasNextWaypoint()),
 											memSequence(
 												debug("go to next waypoint", action(c -> {
-													c.entity.steerC().setTarget(c.entity.donkeyC().peekNextWaypoint());
+													c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().peekNextWaypoint());
 												})),
 												debug("wait", waitForTargetReachedAndFailIfNotReachable()),
 												action(c -> {
-													c.entity.donkeyC().getNextWaypoint();
+													c.entity.donkeyComponent().getNextWaypoint();
 												})
 											)
 										))
 									),
-									debug("drop all materials", repeat(condition(c -> !c.entity.mmatC().isEmpty()), alwaysSucceed(tryDropMaterial()))),
+									debug("drop all materials", repeat(condition(c -> !c.entity.multiMaterialComponent().isEmpty()), alwaysSucceed(tryDropMaterial()))),
 									selector(
 										debug("try find new market", tryFindNewMarket()),
 										debug("go back to market", memSequence(
 											action(c -> {
-												c.entity.steerC().setTarget(c.entity.donkeyC().getMarket().getDoor());
+												c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().getMarket().getDoor());
 											}),
 											alwaysSucceed(debug("wait", waitForTargetReachedAndFailIfNotReachable())),
 											action(c -> {
-												c.entity.donkeyC().resetMarket();
+												c.entity.donkeyComponent().resetMarket();
 											})
 										))
 									)
 								)),
 								debug("resolve failures", sequence(
 									debug("invalidate market", action(c -> {
-										c.entity.donkeyC().resetMarket();
+										c.entity.donkeyComponent().resetMarket();
 									})),
-									debug("drop materials", repeat(condition(c -> !c.entity.mmatC().isEmpty()), alwaysSucceed(tryDropMaterial())))
+									debug("drop materials", repeat(condition(c -> !c.entity.multiMaterialComponent().isEmpty()), alwaysSucceed(tryDropMaterial())))
 								))
 							)
 						),
@@ -122,32 +122,32 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> tryDropMaterial() {
 		return new Action<>(c -> {
-			EMaterialType material = c.entity.mmatC().removeMaterial();
+			EMaterialType material = c.entity.multiMaterialComponent().removeMaterial();
 			if (material == EMaterialType.NO_MATERIAL) { return NodeStatus.FAILURE; }
-			c.entity.gameC().getMovableGrid().dropMaterial(c.entity.movC().getPos(), material, true, true);
+			c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPos(), material, true, true);
 			return NodeStatus.SUCCESS;
 		});
 	}
 
 	private static Action<Context> tryTakeMaterialFromMarket() {
 		return new Action<>(c -> {
-			EMaterialType material = c.entity.donkeyC().getMarket().tryToTakeDonkeyMaterial();
+			EMaterialType material = c.entity.donkeyComponent().getMarket().tryToTakeDonkeyMaterial();
 			if (material == null || material == EMaterialType.NO_MATERIAL) { return NodeStatus.FAILURE; }
-			c.entity.mmatC().addMaterial(material);
+			c.entity.multiMaterialComponent().addMaterial(material);
 			return NodeStatus.SUCCESS;
 		});
 	}
 
 	private static Action<Context> tryFindNewMarket() {
 		return new Action<>(c -> {
-			IDonkeyMarket market = c.entity.donkeyC().findNextMarketNeedingDonkey();
+			IDonkeyMarket market = c.entity.donkeyComponent().findNextMarketNeedingDonkey();
 			if (market == null) { return NodeStatus.FAILURE; }
-			c.entity.donkeyC().setMarket(market);
+			c.entity.donkeyComponent().setMarket(market);
 			return NodeStatus.SUCCESS;
 		});
 	}
 
 	private static boolean hasValidMarket(Context c) {
-		return c.entity.donkeyC().getMarket() != null;
+		return c.entity.donkeyComponent().getMarket() != null;
 	}
 }

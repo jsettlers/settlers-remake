@@ -10,14 +10,10 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 public class GameFieldComponent extends Component {
 	private static final long serialVersionUID = 476680901281177567L;
 
-	private final AbstractMovableGrid movableGrid;
+	public final AbstractMovableGrid movableGrid;
 
 	public GameFieldComponent(AbstractMovableGrid grid) {
 		this.movableGrid = grid;
-	}
-
-	public AbstractMovableGrid getMovableGrid() {
-		return movableGrid;
 	}
 
 	void addNewMovable(ILogicMovable movable) {

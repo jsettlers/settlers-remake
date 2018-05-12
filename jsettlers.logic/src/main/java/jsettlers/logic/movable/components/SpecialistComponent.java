@@ -10,7 +10,6 @@ public class SpecialistComponent extends Component {
 
 	private boolean      isWorking     = false;
 	private ShortPoint2D centerOfWork;
-	private ShortPoint2D targetWorkPos = null;
 
 
 	public boolean isWorking() {
@@ -24,16 +23,4 @@ public class SpecialistComponent extends Component {
 	public ShortPoint2D getCenterOfWork() { return centerOfWork; }
 
 	public void setCenterOfWork(ShortPoint2D centerOfWork) { this.centerOfWork = centerOfWork; }
-
-	public void setTargetWorkPos(ShortPoint2D targetWorkPos) {
-		this.targetWorkPos = targetWorkPos;
-	}
-
-	public ShortPoint2D getTargetWorkPos() {
-		return targetWorkPos;
-	}
-
-	public void resetTargetWorkPos() {
-		this.targetWorkPos = null;
-	}
 }

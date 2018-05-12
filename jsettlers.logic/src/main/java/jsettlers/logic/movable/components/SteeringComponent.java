@@ -47,9 +47,9 @@ public class SteeringComponent extends Component {
 
 	public void IsIdleBehaviorActive(boolean value) { isIdleBehaviorActive = value; }
 
-	public static class TargetReachedTrigger extends Notification {}
+	public static class TargetReachedNotification extends Notification {}
 
-	public static class TargetNotReachedTrigger extends Notification {}
+	public static class TargetNotReachedNotification extends Notification {}
 
 	public static class LeavePositionRequest extends Notification {
 		public final ILocatable sender;
@@ -69,10 +69,10 @@ public class SteeringComponent extends Component {
 
 	public boolean setTarget(ShortPoint2D targetPos) {
 		if (movableComponent.getPos().equals(targetPos)) {
-			entity.raiseNotification(new TargetReachedTrigger());
+			entity.raiseNotification(new TargetReachedNotification());
 			return true;
 		}
-		path = gameFieldComponent.getMovableGrid().calculatePathTo(movableComponent, targetPos);
+		path = gameFieldComponent.movableGrid.calculatePathTo(movableComponent, targetPos);
 		return path != null;
 	}
 
@@ -87,9 +87,9 @@ public class SteeringComponent extends Component {
 
 	public Path preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		if (dijkstra) {
-			return gameFieldComponent.getMovableGrid().searchDijkstra(movableComponent, centerX, centerY, radius, searchType);
+			return gameFieldComponent.movableGrid.searchDijkstra(movableComponent, centerX, centerY, radius, searchType);
 		} else {
-			return gameFieldComponent.getMovableGrid().searchInArea(movableComponent, centerX, centerY, radius, searchType);
+			return gameFieldComponent.movableGrid.searchInArea(movableComponent, centerX, centerY, radius, searchType);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class SteeringComponent extends Component {
 						followPath();
 					})
 				),
-				guard(c -> gameFieldComponent.getMovableGrid().isBlockedOrProtected(movableComponent.getPos().x, movableComponent.getPos().y), true,
+				guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPos().x, movableComponent.getPos().y), true,
 					BehaviorTreeHelper.action(c -> {
 						goToNonBlockedOrProtectedPosition();
 					})
@@ -157,25 +157,25 @@ public class SteeringComponent extends Component {
 		// if path is finished
 		if (!path.hasNextStep()) {
 			path = null;
-			entity.raiseNotification(new TargetReachedTrigger());
+			entity.raiseNotification(new TargetReachedNotification());
 			return;
 		}
 
-		ILogicMovable blockingMovable = gameFieldComponent.getMovableGrid().getMovableAt(path.nextX(), path.nextY());
+		ILogicMovable blockingMovable = gameFieldComponent.movableGrid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
-			if (gameFieldComponent.getMovableGrid().isValidNextPathPosition(movableComponent, path.getNextPos(), path.getTargetPos())) { // next position is valid
+			if (gameFieldComponent.movableGrid.isValidNextPathPosition(movableComponent, path.getNextPos(), path.getTargetPos())) { // next position is valid
 				goSingleStep(path.getNextPos());
 				path.goToNextStep();
 			} else { // next position is invalid
 
-				Path newPath = gameFieldComponent.getMovableGrid().calculatePathTo(movableComponent, path.getTargetPos()); // try to find a new path
+				Path newPath = gameFieldComponent.movableGrid.calculatePathTo(movableComponent, path.getTargetPos()); // try to find a new path
 
 				if (newPath == null) { // no path found
 					path = null;
-					entity.raiseNotification(new TargetNotReachedTrigger());
+					entity.raiseNotification(new TargetNotReachedNotification());
 				} else {
 					this.path = newPath; // continue with new path
-					if (gameFieldComponent.getMovableGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+					if (gameFieldComponent.movableGrid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
 						goSingleStep(path.getNextPos());
 						path.goToNextStep();
 					}
@@ -187,7 +187,7 @@ public class SteeringComponent extends Component {
 	}
 
 	private void goToNonBlockedOrProtectedPosition() {
-		Path newPath = gameFieldComponent.getMovableGrid().searchDijkstra(movableComponent, movableComponent.getPos().x, movableComponent.getPos().y, (short) 50, ESearchType
+		Path newPath = gameFieldComponent.movableGrid.searchDijkstra(movableComponent, movableComponent.getPos().x, movableComponent.getPos().y, (short) 50, ESearchType
 			.NON_BLOCKED_OR_PROTECTED);
 		if (newPath == null) {
 			entity.kill();
@@ -216,7 +216,7 @@ public class SteeringComponent extends Component {
 	 * @return true if the movable moves to flock, false if no flocking is required.
 	 */
 	private boolean flockToDecentralize() {
-		ShortPoint2D decentVector = gameFieldComponent.getMovableGrid().calcDecentralizeVector(movableComponent.getPos().x, movableComponent.getPos().y);
+		ShortPoint2D decentVector = gameFieldComponent.movableGrid.calcDecentralizeVector(movableComponent.getPos().x, movableComponent.getPos().y);
 
 		EDirection randomDirection = movableComponent.getViewDirection().getNeighbor(MatchConstants.random().nextInt(-1, 1));
 		int dx = randomDirection.gridDeltaX + decentVector.x;
@@ -249,15 +249,15 @@ public class SteeringComponent extends Component {
 				return true;
 			}
 			case GO_IF_ALLOWED_AND_FREE:
-				if ((gameFieldComponent.getMovableGrid().isValidPosition(movableComponent, targetPosition.x, targetPosition.y)
-					&& gameFieldComponent.getMovableGrid().hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+				if ((gameFieldComponent.movableGrid.isValidPosition(movableComponent, targetPosition.x, targetPosition.y)
+					&& gameFieldComponent.movableGrid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
 					goSingleStep(targetPosition);
 					return true;
 				} else {
 					break;
 				}
 			case GO_IF_FREE:
-				if (gameFieldComponent.getMovableGrid().isFreePosition(targetPosition)) {
+				if (gameFieldComponent.movableGrid.isFreePosition(targetPosition)) {
 					goSingleStep(targetPosition);
 					return true;
 				} else {

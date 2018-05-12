@@ -1,6 +1,5 @@
 package jsettlers.logic.movable.components;
 
-import java8.util.Optional;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
@@ -11,15 +10,17 @@ import jsettlers.common.utils.mutables.MutableDouble;
 import jsettlers.logic.movable.BehaviorTreeHelper;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Requires;
+import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 
+import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
-import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
+import static jsettlers.logic.movable.BehaviorTreeHelper.succeeder;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAndFailIfNotReachable;
@@ -34,7 +35,7 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAnd
 	AttackableComponent.class,
 	GameFieldComponent.class,
 	AnimationComponent.class,
-	MovableComponent.class
+	MovableComponent.class,
 })
 public final class GeologistBehaviorComponent extends BehaviorComponent {
 	private static final long serialVersionUID = -4157235942699928852L;
@@ -44,86 +45,76 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 		final short ACTION1_DURATION = 1400;
 		final short ACTION2_DURATION = 1500;
 
-		return new Root<>(selector(
-			triggerGuard(PlayerCmdComponent.LeftClickCommand.class,
-				memSequence(
-					BehaviorTreeHelper.action(c -> {
-						c.entity.specC().setIsWorking(false);
-					}),
-					BehaviorTreeHelper.action(GeologistBehaviorComponent::setTargetWorkPos)
-				)
-			),
-			triggerGuard(PlayerCmdComponent.AltLeftClickCommand.class,
-				memSequence(
-					BehaviorTreeHelper.action(c -> {
-						c.entity.specC().setIsWorking(true);
-					}),
-					BehaviorTreeHelper.action(GeologistBehaviorComponent::setTargetWorkPos)
-				)
-			),
-			triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
-				sequence(
-					BehaviorTreeHelper.action(c -> {
-						c.entity.specC().setIsWorking(true);
-					}),
-					BehaviorTreeHelper.action(c -> {
-						c.entity.specC().resetTargetWorkPos();
-					})
-				)
-			),
-			guard(c -> c.entity.specC().getTargetWorkPos() != null, true,
+		return new Root<>(
+			debug("root",
 				selector(
-					memSequence(
-						BehaviorTreeHelper.action(c -> {
-							c.entity.steerC().setTarget(c.entity.specC().getTargetWorkPos());
-						}),
-						waitForTargetReachedAndFailIfNotReachable(),
-						BehaviorTreeHelper.action(c -> {
-							c.entity.specC().resetTargetWorkPos();
-						})
+					triggerGuard(PlayerCmdComponent.MoveToCommand.class,
+						debug("MoveToCommand",
+							memSequence(
+								BehaviorTreeHelper.action(c -> {
+									c.component.forFirstNotificationOfType(PlayerCmdComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
+								}),
+								waitForTargetReachedAndFailIfNotReachable(),
+								BehaviorTreeHelper.action(c -> {
+									c.entity.specialistComponent().setIsWorking(true);
+								})
+							)
+						)
 					),
-					sequence(
-						BehaviorTreeHelper.action(c -> {
-							c.entity.specC().resetTargetWorkPos();
-						}),
-						BehaviorTreeHelper.action(c -> {
-							c.entity.specC().setIsWorking(false);
-						})
-					)
+					triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
+						debug("StartWorkCommand",
+							BehaviorTreeHelper.action(c -> {
+								c.entity.specialistComponent().setIsWorking(true);
+								//								c.entity.specialistComponent().resetTargetWorkPos();
+							})
+						)
+					),
+					guard(c -> c.entity.specialistComponent().isWorking(), true,
+						debug("isWorking",
+							selector(
+								debug("find a place and work there", memSequence(
+									new FindGoToWorkablePosition(),
+									waitForTargetReachedAndFailIfNotReachable(),
+									markOnCurrentPositionIfWorkingIsPossible(),
+									startAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
+									waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+									startAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
+									waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+									placeSign()
+								)),
+								debug("on failure: stop working", BehaviorTreeHelper.action(c -> {
+									c.entity.specialistComponent().setIsWorking(false);
+								}))
+							)
+						)
+					),
+					debug("no action", succeeder())
 				)
-			),
-			guard(c -> c.entity.specC().isWorking(), true,
-				selector(
-					BehaviorTreeHelper.debug("find a place and work there", memSequence(
-						new FindGoToWorkablePosition(),
-						waitForTargetReachedAndFailIfNotReachable(),
-						WorkOnPosIfPossible(),
-						startAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
-						waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
-						startAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
-						waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
-					)),
-					BehaviorTreeHelper.debug("on failure: stop working", BehaviorTreeHelper.action(c -> {
-						c.entity.specC().setIsWorking(false);
-					}))
-				)
-			)
-		));
+			));
 	}
 
-	private static Action<Context> WorkOnPosIfPossible() {
+	private Node<Context> placeSign() {
 		return new Action<>(c -> {
-			ShortPoint2D pos = c.entity.movC().getPos();
+			ShortPoint2D position = c.entity.movableComponent().getPos();
 
-			if (c.entity.specC().getCenterOfWork() == null) {
-				c.entity.specC().setCenterOfWork(pos);
+			c.entity.gameFieldComponent().movableGrid.setMarked(position, false);
+			c.entity.gameFieldComponent().movableGrid.executeSearchType(c.entity.movableComponent(), position, ESearchType.RESOURCE_SIGNABLE);
+		});
+	}
+
+	private static Action<Context> markOnCurrentPositionIfWorkingIsPossible() {
+		return new Action<>(c -> {
+			ShortPoint2D position = c.entity.movableComponent().getPos();
+
+			if (c.entity.specialistComponent().getCenterOfWork() == null) {
+				c.entity.specialistComponent().setCenterOfWork(position);
 			}
 
-			c.entity.gameC().getMovableGrid().setMarked(pos, false); // unmark the pos for the following check
-			boolean canWorkOnPos = c.entity.gameC().getMovableGrid().fitsSearchType(c.entity.movC(), pos.x, pos.y, ESearchType.RESOURCE_SIGNABLE);
+			c.entity.gameFieldComponent().movableGrid.setMarked(position, false); // unmark the pos for the following check
+			boolean canWorkOnPos = c.entity.gameFieldComponent().movableGrid.fitsSearchType(c.entity.movableComponent(), position.x, position.y, ESearchType.RESOURCE_SIGNABLE);
 
 			if (canWorkOnPos) {
-				c.entity.gameC().getMovableGrid().setMarked(pos, true);
+				c.entity.gameFieldComponent().movableGrid.setMarked(position, true);
 				return NodeStatus.SUCCESS;
 			}
 			return NodeStatus.FAILURE;
@@ -139,16 +130,16 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 		}
 
 		private static ShortPoint2D getCloseWorkablePos(Context c) {
-			MovableComponent movC = c.entity.movC();
-			GameFieldComponent gameC = c.entity.gameC();
-			SpecialistComponent specC = c.entity.specC();
+			MovableComponent movC = c.entity.movableComponent();
+			GameFieldComponent gameC = c.entity.gameFieldComponent();
+			SpecialistComponent specC = c.entity.specialistComponent();
 
 			MutablePoint2D bestNeighbourPos = new MutablePoint2D(-1, -1);
 			MutableDouble bestNeighbourDistance = new MutableDouble(Double.MAX_VALUE); // distance from start point
 
 			HexGridArea.streamBorder(movC.getPos(), 2).filter((x, y) -> {
-					boolean isValidPosition = gameC.getMovableGrid().isValidPosition(movC, x, y);
-					boolean canWorkOnPos = gameC.getMovableGrid().fitsSearchType(movC, x, y, ESearchType.RESOURCE_SIGNABLE);
+					boolean isValidPosition = gameC.movableGrid.isValidPosition(movC, x, y);
+					boolean canWorkOnPos = gameC.movableGrid.fitsSearchType(movC, x, y, ESearchType.RESOURCE_SIGNABLE);
 					return isValidPosition && canWorkOnPos;
 				}
 			).forEach((x, y) -> {
@@ -168,15 +159,15 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 		}
 
 		public static NodeStatus run(Context c) {
-			MovableComponent movC = c.entity.movC();
-			GameFieldComponent gameC = c.entity.gameC();
-			SpecialistComponent specC = c.entity.specC();
-			SteeringComponent steerC = c.entity.steerC();
+			MovableComponent movC = c.entity.movableComponent();
+			GameFieldComponent gameC = c.entity.gameFieldComponent();
+			SpecialistComponent specC = c.entity.specialistComponent();
+			SteeringComponent steerC = c.entity.steeringComponent();
 
 			ShortPoint2D closeWorkablePos = getCloseWorkablePos(c);
 
 			if (closeWorkablePos != null && steerC.setTarget(closeWorkablePos)) {
-				gameC.getMovableGrid().setMarked(closeWorkablePos, true);
+				gameC.movableGrid.setMarked(closeWorkablePos, true);
 				return NodeStatus.SUCCESS;
 			}
 			specC.setCenterOfWork(null);
@@ -190,9 +181,5 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 
 			return NodeStatus.FAILURE;
 		}
-	}
-
-	private static void setTargetWorkPos(Context context) {
-		context.component.forFirstNotificationOfType(PlayerCmdComponent.LeftClickCommand.class, command -> context.entity.specC().setTargetWorkPos(command.pos));
 	}
 }

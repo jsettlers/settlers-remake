@@ -1,4 +1,5 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
+
 import jsettlers.logic.movable.simplebehaviortree.Composite;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
@@ -11,13 +12,14 @@ public class Selector<T> extends Composite<T> {
 	public Selector(Node<T>... children) {
 		super(children);
 	}
-	
+
 	@Override
-	protected NodeStatus onTick(Tick<T> tick) { 
+	protected NodeStatus onTick(Tick<T> tick) {
 		for (Node<T> node : children) {
 			NodeStatus status = node.execute(tick);
-			if (!status.equals(NodeStatus.FAILURE))
+			if (!status.equals(NodeStatus.FAILURE)) {
 				return status;
+			}
 		}
 		return NodeStatus.FAILURE;
 	}

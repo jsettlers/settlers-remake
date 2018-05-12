@@ -3,6 +3,7 @@ package jsettlers.logic.movable;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
@@ -15,6 +16,7 @@ import jsettlers.logic.movable.components.GeologistBehaviorComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.MultiMaterialComponent;
+import jsettlers.logic.movable.components.SelectableComponent;
 import jsettlers.logic.movable.components.SpecialistComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
@@ -29,8 +31,8 @@ public final class EntityFactory {
 
 	public static ILogicMovable createMovable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		switch (movableType) {
-			//case GEOLOGIST:
 			//case BEARER:
+			case GEOLOGIST:
 			case DONKEY:
 				return new MovableWrapper(createEntity(grid, movableType, position, player));
 			default:
@@ -38,11 +40,13 @@ public final class EntityFactory {
 		}
 	}
 
-	public static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+	static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		Entity entity = null;
 		switch (movableType) {
 			//case BEARER:
-			//case GEOLOGIST:
+			case GEOLOGIST:
+				entity = createGeologist(grid, movableType, position, player);
+				break;
 			case DONKEY:
 				entity = createDonkey(grid, movableType, position, player);
 				break;
@@ -53,7 +57,7 @@ public final class EntityFactory {
 		return entity;
 	}
 
-	public static Entity createDonkey(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+	private static Entity createDonkey(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		Entity entity = new Entity();
 		entity.add(new MultiMaterialComponent());
 		entity.add(new DonkeyBehaviorComponent());
@@ -64,6 +68,7 @@ public final class EntityFactory {
 		entity.add(new SteeringComponent());
 		entity.add(new GameFieldComponent(grid));
 		entity.add(new DonkeyComponent());
+		entity.add(new SelectableComponent(ESelectionType.PEOPLE));
 		return entity;
 	}
 
@@ -78,6 +83,7 @@ public final class EntityFactory {
 		entity.add(new MovableComponent(movableType, player, position, dir));
 		entity.add(new SteeringComponent());
 		entity.add(new GameFieldComponent(grid));
+		entity.add(new SelectableComponent(ESelectionType.SPECIALISTS));
 		return entity;
 	}
 

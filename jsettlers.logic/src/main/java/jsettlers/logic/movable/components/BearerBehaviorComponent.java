@@ -45,28 +45,28 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 	protected Root<Context> createBehaviorTree() {
 		return new Root<>(selector(
 			triggerGuard(BearerComponent.DeliveryJob.class,
-				guard(c -> c.entity.bearerC().hasJob(), false,
+				guard(c -> c.entity.bearerComponent().hasJob(), false,
 					accept_SaveDeliveryJob()
 				)
 			),
 			triggerGuard(BearerComponent.BecomeSoldierJob.class,
-				guard(c -> c.entity.bearerC().hasJob(), false,
+				guard(c -> c.entity.bearerComponent().hasJob(), false,
 					accept_SaveBecomeSoldierJob()
 				)
 			),
 			triggerGuard(BearerComponent.BecomeWorkerJob.class,
-				guard(c -> c.entity.bearerC().hasJob(), false,
+				guard(c -> c.entity.bearerComponent().hasJob(), false,
 					accept_SaveBecomeWorkerJob()
 				)
 			),
-			guard(c -> c.entity.bearerC().hasBecomeWorkerJob(), true,
+			guard(c -> c.entity.bearerComponent().hasBecomeWorkerJob(), true,
 				selector(
 					BehaviorTreeHelper.debug("try to fulfil the job", memSequence(
-						BehaviorTreeHelper.debug("grab a tool if needed", BehaviorTreeHelper.guard(c -> c.entity.bearerC().materialOffer == null,
+						BehaviorTreeHelper.debug("grab a tool if needed", BehaviorTreeHelper.guard(c -> c.entity.bearerComponent().materialOffer == null,
 							selector(
 								memSequence(
 									BehaviorTreeHelper.debug("go to the tool", action(c -> {
-										c.entity.steerC().setTarget(c.entity.bearerC().materialOffer.getPos());
+										c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPos());
 									})),
 									waitForTargetReachedAndFailIfNotReachable(),
 									BehaviorTreeHelper.debug("can we pick it up?", condition(BearerBehaviorComponent::canTakeMaterial)),
@@ -83,7 +83,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 							)
 						)),
 						BehaviorTreeHelper.debug("convert Entity to a worker", action(c -> {
-							convertTo(c.entity, c.entity.bearerC().workerCreationRequest.requestedMovableType());
+							convertTo(c.entity, c.entity.bearerComponent().workerCreationRequest.requestedMovableType());
 						}))
 					)),
 					BehaviorTreeHelper.debug("handle failure", sequence(
@@ -93,12 +93,12 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 					))
 				)
 			),
-			guard(c -> c.entity.bearerC().hasDeliveryJob(), true,
+			guard(c -> c.entity.bearerComponent().hasDeliveryJob(), true,
 				memSequence(
 					selector(
 						BehaviorTreeHelper.debug("go to materialOffer and take material", memSequence(
 							action(c -> {
-								c.entity.steerC().setTarget(c.entity.bearerC().materialOffer.getPos());
+								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPos());
 							}),
 							waitForTargetReachedAndFailIfNotReachable(),
 							condition(BearerBehaviorComponent::canTakeMaterial),
@@ -118,10 +118,10 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 					selector(
 						BehaviorTreeHelper.debug("go to request & drop material", memSequence(
 							action(c -> {
-								c.entity.steerC().setTarget(c.entity.bearerC().deliveryRequest.getPos());
+								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().deliveryRequest.getPos());
 							}),
 							waitForTargetReachedAndFailIfNotReachable(),
-							condition(c -> c.entity.bearerC().materialType.isDroppable()),
+							condition(c -> c.entity.bearerComponent().materialType.isDroppable()),
 							startAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
 							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
 							tryFulfillRequest(),
@@ -138,11 +138,11 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 					)
 				)
 			),
-			guard(c -> c.entity.bearerC().hasBecomeSoldierJob(), true,
+			guard(c -> c.entity.bearerComponent().hasBecomeSoldierJob(), true,
 				selector(
 					BehaviorTreeHelper.debug("fullfill the job", memSequence(
 						action(c -> {
-							c.entity.steerC().setTarget(c.entity.bearerC().barrack.getDoor());
+							c.entity.steeringComponent().setTarget(c.entity.bearerComponent().barrack.getDoor());
 						}),
 						waitForTargetReachedAndFailIfNotReachable(),
 						tryTakeWeapon_ConvertToSoldier()
@@ -160,14 +160,14 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 			context.component.forFirstNotificationOfType(BearerComponent.DeliveryJob.class, job -> {
 				job.offer.distributionAccepted();
 				job.request.deliveryAccepted();
-				context.entity.bearerC().setDeliveryJob(job);
+				context.entity.bearerComponent().setDeliveryJob(job);
 			});
 		});
 	}
 
 	private static Action<Context> accept_SaveBecomeSoldierJob() {
 		return new Action<>(context -> {
-			context.component.forFirstNotificationOfType(BearerComponent.BecomeSoldierJob.class, context.entity.bearerC()::setBecomeSoldierJob);
+			context.component.forFirstNotificationOfType(BearerComponent.BecomeSoldierJob.class, context.entity.bearerComponent()::setBecomeSoldierJob);
 		});
 	}
 
@@ -175,17 +175,17 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 		return new Action<>(context -> {
 			context.component.forFirstNotificationOfType(BearerComponent.BecomeWorkerJob.class, job -> {
 				job.offer.distributionAccepted();
-				context.entity.bearerC().setBecomeWorkerJob(job);
+				context.entity.bearerComponent().setBecomeWorkerJob(job);
 			});
 		});
 	}
 
 	private static Action<Context> tryTakeMaterialFromMap() {
 		return new Action<>(c -> {
-			EMaterialType materialToTake = c.entity.bearerC().materialType;
-			if (c.entity.gameC().getMovableGrid().takeMaterial(c.entity.movC().getPos(), materialToTake)) {
-				c.entity.matC().setMaterial(materialToTake);
-				c.entity.bearerC().materialOffer.offerTaken();
+			EMaterialType materialToTake = c.entity.bearerComponent().materialType;
+			if (c.entity.gameFieldComponent().movableGrid.takeMaterial(c.entity.movableComponent().getPos(), materialToTake)) {
+				c.entity.materialComponent().setMaterial(materialToTake);
+				c.entity.bearerComponent().materialOffer.offerTaken();
 				return NodeStatus.SUCCESS;
 			}
 			return NodeStatus.FAILURE;
@@ -194,12 +194,12 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> tryTakeWeapon_ConvertToSoldier() {
 		return new Action<>(c -> {
-			ShortPoint2D targetPosition = c.entity.bearerC().barrack.getSoldierTargetPosition();
-			EMovableType type = c.entity.bearerC().barrack.popWeaponForBearer();
+			ShortPoint2D targetPosition = c.entity.bearerComponent().barrack.getSoldierTargetPosition();
+			EMovableType type = c.entity.bearerComponent().barrack.popWeaponForBearer();
 			if (type != null) {
 				convertTo(c.entity, type);
-				c.entity.steerC().setTarget(targetPosition);
-				c.entity.movC().getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
+				c.entity.steeringComponent().setTarget(targetPosition);
+				c.entity.movableComponent().getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
 				return NodeStatus.SUCCESS;
 			}
 			return NodeStatus.FAILURE;
@@ -208,10 +208,10 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> tryFulfillRequest() {
 		return new Action<>(c -> {
-			if (c.entity.bearerC().deliveryRequest.isActive() && c.entity.bearerC().deliveryRequest.getPos().equals(c.entity.movC().getPos())) {
-				c.entity.gameC().getMovableGrid().dropMaterial(c.entity.movC().getPos(), c.entity.bearerC().materialType, false, false);
-				c.entity.bearerC().deliveryRequest.deliveryFulfilled();
-				c.entity.matC().setMaterial(EMaterialType.NO_MATERIAL);
+			if (c.entity.bearerComponent().deliveryRequest.isActive() && c.entity.bearerComponent().deliveryRequest.getPos().equals(c.entity.movableComponent().getPos())) {
+				c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPos(), c.entity.bearerComponent().materialType, false, false);
+				c.entity.bearerComponent().deliveryRequest.deliveryFulfilled();
+				c.entity.materialComponent().setMaterial(EMaterialType.NO_MATERIAL);
 				return NodeStatus.SUCCESS;
 			}
 			return NodeStatus.FAILURE;
@@ -220,31 +220,31 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> dropMaterial() {
 		return new Action<>(c -> {
-			c.entity.gameC().getMovableGrid().dropMaterial(c.entity.movC().getPos(), c.entity.bearerC().materialType, true, false);
-			c.entity.bearerC().deliveryRequest.deliveryFulfilled();
-			c.entity.matC().setMaterial(EMaterialType.NO_MATERIAL);
+			c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPos(), c.entity.bearerComponent().materialType, true, false);
+			c.entity.bearerComponent().deliveryRequest.deliveryFulfilled();
+			c.entity.materialComponent().setMaterial(EMaterialType.NO_MATERIAL);
 		});
 	}
 
 	private static boolean canTakeMaterial(Context c) {
-		EMaterialType materialToTake = c.entity.bearerC().materialType;
-		return c.entity.gameC().getMovableGrid().canTakeMaterial(c.entity.movC().getPos(), materialToTake);
+		EMaterialType materialToTake = c.entity.bearerComponent().materialType;
+		return c.entity.gameFieldComponent().movableGrid.canTakeMaterial(c.entity.movableComponent().getPos(), materialToTake);
 	}
 
 	private static void resetJob(Context c) {
-		c.entity.bearerC().resetJob();
-		c.entity.gameC().getMovableGrid().addJobless(new ManageableBearerWrapper(c.entity));
+		c.entity.bearerComponent().resetJob();
+		c.entity.gameFieldComponent().movableGrid.addJobless(new ManageableBearerWrapper(c.entity));
 	}
 
 	private static void distributionAborted(Context c) {
-		c.entity.bearerC().materialOffer.distributionAborted();
+		c.entity.bearerComponent().materialOffer.distributionAborted();
 	}
 
 	private static void deliveryAborted(Context c) {
-		c.entity.bearerC().deliveryRequest.deliveryAborted();
+		c.entity.bearerComponent().deliveryRequest.deliveryAborted();
 	}
 
 	private static void workerCreationRequestFailed(Context c) {
-		c.entity.bearerC().workerRequester.workerCreationRequestFailed(c.entity.bearerC().workerCreationRequest);
+		c.entity.bearerComponent().workerRequester.workerCreationRequestFailed(c.entity.bearerComponent().workerCreationRequest);
 	}
 }

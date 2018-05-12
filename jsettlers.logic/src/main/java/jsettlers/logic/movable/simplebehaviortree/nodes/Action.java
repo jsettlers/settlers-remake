@@ -17,11 +17,10 @@ public class Action<T> extends Node<T> {
 	}
 
 	public Action(INodeStatusActionConsumer<T> action) {
-		super();
-		this.action = (t) -> {
+		this(t -> {
 			action.accept(t);
 			return NodeStatus.SUCCESS;
-		};
+		});
 	}
 
 	@Override

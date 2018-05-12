@@ -45,7 +45,7 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	@Override
 	protected void onEnable() {
 		gameComponent.addNewMovable(movableWrapper);
-		gameComponent.getMovableGrid().enterPosition(position, movableWrapper, true);
+		gameComponent.movableGrid.enterPosition(position, movableWrapper, true);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -55,13 +55,13 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	@Override
 	protected void onDisable() {
 		// TODO: refactor leavePosition to not use the instance
-		gameComponent.getMovableGrid().leavePosition(position, gameComponent.getMovableGrid().getMovableAt(position.x, position.y));
+		gameComponent.movableGrid.leavePosition(position, gameComponent.movableGrid.getMovableAt(position.x, position.y));
 		gameComponent.removeMovable(getMovableWrapper());
 	}
 
 	@Override
 	protected void onDestroy() {
-		gameComponent.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
+		gameComponent.movableGrid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
 
 	public MovableWrapper getMovableWrapper() {
@@ -91,9 +91,9 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	}
 
 	public void setPos(ShortPoint2D position) {
-		gameComponent.getMovableGrid().leavePosition(this.position, movableWrapper);
+		gameComponent.movableGrid.leavePosition(this.position, movableWrapper);
 		this.position = position;
-		gameComponent.getMovableGrid().enterPosition(this.position, movableWrapper, false);
+		gameComponent.movableGrid.enterPosition(this.position, movableWrapper, false);
 	}
 
 	public void setPlayer(Player player) {

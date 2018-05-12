@@ -97,7 +97,10 @@ public class Entity implements Serializable, IScheduledTimerable {
 	}
 
 	public void setActive(boolean active) {
-		if (active == isActive()) { return; }
+		if (active == isActive()) {
+			return;
+		}
+
 		if (state == State.UNINITALIZED) {
 			initialize();
 		}
@@ -156,14 +159,17 @@ public class Entity implements Serializable, IScheduledTimerable {
 		}
 	}
 
-	public void remove(Class<? extends Component> c) {
-		componentLookup.remove(c);
+	public Component remove(Class<? extends Component> c) {
+		Component result = componentLookup.remove(c);
 		components.remove(c);
+
 		Class cls = c.getSuperclass();
 		while (cls != null && cls != Component.class) {
 			componentLookup.remove(cls);
 			cls = cls.getSuperclass();
 		}
+
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -187,15 +193,18 @@ public class Entity implements Serializable, IScheduledTimerable {
 	public void convertTo(Entity blueprint) {
 		// remove all unused components
 		for (Class<? extends Component> cls : components.keySet()) {
-			if (!blueprint.components.containsKey(cls)) { remove(cls); }
+			if (!blueprint.components.containsKey(cls)) {
+				remove(cls);
+			}
 		}
 		// add all new components
 		List<Component> newComponents = new ArrayList<>();
 		for (Class<? extends Component> cls : blueprint.components.keySet()) {
 			// ignore components we already have
-			if (components.containsKey(cls)) { continue; }
-			Component c = blueprint.getComponent(cls);
-			blueprint.remove(cls);
+			if (components.containsKey(cls)) {
+				continue;
+			}
+			Component c = blueprint.remove(cls);
 			newComponents.add(c);
 			add(c);
 		}
@@ -251,31 +260,31 @@ public class Entity implements Serializable, IScheduledTimerable {
 		return getComponent(AnimationComponent.class);
 	}
 
-	public final SteeringComponent steerC() {
+	public final SteeringComponent steeringComponent() {
 		return getComponent(SteeringComponent.class);
 	}
 
-	public final MovableComponent movC() {
+	public final MovableComponent movableComponent() {
 		return getComponent(MovableComponent.class);
 	}
 
-	public final BearerComponent bearerC() {
+	public final BearerComponent bearerComponent() {
 		return getComponent(BearerComponent.class);
 	}
 
-	public final SpecialistComponent specC() {
+	public final SpecialistComponent specialistComponent() {
 		return getComponent(SpecialistComponent.class);
 	}
 
-	public final GameFieldComponent gameC() {
+	public final GameFieldComponent gameFieldComponent() {
 		return getComponent(GameFieldComponent.class);
 	}
 
-	public final MaterialComponent matC() { return getComponent(MaterialComponent.class); }
+	public final MaterialComponent materialComponent() { return getComponent(MaterialComponent.class); }
 
-	public final MultiMaterialComponent mmatC() { return getComponent(MultiMaterialComponent.class); }
+	public final MultiMaterialComponent multiMaterialComponent() { return getComponent(MultiMaterialComponent.class); }
 
-	public final DonkeyComponent donkeyC() { return getComponent(DonkeyComponent.class); }
+	public final DonkeyComponent donkeyComponent() { return getComponent(DonkeyComponent.class); }
 
-	public final AttackableComponent attC() { return getComponent(AttackableComponent.class); }
+	public final AttackableComponent attackableComponent() { return getComponent(AttackableComponent.class); }
 }
