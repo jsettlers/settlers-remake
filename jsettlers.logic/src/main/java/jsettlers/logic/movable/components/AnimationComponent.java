@@ -16,18 +16,20 @@ public class AnimationComponent extends Component {
 	private boolean        isSoundPlayed = false;
 	private boolean        isRightStep   = false;
 
-	public static class AnimationFinishedTrigger extends Notification {}
+	public static class AnimationFinishedNotification extends Notification {}
 
 	public AnimationComponent() { }
 
 	@Override
 	protected void onUpdate() {
-		if (!isAnimating()) { stopAnimation(); }
+		if (animation != EMovableAction.NO_ACTION && isAnimationFinished()) {
+			stopAnimation();
+		}
 	}
 
 	@Override
 	protected void onLateUpdate() {
-		if (isAnimating()) { entity.setInvocationDelay(getRemainingTime()); }
+		if (!isAnimationFinished()) { entity.setInvocationDelay(getRemainingTime()); }
 	}
 
 	public EMovableAction getAnimation() {
@@ -38,8 +40,8 @@ public class AnimationComponent extends Component {
 		return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
 	}
 
-	public boolean isAnimating() {
-		return animationStartTime + animationDuration > MatchConstants.clock().getTime();
+	public boolean isAnimationFinished() {
+		return animationStartTime + animationDuration <= MatchConstants.clock().getTime();
 	}
 
 	public void startAnimation(EMovableAction animation, short duration) {
@@ -51,6 +53,7 @@ public class AnimationComponent extends Component {
 
 	private void stopAnimation() {
 		this.animation = EMovableAction.NO_ACTION;
+		this.entity.raiseNotification(new AnimationFinishedNotification());
 	}
 
 	public boolean isRightStep() {

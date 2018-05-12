@@ -31,4 +31,8 @@ public class Guard<T> extends Node<T> {
 		boolean result = condition.test(tick.target);
 		if (result == value) { return child.execute(tick); } else { return NodeStatus.FAILURE; }
 	}
+
+	public boolean checkGuardCondition(Tick<T> tick) {
+		return condition.test(tick.target);
+	}
 }

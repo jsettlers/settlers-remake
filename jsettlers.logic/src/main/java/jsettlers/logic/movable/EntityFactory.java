@@ -16,6 +16,7 @@ import jsettlers.logic.movable.components.GeologistBehaviorComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.MultiMaterialComponent;
+import jsettlers.logic.movable.components.PlayerCmdComponent;
 import jsettlers.logic.movable.components.SelectableComponent;
 import jsettlers.logic.movable.components.SpecialistComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
@@ -62,7 +63,7 @@ public final class EntityFactory {
 		entity.add(new MultiMaterialComponent());
 		entity.add(new DonkeyBehaviorComponent());
 		entity.add(new AnimationComponent());
-		entity.add(new AttackableComponent());
+		entity.add(new AttackableComponent(movableType));
 		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
 		entity.add(new MovableComponent(movableType, player, position, dir));
 		entity.add(new SteeringComponent());
@@ -77,13 +78,14 @@ public final class EntityFactory {
 		entity.add(new GeologistBehaviorComponent());
 		entity.add(new SpecialistComponent());
 		entity.add(new AnimationComponent());
-		entity.add(new AttackableComponent());
+		entity.add(new AttackableComponent(movableType));
 		entity.add(new MaterialComponent());
 		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
 		entity.add(new MovableComponent(movableType, player, position, dir));
 		entity.add(new SteeringComponent());
 		entity.add(new GameFieldComponent(grid));
 		entity.add(new SelectableComponent(ESelectionType.SPECIALISTS));
+		entity.add(new PlayerCmdComponent());
 		return entity;
 	}
 

@@ -46,6 +46,6 @@ public class Debug extends Decorator<Context> {
 	}
 
 	private String indent(Tick<Context> tick, String message) {
-		return StringUtils.repeat('\t', 2 * tick.target.debugLevel) + message;
+		return StringUtils.repeat('\t', tick.target.debugLevel) + message;
 	}
 }

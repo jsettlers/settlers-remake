@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.components;
 
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.Notification;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
@@ -16,9 +17,13 @@ public class AttackableComponent extends Component {
 	private float   health;
 	private boolean isAttackable = false;
 
-	public boolean IsAttackable() { return isAttackable; }
+	public AttackableComponent(EMovableType movableType) {
+		this.health = movableType.getHealth();
+	}
 
-	public void IsAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
+	public boolean isAttackable() { return isAttackable; }
+
+	public void isAttackable(boolean isAttackable) { this.isAttackable = isAttackable; }
 
 	public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
 		health -= strength;

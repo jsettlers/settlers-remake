@@ -71,10 +71,10 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 									waitForTargetReachedAndFailIfNotReachable(),
 									BehaviorTreeHelper.debug("can we pick it up?", condition(BearerBehaviorComponent::canTakeMaterial)),
 									startAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-									waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+									waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true),
 									tryTakeMaterialFromMap(),
 									startAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-									waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
+									waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true)
 								),
 								BehaviorTreeHelper.debug("handle failure", sequence(
 									action(BearerBehaviorComponent::distributionAborted),
@@ -103,10 +103,10 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 							waitForTargetReachedAndFailIfNotReachable(),
 							condition(BearerBehaviorComponent::canTakeMaterial),
 							startAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+							waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true),
 							tryTakeMaterialFromMap(),
 							startAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true)
+							waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true)
 						)),
 						BehaviorTreeHelper.debug("handle failure", sequence(
 							action(BearerBehaviorComponent::distributionAborted),
@@ -123,10 +123,10 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 							waitForTargetReachedAndFailIfNotReachable(),
 							condition(c -> c.entity.bearerComponent().materialType.isDroppable()),
 							startAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+							waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true),
 							tryFulfillRequest(),
 							startAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+							waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true),
 							action(BearerBehaviorComponent::resetJob)
 						)),
 						BehaviorTreeHelper.debug("handle failure", sequence(

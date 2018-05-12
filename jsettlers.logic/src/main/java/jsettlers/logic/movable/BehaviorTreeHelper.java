@@ -22,6 +22,7 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.NotificationCondition;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Parallel;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Property;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Repeat;
+import jsettlers.logic.movable.simplebehaviortree.nodes.Runner;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Sequence;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Succeeder;
@@ -119,10 +120,18 @@ public final class BehaviorTreeHelper {
 		);
 	}
 
+	public static Node<Context> waitForTargetReached(Node<Context> targetReachedChild, Node<Context> targetNotReachedChild) {
+		return debug("waitForTargetReached", selector(
+			triggerGuard(SteeringComponent.TargetReachedNotification.class, debug("TargetReachedNotification", targetReachedChild)),
+			triggerGuard(SteeringComponent.TargetNotReachedNotification.class, debug("TargetNotReachedNotification", targetNotReachedChild)),
+			debug("path not finished yet", new Runner<>())
+		));
+	}
+
 	public static Property<Context, Boolean> setAttackableWhile(boolean value, Node<Context> child) {
 		return new Property<>(
-			(context, v) -> context.entity.attackableComponent().IsAttackable(v),
-			(context) -> context.entity.attackableComponent().IsAttackable(), value, child
+			(context, v) -> context.entity.attackableComponent().isAttackable(v),
+			(context) -> context.entity.attackableComponent().isAttackable(), value, child
 		);
 	}
 

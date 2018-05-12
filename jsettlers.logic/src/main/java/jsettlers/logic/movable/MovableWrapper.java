@@ -114,7 +114,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public boolean isAttackable() {
-		return entity.getComponentOptional(AttackableComponent.class).map(AttackableComponent::IsAttackable).orElse(false);
+		return entity.getComponentOptional(AttackableComponent.class).map(AttackableComponent::isAttackable).orElse(false);
 	}
 
 	@Override
