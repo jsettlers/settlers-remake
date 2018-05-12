@@ -9,8 +9,8 @@ import jsettlers.logic.movable.BehaviorTreeHelper;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.ManageableBearerWrapper;
 import jsettlers.logic.movable.Requires;
+import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
-import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
@@ -42,8 +42,8 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 	private static final long serialVersionUID = -4581600901753172458L;
 
 	@Override
-	protected Root<Context> createBehaviorTree() {
-		return new Root<>(selector(
+	protected Node<Context> createBehaviorTree() {
+		return selector(
 			triggerGuard(BearerComponent.DeliveryJob.class,
 				guard(c -> c.entity.bearerComponent().hasJob(), false,
 					accept_SaveDeliveryJob()
@@ -152,7 +152,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 					))
 				)
 			)
-		));
+		);
 	}
 
 	private static Action<Context> accept_SaveDeliveryJob() {

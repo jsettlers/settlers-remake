@@ -14,15 +14,19 @@ import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Notification;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.condition;
+import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
+import static jsettlers.logic.movable.BehaviorTreeHelper.sleep;
+import static jsettlers.logic.movable.BehaviorTreeHelper.succeeder;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 
 /**
@@ -64,7 +68,7 @@ public class SteeringComponent extends Component {
 		gameFieldComponent = entity.getComponent(GameFieldComponent.class);
 		movableComponent = entity.getComponent(MovableComponent.class);
 		animationComponent = entity.getComponent(AnimationComponent.class);
-		tick = new Tick<>(new Context(entity, this), CreateBehaviorTree());
+		tick = new Tick<>(new Context(entity, this), new Root<>(debug("==<root: steering>== of " + entity.getID(), createBehaviorTree())));
 	}
 
 	public boolean setTarget(ShortPoint2D targetPos) {
@@ -93,45 +97,44 @@ public class SteeringComponent extends Component {
 		}
 	}
 
-	private Root<Context> CreateBehaviorTree() {
-		return new Root<>(BehaviorTreeHelper.debug("==<root>==",
-			selector(
-				guard(c -> path != null, true,
-					BehaviorTreeHelper.action(c -> {
-						followPath();
-					})
-				),
-				guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPos().x, movableComponent.getPos().y), true,
-					BehaviorTreeHelper.action(c -> {
-						goToNonBlockedOrProtectedPosition();
-					})
-				),
-				BehaviorTreeHelper.guard(c -> isIdleBehaviorActive,
-					selector(
-						BehaviorTreeHelper.debug("if LeavePositionRequest", triggerGuard(LeavePositionRequest.class,
-							BehaviorTreeHelper.debug("try go in random direction", action(context -> {
-								Optional<LeavePositionRequest> note = context.component.getNextNotification(LeavePositionRequest.class, false);
-								if (note.isPresent() && goToRandomDirection(note.get().sender)) {
-									context.component.consumeNotification(note.get());
-									return NodeStatus.SUCCESS;
-								}
-								return NodeStatus.FAILURE;
-							}))
-						)),
-						BehaviorTreeHelper.debug("move away from other movables", memSequence(
-							condition(c -> this.flockToDecentralize()),
-							BehaviorTreeHelper.sleep(500)
-						)),
-						BehaviorTreeHelper.debug("turn in a random direction", memSequence(
-							BehaviorTreeHelper.action(c -> {
-								turnInRandomDirection();
-							}),
-							BehaviorTreeHelper.sleep(1000)
-						))
-					)
+	protected Node<Context> createBehaviorTree() {
+		return selector(
+			guard(c -> path != null, true,
+				action(c -> {
+					followPath();
+				})
+			),
+			guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPos().x, movableComponent.getPos().y), true,
+				action(c -> {
+					goToNonBlockedOrProtectedPosition();
+				})
+			),
+			BehaviorTreeHelper.guard(c -> isIdleBehaviorActive,
+				selector(
+					debug("if LeavePositionRequest", triggerGuard(LeavePositionRequest.class,
+						debug("try go in random direction", action(context -> {
+							Optional<LeavePositionRequest> note = context.component.getNextNotification(LeavePositionRequest.class, false);
+							if (note.isPresent() && goToRandomDirection(note.get().sender)) {
+								context.component.consumeNotification(note.get());
+								return NodeStatus.SUCCESS;
+							}
+							return NodeStatus.FAILURE;
+						}))
+					)),
+					debug("move away from other movables", memSequence(
+						condition(c -> this.flockToDecentralize()),
+						sleep(500)
+					)),
+					debug("turn in a random direction", memSequence(
+						action(c -> {
+							turnInRandomDirection();
+						}),
+						sleep(1000)
+					))
 				)
-			)
-		));
+			),
+			debug("nothing to do", succeeder())
+		);
 	}
 
 	@Override

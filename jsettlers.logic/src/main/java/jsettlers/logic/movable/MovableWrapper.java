@@ -140,6 +140,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	@Override
 	public void debug() {
 		System.out.println("debug: " + entity);
+		entity.toggleDebug();
 	}
 
 	@Override

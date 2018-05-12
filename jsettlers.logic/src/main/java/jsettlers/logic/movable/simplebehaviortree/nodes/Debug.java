@@ -1,5 +1,7 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
 
+import org.apache.commons.lang3.StringUtils;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.simplebehaviortree.Decorator;
@@ -24,20 +26,26 @@ public class Debug extends Decorator<Context> {
 
 	@Override
 	public NodeStatus onTick(Tick<Context> tick) {
-		if (CommonConstants.DEBUG_BEHAVIOR_TREES) {
-			System.out.println(message);
+		if (CommonConstants.DEBUG_BEHAVIOR_TREES && tick.target.entity.isInDebugMode()) {
+			System.out.println(indent(tick, message));
 		}
 
 		if (child != null) {
+			tick.target.debugLevel++;
 			NodeStatus result = child.execute(tick);
+			tick.target.debugLevel--;
 
-			if (CommonConstants.DEBUG_BEHAVIOR_TREES) {
-				System.out.println(message + ": " + result);
+			if (CommonConstants.DEBUG_BEHAVIOR_TREES && tick.target.entity.isInDebugMode()) {
+				System.out.println(indent(tick, message + ": " + result));
 			}
 
 			return result;
 		}
 
 		return NodeStatus.SUCCESS;
+	}
+
+	private String indent(Tick<Context> tick, String message) {
+		return StringUtils.repeat('\t', 2 * tick.target.debugLevel) + message;
 	}
 }

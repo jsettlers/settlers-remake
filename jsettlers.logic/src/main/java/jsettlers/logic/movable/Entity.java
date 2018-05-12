@@ -33,6 +33,8 @@ public class Entity implements Serializable, IScheduledTimerable {
 
 	private final int id;
 
+	private boolean debug;
+
 	private final Map<Class<? extends Component>, Component> components      = new IdentityHashMap<>();
 	private final Map<Class<? extends Component>, Component> componentLookup = new IdentityHashMap<>();
 
@@ -43,20 +45,6 @@ public class Entity implements Serializable, IScheduledTimerable {
 		return notificationsCurrent;
 	}
 
-	/**
-	 * Checks whether or not all Component dependencies are satisfied.
-	 * @return {@code true} if all Component dependencies are satisfied, {@code false} otherwise.
-	 */
-	public boolean checkComponentDependencies() {
-		for (Class<? extends Component> cmp : this.componentLookup.keySet()) {
-			Requires ann = cmp.getAnnotation(Requires.class);
-			if (ann == null) { continue; }
-			for (Class<? extends Component> dependency : ann.value()) {
-				assert componentLookup.containsKey(dependency) : componentLookup.get(cmp).getClass().getName() + "[" + cmp.getName() + "]: " + dependency.getName() + " missing";
-			}
-		}
-		return true;
-	}
 
 	public enum State {
 		ACTIVE,
@@ -80,6 +68,29 @@ public class Entity implements Serializable, IScheduledTimerable {
 		for (Component c : cs) {
 			add(c);
 		}
+	}
+
+	/**
+	 * Checks whether or not all Component dependencies are satisfied.
+	 * @return {@code true} if all Component dependencies are satisfied, {@code false} otherwise.
+	 */
+	boolean checkComponentDependencies() {
+		for (Class<? extends Component> cmp : this.componentLookup.keySet()) {
+			Requires ann = cmp.getAnnotation(Requires.class);
+			if (ann == null) { continue; }
+			for (Class<? extends Component> dependency : ann.value()) {
+				assert componentLookup.containsKey(dependency) : componentLookup.get(cmp).getClass().getName() + "[" + cmp.getName() + "]: " + dependency.getName() + " missing";
+			}
+		}
+		return true;
+	}
+
+	void toggleDebug() {
+		debug = !debug;
+	}
+
+	public boolean isInDebugMode() {
+		return debug;
 	}
 
 	private int resetInvokationDelay() {

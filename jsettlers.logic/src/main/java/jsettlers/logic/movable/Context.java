@@ -11,12 +11,14 @@ public final class Context implements Serializable {
 	public final Entity    entity;
 	public final Component component;
 
-	public Entity getEntity() { return entity; }
-
-	public Component getComponent() { return component; }
+	public int debugLevel = 0;
 
 	public Context(Entity entity, Component component) {
 		this.entity = entity;
 		this.component = component;
 	}
+
+	public Entity getEntity() { return entity; }
+
+	public Component getComponent() { return component; }
 }

@@ -12,7 +12,6 @@ import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
-import jsettlers.logic.movable.simplebehaviortree.Root;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
@@ -40,57 +39,54 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAnd
 public final class GeologistBehaviorComponent extends BehaviorComponent {
 	private static final long serialVersionUID = -4157235942699928852L;
 
-	@Override
-	protected Root<Context> createBehaviorTree() {
-		final short ACTION1_DURATION = 1400;
-		final short ACTION2_DURATION = 1500;
+	private static final short ACTION1_DURATION = 1400;
+	private static final short ACTION2_DURATION = 1500;
 
-		return new Root<>(
-			debug("root",
-				selector(
-					triggerGuard(PlayerCmdComponent.MoveToCommand.class,
-						debug("MoveToCommand",
-							memSequence(
-								BehaviorTreeHelper.action(c -> {
-									c.component.forFirstNotificationOfType(PlayerCmdComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
-								}),
-								waitForTargetReachedAndFailIfNotReachable(),
-								BehaviorTreeHelper.action(c -> {
-									c.entity.specialistComponent().setIsWorking(true);
-								})
-							)
-						)
-					),
-					triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
-						debug("StartWorkCommand",
-							BehaviorTreeHelper.action(c -> {
-								c.entity.specialistComponent().setIsWorking(true);
-								//								c.entity.specialistComponent().resetTargetWorkPos();
-							})
-						)
-					),
-					guard(c -> c.entity.specialistComponent().isWorking(), true,
-						debug("isWorking",
-							selector(
-								debug("find a place and work there", memSequence(
-									new FindGoToWorkablePosition(),
-									waitForTargetReachedAndFailIfNotReachable(),
-									markOnCurrentPositionIfWorkingIsPossible(),
-									startAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
-									waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
-									startAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
-									waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
-									placeSign()
-								)),
-								debug("on failure: stop working", BehaviorTreeHelper.action(c -> {
-									c.entity.specialistComponent().setIsWorking(false);
-								}))
-							)
-						)
-					),
-					debug("no action", succeeder())
+	@Override
+	protected Node<Context> createBehaviorTree() {
+		return selector(
+			triggerGuard(PlayerCmdComponent.MoveToCommand.class,
+				debug("MoveToCommand",
+					memSequence(
+						BehaviorTreeHelper.action(c -> {
+							c.component.forFirstNotificationOfType(PlayerCmdComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
+						}),
+						waitForTargetReachedAndFailIfNotReachable(),
+						BehaviorTreeHelper.action(c -> {
+							c.entity.specialistComponent().setIsWorking(true);
+						})
+					)
 				)
-			));
+			),
+			triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
+				debug("StartWorkCommand",
+					BehaviorTreeHelper.action(c -> {
+						c.entity.specialistComponent().setIsWorking(true);
+						//								c.entity.specialistComponent().resetTargetWorkPos();
+					})
+				)
+			),
+			guard(c -> c.entity.specialistComponent().isWorking(), true,
+				debug("isWorking",
+					selector(
+						debug("find a place and work there", memSequence(
+							new FindGoToWorkablePosition(),
+							waitForTargetReachedAndFailIfNotReachable(),
+							markOnCurrentPositionIfWorkingIsPossible(),
+							startAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
+							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+							startAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
+							waitForNotification(AnimationComponent.AnimationFinishedTrigger.class, true),
+							placeSign()
+						)),
+						debug("on failure: stop working", BehaviorTreeHelper.action(c -> {
+							c.entity.specialistComponent().setIsWorking(false);
+						}))
+					)
+				)
+			),
+			debug("no action", succeeder())
+		);
 	}
 
 	private Node<Context> placeSign() {

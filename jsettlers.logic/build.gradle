@@ -21,6 +21,7 @@ task unitTest(type: Test) {
 dependencies {
     implementation project(':jsettlers.common')
     implementation project(':jsettlers.network')
+    implementation 'org.apache.commons:commons-text:1.3'
 
     testImplementation project(':jsettlers.testutils')
     testImplementation project(':jsettlers.main.swing')
