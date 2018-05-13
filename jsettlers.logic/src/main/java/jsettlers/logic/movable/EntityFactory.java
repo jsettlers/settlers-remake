@@ -16,7 +16,7 @@ import jsettlers.logic.movable.components.GeologistBehaviorComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.MultiMaterialComponent;
-import jsettlers.logic.movable.components.PlayerCmdComponent;
+import jsettlers.logic.movable.components.PlayerComandComponent;
 import jsettlers.logic.movable.components.SelectableComponent;
 import jsettlers.logic.movable.components.SpecialistComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
@@ -85,7 +85,7 @@ public final class EntityFactory {
 		entity.add(new SteeringComponent());
 		entity.add(new GameFieldComponent(grid));
 		entity.add(new SelectableComponent(ESelectionType.SPECIALISTS));
-		entity.add(new PlayerCmdComponent());
+		entity.add(new PlayerComandComponent());
 		return entity;
 	}
 

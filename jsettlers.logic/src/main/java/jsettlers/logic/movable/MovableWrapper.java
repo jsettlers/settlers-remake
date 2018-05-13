@@ -16,9 +16,8 @@ import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
-import jsettlers.logic.movable.components.PlayerCmdComponent;
+import jsettlers.logic.movable.components.PlayerComandComponent;
 import jsettlers.logic.movable.components.SelectableComponent;
-import jsettlers.logic.movable.components.SpecialistComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
@@ -84,7 +83,13 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
-		entity.getComponentOptional(SpecialistComponent.class).ifPresent(component -> component.setIsWorking(!stop));
+		entity.getComponentOptional(PlayerComandComponent.class).ifPresent(component -> {
+			if (stop) {
+				component.sendStopWorkCommand();
+			} else {
+				component.sendStartWorkCommand();
+			}
+		});
 	}
 
 	@Override
@@ -219,7 +224,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public void moveTo(ShortPoint2D targetPosition) {
-		entity.getComponentOptional(PlayerCmdComponent.class).ifPresent(component -> component.moveTo(targetPosition));
+		entity.getComponentOptional(PlayerComandComponent.class).ifPresent(component -> component.sendMoveToCommand(targetPosition));
 	}
 
 	@Override

@@ -37,7 +37,7 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAnd
 	GameFieldComponent.class,
 	AnimationComponent.class,
 	MovableComponent.class,
-	PlayerCmdComponent.class
+	PlayerComandComponent.class
 })
 public final class GeologistBehaviorComponent extends BehaviorComponent {
 	private static final long serialVersionUID = -4157235942699928852L;
@@ -50,16 +50,21 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 	@Override
 	protected Node<Context> createBehaviorTree() {
 		return new DynamicGuardSelector<>(
-			triggerGuard(PlayerCmdComponent.MoveToCommand.class,
+			triggerGuard(PlayerComandComponent.MoveToCommand.class,
 				debug("MoveToCommand", action(c -> {
-					c.component.forFirstNotificationOfType(PlayerCmdComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
+					c.component.forFirstNotificationOfType(PlayerComandComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
 					goingToPlayerCommandLocation = true;
 					c.entity.specialistComponent().setIsWorking(true);
 				}))
 			),
-			triggerGuard(PlayerCmdComponent.StartWorkCommand.class,
+			triggerGuard(PlayerComandComponent.StartWorkCommand.class,
 				debug("StartWorkCommand",
 					setIsWorkingAction(true)
+				)
+			),
+			triggerGuard(PlayerComandComponent.StopWorkCommand.class,
+				debug("StopWorkCommand",
+					setIsWorkingAction(false)
 				)
 			),
 			guard(c -> goingToPlayerCommandLocation, true,

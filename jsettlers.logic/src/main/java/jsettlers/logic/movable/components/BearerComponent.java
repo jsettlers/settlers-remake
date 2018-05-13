@@ -104,7 +104,7 @@ public class BearerComponent extends MaterialComponent {
 	public void resetJob() {
 		hasDeliveryJob = false;
 		hasBecomeSoldierJob = false;
-		hasBecomeSoldierJob = false;
+		hasBecomeWorkerJob = false;
 
 		materialOffer = null;
 		workerRequester = null;

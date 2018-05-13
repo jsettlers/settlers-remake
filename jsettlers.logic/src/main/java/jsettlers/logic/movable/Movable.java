@@ -98,7 +98,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
+	 * Tests if this movable can receive sendMoveToCommand requests and if so, directs it to go to the given position.
 	 *
 	 * @param targetPosition
 	 */
