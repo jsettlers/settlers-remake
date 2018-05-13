@@ -47,12 +47,12 @@ public class BearerComponent extends MaterialComponent {
 		}
 	}
 
-	public EMaterialType    materialType;
-	public IMaterialOffer   materialOffer;
-	public IMaterialRequest deliveryRequest;
+	public EMaterialType materialType;
+	IMaterialOffer   materialOffer;
+	IMaterialRequest deliveryRequest;
 
-	public IManageableBearer.IWorkerRequester workerRequester;
-	public WorkerCreationRequest              workerCreationRequest;
+	IManageableBearer.IWorkerRequester workerRequester;
+	WorkerCreationRequest              workerCreationRequest;
 
 	public IBarrack barrack;
 

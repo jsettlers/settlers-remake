@@ -5,22 +5,24 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.movable.BehaviorTreeHelper;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.ManageableBearerWrapper;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
+import jsettlers.logic.movable.simplebehaviortree.nodes.DynamicGuardSelector;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
+import static jsettlers.logic.movable.BehaviorTreeHelper.alwaysFail;
 import static jsettlers.logic.movable.BehaviorTreeHelper.condition;
 import static jsettlers.logic.movable.BehaviorTreeHelper.convertTo;
-import static jsettlers.logic.movable.BehaviorTreeHelper.failer;
+import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
 import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
+import static jsettlers.logic.movable.BehaviorTreeHelper.startAndWaitForAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
@@ -43,60 +45,58 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	@Override
 	protected Node<Context> createBehaviorTree() {
-		return selector(
+		return new DynamicGuardSelector<>(
 			triggerGuard(BearerComponent.DeliveryJob.class,
-				guard(c -> c.entity.bearerComponent().hasJob(), false,
-					accept_SaveDeliveryJob()
+				guard("DeliveryJob", c -> c.entity.bearerComponent().hasJob(), false,
+					debug("accepting delivery job", acceptDeliveryJob())
 				)
 			),
 			triggerGuard(BearerComponent.BecomeSoldierJob.class,
-				guard(c -> c.entity.bearerComponent().hasJob(), false,
-					accept_SaveBecomeSoldierJob()
+				guard("BecomeSoldierJob", c -> c.entity.bearerComponent().hasJob(), false,
+					debug("accepting become soldier job", acceptBecomeSoldierJob())
 				)
 			),
 			triggerGuard(BearerComponent.BecomeWorkerJob.class,
-				guard(c -> c.entity.bearerComponent().hasJob(), false,
-					accept_SaveBecomeWorkerJob()
+				guard("BecomeWorkerJob", c -> c.entity.bearerComponent().hasJob(), false,
+					debug("accepting become worker job", acceptBecomeWorkerJob())
 				)
 			),
 			guard(c -> c.entity.bearerComponent().hasBecomeWorkerJob(), true,
-				selector(
-					BehaviorTreeHelper.debug("try to fulfil the job", memSequence(
-						BehaviorTreeHelper.debug("grab a tool if needed", BehaviorTreeHelper.guard(c -> c.entity.bearerComponent().materialOffer == null,
+				selector("hasBecomeWorkerJob",
+					memSequence("try to fulfil the job",
+						guard("grab a tool if needed", c -> c.entity.bearerComponent().materialOffer == null,
 							selector(
 								memSequence(
-									BehaviorTreeHelper.debug("go to the tool", action(c -> {
+									action("go to the tool", c -> {
 										c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPos());
-									})),
+									}),
 									waitForTargetReachedAndFailIfNotReachable(),
-									BehaviorTreeHelper.debug("can we pick it up?", condition(BearerBehaviorComponent::canTakeMaterial)),
-									startAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
-									waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true),
+									condition("can we pick it up?", BearerBehaviorComponent::canTakeMaterial),
+									startAndWaitForAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),
 									tryTakeMaterialFromMap(),
-									startAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
-									waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true)
+									startAndWaitForAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION)
 								),
-								BehaviorTreeHelper.debug("handle failure", sequence(
+								sequence("handle failure",
 									action(BearerBehaviorComponent::distributionAborted),
-									failer()
-								))
+									alwaysFail()
+								)
 							)
-						)),
-						BehaviorTreeHelper.debug("convert Entity to a worker", action(c -> {
+						),
+						action("convert Entity to a worker", c -> {
 							convertTo(c.entity, c.entity.bearerComponent().workerCreationRequest.requestedMovableType());
-						}))
-					)),
-					BehaviorTreeHelper.debug("handle failure", sequence(
+						})
+					),
+					sequence("handle failure",
 						action(BearerBehaviorComponent::workerCreationRequestFailed),
 						action(BearerBehaviorComponent::resetJob),
-						failer()
-					))
+						alwaysFail()
+					)
 				)
 			),
 			guard(c -> c.entity.bearerComponent().hasDeliveryJob(), true,
 				memSequence(
 					selector(
-						BehaviorTreeHelper.debug("go to materialOffer and take material", memSequence(
+						memSequence("go to materialOffer and take material",
 							action(c -> {
 								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPos());
 							}),
@@ -107,16 +107,16 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 							tryTakeMaterialFromMap(),
 							startAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
 							waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true)
-						)),
-						BehaviorTreeHelper.debug("handle failure", sequence(
+						),
+						sequence("handle failure",
 							action(BearerBehaviorComponent::distributionAborted),
 							action(BearerBehaviorComponent::deliveryAborted),
 							action(BearerBehaviorComponent::resetJob),
-							failer()
-						))
+							alwaysFail()
+						)
 					),
 					selector(
-						BehaviorTreeHelper.debug("go to request & drop material", memSequence(
+						memSequence("go to request & drop material",
 							action(c -> {
 								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().deliveryRequest.getPos());
 							}),
@@ -128,34 +128,34 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 							startAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
 							waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true),
 							action(BearerBehaviorComponent::resetJob)
-						)),
-						BehaviorTreeHelper.debug("handle failure", sequence(
-							BehaviorTreeHelper.debug("reoffer the material", dropMaterial()),
+						),
+						sequence("handle failure",
+							debug("reoffer the material", dropMaterial()),
 							action(BearerBehaviorComponent::deliveryAborted),
 							action(BearerBehaviorComponent::resetJob),
-							failer()
-						))
+							alwaysFail()
+						)
 					)
 				)
 			),
 			guard(c -> c.entity.bearerComponent().hasBecomeSoldierJob(), true,
 				selector(
-					BehaviorTreeHelper.debug("fullfill the job", memSequence(
+					memSequence("fullfill the job",
 						action(c -> {
 							c.entity.steeringComponent().setTarget(c.entity.bearerComponent().barrack.getDoor());
 						}),
 						waitForTargetReachedAndFailIfNotReachable(),
 						tryTakeWeapon_ConvertToSoldier()
-					)),
-					BehaviorTreeHelper.debug("handle failure", sequence(
+					),
+					sequence("handle failure",
 						action(BearerBehaviorComponent::resetJob)
-					))
+					)
 				)
 			)
 		);
 	}
 
-	private static Action<Context> accept_SaveDeliveryJob() {
+	private static Action<Context> acceptDeliveryJob() {
 		return new Action<>(context -> {
 			context.component.forFirstNotificationOfType(BearerComponent.DeliveryJob.class, job -> {
 				job.offer.distributionAccepted();
@@ -165,13 +165,13 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 		});
 	}
 
-	private static Action<Context> accept_SaveBecomeSoldierJob() {
+	private static Action<Context> acceptBecomeSoldierJob() {
 		return new Action<>(context -> {
 			context.component.forFirstNotificationOfType(BearerComponent.BecomeSoldierJob.class, context.entity.bearerComponent()::setBecomeSoldierJob);
 		});
 	}
 
-	private static Action<Context> accept_SaveBecomeWorkerJob() {
+	private static Action<Context> acceptBecomeWorkerJob() {
 		return new Action<>(context -> {
 			context.component.forFirstNotificationOfType(BearerComponent.BecomeWorkerJob.class, job -> {
 				job.offer.distributionAccepted();

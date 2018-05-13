@@ -11,7 +11,6 @@ public class Condition<T> extends Node<T> {
 	private final IBooleanConditionFunction<T> condition;
 
 	public Condition(IBooleanConditionFunction<T> condition) {
-		super();
 		this.condition = condition;
 	}
 

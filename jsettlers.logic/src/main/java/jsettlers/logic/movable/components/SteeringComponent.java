@@ -26,7 +26,7 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
 import static jsettlers.logic.movable.BehaviorTreeHelper.sleep;
-import static jsettlers.logic.movable.BehaviorTreeHelper.succeeder;
+import static jsettlers.logic.movable.BehaviorTreeHelper.alwaysSucceed;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 
 /**
@@ -133,7 +133,7 @@ public class SteeringComponent extends Component {
 					))
 				)
 			),
-			debug("nothing to do", succeeder())
+			debug("nothing to do", alwaysSucceed())
 		);
 	}
 

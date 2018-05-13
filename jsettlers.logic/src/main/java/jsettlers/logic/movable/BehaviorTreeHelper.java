@@ -3,6 +3,7 @@ package jsettlers.logic.movable;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
 import jsettlers.logic.movable.simplebehaviortree.INodeStatusActionConsumer;
@@ -11,10 +12,11 @@ import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
+import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysFail;
 import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysRunning;
+import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysSucceed;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Condition;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Debug;
-import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysFail;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Guard;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Inverter;
 import jsettlers.logic.movable.simplebehaviortree.nodes.MemSelector;
@@ -25,7 +27,6 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.Property;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Repeat;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Sequence;
-import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysSucceed;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Wait;
 
 public final class BehaviorTreeHelper {
@@ -36,28 +37,48 @@ public final class BehaviorTreeHelper {
 		return new Action<>(action);
 	}
 
+	public static Node<Context> action(String debugMessage, INodeStatusActionConsumer<Context> action) {
+		return debug(debugMessage, action(action));
+	}
+
 	public static Action<Context> action(INodeStatusActionFunction<Context> action) {
 		return new Action<>(action);
+	}
+
+	public static Node<Context> action(String debugMessage, INodeStatusActionFunction<Context> action) {
+		return debug(debugMessage, action(action));
 	}
 
 	public static Condition<Context> condition(IBooleanConditionFunction<Context> condition) {
 		return new Condition<>(condition);
 	}
 
-	public static AlwaysFail<Context> failer() {
+	public static Node<Context> condition(String debugMessage, IBooleanConditionFunction<Context> condition) {
+		return debug(debugMessage, condition(condition));
+	}
+
+	public static AlwaysFail<Context> alwaysFail() {
 		return new AlwaysFail<>();
 	}
 
-	public static AlwaysSucceed<Context> succeeder() {
+	public static AlwaysSucceed<Context> alwaysSucceed() {
 		return new AlwaysSucceed<>();
 	}
 
 	public static Guard<Context> guard(IBooleanConditionFunction<Context> condition, Node<Context> child) {
-		return new Guard<>(condition, child);
+		return guard(condition, true, child);
+	}
+
+	public static Node<Context> guard(String debugMessage, IBooleanConditionFunction<Context> condition, Node<Context> child) {
+		return guard(debugMessage, condition, true, child);
 	}
 
 	public static Guard<Context> guard(IBooleanConditionFunction<Context> condition, boolean shouldBe, Node<Context> child) {
 		return new Guard<>(condition, shouldBe, child);
+	}
+
+	public static Node<Context> guard(String debugMessage, IBooleanConditionFunction<Context> condition, boolean shouldBe, Node<Context> child) {
+		return debug(debugMessage, guard(condition, shouldBe, child));
 	}
 
 	public static Inverter<Context> inverter(Node<Context> child) {
@@ -72,6 +93,11 @@ public final class BehaviorTreeHelper {
 	@SafeVarargs
 	public static MemSequence<Context> memSequence(Node<Context>... children) {
 		return new MemSequence<>(children);
+	}
+
+	@SafeVarargs
+	public static Node<Context> memSequence(String debugMessage, Node<Context>... children) {
+		return debug(debugMessage, memSequence(children));
 	}
 
 	@SafeVarargs
@@ -93,8 +119,18 @@ public final class BehaviorTreeHelper {
 	}
 
 	@SafeVarargs
+	public static Node<Context> selector(String debugMessage, Node<Context>... children) {
+		return debug(debugMessage, new Selector<>(children));
+	}
+
+	@SafeVarargs
 	public static Sequence<Context> sequence(Node<Context>... children) {
 		return new Sequence<>(children);
+	}
+
+	@SafeVarargs
+	public static Node<Context> sequence(String debugMessage, Node<Context>... children) {
+		return debug(debugMessage, sequence(children));
 	}
 
 	public static Wait<Context> wait(Node<Context> condition) {
@@ -110,7 +146,7 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static Node<Context> waitForTargetReachedAndFailIfNotReachable() {
-		return sequence(
+		return sequence("waitForTargetReachedAndFailIfNotReachable",
 			inverter(
 				notificationCondition(SteeringComponent.TargetNotReachedNotification.class, true)
 			),
@@ -157,6 +193,13 @@ public final class BehaviorTreeHelper {
 		return new Action<>(context -> {
 			context.entity.getAnimationComponent().startAnimation(animation, duration);
 		});
+	}
+
+	public static Node<Context> startAndWaitForAnimation(EMovableAction animation, short duration) {
+		return memSequence("startAndWaitForAnimation with " + animation + " for " + duration + "ms",
+			debug("start animation", startAnimation(animation, duration)),
+			debug("wait for animation to finish", waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true))
+		);
 	}
 
 	public static void convertTo(Entity entity, EMovableType type) {

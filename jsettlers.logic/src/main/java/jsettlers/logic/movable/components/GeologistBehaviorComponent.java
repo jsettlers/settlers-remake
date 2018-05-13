@@ -15,14 +15,13 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 import jsettlers.logic.movable.simplebehaviortree.nodes.DynamicGuardSelector;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
+import static jsettlers.logic.movable.BehaviorTreeHelper.alwaysSucceed;
 import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
-import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
-import static jsettlers.logic.movable.BehaviorTreeHelper.succeeder;
+import static jsettlers.logic.movable.BehaviorTreeHelper.startAndWaitForAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
-import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForPathFinished;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAndFailIfNotReachable;
 
@@ -51,11 +50,11 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 	protected Node<Context> createBehaviorTree() {
 		return new DynamicGuardSelector<>(
 			triggerGuard(PlayerComandComponent.MoveToCommand.class,
-				debug("MoveToCommand", action(c -> {
+				action("MoveToCommand", c -> {
 					c.component.forFirstNotificationOfType(PlayerComandComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
 					goingToPlayerCommandLocation = true;
 					c.entity.specialistComponent().setIsWorking(true);
-				}))
+				})
 			),
 			triggerGuard(PlayerComandComponent.StartWorkCommand.class,
 				debug("StartWorkCommand",
@@ -73,25 +72,19 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 				}))
 			),
 			guard(c -> c.entity.specialistComponent().isWorking(), true,
-				debug("isWorking",
-					selector(
-						debug("find a place and work there",
-							memSequence(
-								debug("FindGoToWorkablePosition", new FindGoToWorkablePosition()),
-								debug("waitForTargetReachedAndFailIfNotReachable", waitForTargetReachedAndFailIfNotReachable()),
-								debug("markOnCurrentPositionIfWorkingIsPossible", markOnCurrentPositionIfWorkingIsPossible()),
-								debug("startAnimation", startAnimation(EMovableAction.ACTION1, ACTION1_DURATION)),
-								debug("waitForNotification", waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true)),
-								debug("startAnimation", startAnimation(EMovableAction.ACTION2, ACTION2_DURATION)),
-								debug("waitForNotification", waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true)),
-								debug("placeSign", placeSign())
-							)
-						),
-						debug("on failure: stop working", setIsWorkingAction(false))
-					)
+				selector("isWorking",
+					memSequence("find a place and work there",
+						debug("FindGoToWorkablePosition", new FindGoToWorkablePosition()),
+						waitForTargetReachedAndFailIfNotReachable(),
+						debug("markOnCurrentPositionIfWorkingIsPossible", markOnCurrentPositionIfWorkingIsPossible()),
+						startAndWaitForAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
+						startAndWaitForAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
+						debug("placeSign", placeSign())
+					),
+					debug("on failure: stop working", setIsWorkingAction(false))
 				)
 			),
-			guard(c -> true, debug("no action", succeeder()))
+			guard(c -> true, debug("no action", alwaysSucceed()))
 		);
 	}
 
