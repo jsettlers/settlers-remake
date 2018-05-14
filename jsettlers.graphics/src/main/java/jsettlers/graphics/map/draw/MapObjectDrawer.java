@@ -295,6 +295,9 @@ public class MapObjectDrawer {
 				}
 			});
 		}
+
+		ShortPoint2D shipPosition = ship.getPosition();
+
 		if (shipType == EMovableType.FERRY) {
 			// draw passengers behind the sail
 			for (int i = 0; i < numberOfFreight; i++) {
@@ -304,7 +307,8 @@ public class MapObjectDrawer {
 					float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 					IMovable passenger = passengerList.get(j);
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
-							EMaterialType.NO_MATERIAL, direction.rotateRight(passenger.getPassengerRotation()), 0);
+						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
+					);
 					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
 			}
@@ -336,7 +340,8 @@ public class MapObjectDrawer {
 					float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 					IMovable passenger = passengerList.get(j);
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
-							EMaterialType.NO_MATERIAL, direction.rotateRight(passenger.getPassengerRotation()), 0);
+						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
+					);
 					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
 			}
@@ -362,6 +367,13 @@ public class MapObjectDrawer {
 		if (ship.isSelected()) {
 			drawSelectionMark(viewX, viewY, ship.getHealth() / DEFAULT_HEALTH);
 		}
+	}
+
+	private EDirection getPassengerDirection(EDirection shipDirection, ShortPoint2D shipPosition, int seatIndex) { // make ferry passengers look around
+		int x = shipPosition.x;
+		int y = shipPosition.y;
+		int slowerAnimationStep = animationStep / 32;
+		return shipDirection.getNeighbor(((x + seatIndex + slowerAnimationStep) / 8 + (y + seatIndex + slowerAnimationStep) / 11 + seatIndex ) % 3 - 1);
 	}
 
 	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, DrawBuffer db, float viewX, float viewY, Color color, float shade) {

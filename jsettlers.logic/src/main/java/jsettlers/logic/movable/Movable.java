@@ -102,7 +102,6 @@ public final class Movable implements ILogicMovable {
 
 	// the following data only for ship passengers
 	private Movable ferryToEnter = null;
-	private int passengerRotation = 0;
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -1157,21 +1156,5 @@ public final class Movable implements ILogicMovable {
 
 	public int getNumberOfStacks() {
 		return this.cargoStacks;
-	}
-
-	public int getPassengerRotation() { // make ferry passengers look around
-		double random = Math.random();
-		if (random > 0.995) {
-			if (this.passengerRotation == 0) {
-				if (random > 0.999) {
-					this.passengerRotation = 5; // look left
-				} else if (random < 0.997) {
-					this.passengerRotation = 1; // look right
-				}
-			} else {
-				this.passengerRotation = 0; // look forward
-			}
-		}
-		return this.passengerRotation;
 	}
 }
