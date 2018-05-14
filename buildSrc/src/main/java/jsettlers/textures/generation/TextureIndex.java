@@ -76,7 +76,7 @@ public class TextureIndex {
 
 	public int registerTexture(String name, int textureFile, int offsetX, int offsetY, int width, int height, Integer torsoIndex, boolean isTorso, TexturePosition position) throws IOException {
 		synchronized (imageIndexMutex) {
-			String safename = name.replaceAll("[^a-zA-Z0-9._]", "_");
+			String safename = name.replaceAll("[^a-zA-Z0-9._]", ".");
 
 			imageIndexes.put(safename, imageIndexCounter);
 

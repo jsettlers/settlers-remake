@@ -14,12 +14,13 @@
  */
 package jsettlers.textures.generation;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
+
+import javax.imageio.ImageIO;
 
 /**
  * This class lets you generate a texture that can be understood by the graphics module. It generates the .texture file.
@@ -29,12 +30,12 @@ import java.util.Scanner;
 public final class TextureGenerator {
 
 	private static class ImageData {
-		ProvidedImage data = null;
+		ProvidedImage data  = null;
 		ProvidedImage torso = null;
-		String name;
+		String        name;
 	}
 
-	private final File outDirectory;
+	private final File         outDirectory;
 	private final TextureIndex textureIndex;
 
 	public TextureGenerator(TextureIndex textureIndex, File outDirectory) {
@@ -53,15 +54,15 @@ public final class TextureGenerator {
 		}
 
 		Arrays.stream(files)
-				.parallel()
-				.filter(File::isDirectory)
-				.forEach(subDirectory -> processTextures(resourceDirectory, subDirectory));
+			  .parallel()
+			  .filter(File::isDirectory)
+			  .forEach(subDirectory -> processTextures(resourceDirectory, subDirectory));
 		Arrays.stream(files)
-				.parallel()
-				.filter(File::isFile)
-				.filter(file -> file.getName().endsWith(".png"))
-				.filter(file -> !file.getName().endsWith(".t.png")) // torso files are added with their corresponding image file
-				.forEach(file -> processTexturesFile(resourceDirectory, file));
+			  .parallel()
+			  .filter(File::isFile)
+			  .filter(file -> file.getName().endsWith(".png"))
+			  .filter(file -> !file.getName().endsWith(".t.png")) // torso files are added with their corresponding image file
+			  .forEach(file -> processTexturesFile(resourceDirectory, file));
 	}
 
 	private void processTexturesFile(File baseDirectory, File file) {
@@ -89,8 +90,8 @@ public final class TextureGenerator {
 	}
 
 	private String calculateName(File baseDirectory, File file) {
-		StringBuilder name = new StringBuilder(file.getName().replaceFirst("(\\.t)?\\.png$", ""));
-		File currentFile = file.getParentFile();
+		StringBuilder name = new StringBuilder(file.getParentFile().getName() + "." + file.getName().replaceFirst("(\\.t)?\\.png$", ""));
+		File currentFile = file.getParentFile().getParentFile();
 
 		while (!baseDirectory.equals(currentFile)) {
 			name.insert(0, currentFile.getName() + "/");
@@ -110,7 +111,7 @@ public final class TextureGenerator {
 				Integer torsoIndex = null;
 
 				if (torso != null) {
-					torsoIndex = storeImage(name + "_torso", torso, null, true);
+					torsoIndex = storeImage(name + ".t", torso, null, true);
 				}
 
 				storeImage(name, data, torsoIndex, false);
@@ -125,8 +126,8 @@ public final class TextureGenerator {
 		TexturePosition position = addAsNewImage(image, texture);
 		int index = textureIndex.registerTexture(name, texture, image.getOffsetX(), image.getOffsetY(), image.getWidth(), image.getHeight(), torsoIndex, isTorso, position);
 		System.out.println("Texture file #" + texture + ": add name=" + name + " using offsets x=" + image.getOffsetX() + ".." + (image.getOffsetX() + image.getWidth()) + ", y=" + image
-				.getOffsetY() + ".." + (image.getOffsetY() + image.getHeight()) + " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".."
-				+ position.getBottom());
+			.getOffsetY() + ".." + (image.getOffsetY() + image.getHeight()) + " => in texture at x=" + position.getLeft() + ".." + position.getRight() + ", y=" + position.getTop() + ".."
+			+ position.getBottom());
 		return index;
 	}
 
@@ -163,7 +164,9 @@ public final class TextureGenerator {
 		File offset = new File(imageFile.getPath() + ".offset");
 
 		if (!offset.exists()) {
-			return new int[] { 0, 0 };
+			return new int[]{
+				0,
+				0};
 		}
 
 		int[] offsets = new int[2];
@@ -177,7 +180,9 @@ public final class TextureGenerator {
 
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem reading offsets for " + imageFile + ", assuming (0,0). Problem was: " + t.getMessage());
-			return new int[] { 0, 0 };
+			return new int[]{
+				0,
+				0};
 		}
 	}
 }

@@ -16,13 +16,13 @@ package jsettlers.graphics.image.reader.custom.graphics;
 
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.sequence.ArraySequence;
-import jsettlers.graphics.image.sequence.Sequence;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.EmptyDatFile;
-import jsettlers.graphics.image.sequence.SequenceList;
 import jsettlers.graphics.image.reader.WrappedAnimation;
+import jsettlers.graphics.image.sequence.ArraySequence;
+import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.graphics.image.sequence.SequenceList;
+import jsettlers.graphics.map.draw.ImageProvider;
 
 class CustomShipsDatFile extends EmptyDatFile {
 	private final DatFileReader fallback;
@@ -55,18 +55,18 @@ class CustomShipsDatFile extends EmptyDatFile {
 				}
 
 				if (index == 0) {
-					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_hull_hull", 0, 6));
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship.hull", 0, 6));
 				} else if (index == 2) {
-					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_structures_structures", 0, 6));
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship.structures", 0, 6));
 				} else if (index == 28) {
-					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_sail_sail", 0, 6));
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship.sail", 0, 6));
 
 				} else if (index == 4) {
-					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_hull_hull", 0, 6));
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship.hull", 0, 6));
 				} else if (index == 6) {
-					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_structures_structures", 0, 6));
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship.structures", 0, 6));
 				} else if (index == 29) {
-					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship_sail_sail", 0, 6));
+					return new WrappedAnimation(imageProvider, new AnimationSequence("cargo_ship.sail", 0, 6));
 
 				} else {
 					return ArraySequence.getNullSequence();
