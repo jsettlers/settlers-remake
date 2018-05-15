@@ -19,12 +19,13 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public class JOGLContextCreator extends ContextCreator implements GLEventListener{
 
-	public JOGLContextCreator(AreaContainer ac) {
-		super(ac);
+	public JOGLContextCreator(GLContainer container) {
+		super(container);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import org.lwjgl.system.windows.GDI32;
 import org.lwjgl.system.windows.PIXELFORMATDESCRIPTOR;
 
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 
 public class WGLContextCreator extends JAWTContextCreator {
 
@@ -29,8 +30,8 @@ public class WGLContextCreator extends JAWTContextCreator {
     private long context;
     private int pixel_format;
 
-    public WGLContextCreator(AreaContainer ac) {
-        super(ac);
+    public WGLContextCreator(GLContainer container) {
+        super(container);
 		// do we have gdi and wgl support ?
 		GDI32.getLibrary().getName();
     }

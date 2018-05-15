@@ -15,14 +15,17 @@
 package go.graphics.swing.contextcreator;
 
 import java.awt.Component;
+import java.awt.GridBagConstraints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
+import jogamp.opengl.util.glsl.GLSLTextureRaster;
 
 public abstract class ContextCreator implements ComponentListener{
 
-    public ContextCreator(AreaContainer ac) {
+    public ContextCreator(GLContainer ac) {
         parent = ac;
     }
 
@@ -32,7 +35,7 @@ public abstract class ContextCreator implements ComponentListener{
     protected Object wnd_lock = new Object();
     protected boolean first_draw = true;
     protected Component canvas;
-    protected AreaContainer parent;
+    protected GLContainer parent;
 
 
     public abstract void stop();
@@ -46,7 +49,7 @@ public abstract class ContextCreator implements ComponentListener{
     public void init() {
         initSpecific();
 
-        parent.add(canvas);
+        parent.addCanvas(canvas);
 
         canvas.addComponentListener(this);
     }

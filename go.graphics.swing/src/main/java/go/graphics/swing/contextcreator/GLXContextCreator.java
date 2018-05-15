@@ -20,6 +20,7 @@ import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.linux.XVisualInfo;
 
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 
 
 public class GLXContextCreator extends JAWTContextCreator {
@@ -29,8 +30,8 @@ public class GLXContextCreator extends JAWTContextCreator {
     private long display = 0;
     private long context = 0;
 
-	public GLXContextCreator(AreaContainer ac) {
-		super(ac);
+	public GLXContextCreator(GLContainer container) {
+		super(container);
 		// do we have xlib support ?
 		X11.getLibrary().getName();
     }

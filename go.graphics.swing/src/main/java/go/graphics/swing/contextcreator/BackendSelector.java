@@ -24,6 +24,7 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 
 public class BackendSelector extends JComboBox<EBackendType> {
 
@@ -66,7 +67,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 		return availableBackends().filter(backend -> backend.cc_name.equalsIgnoreCase(name)).findFirst().orElse(EBackendType.DEFAULT);
 	}
 
-	public static ContextCreator createBackend(AreaContainer ac, EBackendType backend) throws Exception {
+	public static ContextCreator createBackend(GLContainer container, EBackendType backend) throws Exception {
 		EBackendType real_backend = backend;
 
 		if(backend == null || backend.cc_class == null) {
@@ -74,7 +75,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 			real_backend = availableBackends().filter(current_backend -> current_backend.cc_class != null).sorted().findFirst().orElse(FALLBACK_BACKEND);
 		}
 
-		return real_backend.cc_class.getConstructor(AreaContainer.class).newInstance(ac);
+		return real_backend.cc_class.getConstructor(GLContainer.class).newInstance(container);
 	}
 
 }

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.jawt.JAWT;
 import org.lwjgl.system.jawt.JAWTDrawingSurface;
 import org.lwjgl.system.jawt.JAWTDrawingSurfaceInfo;
@@ -23,6 +24,7 @@ import java.awt.Canvas;
 import java.awt.Graphics;
 
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public abstract class JAWTContextCreator extends ContextCreator {
@@ -31,8 +33,8 @@ public abstract class JAWTContextCreator extends ContextCreator {
     protected JAWTDrawingSurface surface;
     protected JAWTDrawingSurfaceInfo surfaceinfo;
 
-    public JAWTContextCreator(AreaContainer ac) {
-        super(ac);
+    public JAWTContextCreator(GLContainer container) {
+        super(container);
 
         jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
         JAWTFunctions.JAWT_GetAWT(jawt);

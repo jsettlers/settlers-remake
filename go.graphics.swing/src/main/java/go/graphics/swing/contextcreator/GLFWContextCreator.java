@@ -45,13 +45,14 @@ import go.graphics.UIPoint;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 
 public class GLFWContextCreator extends AsyncContextCreator {
 
 	private final GLFWEventConverter event_converter;
 
-    public GLFWContextCreator(AreaContainer ac) {
-        super(ac);
+    public GLFWContextCreator(GLContainer container) {
+        super(container);
 		event_converter = new GLFWEventConverter();
     }
 

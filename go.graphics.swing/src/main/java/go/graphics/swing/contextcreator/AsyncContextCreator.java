@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 
 import go.graphics.DrawmodeListener;
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public abstract class AsyncContextCreator extends ContextCreator implements Runnable,DrawmodeListener {
@@ -42,8 +43,8 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
     private Thread render_thread;
 
-    public AsyncContextCreator(AreaContainer ac)  {
-        super(ac);
+    public AsyncContextCreator(GLContainer container)  {
+        super(container);
     }
 
     @Override
