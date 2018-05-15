@@ -28,6 +28,7 @@ import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
+import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.opengl.LWJGLDrawContext;
 
@@ -55,10 +56,10 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	 *            The area to display
 	 */
 	public AreaContainer(Area area) {
-		this(area, BackendSelector.DEFAULT_BACKEND);
+		this(area, EBackendType.DEFAULT);
 	}
 
-	public AreaContainer(Area area, BackendSelector.BackendItem backend) {
+	public AreaContainer(Area area, EBackendType backend) {
 		this.area = area;
 		this.setLayout(new BorderLayout());
 

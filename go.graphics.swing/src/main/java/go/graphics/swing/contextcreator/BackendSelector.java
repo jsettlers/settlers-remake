@@ -17,30 +17,27 @@ package go.graphics.swing.contextcreator;
 import org.lwjgl.system.Platform;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import go.graphics.swing.AreaContainer;
 
-public class BackendSelector extends JComboBox<BackendSelector.BackendItem> {
+public class BackendSelector extends JComboBox<EBackendType> {
 
-	private BackendItem current_item = null;
+	private EBackendType current_item = null;
 	private static final Platform current_platform = Platform.get();
 
-	public static final ArrayList<BackendItem> backends = new ArrayList<>();
-	public static final BackendItem DEFAULT_BACKEND = new BackendItem(null, "default", null);
-	public static final BackendItem GLFW_BACKEND = new BackendItem(GLFWContextCreator.class, "glfw", null);
-	public static final BackendItem GLX_BACKEND = new BackendItem(GLXContextCreator.class, "glx", null);
-	public static final BackendItem WGL_BACKEND = new BackendItem(WGLContextCreator.class, "wgl", Platform.WINDOWS);
+	public static final EBackendType FALLBACK_BACKEND = EBackendType.GLFW;
 
 	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
 		super.actionPerformed(actionEvent);
 
 		if(actionEvent.getActionCommand() == "comboBoxChanged") {
-			BackendItem bi = (BackendItem) getSelectedItem();
+			EBackendType bi = (EBackendType) getSelectedItem();
 			if (bi.platform != null && bi.platform != current_platform) {
 				setSelectedItem(current_item);
 				BackendSelector.this.hidePopup();
@@ -57,54 +54,27 @@ public class BackendSelector extends JComboBox<BackendSelector.BackendItem> {
 
 		addActionListener(this);
 
-		addItem(DEFAULT_BACKEND);
-		addItem(GLFW_BACKEND);
-		addItem(GLX_BACKEND);
-		addItem(WGL_BACKEND);
+		availableBackends().forEach(backend -> addItem(backend));
 	}
 
-	public static BackendItem getBackendByName(String name) {
-		for(BackendItem backend : backends) {
-			if(backend.cc_name.equals(name)) return backend;
-		}
-
-		return DEFAULT_BACKEND;
+	private static Stream<EBackendType> availableBackends() {
+		return Arrays.stream(EBackendType.values()).filter(backend -> backend.platform == null || backend.platform == current_platform);
 	}
 
-	public static ContextCreator createBackend(AreaContainer ac, BackendItem backend) throws Exception {
-		BackendItem real_backend = backend;
+	public static EBackendType getBackendByName(String name) {
+		// matching and matching and suitable backends
+		return availableBackends().filter(backend -> backend.cc_name.equalsIgnoreCase(name)).findFirst().orElse(EBackendType.DEFAULT);
+	}
+
+	public static ContextCreator createBackend(AreaContainer ac, EBackendType backend) throws Exception {
+		EBackendType real_backend = backend;
 
 		if(backend == null || backend.cc_class == null) {
-			Platform platform = Platform.get();
-			if(platform == Platform.WINDOWS) {
-				real_backend = WGL_BACKEND;
-			} else if(platform == Platform.LINUX) {
-				real_backend = GLX_BACKEND;
-			} else {
-				real_backend = GLFW_BACKEND;
-			}
+			// first of all usable and suitable backends sorted for being default
+			real_backend = availableBackends().filter(current_backend -> current_backend.cc_class != null).sorted().findFirst().orElse(FALLBACK_BACKEND);
 		}
 
 		return real_backend.cc_class.getConstructor(AreaContainer.class).newInstance(ac);
 	}
 
-	public static class BackendItem {
-
-		public BackendItem(Class<? extends ContextCreator> cc_class, String cc_name, Platform platform) {
-			this.cc_class = cc_class;
-			this.cc_name = cc_name;
-			this.platform = platform;
-
-			backends.add(this);
-		}
-
-		public Class<? extends ContextCreator> cc_class;
-		public Platform platform;
-		public String cc_name;
-
-		@Override
-		public String toString() {
-			return cc_name;
-		}
-	}
 }

@@ -22,4 +22,10 @@ dependencies {
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-windows"
 
     compile "org.lwjgl:lwjgl-jawt:"+lwjgl_version
+
+    // macos support
+    compile "org.jogamp.gluegen:gluegen-rt:2.3.2"
+    compile "org.jogamp.jogl:jogl-all:2.3.2"
+    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal"
+    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal"
 }

@@ -14,6 +14,7 @@
  */
 package jsettlers.main.swing.settings;
 
+import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.sound.ISoundSettingsProvider;
 import java8.util.Maps;
 import java8.util.Optional;
@@ -33,8 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import go.graphics.swing.contextcreator.BackendSelector;
-import go.graphics.swing.contextcreator.GLFWContextCreator;
-import go.graphics.swing.sound.ISoundSettingsProvider;
 
 public class SettingsManager implements ISoundSettingsProvider {
 	private static final String CONFIGURATION_FILE = ".jsettlers";
@@ -194,8 +193,8 @@ public class SettingsManager implements ISoundSettingsProvider {
 		return 1;
 	}
 
-	public BackendSelector.BackendItem getBackend() {
-		return BackendSelector.getBackendByName(getOrDefault(SETTING_BACKEND, () -> BackendSelector.DEFAULT_BACKEND.cc_name));
+	public EBackendType getBackend() {
+		return BackendSelector.getBackendByName(getOrDefault(SETTING_BACKEND, () -> EBackendType.DEFAULT.cc_name));
   }
 	public void setVolume(float volume) {
 		set(SETTING_VOLUME, Float.toString(volume));
