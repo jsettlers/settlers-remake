@@ -30,8 +30,6 @@ public class EGLContextCreator extends JAWTContextCreator {
 	@Override
 	public void stop() {
 		EGL10.eglDestroySurface(egl_display, egl_surface);
-		//EGL10.eglDestroyContext(egl_display, egl_context);
-		//EGL10.eglTerminate(egl_display);
 	}
 
 	@Override
@@ -71,25 +69,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 
 	@Override
 	protected void initContext() {
-		/*egl_display = EGL10.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
-		EGL10.eglInitialize(egl_display, new int[1], new int[1]);
-		EGL12.eglBindAPI(EGL14.EGL_OPENGL_API);
-
-
-		int[] attrs = {EGL13.EGL_CONFORMANT, EGL14.EGL_OPENGL_BIT,
-				EGL10.EGL_NONE};
-		PointerBuffer cfgs = BufferUtils.createPointerBuffer(1);
-		int[] num_config = new int[1];
-
-		EGL10.eglChooseConfig(egl_display, attrs, cfgs, num_config);
-		if(num_config[0] == 0) throw new Error("could not found egl configs!");
-		egl_config = cfgs.get(0);*/
-
 		egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, native_drawable, (IntBuffer)null);
-
-		/*int[] ctx_attrs = new int[] {EGL10.EGL_NONE};
-
-		egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, ctx_attrs);*/
 	}
 
 	@Override
