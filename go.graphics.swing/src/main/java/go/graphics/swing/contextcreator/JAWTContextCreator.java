@@ -14,7 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
-import org.lwjgl.opengl.GL;
 import org.lwjgl.system.jawt.JAWT;
 import org.lwjgl.system.jawt.JAWTDrawingSurface;
 import org.lwjgl.system.jawt.JAWTDrawingSurfaceInfo;
@@ -23,7 +22,6 @@ import org.lwjgl.system.jawt.JAWTFunctions;
 import java.awt.Canvas;
 import java.awt.Graphics;
 
-import go.graphics.swing.AreaContainer;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 

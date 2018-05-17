@@ -19,7 +19,6 @@ import org.lwjgl.system.jawt.JAWTX11DrawingSurfaceInfo;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.linux.XVisualInfo;
 
-import go.graphics.swing.AreaContainer;
 import go.graphics.swing.GLContainer;
 
 

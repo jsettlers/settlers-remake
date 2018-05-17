@@ -14,30 +14,56 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
+import org.lwjgl.egl.EGL;
+import org.lwjgl.opengl.GLX;
+import org.lwjgl.opengl.WGL;
 import org.lwjgl.system.Platform;
+import org.lwjgl.system.linux.X11;
+import org.lwjgl.system.windows.GDI32;
+
 
 public enum EBackendType implements Comparable<EBackendType> {
 
-	GLX(GLXContextCreator.class, "glx", null, Platform.LINUX),
-	WGL(WGLContextCreator.class, "wgl", Platform.WINDOWS, Platform.WINDOWS),
-	JOGL(JOGLContextCreator.class, "jogl", Platform.MACOSX, Platform.MACOSX),
+	DEFAULT(null, "default", null, null, null, null),
 
-	GLFW(GLFWContextCreator.class, "glfw", null, null),
-	DEFAULT(null, "default", null, null);
+	GLX(GLXContextCreator.class, "glx", null, Platform.LINUX, X11.class, null),
+	EGL(EGLContextCreator.class, "egl", null, null, org.lwjgl.egl.EGL.class, "getFunctionProvider"),
+	WGL(WGLContextCreator.class, "wgl", null, Platform.WINDOWS, GDI32.class, null),
+	JOGL(JOGLContextCreator.class, "jogl", Platform.MACOSX, Platform.MACOSX, null, null),
 
-	EBackendType(Class<? extends ContextCreator> cc_class, String cc_name, Platform platform, Platform default_for) {
+	GLFW(GLFWContextCreator.class, "glfw", null, null, null, null);
+
+	EBackendType(Class<? extends ContextCreator> cc_class, String cc_name, Platform platform, Platform default_for, Class<?> probe_class, String probe_method) {
 		this.cc_class = cc_class;
 		this.cc_name = cc_name;
 		this.platform = platform;
 		this.default_for = default_for;
+		this.probe_class = probe_class;
+		this.probe_method = probe_method;
 	}
 
 	public Class<? extends ContextCreator> cc_class;
 	public Platform platform, default_for;
 	public String cc_name;
+	private Class<?> probe_class;
+	private String probe_method;
 
 	@Override
 	public String toString() {
 		return cc_name;
+	}
+
+	public boolean available(Platform platform) {
+		if(probe_class != null) {
+			try {
+				probe_class.getDeclaredMethod(probe_method != null ? probe_method : "getLibrary").invoke(null);
+			} catch (Throwable thrown) {
+				return false;
+			}
+		} else if(this.platform != null){
+			return this.platform == platform;
+		}
+
+		return true;
 	}
 }

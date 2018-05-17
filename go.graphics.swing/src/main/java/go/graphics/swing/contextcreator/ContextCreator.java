@@ -15,13 +15,10 @@
 package go.graphics.swing.contextcreator;
 
 import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
-import go.graphics.swing.AreaContainer;
 import go.graphics.swing.GLContainer;
-import jogamp.opengl.util.glsl.GLSLTextureRaster;
 
 public abstract class ContextCreator implements ComponentListener{
 

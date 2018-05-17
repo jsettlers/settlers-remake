@@ -19,7 +19,6 @@ import org.lwjgl.system.jawt.JAWTWin32DrawingSurfaceInfo;
 import org.lwjgl.system.windows.GDI32;
 import org.lwjgl.system.windows.PIXELFORMATDESCRIPTOR;
 
-import go.graphics.swing.AreaContainer;
 import go.graphics.swing.GLContainer;
 
 public class WGLContextCreator extends JAWTContextCreator {

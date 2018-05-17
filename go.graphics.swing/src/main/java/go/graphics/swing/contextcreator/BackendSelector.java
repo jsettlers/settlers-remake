@@ -23,13 +23,11 @@ import java.util.stream.Stream;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-import go.graphics.swing.AreaContainer;
 import go.graphics.swing.GLContainer;
 
 public class BackendSelector extends JComboBox<EBackendType> {
 
 	private EBackendType current_item = null;
-	private static final Platform current_platform = Platform.get();
 
 	public static final EBackendType FALLBACK_BACKEND = EBackendType.GLFW;
 
@@ -39,7 +37,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 
 		if(actionEvent.getActionCommand() == "comboBoxChanged") {
 			EBackendType bi = (EBackendType) getSelectedItem();
-			if (bi.platform != null && bi.platform != current_platform) {
+			if (bi.platform != null && bi.platform != Platform.get()) {
 				setSelectedItem(current_item);
 				BackendSelector.this.hidePopup();
 				JOptionPane.showMessageDialog(BackendSelector.this.getParent(), bi.cc_name + " is only available on " + bi.platform);
@@ -59,7 +57,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 	}
 
 	private static Stream<EBackendType> availableBackends() {
-		return Arrays.stream(EBackendType.values()).filter(backend -> backend.platform == null || backend.platform == current_platform);
+		return Arrays.stream(EBackendType.values()).filter(backend -> backend.available(Platform.get()));
 	}
 
 	public static EBackendType getBackendByName(String name) {

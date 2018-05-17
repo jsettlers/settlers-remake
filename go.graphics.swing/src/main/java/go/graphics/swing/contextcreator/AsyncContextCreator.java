@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import java.awt.Graphics;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 
@@ -27,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import go.graphics.DrawmodeListener;
-import go.graphics.swing.AreaContainer;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 

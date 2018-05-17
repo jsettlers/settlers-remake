@@ -9,7 +9,6 @@ import java.awt.LayoutManager;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import go.graphics.RedrawListener;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;

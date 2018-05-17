@@ -14,23 +14,12 @@
  *******************************************************************************/
 package go.graphics.swing;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-
 import java.awt.BorderLayout;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import go.graphics.DrawmodeListener;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvider;
-import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.EBackendType;
-import go.graphics.swing.contextcreator.ContextCreator;
-import go.graphics.swing.opengl.LWJGLDrawContext;
 
 /**
  * This class lets you embed areas into swing components.
