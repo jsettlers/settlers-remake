@@ -14,9 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
-import org.lwjgl.egl.EGL;
-import org.lwjgl.opengl.GLX;
-import org.lwjgl.opengl.WGL;
 import org.lwjgl.system.Platform;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.windows.GDI32;
@@ -31,7 +28,7 @@ public enum EBackendType implements Comparable<EBackendType> {
 	WGL(WGLContextCreator.class, "wgl", null, Platform.WINDOWS, GDI32.class, null),
 	JOGL(JOGLContextCreator.class, "jogl", Platform.MACOSX, Platform.MACOSX, null, null),
 
-	GLFW(GLFWContextCreator.class, "glfw", null, null, null, null);
+	GLFW(GLFWContextCreator.class, "glfw", null, null, org.lwjgl.glfw.GLFW.class, null);
 
 	EBackendType(Class<? extends ContextCreator> cc_class, String cc_name, Platform platform, Platform default_for, Class<?> probe_class, String probe_method) {
 		this.cc_class = cc_class;
