@@ -38,6 +38,12 @@ After that, follow the detailed installation instructions for you platform.
   2. Have fun and enjoy the game!
 6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game lacks some controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
 
+#### Arch Linux
+1. Install [jsettlers-git](https://aur.archlinux.org/packages/jsettlers-git/) from the AUR.
+2. Optionally: Install [settlers3-demo-data](https://aur.archlinux.org/packages/settlers3-demo-data/) if you don't own an original The Settlers III and select the following folder when the game asks you: /usr/share/jsettlers/s3
+3. You can start the game from the system-menu or with the commands "jsettlers" and "jsettlers-mapcreator".
+4. See instructions above
+
 #### Configuration Flags
 As described before, the game's UI is still lacking a lot of features. That's why we have to offer some configurations via an options file. You can find a default `options.prp` file aside the `JSettlers.jar` file after you unpacked the archive. 
 
