@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,12 +14,14 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import static java8.util.stream.StreamSupport.stream;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.function.Consumer;
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.movable.EMovableType;
@@ -57,10 +59,7 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.function.Consumer;
-import java8.util.stream.Collectors;
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * @author Andreas Eberle
@@ -228,7 +227,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 
 		if (guiTask.isLocal()) {
 			IBuilding building = grid.getBuildingAt(taskPosition.x, taskPosition.y);
-			if (building != null && building instanceof StockBuilding) {
+			if (building instanceof StockBuilding) {
 				StockBuilding stock = (StockBuilding) building;
 				stock.setAcceptedMaterial(guiTask.getMaterialType(), guiTask.isAccepted());
 			}
@@ -310,15 +309,15 @@ class GuiTaskExecutor implements ITaskExecutor {
 		if (movableIds.isEmpty()) {
 			return;
 		}
+
 		FerryEntrance ferryEntrance = null;
 		if (!Movable.getMovableByID(movableIds.get(0)).isShip() && grid.isBlocked(targetPosition.x, targetPosition.y)) {
 			ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
 		}
 		if (ferryEntrance != null) { // enter a ferry
 			for (int movableId : movableIds) {
-				Movable movable = (Movable) (Movable.getMovableByID(movableId));
-				movable.moveTo(ferryEntrance.getEntrance());
-				movable.aimAtFerry(ferryEntrance.getFerry());
+				ILogicMovable movable =  (Movable.getMovableByID(movableId));
+				movable.moveToFerry(ferryEntrance.ferry, ferryEntrance.entrance);
 			}
 		} else {
 			if (movableIds.size() == 1) {

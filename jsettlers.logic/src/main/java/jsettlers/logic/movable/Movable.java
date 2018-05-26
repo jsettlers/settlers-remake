@@ -14,18 +14,27 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
-import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
@@ -38,70 +47,60 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EmptyStackException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
  * Central Movable class of JSettlers.
  *
  * @author Andreas Eberle
  */
 public final class Movable implements ILogicMovable {
-	private static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<>();
-	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<>();
-	private static int nextID = Integer.MIN_VALUE;
+	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
+	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
+	private static       int                                  nextID       = Integer.MIN_VALUE;
 
 	protected final AbstractMovableGrid grid;
-	private final int id;
+	private final   int                 id;
 
 	private EMovableState state = EMovableState.DOING_NOTHING;
 
-	private EMovableType movableType;
-	private MovableStrategy strategy;
-	private final Player player;
+	private       EMovableType    movableType;
+	private       MovableStrategy strategy;
+	private final Player          player;
 
-	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
+	private EMaterialType  materialType  = EMaterialType.NO_MATERIAL;
 	private EMovableAction movableAction = EMovableAction.NO_ACTION;
-	private EDirection direction;
+	private EDirection     direction;
 
-	private int animationStartTime;
+	private int   animationStartTime;
 	private short animationDuration;
 
 	private ShortPoint2D position;
 
 	private ShortPoint2D requestedTargetPosition = null;
-	private Path path;
+	private Path         path;
 
-	private float health;
-	private boolean visible = true;
-	private boolean enableNothingToDo = true;
+	private float         health;
+	private boolean       visible           = true;
+	private boolean       enableNothingToDo = true;
 	private ILogicMovable pushedFrom;
 
 	private boolean isRightstep = false;
-	private int flockDelay = 700;
+	private int     flockDelay  = 700;
 
 	private EMaterialType takeDropMaterial;
 
-	private transient boolean selected = false;
+	private transient boolean selected    = false;
 	private transient boolean soundPlayed = false;
 
 	// the following block of data only for ships
-	private ArrayList<IMovable> passengers = new ArrayList<>();
-	private static final int maxNumberOfPassengers = 7;
-	private ShortPoint2D unloadingPosition = null;
-	private final int cargoStacks = 3;
-	private EMaterialType cargoType[] = new EMaterialType[cargoStacks];
-	private int cargoCount[] = new int[cargoStacks];
+	private              ArrayList<IMovable> passengers            = new ArrayList<>();
+	private static final int                 maxNumberOfPassengers = 7;
+	private              ShortPoint2D        unloadingPosition     = null;
+	private final        int                 cargoStacks           = 3;
+	private              EMaterialType       cargoType[]           = new EMaterialType[cargoStacks];
+	private              int                 cargoCount[]          = new int[cargoStacks];
 
 	// the following data only for ship passengers
-	private Movable ferryToEnter = null;
+	private ILogicMovable ferryToEnter = null;
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -186,85 +185,85 @@ public final class Movable implements ILogicMovable {
 		}
 
 		switch (state) { // ensure animation is finished, if not, reschedule
-		case GOING_SINGLE_STEP:
-		case PLAYING_ACTION:
-		case TAKE:
-		case DROP:
-		case PATHING:
-		case WAITING:
-			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock().getTime();
-			if (remainingAnimationTime > 0) {
-				return remainingAnimationTime;
-			}
-			break;
-		default:
-			break;
+			case GOING_SINGLE_STEP:
+			case PLAYING_ACTION:
+			case TAKE:
+			case DROP:
+			case PATHING:
+			case WAITING:
+				int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock().getTime();
+				if (remainingAnimationTime > 0) {
+					return remainingAnimationTime;
+				}
+				break;
+			default:
+				break;
 		}
 
 		switch (state) {
-		case TAKE:
-		case DROP:
-			if (this.movableAction != EMovableAction.RAISE_UP) {
-				break;
-			} // TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
+			case TAKE:
+			case DROP:
+				if (this.movableAction != EMovableAction.RAISE_UP) {
+					break;
+				} // TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
 
-		case WAITING:
-		case GOING_SINGLE_STEP:
-		case PLAYING_ACTION:
-			setState(EMovableState.DOING_NOTHING); // the action is finished, as the time passed
-			movableAction = EMovableAction.NO_ACTION;
+			case WAITING:
+			case GOING_SINGLE_STEP:
+			case PLAYING_ACTION:
+				setState(EMovableState.DOING_NOTHING); // the action is finished, as the time passed
+				movableAction = EMovableAction.NO_ACTION;
 
-		case PATHING:
-		case DOING_NOTHING:
-			if (visible) {
-				checkPlayerOfCurrentPosition();
-			}
-			break;
-
-		case UNLOADING:
-			int numberOfPassengers = passengers.size();
-			if (numberOfPassengers > 0) {
-				Movable movable = (Movable) grid.getMovableAt(this.unloadingPosition.x, this.unloadingPosition.y);
-				if (movable != null) {
-					movable.leavePosition(); // passengers need free space to leave the ferry
-				} else { // one passenger leaves the ferry
-					((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
-					passengers.remove(numberOfPassengers - 1);
+			case PATHING:
+			case DOING_NOTHING:
+				if (visible) {
+					checkPlayerOfCurrentPosition();
 				}
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-			} else {
-				setState(EMovableState.DOING_NOTHING);
-			}
-			break;
+				break;
 
-		default:
-			break;
+			case UNLOADING:
+				int numberOfPassengers = passengers.size();
+				if (numberOfPassengers > 0) {
+					Movable movable = (Movable) grid.getMovableAt(this.unloadingPosition.x, this.unloadingPosition.y);
+					if (movable != null) {
+						movable.leavePosition(); // passengers need free space to leave the ferry
+					} else { // one passenger leaves the ferry
+						((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
+						passengers.remove(numberOfPassengers - 1);
+					}
+					animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
+				} else {
+					setState(EMovableState.DOING_NOTHING);
+				}
+				break;
+
+			default:
+				break;
 		}
 
 		if (requestedTargetPosition != null) {
 			if (strategy.canBeControlledByPlayer()) {
 				switch (state) {
-				case PATHING:
-					// if we're currently pathing, stop former pathing and calculate a new path
-					setState(EMovableState.DOING_NOTHING);
-					this.movableAction = EMovableAction.NO_ACTION;
-					this.path = null;
+					case PATHING:
+						// if we're currently pathing, stop former pathing and calculate a new path
+						setState(EMovableState.DOING_NOTHING);
+						this.movableAction = EMovableAction.NO_ACTION;
+						this.path = null;
 
-				case DOING_NOTHING:
-					ShortPoint2D oldTargetPos = path != null ? path.getTargetPosition() : null;
-					ShortPoint2D oldPos = position;
-					boolean foundPath = goToPos(requestedTargetPosition); // progress is reset in here
-					requestedTargetPosition = null;
+					case DOING_NOTHING:
+						ShortPoint2D oldTargetPos = path != null ? path.getTargetPosition() : null;
+						ShortPoint2D oldPos = position;
+						boolean foundPath = goToPos(requestedTargetPosition); // progress is reset in here
+						requestedTargetPosition = null;
 
-					if (foundPath) {
-						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPosition());
-						return animationDuration; // we already follow the path and initiated the walking
-					} else {
+						if (foundPath) {
+							this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPosition());
+							return animationDuration; // we already follow the path and initiated the walking
+						} else {
+							break;
+						}
+
+					default:
 						break;
-					}
-
-				default:
-					break;
 				}
 			} else {
 				requestedTargetPosition = null;
@@ -272,33 +271,33 @@ public final class Movable implements ILogicMovable {
 		}
 
 		switch (state) {
-		case GOING_SINGLE_STEP:
-		case PLAYING_ACTION:
-			setState(EMovableState.DOING_NOTHING);
-			this.movableAction = EMovableAction.NO_ACTION;
-			break;
+			case GOING_SINGLE_STEP:
+			case PLAYING_ACTION:
+				setState(EMovableState.DOING_NOTHING);
+				this.movableAction = EMovableAction.NO_ACTION;
+				break;
 
-		case PATHING:
-			pathingAction();
-			break;
+			case PATHING:
+				pathingAction();
+				break;
 
-		case TAKE:
-			grid.takeMaterial(position, takeDropMaterial);
-			setMaterial(takeDropMaterial);
-			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
-			strategy.tookMaterial();
-			break;
-		case DROP:
-			if (takeDropMaterial != null && takeDropMaterial.isDroppable()) {
-				boolean offerMaterial = strategy.droppingMaterial();
-				grid.dropMaterial(position, takeDropMaterial, offerMaterial, false);
-			}
-			setMaterial(EMaterialType.NO_MATERIAL);
-			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
-			break;
+			case TAKE:
+				grid.takeMaterial(position, takeDropMaterial);
+				setMaterial(takeDropMaterial);
+				playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+				strategy.tookMaterial();
+				break;
+			case DROP:
+				if (takeDropMaterial != null && takeDropMaterial.isDroppable()) {
+					boolean offerMaterial = strategy.droppingMaterial();
+					grid.dropMaterial(position, takeDropMaterial, offerMaterial, false);
+				}
+				setMaterial(EMaterialType.NO_MATERIAL);
+				playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 
 		if (state == EMovableState.DOING_NOTHING) { // if movable is currently doing nothing
@@ -321,14 +320,14 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private void pathingAction() {
-		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPosition(), path.getStep())) {
+		if (path == null || !path.hasNextStep() || ferryToEnter == null && !strategy.checkPathStepPreconditions(path.getTargetPosition(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
 			path = null;
 			if (ferryToEnter != null) {
 				int distanceToFerry = this.getPosition().getOnGridDistTo(ferryToEnter.getPosition());
-				if (distanceToFerry < 4) {
+				if (distanceToFerry <= Constants.MAX_FERRY_ENTRANCE_DISTANCE) {
 					if (ferryToEnter.addPassenger(this)) {
 						grid.leavePosition(this.getPosition(), this);
 						setState(EMovableState.ON_FERRY);
@@ -415,9 +414,10 @@ public final class Movable implements ILogicMovable {
 		return this.position;
 	}
 
-	public void leaveFerryAtPosition(ShortPoint2D position) {
+	private void leaveFerryAtPosition(ShortPoint2D position) {
 		this.position = position;
-		this.setState(EMovableState.DOING_NOTHING);
+		setState(EMovableState.DOING_NOTHING);
+		requestedTargetPosition = null;
 		grid.enterPosition(position, this, true);
 	}
 
@@ -498,75 +498,75 @@ public final class Movable implements ILogicMovable {
 		}
 
 		switch (state) {
-		case DOING_NOTHING:
-			if (!enableNothingToDo) { // don't go to random direction if movable shouldn't do something in DOING_NOTHING
-				return false;
-			}
-
-			if (goToRandomDirection(pushingMovable)) { // try to find free direction
-				return true; // if we found a free direction, go there and tell the pushing one we'll move
-
-			} else { // if we didn't find a direction, check if it's possible to exchange positions
-				if (pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
-					return false; // the other movable just pushed to get space, we can't do anything for it here.
-
-				} else if (pushingMovable.getMovableType().isPlayerControllable()
-						|| strategy.isValidPosition(pushingMovable.getPosition())) { // exchange positions
-					EDirection directionToPushing = EDirection.getApproxDirection(this.position, pushingMovable.getPosition());
-					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
-					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
-					return true;
-
-				} else { // exchange not possible, as the location is not valid.
+			case DOING_NOTHING:
+				if (!enableNothingToDo) { // don't go to random direction if movable shouldn't do something in DOING_NOTHING
 					return false;
 				}
-			}
 
-		case PATHING:
-			if (path == null || pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
-				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
-			}
+				if (goToRandomDirection(pushingMovable)) { // try to find free direction
+					return true; // if we found a free direction, go there and tell the pushing one we'll move
 
-			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
-				ShortPoint2D nextPos = path.getNextPos();
-				if (pushingMovable.getPosition() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
-					pushingMovable.goSinglePathStep();
-					this.goSinglePathStep();
+				} else { // if we didn't find a direction, check if it's possible to exchange positions
+					if (pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
+						return false; // the other movable just pushed to get space, we can't do anything for it here.
 
-				} else {
-					if (grid.hasNoMovableAt(nextPos.x, nextPos.y)) {
-						// this movable isn't blocked, so just let it's pathingAction() handle this
-					} else if (pushedFrom == null) {
-						try {
-							this.pushedFrom = pushingMovable;
-							return grid.getMovableAt(nextPos.x, nextPos.y).push(this);
-						} finally {
-							this.pushedFrom = null;
-						}
-					} else {
-						while (pushingMovable != this) {
-							pushingMovable.goSinglePathStep();
-							pushingMovable = pushingMovable.getPushedFrom();
-						}
-						this.goSinglePathStep();
+					} else if (pushingMovable.getMovableType().isPlayerControllable()
+						|| strategy.isValidPosition(pushingMovable.getPosition())) { // exchange positions
+						EDirection directionToPushing = EDirection.getApproxDirection(this.position, pushingMovable.getPosition());
+						pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
+						goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
+						return true;
+
+					} else { // exchange not possible, as the location is not valid.
+						return false;
 					}
 				}
-			}
-			return true;
 
-		case GOING_SINGLE_STEP:
-		case PLAYING_ACTION:
-		case TAKE:
-		case DROP:
-		case WAITING:
-			return false; // we can't do anything
+			case PATHING:
+				if (path == null || pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
+					return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
+				}
 
-		case DEBUG_STATE:
-			return false;
+				if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
+					ShortPoint2D nextPos = path.getNextPos();
+					if (pushingMovable.getPosition() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
+						pushingMovable.goSinglePathStep();
+						this.goSinglePathStep();
 
-		default:
-			assert false : "got pushed in unhandled state: " + state;
-			return false;
+					} else {
+						if (grid.hasNoMovableAt(nextPos.x, nextPos.y)) {
+							// this movable isn't blocked, so just let it's pathingAction() handle this
+						} else if (pushedFrom == null) {
+							try {
+								this.pushedFrom = pushingMovable;
+								return grid.getMovableAt(nextPos.x, nextPos.y).push(this);
+							} finally {
+								this.pushedFrom = null;
+							}
+						} else {
+							while (pushingMovable != this) {
+								pushingMovable.goSinglePathStep();
+								pushingMovable = pushingMovable.getPushedFrom();
+							}
+							this.goSinglePathStep();
+						}
+					}
+				}
+				return true;
+
+			case GOING_SINGLE_STEP:
+			case PLAYING_ACTION:
+			case TAKE:
+			case DROP:
+			case WAITING:
+				return false; // we can't do anything
+
+			case DEBUG_STATE:
+				return false;
+
+			default:
+				assert false : "got pushed in unhandled state: " + state;
+				return false;
 		}
 	}
 
@@ -577,12 +577,12 @@ public final class Movable implements ILogicMovable {
 
 	public boolean isProbablyPushable(ILogicMovable pushingMovable) {
 		switch (state) {
-		case DOING_NOTHING:
-			return true;
-		case PATHING:
-			return path != null && pushingMovable.getPath() != null && pushingMovable.getPath().hasNextStep();
-		default:
-			return false;
+			case DOING_NOTHING:
+				return true;
+			case PATHING:
+				return path != null && pushingMovable.getPath() != null && pushingMovable.getPath().hasNextStep();
+			default:
+				return false;
 		}
 	}
 
@@ -596,8 +596,8 @@ public final class Movable implements ILogicMovable {
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
 			if (currDir != pushedFromDir && currDir != pushedFromDir.rotateRight(1)
-					&& currDir != pushedFromDir.rotateRight(EDirection.NUMBER_OF_DIRECTIONS - 1)
-					&& goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
+				&& currDir != pushedFromDir.rotateRight(EDirection.NUMBER_OF_DIRECTIONS - 1)
+				&& goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				return true;
 			}
 		}
@@ -720,28 +720,28 @@ public final class Movable implements ILogicMovable {
 		ShortPoint2D targetPosition = direction.getNextHexPoint(position);
 
 		switch (mode) {
-		case GO_IF_ALLOWED_WAIT_TILL_FREE: {
-			this.direction = direction;
-			setState(EMovableState.PATHING);
-			this.followPath(new Path(targetPosition));
-			return true;
-		}
-		case GO_IF_ALLOWED_AND_FREE:
-			if ((grid.isValidPosition(this, targetPosition.x, targetPosition.y) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
-				initGoingSingleStep(targetPosition);
-				setState(EMovableState.GOING_SINGLE_STEP);
+			case GO_IF_ALLOWED_WAIT_TILL_FREE: {
+				this.direction = direction;
+				setState(EMovableState.PATHING);
+				this.followPath(new Path(targetPosition));
 				return true;
-			} else {
-				break;
 			}
-		case GO_IF_FREE:
-			if (grid.isFreePosition(targetPosition)) {
-				initGoingSingleStep(targetPosition);
-				setState(EMovableState.GOING_SINGLE_STEP);
-				return true;
-			} else {
-				break;
-			}
+			case GO_IF_ALLOWED_AND_FREE:
+				if ((grid.isValidPosition(this, targetPosition.x, targetPosition.y) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+					initGoingSingleStep(targetPosition);
+					setState(EMovableState.GOING_SINGLE_STEP);
+					return true;
+				} else {
+					break;
+				}
+			case GO_IF_FREE:
+				if (grid.isFreePosition(targetPosition)) {
+					initGoingSingleStep(targetPosition);
+					setState(EMovableState.GOING_SINGLE_STEP);
+					return true;
+				} else {
+					break;
+				}
 		}
 		return false;
 	}
@@ -1014,8 +1014,9 @@ public final class Movable implements ILogicMovable {
 		return strategy != null && strategy.isAttackable();
 	}
 
-	public void aimAtFerry(Movable ferry) {
+	public void moveToFerry(ILogicMovable ferry, ShortPoint2D entrancePosition) {
 		this.ferryToEnter = ferry;
+		moveTo(entrancePosition);
 	}
 
 	/**
@@ -1059,7 +1060,7 @@ public final class Movable implements ILogicMovable {
 	@Override
 	public String toString() {
 		return "Movable: " + id + " position: " + position + " player: " + player.playerId + " movableType: " + movableType
-				+ " direction: " + direction + " material: " + materialType;
+			+ " direction: " + direction + " material: " + materialType;
 	}
 
 	private enum EMovableState {
@@ -1090,7 +1091,8 @@ public final class Movable implements ILogicMovable {
 		this.direction = direction;
 	}
 
-	public boolean addPassenger(Movable movable) {
+	@Override
+	public boolean addPassenger(ILogicMovable movable) {
 		if (passengers.size() < maxNumberOfPassengers) {
 			this.passengers.add(movable);
 			return true;
