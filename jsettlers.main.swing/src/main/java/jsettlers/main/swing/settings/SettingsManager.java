@@ -14,13 +14,6 @@
  */
 package jsettlers.main.swing.settings;
 
-import go.graphics.swing.sound.ISoundSettingsProvider;
-import java8.util.Maps;
-import java8.util.Optional;
-import java8.util.function.Supplier;
-import jsettlers.common.CommonConstants;
-import jsettlers.common.resources.ResourceManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -32,35 +25,43 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import go.graphics.swing.sound.ISoundSettingsProvider;
+import java8.util.Maps;
+import java8.util.Optional;
+import java8.util.function.Supplier;
+import jsettlers.common.CommonConstants;
+import jsettlers.common.resources.ResourceManager;
+
 public class SettingsManager implements ISoundSettingsProvider {
 	private static final String CONFIGURATION_FILE = ".jsettlers";
 
-	private static final String ENV_PREFIX = "SETTLERS_";
+	private static final String ENV_PREFIX        = "SETTLERS_";
 	private static final String PROPERTIES_PREFIX = "settlers.";
 
-	private static final String SETTING_UUID = "gid";
-	private static final String SETTING_SETTLERS_FOLDER = "settlers-folder";
+	private static final String SETTING_UUID                = "gid";
+	private static final String SETTING_SETTLERS_FOLDER     = "settlers-folder";
 	private static final String SETTING_SETTLERS_VERSION_ID = "settlers-folder-version-id";
 
-	private static final String SETTING_USERNAME = "name";
-	private static final String SETTING_LOCALE = "locale";
-	private static final String SETTING_SERVER = "server";
-	private static final String SETTING_VOLUME = "volume";
+	private static final String SETTING_USERNAME         = "name";
+	private static final String SETTING_LOCALE           = "locale";
+	private static final String SETTING_SERVER           = "server";
+	private static final String SETTING_VOLUME           = "volume";
 	private static final String SETTING_FULL_SCREEN_MODE = "fullScreenMode";
 
-	private static final String SETTING_CONTROL_ALL = "control-all";
-	private static final String SETTING_ACTIVATE_ALL_PLAYERS = "activate-all-players";
-	private static final String SETTING_ENABLE_CONSOLE_LOGGING = "console-output";
-	private static final String SETTING_DISABLE_ORIGINAL_MAPS = "disable-original-maps";
-	private static final String SETTING_MAPFILE = "map-file";
-	private static final String SETTING_RANDOM = "random";
-	private static final String SETTING_REPLAY_FILE = "replay-file";
-	private static final String SETTING_TARGET_TIME = "target-time";
-	private static final String SETTING_MAPS = "maps";
+	private static final String SETTING_CONTROL_ALL                    = "control-all";
+	private static final String SETTING_ACTIVATE_ALL_PLAYERS           = "activate-all-players";
+	private static final String SETTING_ENABLE_CONSOLE_LOGGING         = "console-output";
+	private static final String SETTING_DISABLE_ORIGINAL_MAPS          = "disable-original-maps";
+	private static final String SETTING_MAPFILE                        = "map-file";
+	private static final String SETTING_RANDOM                         = "random";
+	private static final String SETTING_REPLAY_FILE                    = "replay-file";
+	private static final String SETTING_TARGET_TIME                    = "target-time";
+	private static final String SETTING_MAPS                           = "maps";
+	private static final String SETTING_ENABLE_BEHAVIOR_TREE_DEBUGGING = "debug-behavior";
 
 	private static SettingsManager manager;
 
-	private final Properties storedSettings = new Properties();
+	private final Properties          storedSettings    = new Properties();
 	private final Map<String, String> runtimeProperties = new HashMap<>();
 
 	public static void setup(String... args) throws IOException {
@@ -214,6 +215,10 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	public boolean useConsoleOutput() {
 		return getOptional(SETTING_ENABLE_CONSOLE_LOGGING);
+	}
+
+	public boolean debugBehaviorTrees() {
+		return getOptional(SETTING_ENABLE_BEHAVIOR_TREE_DEBUGGING);
 	}
 
 	public boolean areOriginalMapsDisabled() {

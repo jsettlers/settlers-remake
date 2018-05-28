@@ -82,7 +82,7 @@ public class FilesystemTreeNode implements TreeNode {
 	}
 
 	/**
-	 * @return Root node
+	 * @return root node
 	 */
 	private RootTreeNode findRoot() {
 		TreeNode node = getParent();

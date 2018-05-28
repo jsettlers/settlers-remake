@@ -381,7 +381,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		int pointerCount = reader.read16();
 
 		if (byteCount != pointerCount * 4 + 8) {
-			throw new IOException("Sequence index block length (" + pointerCount + ") and " + "bytecount (" + byteCount + ") are not consistent.");
+			throw new IOException("sequence index block length (" + pointerCount + ") and " + "bytecount (" + byteCount + ") are not consistent.");
 		}
 
 		int[] sequenceIndexPointers = new int[pointerCount];

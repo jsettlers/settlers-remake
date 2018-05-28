@@ -280,7 +280,7 @@ public class AiPositions implements IMapArea {
 	}
 
 	public ShortPoint2D getBestRatedPoint(PositionRater rater) {
-		// TODO: Parallel ?
+		// TODO: parallel ?
 		int currentBestRating = PositionRater.RATE_INVALID;
 		ShortPoint2D currentBest = null;
 		for (int i = 0; i < size; i++) {

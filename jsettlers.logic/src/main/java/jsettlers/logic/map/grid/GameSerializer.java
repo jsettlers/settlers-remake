@@ -17,6 +17,7 @@ package jsettlers.logic.map.grid;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableDataManager;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,7 +38,7 @@ public class GameSerializer {
 	 *
 	 * @param grid
 	 * 		The grid to use.
-	 * @param out
+	 * @param oos
 	 * 		The output file/stream for the game.
 	 * @throws IOException
 	 */
@@ -89,7 +90,7 @@ public class GameSerializer {
 		public void run() {
 			try {
 				Building.writeStaticState(oos);
-				Movable.writeStaticState(oos);
+				MovableDataManager.serialize(oos);
 				oos.writeObject(grid);
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -111,7 +112,7 @@ public class GameSerializer {
 		public void run() {
 			try {
 				Building.readStaticState(ois);
-				Movable.readStaticState(ois);
+				MovableDataManager.deserialize(ois);
 				grid = (MainGrid) ois.readObject();
 			} catch (Throwable t) {
 				t.printStackTrace();

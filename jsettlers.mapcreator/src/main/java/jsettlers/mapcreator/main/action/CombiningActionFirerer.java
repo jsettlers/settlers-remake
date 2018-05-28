@@ -39,7 +39,7 @@ public class CombiningActionFirerer implements ActionFireable {
 	private final BlockingQueue<IAction> toFire = new LinkedBlockingQueue<>();
 
 	/**
-	 * Target
+	 * target
 	 */
 	private final ActionFireable fireTo;
 
@@ -47,7 +47,7 @@ public class CombiningActionFirerer implements ActionFireable {
 	 * Constructor
 	 * 
 	 * @param fireTo
-	 *            Target
+	 *            target
 	 */
 	public CombiningActionFirerer(ActionFireable fireTo) {
 		this.fireTo = fireTo;

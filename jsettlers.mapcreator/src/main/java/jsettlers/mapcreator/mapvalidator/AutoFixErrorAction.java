@@ -25,7 +25,7 @@ import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
 /**
- * Action to fix all errors automatically, if clear what to do
+ * action to fix all errors automatically, if clear what to do
  * 
  * @author Andreas Butti
  */
@@ -77,7 +77,7 @@ public class AutoFixErrorAction extends AbstractAction implements ValidationResu
 	}
 
 	/**
-	 * Update the error text and icon, if an error or not
+	 * update the error text and icon, if an error or not
 	 */
 	@Override
 	public void validationFinished(ValidationListModel list) {

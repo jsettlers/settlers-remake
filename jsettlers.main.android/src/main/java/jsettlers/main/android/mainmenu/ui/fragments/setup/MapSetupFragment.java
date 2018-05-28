@@ -101,7 +101,7 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 		recyclerView.setHasFixedSize(true);
 		FragmentUtil.setActionBar(this, toolbar);
 
-		// Disable these for now, as these features are not implemented yet.
+		// disable these for now, as these features are not implemented yet.
 		startResourcesSpinner.setEnabled(false);
 		peacetimeSpinner.setEnabled(false);
 

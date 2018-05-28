@@ -326,7 +326,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	}
 
 	/**
-	 * Update the shape buttons
+	 * update the shape buttons
 	 * 
 	 * @param tool
 	 *            Selected tool

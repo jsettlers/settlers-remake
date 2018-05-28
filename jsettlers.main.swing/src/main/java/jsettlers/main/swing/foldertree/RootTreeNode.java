@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
- * Root node of the tree, with the functionality to load from filesystem and display blocking panel
+ * root node of the tree, with the functionality to load from filesystem and display blocking panel
  * 
  * Usually control operation and model should not be mixed, but in this case it's the easyest solution, and its only data loading, not really
  * controlling

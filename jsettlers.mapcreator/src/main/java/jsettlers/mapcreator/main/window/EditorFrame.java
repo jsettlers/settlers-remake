@@ -94,7 +94,7 @@ public abstract class EditorFrame extends JFrame {
 	 * Constructor
 	 * 
 	 * @param root
-	 *            Root panel
+	 *            root panel
 	 * @param sidebar
 	 *            Sidebar panel
 	 */
@@ -172,7 +172,7 @@ public abstract class EditorFrame extends JFrame {
 	 * @param actionName
 	 *            Name of the action
 	 * @param action
-	 *            Action to execute
+	 *            action to execute
 	 */
 	public void registerAction(String actionName, Action action) {
 		ActionMap actionMap = ((JPanel) this.getContentPane()).getActionMap();
@@ -189,10 +189,10 @@ public abstract class EditorFrame extends JFrame {
 	}
 
 	/**
-	 * Enable / disable an action
+	 * enable / disable an action
 	 * 
 	 * @param actionName
-	 *            Action name
+	 *            action name
 	 * @param enable
 	 *            enabled / disabled
 	 */
@@ -263,7 +263,7 @@ public abstract class EditorFrame extends JFrame {
 			} else {
 				final Action action = actionMap.get(menuActionName);
 				if (action == null) {
-					System.err.println("Action \"" + menuActionName + "\" not found!");
+					System.err.println("action \"" + menuActionName + "\" not found!");
 					continue;
 				}
 
@@ -362,7 +362,7 @@ public abstract class EditorFrame extends JFrame {
 			} else {
 				final Action action = actionMap.get(toolName);
 				if (action == null) {
-					System.err.println("Action \"" + toolName + "\" not found!");
+					System.err.println("action \"" + toolName + "\" not found!");
 					continue;
 				}
 				final JButton bt = tb.add(action);
@@ -389,7 +389,7 @@ public abstract class EditorFrame extends JFrame {
 	 * @param bt
 	 *            Button
 	 * @param action
-	 *            Action
+	 *            action
 	 */
 	private void setButtonText(JButton bt, Action action) {
 

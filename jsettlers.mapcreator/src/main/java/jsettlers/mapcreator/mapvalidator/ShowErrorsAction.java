@@ -26,7 +26,7 @@ import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
- * Action to display errors, display error count as text (always enabled, always clickable)
+ * action to display errors, display error count as text (always enabled, always clickable)
  * 
  * @author Andreas Butti
  */
@@ -63,7 +63,7 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 	}
 
 	/**
-	 * Update the error text and icon, if an error or not
+	 * update the error text and icon, if an error or not
 	 */
 	@Override
 	public void validationFinished(ValidationListModel list) {

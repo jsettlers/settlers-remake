@@ -17,6 +17,7 @@ package jsettlers.algorithms.fogofwar;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.fogofwar.CachedViewCircle.CachedViewCircleIterator;
@@ -29,26 +30,26 @@ import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This class holds the fog of war for a given map and team.
- * 
+ *
  * @author Andreas Eberle
  */
 public final class FogOfWar implements Serializable {
-	private static final long serialVersionUID = 1877994785778678510L;
+	private static final long serialVersionUID  = 1877994785778678510L;
 	/**
 	 * Longest distance any unit may look
 	 */
 	private static final byte MAX_VIEW_DISTANCE = 65;
-	static final int PADDING = 10;
+	static final         int  PADDING           = 10;
 
 	private final byte team;
 
-	private final short width;
-	private final short height;
-	private byte[][] sight;
+	private final short    width;
+	private final short    height;
+	private       byte[][] sight;
 
-	private transient boolean enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
+	private transient boolean       enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
 	private transient IFogOfWarGrid grid;
-	private transient boolean canceled;
+	private transient boolean       canceled;
 
 	public FogOfWar(short width, short height, IPlayer player) {
 		this.width = width;
@@ -70,7 +71,7 @@ public final class FogOfWar implements Serializable {
 
 	/**
 	 * Gets the visible status of a map pint
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate of the point in 0..(mapWidth - 1)
 	 * @param y
@@ -98,9 +99,9 @@ public final class FogOfWar implements Serializable {
 	}
 
 	final class NewFoWThread extends Thread {
-		private static final byte DIM_DOWN_SPEED = 10;
-		private final CircleDrawer drawer = new CircleDrawer();
-		private byte[][] buffer = new byte[width][height];
+		private static final byte         DIM_DOWN_SPEED = 10;
+		private final        CircleDrawer drawer         = new CircleDrawer();
+		private              byte[][]     buffer         = new byte[width][height];
 
 		NewFoWThread() {
 			super("FoWThread");
@@ -143,10 +144,10 @@ public final class FogOfWar implements Serializable {
 				}
 			}
 
-			ConcurrentLinkedQueue<? extends IViewDistancable> buildings = grid.getBuildingViewDistancables();
+			Collection<? extends IViewDistancable> buildings = grid.getBuildingViewDistancables();
 			applyViewDistances(buildings);
 
-			ConcurrentLinkedQueue<? extends IViewDistancable> movables = grid.getMovableViewDistancables();
+			Collection<? extends IViewDistancable> movables = grid.getMovableViewDistancables();
 			applyViewDistances(movables);
 
 			byte[][] temp = sight;
@@ -154,14 +155,15 @@ public final class FogOfWar implements Serializable {
 			buffer = temp;
 		}
 
-		private void applyViewDistances(ConcurrentLinkedQueue<? extends IViewDistancable> objects) {
+		private void applyViewDistances(Collection<? extends IViewDistancable> objects) {
 			for (IViewDistancable curr : objects) {
 				if (isPlayerOK(curr)) {
 					short distance = curr.getViewDistance();
 					if (distance > 0) {
 						ShortPoint2D pos = curr.getPos();
-						if (pos != null)
+						if (pos != null) {
 							drawer.drawCircleToBuffer(pos.x, pos.y, distance);
+						}
 					}
 				}
 			}
@@ -178,7 +180,7 @@ public final class FogOfWar implements Serializable {
 	}
 
 	final class CircleDrawer {
-		private byte[][] buffer;
+		private       byte[][]           buffer;
 		private final CachedViewCircle[] cachedCircles = new CachedViewCircle[MAX_VIEW_DISTANCE];
 
 		public final void setBuffer(byte[][] buffer) {

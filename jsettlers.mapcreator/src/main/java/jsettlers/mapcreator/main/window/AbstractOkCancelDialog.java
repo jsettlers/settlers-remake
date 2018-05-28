@@ -93,7 +93,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 	}
 
 	/**
-	 * Action performed before cancel
+	 * action performed before cancel
 	 * 
 	 * @return true to close the dialog
 	 */
@@ -102,7 +102,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 	}
 
 	/**
-	 * Action performed before OK
+	 * action performed before OK
 	 * 
 	 * @return true to close the dialog
 	 */

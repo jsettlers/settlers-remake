@@ -14,6 +14,12 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
@@ -38,11 +44,6 @@ import jsettlers.main.swing.resources.SwingResourceLoader.ResourceSetupException
 import jsettlers.main.swing.resources.SwingResourceProvider;
 import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.network.client.OfflineNetworkConnector;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @author codingberlin
@@ -69,11 +70,14 @@ public class SwingManagedJSettlers {
 	}
 
 	public static void loadCommandLineSettings() {
-		CommonConstants.CONTROL_ALL = SettingsManager.getInstance().isControllAll();
-		CommonConstants.ACTIVATE_ALL_PLAYERS = SettingsManager.getInstance().isActivateAllPlayers();
-		CommonConstants.ENABLE_CONSOLE_LOGGING = SettingsManager.getInstance().useConsoleOutput();
-		CommonConstants.DISABLE_ORIGINAL_MAPS = SettingsManager.getInstance().areOriginalMapsDisabled();
-		AbstractLabels.setPreferredLocale(SettingsManager.getInstance().getLocale());
+		SettingsManager settingsManager = SettingsManager.getInstance();
+
+		CommonConstants.CONTROL_ALL = settingsManager.isControllAll();
+		CommonConstants.ACTIVATE_ALL_PLAYERS = settingsManager.isActivateAllPlayers();
+		CommonConstants.ENABLE_CONSOLE_LOGGING = settingsManager.useConsoleOutput();
+		CommonConstants.DISABLE_ORIGINAL_MAPS = settingsManager.areOriginalMapsDisabled();
+		CommonConstants.DEBUG_BEHAVIOR_TREES = settingsManager.debugBehaviorTrees();
+		AbstractLabels.setPreferredLocale(settingsManager.getLocale());
 	}
 
 	/**

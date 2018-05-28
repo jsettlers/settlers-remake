@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.algorithms.fogofwar;
 
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.mapobject.IMapObject;
@@ -31,8 +32,8 @@ public interface IFogOfWarGrid {
 
 	IMapObject getMapObjectsAt(short x, short y);
 
-	ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables();
+	Collection<? extends IViewDistancable> getMovableViewDistancables();
 
-	ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables();
+	Collection<? extends IViewDistancable> getBuildingViewDistancables();
 
 }

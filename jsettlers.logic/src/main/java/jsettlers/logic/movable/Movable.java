@@ -37,14 +37,6 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
  * Central Movable class of JSettlers.
  *
@@ -52,9 +44,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
-	private static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<>();
-	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<>();
-	private static int nextID = Integer.MIN_VALUE;
 
 	protected final AbstractMovableGrid grid;
 	private final int id;
@@ -102,29 +91,14 @@ public final class Movable implements ILogicMovable {
 
 		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
 
-		this.id = nextID++;
-		movablesByID.put(this.id, this);
-		allMovables.offer(this);
+		this.id = MovableDataManager.getNextID();
+		MovableDataManager.add( this);
 
 		grid.enterPosition(position, this, true);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		nextID = ois.readInt();
-		allMovables.clear();
-		allMovables.addAll((Collection<? extends ILogicMovable>) ois.readObject());
-		movablesByID.putAll((Map<? extends Integer, ? extends ILogicMovable>) ois.readObject());
-	}
-
-	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
-		oos.writeInt(nextID);
-		oos.writeObject(allMovables);
-		oos.writeObject(movablesByID);
-	}
-
 	/**
-	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
+	 * Tests if this movable can receive sendMoveToCommand requests and if so, directs it to go to the given position.
 	 *
 	 * @param targetPosition
 	 */
@@ -725,28 +699,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-	 * Used for networking to identify movables over the network.
-	 *
-	 * @param id
-	 * 		id to be looked for
-	 * @return returns the movable with the given ID<br>
-	 * or null if the id can not be found
-	 */
-	public static ILogicMovable getMovableByID(int id) {
-		return movablesByID.get(id);
-	}
-
-	public static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
-		return allMovables;
-	}
-
-	public static void resetState() {
-		allMovables.clear();
-		movablesByID.clear();
-		nextID = Integer.MIN_VALUE;
-	}
-
-	/**
 	 * kills this movable.
 	 */
 	@Override
@@ -761,8 +713,7 @@ public final class Movable implements ILogicMovable {
 		this.state = EMovableState.DEAD;
 		this.selected = false;
 
-		movablesByID.remove(this.getID());
-		allMovables.remove(this);
+		MovableDataManager.remove(this);
 
 		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
