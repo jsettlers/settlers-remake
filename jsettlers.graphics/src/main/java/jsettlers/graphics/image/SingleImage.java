@@ -26,7 +26,7 @@ import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * This is the base for all images that are directly loaded from the image file.
@@ -415,5 +415,16 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
 		return rendered;
+	}
+
+	public Long hash() {
+		long hashCode = 1L;
+		long multiplier = 1L;
+		while (data.hasRemaining()) {
+			multiplier *= 31L;
+			hashCode += (data.get() + 27L) * multiplier;
+		}
+		data.rewind();
+		return hashCode;
 	}
 }

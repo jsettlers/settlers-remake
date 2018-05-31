@@ -81,6 +81,10 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		return item;
 	}
 
+	/**
+	 * gets the first item in the list without removing it from the list.
+	 * @return
+	 */
 	public T getFront() {
 		return head.next;
 	}
@@ -90,6 +94,9 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		item.next.prev = item.prev;
 
 		size--;
+
+		item.next = null;
+		item.prev = null;
 	}
 
 	public int size() {

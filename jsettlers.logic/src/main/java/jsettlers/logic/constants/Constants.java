@@ -44,8 +44,15 @@ public final class Constants {
 
 	public static final short MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS = 2;
 
+	/**
+	 * the radius within soldiers search for targets to attack them.
+	 */
 	public static final short SOLDIER_SEARCH_RADIUS = 30;
-	public static final short TOWER_SEARCH_RADIUS = 40;
+
+	/**
+	 * the radius within a tower can request soldiers to enter the building.
+	 */
+	public static final short TOWER_SEARCH_RADIUS = 100;
 	public static final int BOWMAN_ATTACK_RADIUS = 15;
 	public static final int BOWMAN_IN_TOWER_ATTACK_RADIUS = 25;
 	public static final int BOWMAN_MIN_ATTACK_DISTANCE = 7;

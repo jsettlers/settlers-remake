@@ -113,7 +113,7 @@ public class NetworkClientIT {
 		TestPacket testPacket = new TestPacket("sdlfjsh", 2324);
 		server1Channel.sendPacket(NetworkConstants.ENetworkKey.TEST_PACKET, testPacket);
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 
 		assertEquals(1, listener.packets.size());
 		assertEquals(testPacket, listener.packets.get(0));
@@ -131,7 +131,7 @@ public class NetworkClientIT {
 
 		client.logIn(playerId, playerName, null);
 
-		Thread.sleep(40);
+		Thread.sleep(40L);
 
 		assertEquals(EPlayerState.LOGGED_IN, client.getState());
 
@@ -181,7 +181,7 @@ public class NetworkClientIT {
 		openMatch("id1", "player1", client1);
 
 		client1.startMatch();
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client1.getState());
 	}
 
@@ -196,7 +196,7 @@ public class NetworkClientIT {
 		assertEquals(1, client1.getMatchInfo().getPlayers().length);
 
 		client2.joinMatch(dbMatchInfo.getId(), null, null, null);
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
 		dbMatchInfo = new MatchInfoPacket(db.getJoinableMatches().get(0));
@@ -204,7 +204,7 @@ public class NetworkClientIT {
 		assertEquals(2, client1.getMatchInfo().getPlayers().length);
 
 		client2.setReadyState(true);
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
 		dbMatchInfo = new MatchInfoPacket(db.getJoinableMatches().get(0));
@@ -224,7 +224,7 @@ public class NetworkClientIT {
 
 		client1.close();
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 		assertEquals(0, db.getNumberOfPlayers());
 		assertEquals(EPlayerState.DISCONNECTED, client1.getState());
 	}
@@ -238,7 +238,7 @@ public class NetworkClientIT {
 
 		server1Channel.close();
 
-		Thread.sleep(10);
+		Thread.sleep(10L);
 		assertEquals(1, db.getNumberOfPlayers());
 		assertEquals(EPlayerState.DISCONNECTED, client1.getState());
 	}
@@ -254,7 +254,7 @@ public class NetworkClientIT {
 
 		client.logIn(id, name, matchesReceiver);
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		List<ArrayOfMatchInfosPacket> arrayOfMatches = matchesReceiver.popBufferedPackets();
 		assertEquals(1, arrayOfMatches.size()); // check that we got one result for the request
@@ -266,7 +266,7 @@ public class NetworkClientIT {
 		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName", 5);
 		client.openNewMatch(matchName, maxPlayers, mapInfo, -4712L, null, matchUpdateListener, null);
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 
 		List<MatchInfoUpdatePacket> matches = matchUpdateListener.popBufferedPackets();
 		assertEquals(1, matches.size());
@@ -278,7 +278,7 @@ public class NetworkClientIT {
 
 		client.setReadyState(true);
 
-		Thread.sleep(150);
+		Thread.sleep(150L);
 		matches = matchUpdateListener.popBufferedPackets();
 		assertEquals(1, matches.size());
 		match = matches.get(0).getMatchInfo();
@@ -295,19 +295,19 @@ public class NetworkClientIT {
 		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<>();
 		client1.openNewMatch("TestMatch", 4, new MapInfoPacket("", "", "", "", 9), 923409340394293842L, null, null, chatReceiver);
 
-		Thread.sleep(80);
+		Thread.sleep(80L);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
 
 		testSendAndReceiveChatMessage(chatReceiver);
 
 		client1.setReadyState(true);
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		testSendAndReceiveChatMessage(chatReceiver);
 
 		client1.startMatch();
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client1.getState());
 
 		testSendAndReceiveChatMessage(chatReceiver);
@@ -320,7 +320,7 @@ public class NetworkClientIT {
 
 		assertEquals(0, chatReceiver.popBufferedPackets().size());
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		List<ChatMessagePacket> chatMessages = chatReceiver.popBufferedPackets();
 		assertEquals(1, chatMessages.size());
 		assertEquals(TEST_PLAYER_ID, chatMessages.get(0).getAuthorId());
@@ -334,13 +334,13 @@ public class NetworkClientIT {
 		clock1.setTime(200);
 		clock2.setTime(210);
 
-		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 1 synchronizations
+		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20L); // wait for 1 synchronizations
 		assertEquals(0, clock1.popAdjustmentEvents().size()); // no adjustments should have happened, because the clocks are almost sync
 		assertEquals(0, clock2.popAdjustmentEvents().size());
 
 		clock1.setTime(2056); // put clock1 forward
 
-		Thread.sleep(3 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 3 synchronizations
+		Thread.sleep(3L * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20L); // wait for 3 synchronizations
 		int diff = Math.abs(clock1.getTime() - clock2.getTime());
 		assertTrue("diff is to high: " + diff, diff < NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE);
 		assertTrue(clock1.popAdjustmentEvents().size() > 0);
@@ -348,7 +348,7 @@ public class NetworkClientIT {
 
 		clock2.setTime(423423); // put clock2 forward
 
-		Thread.sleep(6 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 6 synchronizations
+		Thread.sleep(6L * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20L); // wait for 6 synchronizations
 		diff = Math.abs(clock2.getTime() - clock1.getTime());
 		assertTrue("diff is to high: " + diff, diff < NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE);
 		assertTrue(clock2.popAdjustmentEvents().size() > 0);
@@ -362,19 +362,19 @@ public class NetworkClientIT {
 
 		client1.openNewMatch("TestMatch", 4, new MapInfoPacket("", "", "", "", 4), 34L, null, null, null);
 
-		Thread.sleep(150);
+		Thread.sleep(150L);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
 
 		MatchInfoPacket matchInfo = client1.getMatchInfo();
 
 		client2.joinMatch(matchInfo.getId(), null, null, null);
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
 
 		client1.setReadyState(true);
 		client2.setReadyState(true);
-		Thread.sleep(30);
+		Thread.sleep(30L);
 		client2.startMatch();
 
 		Thread.sleep(30 + NetworkConstants.Client.LOCKSTEP_PERIOD); // Ensure that both clients are in a running match.
@@ -394,7 +394,7 @@ public class NetworkClientIT {
 		TestTaskPacket testTask = new TestTaskPacket("dsfsdf", 2342, (byte) -23);
 		client2.scheduleTask(testTask);
 
-		Thread.sleep(2 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL);
+		Thread.sleep(2L * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL);
 
 		// The task must not have been submitted to the clients yet, because the lockstep is blocked.
 		assertEquals(0, clock1.popBufferedTasks().size());
@@ -403,7 +403,7 @@ public class NetworkClientIT {
 		// Now let one clock continue one lockstep period.
 		clock1.setTime(NetworkConstants.Client.LOCKSTEP_PERIOD + NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE + 10);
 
-		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 40);
+		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 40L);
 
 		List<TaskPacket> packets1 = clock1.popBufferedTasks();
 		assertEquals(1, packets1.size());
@@ -427,27 +427,27 @@ public class NetworkClientIT {
 		BufferingPacketReceiver<RejectPacket> rejectReceiver2 = new BufferingPacketReceiver<>();
 		client2.registerRejectReceiver(rejectReceiver2);
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 		assertEquals(0, rejectReceiver2.popBufferedPackets().size());
 
 		client2.startMatch(); // try to start match with unready player2 => match must not start
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		assertSingleRejectPacket(rejectReceiver2, ENetworkKey.REQUEST_START_MATCH, ENetworkMessage.NOT_ALL_PLAYERS_READY);
 
 		client2.setReadyState(true); // set player2 ready and player1 unready => match must not start
-		Thread.sleep(20);
+		Thread.sleep(20L);
 		client1.setReadyState(false);
-		Thread.sleep(20);
+		Thread.sleep(20L);
 		client2.startMatch();
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		assertSingleRejectPacket(rejectReceiver2, ENetworkKey.REQUEST_START_MATCH, ENetworkMessage.NOT_ALL_PLAYERS_READY);
 
 		client1.setReadyState(true); // set player1 ready => must must start
-		Thread.sleep(20);
+		Thread.sleep(20L);
 		client2.startMatch();
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client1.getState());
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client2.getState());

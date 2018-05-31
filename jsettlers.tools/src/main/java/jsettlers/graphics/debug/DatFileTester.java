@@ -24,20 +24,22 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.utils.FileUtils;
-import jsettlers.common.utils.OptionableProperties;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.reader.AdvancedDatFileReader;
-import jsettlers.graphics.reader.DatFileType;
-import jsettlers.graphics.reader.SequenceList;
-import jsettlers.graphics.sequence.Sequence;
-import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
+import jsettlers.graphics.image.reader.AdvancedDatFileReader;
+import jsettlers.graphics.image.reader.DatFileReader;
+import jsettlers.graphics.image.reader.DatFileType;
+import jsettlers.graphics.image.sequence.SequenceList;
+import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.main.swing.resources.SwingResourceProvider;
+import jsettlers.main.swing.settings.SettingsManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -50,7 +52,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class DatFileTester {
-	private static final int DAT_FILE_INDEX = 0;
+	private static final int DAT_FILE_INDEX = 13;
 	private static final DatFileType TYPE = DatFileType.RGB565;
 
 	private static final String FILE_NAME_PATTERN = "siedler3_%02d" + TYPE.getFileSuffix();
@@ -58,10 +60,12 @@ public class DatFileTester {
 
 	private static final Color[] colors = new Color[] { Color.WHITE };
 
-	private final AdvancedDatFileReader reader;
+	private final DatFileReader reader;
 	private final Region region;
 
 	private DatFileTester() throws IOException {
+		ResourceManager.setProvider(new SwingResourceProvider());
+
 		File settlersGfxFolder = getSettlersGfxFolder();
 
 		File file = findFileIgnoringCase(settlersGfxFolder, FILE_NAME);
@@ -229,14 +233,14 @@ public class DatFileTester {
 				File file = findFileIgnoringCase(settlersGfxFolder, fileName);
 
 				if (file != null && file.exists()) {
-					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);
+					DatFileReader reader = new AdvancedDatFileReader(file, TYPE);
 					exportTo(new File(dir, "" + i), reader);
 				}
 			}
 		}
 	}
 
-	private static void exportTo(File dir, AdvancedDatFileReader reader) {
+	private static void exportTo(File dir, DatFileReader reader) {
 		export(reader.getSettlers(), new File(dir, "settlers"));
 		Sequence<GuiImage> guis = reader.getGuis();
 		if (guis.length() > 0) {
@@ -282,8 +286,7 @@ public class DatFileTester {
 	}
 
 	private static File getSettlersGfxFolder() throws IOException {
-		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
-		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
+		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(SettingsManager.getInstance().getSettlersFolder());
 		return settlersFolderInfo.gfxFolder;
 	}
 

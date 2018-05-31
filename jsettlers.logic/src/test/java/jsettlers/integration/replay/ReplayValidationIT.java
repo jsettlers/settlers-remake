@@ -51,7 +51,6 @@ public class ReplayValidationIT {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 		CommonConstants.USE_SAVEGAME_COMPRESSION = false;
-		CommonConstants.ALL_AI = true;
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 
 		TestUtils.setupTempResourceManager();
@@ -85,7 +84,7 @@ public class ReplayValidationIT {
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
-		Thread.sleep(2000); // loading + saving might happend in less than a second => make sure the next savegame is saved with a different name
+		Thread.sleep(2000L); // loading + saving might happend in less than a second => make sure the next savegame is saved with a different name
 
 		System.out.println("Loading savegame...");
 		MatchConstants.init(new NetworkTimer(true), 0L);
