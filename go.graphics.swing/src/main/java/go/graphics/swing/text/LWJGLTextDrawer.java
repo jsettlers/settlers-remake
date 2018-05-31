@@ -16,6 +16,9 @@ package go.graphics.swing.text;
 
 import org.lwjgl.opengl.GL11;
 
+import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import go.graphics.swing.opengl.LWJGLDrawContext;
 import go.graphics.text.EFontSize;
@@ -26,8 +29,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
@@ -41,11 +42,12 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	private static final String FONTNAME = "Arial";
 
-	private final Rectangle2D[] rects = new Rectangle2D[256];
+	private final GeometryHandle[] rects = new GeometryHandle[256];
 	private final TextureHandle font_tex;
     private final int line_height;
 	private final int tex_height;
 	private final int tex_width;
+	private final int[] char_widths;
 
 	private final static int char_spacing = 2; // spacing between two characters (otherwise j and f would overlap with the next character)
 
@@ -68,20 +70,20 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		Graphics tmp_graph = tmp_bi.getGraphics();
 		tmp_graph.setFont(font);
 		FontMetrics fm = tmp_graph.getFontMetrics();
-		int[] widths = fm.getWidths();
+		char_widths = fm.getWidths();
 		line_height = fm.getHeight();
 		tmp_graph.dispose();
 
 
-		if(widths.length != 256) {
-			throw new IndexOutOfBoundsException("we only support 256 characters (256!="+widths.length);
+		if(char_widths.length != 256) {
+			throw new IndexOutOfBoundsException("we only support 256 characters (256!="+char_widths.length);
 		}
 
 		int max_len = 0;
 		for(int l = 0;l != 16;l++) {
 			int current_len = 0;
 			for(int c = 0;c != 16;c++) {
-				current_len += widths[l*16+c]+char_spacing;
+				current_len += char_widths[l*16+c]+char_spacing;
 				max_len = Math.max(max_len, current_len);
 			}
 		}
@@ -97,8 +99,35 @@ public final class LWJGLTextDrawer implements TextDrawer {
 			int line_offset = 0;
 			for(int c = 0;c != 16;c++) {
 				graph.drawChars(new char[]{(char)(l*16+c)}, 0, 1, line_offset, l*line_height);
-				rects[l*16+c] = new Rectangle(line_offset, tex_height-(l*line_height+fm.getDescent()), widths[l*16+c], line_height);
-				line_offset += widths[l*16+c]+char_spacing;
+
+				GeometryHandle handle = drawContext.generateGeometry(5*4*Float.BYTES);
+				try {
+					GLDrawContext.GLBuffer bfr = drawContext.startWriteGeometry(handle);
+
+					float dx = line_offset;
+					float dy = tex_height-(l*line_height+fm.getDescent());
+
+					float dw = char_widths[l*16+c];
+					float dh = line_height;
+
+					float[] data = new float[] {
+							0, 	0,  0, dx/tex_width		, dy/tex_height,
+							0, 	dh, 0, dx/tex_width		, (dy+dh)/tex_height,
+							dw, dh, 0, (dx+dw)/tex_width, (dy+dh)/tex_height,
+							dw, 0,  0, (dx+dw)/tex_width, dy/tex_height
+					};
+
+					for(int i = 0;i != 20;i++) {
+						bfr.putFloat(data[i]);
+					}
+				} catch (IllegalBufferException e) {
+					e.printStackTrace();
+				}
+
+				drawContext.endWriteGeometry(handle);
+
+				rects[l*16+c] = handle;
+				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
 		graph.dispose();
@@ -140,27 +169,17 @@ public final class LWJGLTextDrawer implements TextDrawer {
 	}
 
 	public void drawChar(float x, float y, char c) {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, font_tex.getInternalId());
-        GL11.glColor4d(color.getRed()/255.0, color.getGreen()/255.0, color.getBlue()/255.0, color.getAlpha()/255.0);
-
-        GL11.glPushMatrix();
-		GL11.glTranslated(x, y, 0);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2d(rects[c].getX()/(float)tex_width, rects[c].getY()/(float)tex_height);
-		GL11.glVertex2d(0, 0);
-
-		GL11.glTexCoord2d(rects[c].getX()/(float)tex_width, (rects[c].getY()+rects[c].getHeight())/tex_height);
-		GL11.glVertex2d(0, rects[c].getHeight());
-
-		GL11.glTexCoord2d((rects[c].getX()+rects[c].getWidth())/tex_width, (rects[c].getY()+rects[c].getHeight())/tex_height);
-		GL11.glVertex2d(rects[c].getWidth(), rects[c].getHeight());
-
-		GL11.glTexCoord2d((rects[c].getX()+rects[c].getWidth())/tex_width, rects[c].getY()/tex_height);
-		GL11.glVertex2d(rects[c].getWidth(), 0);
-		GL11.glEnd();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		GL11.glPopMatrix();
+        drawContext.color(color.getRed()/255, color.getGreen()/255, color.getBlue()/255, color.getAlpha()/255);
+        drawContext.glPushMatrix();
+        drawContext.glTranslatef(x, y, 0);
+		try {
+			drawContext.drawQuadWithTexture(font_tex, rects[c]);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
+		}
+		drawContext.glPopMatrix();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -178,7 +197,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 				y_offset += line_height;
 			} else {
 				drawChar(x+x_offset, y+y_offset, string.charAt(i));
-				x_offset += rects[string.charAt(i)].getWidth();
+				x_offset += char_widths[string.charAt(i)];
 			}
 		}
 	}
@@ -188,7 +207,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		int tmp_width = 0;
 		for(int i = 0;i != string.length();i++) {
 			if(string.charAt(i) != '\n') {
-				tmp_width += rects[string.charAt(i)].getWidth();
+				tmp_width += char_widths[string.charAt(i)];
 			}
 		}
 		return tmp_width;
