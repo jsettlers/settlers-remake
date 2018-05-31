@@ -72,7 +72,7 @@ public enum EMovableType {
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
 
-	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, true),
+	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, true, 0.6, 400f, 0f),
 	CARGO_BOAT(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, false);
 
 	/**
