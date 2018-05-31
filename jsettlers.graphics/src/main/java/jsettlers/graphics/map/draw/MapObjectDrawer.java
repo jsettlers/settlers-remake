@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import java.util.ConcurrentModificationException;
+
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
@@ -41,13 +43,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
-import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.sound.SoundManager;
-
-import java.util.ConcurrentModificationException;
 
 /**
  * This class handles drawing of objects on the map.

@@ -289,6 +289,8 @@ public class AndroidDrawContext implements GLDrawContext {
 				GLES10.GL_REPEAT);
 		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_WRAP_T,
 				GLES10.GL_REPEAT);
+
+		GLES10.glAlphaFunc(GLES10.GL_GREATER, 0.5f) ; // prevent writing of transparent pixels to z buffer
 	}
 
 	@Override

@@ -205,6 +205,8 @@ public class JOGLDrawContext implements GLDrawContext {
 				GL.GL_NEAREST);
 		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
 				GL.GL_NEAREST);
+
+		gl2.glAlphaFunc(GL.GL_GREATER, 0.5f) ; // prevent writing of transparent pixels to z buffer
 	}
 
 	@Override
