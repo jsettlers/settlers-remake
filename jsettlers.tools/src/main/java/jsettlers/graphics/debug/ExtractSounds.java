@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,21 +14,18 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
+import jsettlers.graphics.image.reader.bytereader.ByteReader;
+import jsettlers.graphics.sound.SoundManager;
+import jsettlers.main.swing.SwingManagedJSettlers;
+
+import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.JFileChooser;
-
-import jsettlers.common.utils.MainUtils;
-import jsettlers.main.swing.SwingManagedJSettlers;
-import jsettlers.main.swing.resources.SwingResourceLoader;
-import jsettlers.graphics.reader.bytereader.ByteReader;
-import jsettlers.graphics.sound.SoundManager;
-
 /**
  * Exports all sounds as wav files.
- * 
+ *
  * @author Michael Zangl
  */
 public class ExtractSounds extends SoundManager {
@@ -37,8 +34,8 @@ public class ExtractSounds extends SoundManager {
 		super(null);
 	}
 
-	public static void main(String[] args) throws IOException, SwingResourceLoader.ResourceSetupException {
-		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args));
+	public static void main(String[] args) throws IOException {
+		SwingManagedJSettlers.setupResources(true, args);
 
 		ByteReader file = openSoundFile();
 		int[][] starts = getSoundStarts(file);
@@ -66,7 +63,7 @@ public class ExtractSounds extends SoundManager {
 
 	/**
 	 * Export data to a given wav file path.
-	 * 
+	 *
 	 * @param data
 	 * @param seqFile
 	 * @throws IOException

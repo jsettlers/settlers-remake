@@ -357,7 +357,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers, IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
 		SwingUtilities.invokeLater(() -> {
 			List<? extends IMultiplayerPlayer> players = changingPlayers.getItems();
-			String myId = SettingsManager.getInstance().get(SettingsManager.SETTING_UUID);
+			String myId = SettingsManager.getInstance().getUUID();
 			for (int i = 0; i < players.size(); i++) {
 				PlayerSlot playerSlot = playerSlots.get(i);
 				IMultiplayerPlayer player = players.get(i);

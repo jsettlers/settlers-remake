@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 - 2017
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,24 +15,33 @@
 package jsettlers.ai.army;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.BiFunction;
 
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.action.SetMaterialProductionAction.EMaterialProductionType;
+import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
+import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * This general is named winner because his attacks and defence should be very hard for human enemies. This should be realized by creating locally superiority. (You can kill 200 BOWMEN with just 100
@@ -44,6 +53,9 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  * @author codingberlin
  */
 public class ConfigurableGeneral implements ArmyGeneral {
+
+	private static float[] ATTACKER_COUNT_FACTOR_BY_PLAYER_TYPE = { 1.1F, 1F, 0.9F, 0.8F, 0F };
+
 	private static final byte MIN_ATTACKER_COUNT = 20;
 	private static final byte MIN_SWORDSMEN_COUNT = 10;
 	private static final byte MIN_PIKEMEN_COUNT = 20;
@@ -56,18 +68,20 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	private final Player player;
 	private final ITaskScheduler taskScheduler;
 	private final MovableGrid movableGrid;
-	private float attackerCountFactor;
+	private final float attackerCountFactor;
 
-	public ConfigurableGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler, float attackerCountFactor) {
+	public ConfigurableGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler, EPlayerType playerType) {
 		this.aiStatistics = aiStatistics;
 		this.player = player;
 		this.taskScheduler = taskScheduler;
 		this.movableGrid = movableGrid;
-		this.attackerCountFactor = attackerCountFactor;
+		this.attackerCountFactor = ATTACKER_COUNT_FACTOR_BY_PLAYER_TYPE[playerType.ordinal()];
 	}
 
 	@Override
 	public void commandTroops(Set<Integer> soldiersWithOrders) {
+		ensureAllTowersFullyMounted();
+
 		SoldierPositions soldierPositions = calculateSituation(player.playerId);
 		if (aiStatistics.getEnemiesInTownOf(player.playerId).size() > 0) {
 			defend(soldierPositions, soldiersWithOrders);
@@ -79,6 +93,15 @@ public class ConfigurableGeneral implements ArmyGeneral {
 				attack(soldierPositions, infantryWouldDie, soldiersWithOrders);
 			}
 		}
+	}
+
+	private void ensureAllTowersFullyMounted() {
+		stream(aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.MILITARY_BUILDINGS, player.playerId))
+				.map(aiStatistics::getBuildingAt)
+				.filter(building -> building instanceof OccupyingBuilding)
+				.map(building -> (OccupyingBuilding) building)
+				.filter(building -> !building.isSetToBeFullyOccupied())
+				.forEach(building -> taskScheduler.scheduleTask(new ChangeTowerSoldiersGuiTask(player.playerId, building.getPos(), ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType.FULL, null)));
 	}
 
 	private boolean attackIsPossible(SoldierPositions soldierPositions, SoldierPositions enemySoldierPositions, boolean infantryWouldDie) {

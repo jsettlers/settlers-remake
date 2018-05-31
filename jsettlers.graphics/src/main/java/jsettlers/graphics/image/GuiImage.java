@@ -15,7 +15,7 @@
 package jsettlers.graphics.image;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * This is a gui image.

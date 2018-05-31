@@ -88,7 +88,7 @@ public class DelayedOutputStream extends OutputStream {
 				}
 
 				try {
-					Thread.sleep(1);
+					Thread.sleep(1L);
 				} catch (InterruptedException e) {
 				}
 			}

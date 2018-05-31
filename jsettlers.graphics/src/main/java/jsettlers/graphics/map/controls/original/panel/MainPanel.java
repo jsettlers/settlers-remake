@@ -98,7 +98,7 @@ public class MainPanel extends UIPanel {
 
 	private final Button btnSystem = new TabButton(quitPrompt,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
-			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), Labels.getString("game-quit-description"));
 
 	private final Button btnScroll = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
 	private final Button btnSwords = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 114, 102, "");

@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * Class to draw triangles of landscape images.

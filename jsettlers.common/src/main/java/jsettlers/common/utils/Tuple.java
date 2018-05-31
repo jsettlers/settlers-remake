@@ -21,11 +21,10 @@ import java8.util.Comparators;
 
 /**
  * This class defines a tupel of two values.
- * 
- * @author Andreas Eberle
- * 
+ *
  * @param <S>
  * @param <T>
+ * @author Andreas Eberle
  */
 public class Tuple<S, T> implements Serializable {
 	private static final long serialVersionUID = -1637245486740963305L;
@@ -75,7 +74,6 @@ public class Tuple<S, T> implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return A {@link Comparator} that compares the first element of {@link Tuple}s.
 	 */
 	public static <A extends Comparable<A>, B> Comparator<Tuple<A, B>> getE1Comparator() {
@@ -83,10 +81,17 @@ public class Tuple<S, T> implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return A {@link Comparator} that compares the second element of {@link Tuple}s.
 	 */
 	public static <A, B extends Comparable<B>> Comparator<Tuple<A, B>> getE2Comparator() {
 		return Comparators.comparing(tuple -> tuple.e2);
+	}
+
+	public S getE1() {
+		return e1;
+	}
+
+	public T getE2() {
+		return e2;
 	}
 }
