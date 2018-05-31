@@ -31,8 +31,8 @@ public final class MapRectangle implements IMapArea {
 
 	private final short minX;
 	private final short minY;
-	private final short width;
-	private final short height;
+	final short width;
+	final short height;
 
 	public MapRectangle(short minx, short miny, short width, short height) {
 		if (width < 0 || height < 0) {
@@ -54,18 +54,14 @@ public final class MapRectangle implements IMapArea {
 	}
 
 	public final boolean contains(int x, int y) {
-		if (!containsLineY(y)) {
+		if (!containsLine(y)) {
 			return false;
 		}
-		return containsLineX(x);
+		return !(x < getLineStartX(y - getMinY()) || x > getLineEndX(y - getMinY()));
 	}
 
-	private final boolean containsLineY(int y) {
-		return y >= getMinY() && y <= getMinY() + height;
-	}
-
-	private final boolean containsLineX(int x) {
-		return x >= getMinX() && x <= getMinX() + width;
+	public final boolean containsLine(int y) {
+		return y >= getMinY() && y < getMinY() + height;
 	}
 
 	@Override
@@ -101,6 +97,13 @@ public final class MapRectangle implements IMapArea {
 		return minY + line;
 	}
 
+	public final short getLines() {
+		return height;
+	}
+
+	public final short getLineLength() {
+		return width;
+	}
 
 	public short getMinX() {
 		return minX;
@@ -145,17 +148,17 @@ public final class MapRectangle implements IMapArea {
 
 		@Override
 		public boolean hasNext() {
-			return relativeY <= height && relativeX <= width;
+			return relativeY < height && width > 0;
 		}
 
 		@Override
 		public ShortPoint2D next() {
-			if (hasNext()) {
-				int x = minX + relativeX;
-				int y = minY + relativeY;
+			if (relativeY < height && width > 0) {
+				int x = getLineStartX(relativeY) + relativeX;
+				int y = getLineY(relativeY);
 				ShortPoint2D pos = new ShortPoint2D(x, y);
 				relativeX++;
-				if (relativeX > width) {
+				if (relativeX >= width) {
 					relativeX = 0;
 					relativeY++;
 				}
