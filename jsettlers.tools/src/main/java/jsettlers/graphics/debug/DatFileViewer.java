@@ -21,6 +21,7 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -164,13 +165,8 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			}
 		});
 
-		exportThis.addActionListener((e) -> {
-			onExportSelectedFile();
-		});
-
-		exportAll.addActionListener((e) -> {
-			onExportAllFiles();
-		});
+		exportThis.addActionListener((e) -> onExportSelectedFile());
+		exportAll.addActionListener((e) -> onExportAllFiles());
 
 		showSettlers.addActionListener((e) -> {
 			glCanvas.currentSet = ImageSet.SETTLERS;
@@ -196,8 +192,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		if (e.getFirstIndex() < 0 || e.getValueIsAdjusting())
-			return;
+		if (e.getFirstIndex() < 0 || e.getValueIsAdjusting()) { return; }
 
 		String fileName = (String) listView.getSelectedValue();
 
@@ -231,8 +226,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 	}
 
 	private void onExportAllFiles() {
-		if (listItems.isEmpty())
-			return;
+		if (listItems.isEmpty()) { return; }
 
 		JFileChooser openDirDlg = new JFileChooser();
 		openDirDlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -244,8 +238,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 					DatFileType type;
 					if (currentFile.getName().contains(DatFileType.RGB555.getFileSuffix())) {
 						type = DatFileType.RGB555;
-					} else
-						type = DatFileType.RGB565;
+					} else { type = DatFileType.RGB565; }
 
 					AdvancedDatFileReader file = new AdvancedDatFileReader(new File(gfxDirectory, fileName), type);
 					exportFile(exportDir, file);
@@ -258,8 +251,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	private void onExportSelectedFile() {
 		int selectedIndex = listView.getSelectedIndex();
-		if (selectedIndex < 0)
-			return;
+		if (selectedIndex < 0) { return; }
 
 		JFileChooser openDirDlg = new JFileChooser();
 		openDirDlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -270,8 +262,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			DatFileType type;
 			if (datfile.getName().contains(DatFileType.RGB555.getFileSuffix())) {
 				type = DatFileType.RGB555;
-			} else
-				type = DatFileType.RGB565;
+			} else { type = DatFileType.RGB565; }
 
 			AdvancedDatFileReader file = new AdvancedDatFileReader(datfile, type);
 			exportFile(exportDir, file);
@@ -380,13 +371,12 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		// region Drawing Code
 
 		protected void redraw(GLDrawContext gl2, int width, int height) {
-			if (reader == null)
-				return;
+			if (reader == null) { return; }
 
 			TextDrawer txtRenderer = gl2.getTextDrawer(EFontSize.NORMAL);
 			txtRenderer.drawString(0.0f, height - 15.f, currentSet.toString());
-			txtRenderer.drawString(0.0f, height - 30.f, String.format("Offset: %d, %d", offsetX, offsetY));
-			txtRenderer.drawString(0.0f, height - 45.f, String.format("Zoom: %f", zoom));
+			txtRenderer.drawString(0.0f, height - 30.f, String.format(Locale.ENGLISH, "Offset: %d, %d", offsetX, offsetY));
+			txtRenderer.drawString(0.0f, height - 45.f, String.format(Locale.ENGLISH, "Zoom: %f", zoom));
 
 			// Zoom
 			gl2.glTranslatef(width / 2, height / 2, 0);
@@ -423,7 +413,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				drawer.drawString(-20, y + 20, seqIndex + ":");
 
 				seqIndex++;
-				y -= maxHeight + 50;
+				y -= maxHeight + 80;
 			}
 		}
 
@@ -435,6 +425,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				maxHeight = Math.max(maxHeight, image.getHeight());
 
 				drawImage(gl2, x, y, index, (SingleImage) image);
+				gl2.getTextDrawer(EFontSize.NORMAL).drawString(x, y - 10, Integer.toString(index));
 				x += Math.max(50, image.getWidth()) + xSpacing;
 			}
 			return maxHeight;
@@ -444,10 +435,16 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), colors[index % colors.length]);
 
 			gl2.color(1, 0, 0, 1);
-			float[] line = new float[] {
-					x, y, 0,
-					x, y + image.getHeight() + image.getOffsetY(), 0,
-					x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0
+			float[] line = new float[]{
+				x,
+				y,
+				0,
+				x,
+				y + image.getHeight() + image.getOffsetY(),
+				0,
+				x - image.getOffsetX(),
+				y + image.getHeight() + image.getOffsetY(),
+				0
 			};
 			gl2.drawLine(line, false);
 		}
