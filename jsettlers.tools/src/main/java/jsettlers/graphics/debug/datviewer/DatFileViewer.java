@@ -396,7 +396,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				drawer.drawString(-20, y + 20, seqIndex + ":");
 
 				seqIndex++;
-				y -= maxHeight + 50;
+				y -= maxHeight + 80;
 			}
 		}
 
@@ -408,6 +408,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				maxHeight = Math.max(maxHeight, image.getHeight());
 
 				drawImage(gl2, x, y, index, (SingleImage) image);
+				gl2.getTextDrawer(EFontSize.NORMAL).drawString(x,y - 10, Integer.toString(index));
 				x += Math.max(50, image.getWidth()) + xSpacing;
 			}
 			return maxHeight;
