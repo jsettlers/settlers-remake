@@ -42,9 +42,9 @@ public class CustomGraphicsInterceptor {
 	 * @return DatFileReader preferring the custom graphics
 	 */
 	public static DatFileReader prependCustomGraphics(int fileIndex, DatFileReader reader, ImageProvider imageProvider) {
-		if (fileIndex == 36) { // use our own ships
-			return new CustomShipsDatFile(reader, imageProvider);
-		}
+//		if (fileIndex == 36) { // use our own ships
+//			return new CustomShipsDatFile(reader, imageProvider);
+//		}
 		return reader;
 	}
 
