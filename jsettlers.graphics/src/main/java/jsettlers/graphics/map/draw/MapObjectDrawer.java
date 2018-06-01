@@ -282,7 +282,7 @@ public class MapObjectDrawer {
 		// draw ship body
 		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
 		// prepare freight drawing
-		ArrayList<IMovable> passengerList = ship.getPassengers();
+		ArrayList<? extends IMovable> passengerList = ship.getPassengers();
 		byte[] dx = EDirection.getXDeltaArray();
 		byte[] dy = EDirection.getYDeltaArray();
 		float baseViewX = mapCoordinateConverter.getViewX(x, y, height);
@@ -317,15 +317,7 @@ public class MapObjectDrawer {
 		}
 		// sort freight by view y
 		if (freightY.size() > 0) {
-			Collections.sort(freightY, (o1, o2) -> {
-				if (o1.getFloat() > o2.getFloat()) {
-					return -1;
-				} else if (o1.getFloat() == o2.getFloat()) {
-					return 0;
-				} else {
-					return 1;
-				}
-			});
+			Collections.sort(freightY, (o1, o2) -> Float.compare(o2.getFloat(), o1.getFloat()));
 		}
 
 		ShortPoint2D shipPosition = ship.getPosition();

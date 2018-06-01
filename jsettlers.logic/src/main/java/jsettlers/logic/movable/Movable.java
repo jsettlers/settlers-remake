@@ -32,7 +32,6 @@ import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
@@ -47,12 +46,17 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * Central Movable class of JSettlers.
  *
  * @author Andreas Eberle
  */
 public final class Movable implements ILogicMovable {
+	private static final int MAX_NUMBER_OF_PASSENGERS = 7;
+	private static final int CARGO_STACKS             = 3;
+
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
 	private static       int                                  nextID       = Integer.MIN_VALUE;
@@ -92,12 +96,10 @@ public final class Movable implements ILogicMovable {
 	private transient boolean soundPlayed = false;
 
 	// the following block of data only for ships
-	private              ArrayList<IMovable> passengers            = new ArrayList<>();
-	private static final int                 maxNumberOfPassengers = 7;
-	private              ShortPoint2D        unloadingPosition     = null;
-	private final        int                 cargoStacks           = 3;
-	private              EMaterialType       cargoType[]           = new EMaterialType[cargoStacks];
-	private              int                 cargoCount[]          = new int[cargoStacks];
+	private ArrayList<ILogicMovable> passengers        = new ArrayList<>();
+	private ShortPoint2D             unloadingPosition = null;
+	private EMaterialType            cargoType[]       = new EMaterialType[CARGO_STACKS];
+	private int                      cargoCount[]      = new int[CARGO_STACKS];
 
 	// the following data only for ship passengers
 	private ILogicMovable ferryToEnter = null;
@@ -119,7 +121,7 @@ public final class Movable implements ILogicMovable {
 		allMovables.offer(this);
 
 		if (isShip()) {
-			for (int i = 0; i < this.cargoStacks; i++) {
+			for (int i = 0; i < CARGO_STACKS; i++) {
 				this.cargoType[i] = null;
 				this.cargoCount[i] = 0;
 			}
@@ -376,7 +378,7 @@ public final class Movable implements ILogicMovable {
 		}
 	}
 
-	void pushShips() {
+	private void pushShips() {
 		final int SHIP_PUSH_DISTANCE = 10;
 		ILogicMovable blockingMovable;
 		final byte[] xDeltaArray = EDirection.getXDeltaArray();
@@ -559,6 +561,7 @@ public final class Movable implements ILogicMovable {
 			case TAKE:
 			case DROP:
 			case WAITING:
+			case UNLOADING:
 				return false; // we can't do anything
 
 			case DEBUG_STATE:
@@ -853,16 +856,21 @@ public final class Movable implements ILogicMovable {
 			return; // this movable already died.
 		}
 
+		stream(passengers).forEach(ILogicMovable::kill);
+
 		grid.leavePosition(this.position, this);
 		this.health = -200;
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPosition() : null);
+
+		if (state != EMovableState.ON_FERRY) { // position of the movable on a ferry is the position it loaded into the ferry => not correct => don't show ghost
+			grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
+		}
+
 		this.state = EMovableState.DEAD;
 		this.selected = false;
 
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);
-
-		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
 
 	/**
@@ -973,6 +981,7 @@ public final class Movable implements ILogicMovable {
 	 * Converts this movable to a movable of the given {@link EMovableType}.
 	 *
 	 * @param newMovableType
+	 * Type the movable should be converted to.
 	 */
 	public final void convertTo(EMovableType newMovableType) {
 		if (newMovableType == EMovableType.BEARER && !player.equals(grid.getPlayerAt(position))) {
@@ -1093,14 +1102,14 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public boolean addPassenger(ILogicMovable movable) {
-		if (passengers.size() < maxNumberOfPassengers) {
+		if (passengers.size() < MAX_NUMBER_OF_PASSENGERS) {
 			this.passengers.add(movable);
 			return true;
 		}
 		return false;
 	}
 
-	public ArrayList<IMovable> getPassengers() {
+	public ArrayList<? extends ILogicMovable> getPassengers() {
 		return this.passengers;
 	}
 
@@ -1118,7 +1127,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private boolean checkStackNumber(int stack) {
-		return stack >= 0 && stack < this.cargoStacks;
+		return stack >= 0 && stack < this.CARGO_STACKS;
 	}
 
 	public void setCargoType(EMaterialType cargo, int stack) {
@@ -1157,6 +1166,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	public int getNumberOfStacks() {
-		return this.cargoStacks;
+		return this.CARGO_STACKS;
 	}
 }

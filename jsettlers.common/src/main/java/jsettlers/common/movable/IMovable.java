@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.common.movable;
 
+import java.util.ArrayList;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.common.sound.ISoundable;
-
-import java.util.ArrayList;
 
 /**
  * Defines a Movable actor that can be drawn by jsettlers.graphics
@@ -58,7 +58,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * (dropping is done)<br>
 	 * If the movable is currently taking something, this method already returns the EMaterialType, that the movable want's to take.
 	 *
-	 * @return
+	 * @return The material carried by this movable.
 	 */
 	EMaterialType getMaterial();
 
@@ -79,7 +79,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	/**
 	 * Returns alternating true and false on every step.
 	 *
-	 * @return
+	 * @return True if the current step is a right step, false if it is a left step.
 	 */
 	boolean isRightstep();
 
@@ -94,7 +94,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 
 	boolean isShip();
 
-	ArrayList<IMovable> getPassengers();
+	ArrayList<? extends IMovable> getPassengers();
 
 	int getNumberOfStacks();
 
