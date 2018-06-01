@@ -514,7 +514,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 			if (requester.isShip()) {
-				return !isSurroundedByWater((short) x, (short) y);
+				return !isWaterSafe(x, y);
 			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
@@ -1913,7 +1913,7 @@ public final class MainGrid implements Serializable {
 																   return Optional.ofNullable(movable).filter(m -> m.getMovableType() == EMovableType.FERRY);
 															   });
 
-			if(!ferryOptional.isPresent()){
+			if (!ferryOptional.isPresent()) {
 				return null;
 			}
 
@@ -1924,11 +1924,16 @@ public final class MainGrid implements Serializable {
 																 .filter((x, y) -> !isBlocked(x, y))
 																 .getFirst();
 
-			if(!entranceOptional.isPresent()){
+			if (!entranceOptional.isPresent()) {
 				return null;
 			}
 
 			return new FerryEntrance(ferry, entranceOptional.get());
+		}
+
+		@Override
+		public boolean isWater(int x, int y) {
+			return landscapeGrid.getLandscapeTypeAt(x, y).isWater;
 		}
 
 		@Override
