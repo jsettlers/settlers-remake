@@ -14,32 +14,31 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.trading;
 
-import jsettlers.common.action.SetTradingWaypointAction;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.EPriority;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.IteratorFilter;
-import jsettlers.logic.DockPosition;
-import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.IDockBuilding;
-import jsettlers.logic.buildings.stack.IRequestStack;
-import jsettlers.logic.movable.strategies.trading.IShipHarbor;
-import jsettlers.logic.player.Player;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import java8.util.stream.Stream;
+import jsettlers.common.action.SetTradingWaypointAction;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.material.EPriority;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.DockPosition;
+import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.IDockBuilding;
+import jsettlers.logic.player.Player;
+
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * @author Rudolf Polzer
  */
-public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDockBuilding {
+public class HarborBuilding extends TradingBuilding implements IDockBuilding {
 	private static final List<HarborBuilding> ALL_HARBORS = new ArrayList<>();
 
-	public static Iterable<HarborBuilding> getAllHarbors(final Player player) {
-		return new IteratorFilter<>(ALL_HARBORS, building -> building.getPlayer() == player);
+	public static Stream<HarborBuilding> getAllHarbors(final Player player) {
+		return stream(ALL_HARBORS).filter(building -> building.getPlayer() == player);
 	}
 
 	public static void clearState() {
@@ -76,43 +75,13 @@ public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDoc
 	}
 
 	@Override
-	public boolean needsShip() {
+	public boolean needsTrader() {
 		return isTargetSet() && getPriority() != EPriority.STOPPED && super.getStackWithMaterial() != null;
 	}
 
 	@Override
-	public int tryToTakeFurtherMaterial(EMaterialType materialType, int requestedNumber) {
-		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
-			return 0;
-		}
-		IRequestStack stack = super.getStackWithMaterial();
-		int remainingRequest = requestedNumber;
-		while (remainingRequest > 0 && stack != null && materialType == stack.getMaterialType()) {
-			if (stack.pop()) {
-				remainingRequest--;
-			} else {
-				break;
-			}
-		}
-		return requestedNumber - remainingRequest;
-	}
-
-	@Override
-	public EMaterialType tryToTakeShipMaterial() {
-		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
-			return null;
-		}
-
-		IRequestStack stack = super.getStackWithMaterial();
-
-		if (stack != null) {
-			EMaterialType materialType = stack.getMaterialType(); // get this before pop, as pop may reset the currentType of the stack
-			if (stack.pop()) {
-				return materialType;
-			}
-		}
-
-		return null;
+	public ShortPoint2D getPickUpPosition() {
+		return getWaypointsStartPosition();
 	}
 
 	@Override

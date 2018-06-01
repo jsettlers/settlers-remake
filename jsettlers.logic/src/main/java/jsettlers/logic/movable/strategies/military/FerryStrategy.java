@@ -35,10 +35,6 @@ public class FerryStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected void action() {
-	}
-
-	@Override
 	protected boolean canBeControlledByPlayer() {
 		return true;
 	}
@@ -66,7 +62,7 @@ public class FerryStrategy extends MovableStrategy {
 		ShortPoint2D position = super.getPosition();
 		AbstractMovableGrid grid = super.getGrid();
 
-		HexGridArea.stream(position.x, position.y, 2, 5)
+		HexGridArea.stream(position.x, position.y, 2, 6)
 				   .filterBounds(grid.getWidth(), grid.getHeight())
 				   .filter((x, y) -> !grid.isWater(x, y))
 				   .iterate((x, y) -> {

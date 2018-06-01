@@ -51,13 +51,13 @@ import jsettlers.logic.player.Player;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
-	private final short width;
-	private final short height;
+	private final short  width;
+	private final short  height;
 	private final Player defaultPlayer;
 
-	private final ILogicMovable movableMap[][];
-	private final EMaterialType materialTypeMap[][];
-	private final byte materialAmountMap[][];
+	private final ILogicMovable    movableMap[][];
+	private final EMaterialType    materialTypeMap[][];
+	private final byte             materialAmountMap[][];
 	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
@@ -151,26 +151,13 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isFreePosition(ShortPoint2D position) {
-			short x = position.x;
-			short y = position.y;
-
+		public boolean isFreePosition(int x, int y) {
 			return isInBounds(x, y) && !isBlocked(x, y) && movableMap[x][y] == null;
-		}
-
-		@Override
-		public boolean isFreeShipPosition(ShortPoint2D position) {
-			return false;
 		}
 
 		@Override
 		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
-		}
-
-		@Override
-		public boolean isWaterSafe(int x, int y) {
-			return false;
 		}
 
 		@Override
@@ -262,11 +249,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public ILogicMovable getMovableAt(int x, int y) {
 			return movableMap[x][y];
-		}
-
-		@Override
-		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
-			return null;
 		}
 
 		@Override
@@ -442,6 +424,21 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
 			return isValidPosition(pathCalculatable, nextPos.x, nextPos.y);
+		}
+
+		@Override
+		public int getWidth() {
+			return width;
+		}
+
+		@Override
+		public int getHeight() {
+			return height;
+		}
+
+		@Override
+		public boolean isWater(int x, int y) {
+			return getLandscapeTypeAt(x, y).isWater;
 		}
 
 		@Override

@@ -96,7 +96,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 
 	List<? extends IMovable> getPassengers();
 
-	int getNumberOfStacks();
+	int getNumberOfCargoStacks();
 
 	EMaterialType getCargoType(int stack);
 

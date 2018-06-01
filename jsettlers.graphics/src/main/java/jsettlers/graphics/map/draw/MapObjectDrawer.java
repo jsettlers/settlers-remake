@@ -308,7 +308,7 @@ public class MapObjectDrawer {
 					+ PASSENGER_POSITION_TO_RIGHT[i] * yShiftRight, i));
 			}
 		} else {
-			numberOfFreight = ship.getNumberOfStacks();
+			numberOfFreight = ship.getNumberOfCargoStacks();
 			if (numberOfFreight > maxNumberOfStacks) {
 				numberOfFreight = maxNumberOfStacks;
 			}

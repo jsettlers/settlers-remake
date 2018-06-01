@@ -52,20 +52,18 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  */
 public final class Movable implements ILogicMovable {
-	private static final int CARGO_STACKS = 3;
-
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
 	private static       int                                  nextID       = Integer.MIN_VALUE;
 
 	protected final AbstractMovableGrid grid;
 	private final   int                 id;
+	private final   Player              player;
 
 	private EMovableState state = EMovableState.DOING_NOTHING;
 
-	private       EMovableType    movableType;
-	private       MovableStrategy strategy;
-	private final Player          player;
+	private EMovableType    movableType;
+	private MovableStrategy strategy;
 
 	private EMaterialType  materialType  = EMaterialType.NO_MATERIAL;
 	private EMovableAction movableAction = EMovableAction.NO_ACTION;
@@ -92,10 +90,6 @@ public final class Movable implements ILogicMovable {
 	private transient boolean selected    = false;
 	private transient boolean soundPlayed = false;
 
-	// the following block of data only for ships
-	private EMaterialType cargoType[]  = new EMaterialType[CARGO_STACKS];
-	private int           cargoCount[] = new int[CARGO_STACKS];
-
 	// the following data only for ship passengers
 	private ILogicMovable ferryToEnter = null;
 
@@ -114,13 +108,6 @@ public final class Movable implements ILogicMovable {
 		this.id = nextID++;
 		movablesByID.put(this.id, this);
 		allMovables.offer(this);
-
-		if (isShip()) {
-			for (int i = 0; i < CARGO_STACKS; i++) {
-				this.cargoType[i] = null;
-				this.cargoCount[i] = 0;
-			}
-		}
 
 		grid.enterPosition(position, this, true);
 	}
@@ -1099,46 +1086,18 @@ public final class Movable implements ILogicMovable {
 		strategy.unloadFerry();
 	}
 
-	private boolean checkStackNumber(int stack) {
-		return stack >= 0 && stack < CARGO_STACKS;
-	}
-
-	public void setCargoType(EMaterialType cargo, int stack) {
-		if (checkStackNumber(stack)) {
-			this.cargoType[stack] = cargo;
-		} else {
-			throw new IllegalArgumentException("Empty stack cannot be used as ship cargo");
-		}
-	}
-
+	@Override
 	public EMaterialType getCargoType(int stack) {
-		if (checkStackNumber(stack)) {
-			return this.cargoType[stack];
-		} else {
-			return null;
-		}
+		return strategy.getCargoType(stack);
 	}
 
-	public void setCargoCount(int count, int stack) {
-		if (checkStackNumber(stack)) {
-			this.cargoCount[stack] = count;
-			if (this.cargoCount[stack] < 0) {
-				this.cargoCount[stack] = 0;
-			} else if (this.cargoCount[stack] > 8) {
-				this.cargoCount[stack] = 8;
-			}
-		}
-	}
-
+	@Override
 	public int getCargoCount(int stack) {
-		if (checkStackNumber(stack) && this.cargoType[stack] != null) {
-			return this.cargoCount[stack];
-		} else {
-			return 0;
-		}
+		return strategy.getCargoCount(stack);
 	}
 
-	public int getNumberOfStacks() {
-		return CARGO_STACKS;
+	@Override
+	public int getNumberOfCargoStacks() {
+		return strategy.getNumberOfCargoStacks();
 	}
 }

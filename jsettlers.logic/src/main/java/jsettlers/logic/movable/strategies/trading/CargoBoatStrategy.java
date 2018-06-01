@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,154 +14,107 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.trading;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java8.util.J8Arrays;
+import java8.util.stream.Stream;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.trading.HarborBuilding;
-import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.MovableStrategy;
 
 /**
  *
  * @author Rudolf Polzer
  *
  */
-public class CargoBoatStrategy extends MovableStrategy {
-	private static final long serialVersionUID = 1L;
+public class CargoBoatStrategy extends TradingStrategy {
+	private static final int   CARGO_STACKS           = 3;
+	private static final short WAYPOINT_SEARCH_RADIUS = 50;
 
-	private static final short SHIP_WAYPOINT_SEARCH_RADIUS = 50;
-
-	private EShipState state = EShipState.JOBLESS;
-
-	private IShipHarbor harbor;
-	private Iterator<ShortPoint2D> waypoints;
-
-	private Movable ship;
+	private final EMaterialType cargoType[]  = new EMaterialType[CARGO_STACKS];
+	private final int           cargoCount[] = new int[CARGO_STACKS];
 
 	public CargoBoatStrategy(Movable movable) {
 		super(movable);
-		ship = movable;
 	}
 
 	@Override
-	protected void action() {
-		switch (state) {
-		case JOBLESS:
-			this.harbor = findNextHarborNeedingShip();
-
-			if (this.harbor == null) { // no harbor found
-				break;
+	protected boolean loadUp(ITradeBuilding tradeBuilding) {
+		for (int stackIndex = 0; stackIndex < CARGO_STACKS; stackIndex++) {
+			if (getCargoCount(stackIndex) > 0) {
+				continue;
 			}
 
-		case INIT_GOING_TO_HARBOR:
-			if (harbor.needsShip() && super.goToPos(harbor.getWaypointsStartPosition())) {
-				state = EShipState.GOING_TO_HARBOR;
-			} else {
-				reset();
-			}
-			break;
+			final int finalStackIndex = stackIndex;
 
-		case GOING_TO_HARBOR:
-			int cargoTotal = 0;
-			int cargoCount;
-			EMaterialType material;
-			for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
-				if (ship.getCargoCount(stack) == 0) {
-					material = harbor.tryToTakeShipMaterial();
-					if (material != null) {
-						ship.setCargoType(material, stack);
-						cargoCount = 1 + harbor.tryToTakeFurtherMaterial(material, 7);
-						ship.setCargoCount(cargoCount, stack);
-						cargoTotal += cargoCount;
-					}
-				}
-			}
-			if (cargoTotal == 0) {
-				reset();
-				break;
-			} else {
-				this.waypoints = harbor.getWaypointsIterator();
-				state = EShipState.GOING_TO_TARGET;
-			}
-
-		case GOING_TO_TARGET:
-			if (!goToNextWaypoint()) { // no waypoint left
-				dropMaterialIfPossible();
-				waypoints = null;
-				state = EShipState.INIT_GOING_TO_HARBOR;
-			}
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	private boolean goToNextWaypoint() {
-		while (waypoints.hasNext()) {
-			ShortPoint2D nextPosition = waypoints.next();
-			if (super.preSearchPath(true, nextPosition.x, nextPosition.y, SHIP_WAYPOINT_SEARCH_RADIUS, ESearchType.VALID_FREE_POSITION)) {
-				super.followPresearchedPath();
-				return true;
-			}
+			tradeBuilding.tryToTakeMaterial(Constants.STACK_SIZE).ifPresent(materialTypeWithCount -> {
+				setCargoType(materialTypeWithCount.materialType, finalStackIndex);
+				setCargoCount(materialTypeWithCount.count, finalStackIndex);
+			});
 		}
 
-		return false;
+		return J8Arrays.stream(cargoCount).sum() > 0;
 	}
 
-	private void reset() {
-		dropMaterialIfPossible();
-		harbor = null;
-		waypoints = null;
-		state = EShipState.JOBLESS;
-	}
-
-	private void dropMaterialIfPossible() {
+	protected void dropMaterialIfPossible() {
 		int cargoCount;
 		EMaterialType material;
-		for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
-			cargoCount = ship.getCargoCount(stack);
-			material = ship.getCargoType(stack);
+		for (int stack = 0; stack < CARGO_STACKS; stack++) {
+			cargoCount = getCargoCount(stack);
+			material = movable.getCargoType(stack);
 			while (cargoCount > 0) {
 				super.getGrid().dropMaterial(movable.getPosition(), material, true, true);
 				cargoCount--;
 			}
-			ship.setCargoCount(0, stack);
+			setCargoCount(0, stack);
 		}
 	}
 
-	private IShipHarbor findNextHarborNeedingShip() {
-		if (this.harbor != null && this.harbor.needsShip()) {
-			return this.harbor;
-		}
+	protected Stream<? extends ITradeBuilding> getTradersWithWork() {
+		return HarborBuilding.getAllHarbors(movable.getPlayer());
+	}
 
-		Iterable<? extends IShipHarbor> harbors = HarborBuilding.getAllHarbors(movable.getPlayer());
-		List<IShipHarbor> harborsNeedingShips = new ArrayList<>();
-
-		for (IShipHarbor currHarbor : harbors) {
-			if (currHarbor.needsShip()) {
-				harborsNeedingShips.add(currHarbor);
+	private void setCargoCount(int count, int stack) {
+		if (checkStackNumber(stack)) {
+			this.cargoCount[stack] = count;
+			if (this.cargoCount[stack] < 0) {
+				this.cargoCount[stack] = 0;
+			} else if (this.cargoCount[stack] > 8) {
+				this.cargoCount[stack] = 8;
 			}
 		}
+	}
 
-		if (!harborsNeedingShips.isEmpty()) {
-			// randomly distribute the ships onto the harbors needing them
-			return harborsNeedingShips.get(MatchConstants.random().nextInt(harborsNeedingShips.size()));
+	private void setCargoType(EMaterialType cargo, int stack) {
+		this.cargoType[stack] = cargo;
+	}
+
+	private boolean checkStackNumber(int stack) {
+		return stack >= 0 && stack < CARGO_STACKS;
+	}
+
+	@Override
+	public EMaterialType getCargoType(int stack) {
+		if (checkStackNumber(stack)) {
+			return this.cargoType[stack];
 		} else {
 			return null;
 		}
 	}
 
-	private enum EShipState {
-		JOBLESS,
-		INIT_GOING_TO_HARBOR,
-		GOING_TO_HARBOR,
-		GOING_TO_TARGET,
-		DEAD
+	public int getCargoCount(int stack) {
+		if (checkStackNumber(stack) && this.cargoType[stack] != null) {
+			return this.cargoCount[stack];
+		} else {
+			return 0;
+		}
+	}
+
+	public int getNumberOfCargoStacks() {
+		return CARGO_STACKS;
+	}
+
+	@Override
+	protected short getWaypointSearchRadius() {
+		return WAYPOINT_SEARCH_RADIUS;
 	}
 }

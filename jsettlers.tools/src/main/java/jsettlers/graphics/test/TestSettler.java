@@ -128,7 +128,7 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
-	public int getNumberOfStacks() {
+	public int getNumberOfCargoStacks() {
 		return 0;
 	}
 

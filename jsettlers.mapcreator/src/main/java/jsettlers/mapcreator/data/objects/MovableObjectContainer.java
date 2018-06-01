@@ -75,7 +75,7 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public int getNumberOfStacks() {
+	public int getNumberOfCargoStacks() {
 		return 0;
 	}
 
