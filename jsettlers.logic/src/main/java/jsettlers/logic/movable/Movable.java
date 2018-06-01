@@ -42,7 +42,7 @@ import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.strategies.FleeStrategy;
-import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
+import jsettlers.logic.movable.strategies.military.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 

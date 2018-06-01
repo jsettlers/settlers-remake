@@ -77,13 +77,6 @@ public abstract class CoordinateStream implements Serializable {
 	 */
 	public abstract boolean iterate(IBooleanCoordinateFunction function);
 
-	public final void iterate(ICoordinateConsumer consumer) {
-		iterate((x, y) -> {
-			consumer.accept(x, y);
-			return true;
-		});
-	}
-
 	public CoordinateStream filter(ICoordinatePredicate predicate) {
 		return new CoordinateStream() {
 			@Override
