@@ -18,11 +18,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import java8.util.Optional;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.common.utils.mutables.MutableInt;
-
-import java8.util.Optional;
 
 /**
  * Created by Andreas Eberle on 12.01.2017.
@@ -77,6 +76,13 @@ public abstract class CoordinateStream implements Serializable {
 	 * @return <code>true</code> if the iteration has not been aborted (the function never returned <code>false</code>)
 	 */
 	public abstract boolean iterate(IBooleanCoordinateFunction function);
+
+	public final void iterate(ICoordinateConsumer consumer) {
+		iterate((x, y) -> {
+			consumer.accept(x, y);
+			return true;
+		});
+	}
 
 	public CoordinateStream filter(ICoordinatePredicate predicate) {
 		return new CoordinateStream() {
