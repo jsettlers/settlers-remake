@@ -40,12 +40,6 @@ allprojects {
 subprojects {
 
     plugins.withType(JavaPlugin).whenPluginAdded {
-        test {
-            testLogging {
-                events "failed"
-                exceptionFormat "short"
-            }
-        }
         compileJava {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
@@ -81,7 +75,7 @@ subprojects {
 
     tasks.withType(Test) {
         testLogging {
-            events 'passed'
+            exceptionFormat = 'full'
         }
     }
 
