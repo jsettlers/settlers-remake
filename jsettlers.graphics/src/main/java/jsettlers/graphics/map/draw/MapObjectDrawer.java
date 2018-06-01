@@ -178,6 +178,7 @@ public class MapObjectDrawer {
 	private static final int   FERRY_BASE_SEQUENCE      = 4;
 	private static final int   CARGO_SHIP_BASE_SEQUENCE = 0;
 	private static final float WAVES_Z                  = -0.1f;
+	private static final float DOCK_Z                   = 0.f;
 
 	private static final int SMOKE_HEIGHT = 30;
 
@@ -554,7 +555,10 @@ public class MapObjectDrawer {
 				break;
 
 			case DOCK:
+				float z = context.getDrawBuffer().getZ();
+				context.getDrawBuffer().setZ(DOCK_Z);
 				drawDock(x, y, object, color);
+				context.getDrawBuffer().setZ(z);
 				break;
 
 			case FISH_DECORATION:
