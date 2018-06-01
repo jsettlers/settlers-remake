@@ -14,36 +14,28 @@
  */
 package jsettlers.logic.movable.strategies.military;
 
-import jsettlers.common.movable.EMovableType;
+import java.util.ArrayList;
+
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
+
+import static java8.util.stream.StreamSupport.stream;
 
 public class FerryStrategy extends MovableStrategy {
-	private static final long serialVersionUID = 8360707186573364992L;
+	private static final int MAX_NUMBER_OF_PASSENGERS = 7;
 
-	private final EMovableType movableType;
+	private final ArrayList<ILogicMovable> passengers = new ArrayList<>(MAX_NUMBER_OF_PASSENGERS);
 
 	public FerryStrategy(Movable movable) {
 		super(movable);
-		this.movableType = movable.getMovableType();
 	}
 
 	@Override
 	protected void action() {
-	}
-
-	public EMovableType getMovableType() {
-		return movableType;
-	}
-
-	public Movable getMovable() {
-		return movable;
-	}
-
-	public void setSelected(boolean selected) {
-		movable.setSelected(selected);
 	}
 
 	@Override
@@ -51,18 +43,47 @@ public class FerryStrategy extends MovableStrategy {
 		return true;
 	}
 
-	private ShortPoint2D getRandomFreePosition(ShortPoint2D pos1, ShortPoint2D pos2) {
-		boolean pos1Free = getGrid().isFreeShipPosition(pos1);
-		boolean pos2Free = getGrid().isFreeShipPosition(pos2);
-
-		if (pos1Free && pos2Free) {
-			return MatchConstants.random().nextBoolean() ? pos1 : pos2;
-		} else if (pos1Free) {
-			return pos1;
-		} else if (pos2Free) {
-			return pos2;
-		} else {
-			return null;
+	@Override
+	public boolean addPassenger(ILogicMovable movable) {
+		if (passengers.size() < MAX_NUMBER_OF_PASSENGERS) {
+			this.passengers.add(movable);
+			return true;
 		}
+		return false;
+	}
+
+	@Override
+	public ArrayList<ILogicMovable> getPassengers() {
+		return passengers;
+	}
+
+	@Override
+	protected void unloadFerry() {
+		if (passengers.isEmpty()) {
+			return;
+		}
+
+		ShortPoint2D position = super.getPosition();
+		AbstractMovableGrid grid = super.getGrid();
+
+		HexGridArea.stream(position.x, position.y, 2, 5)
+				   .filterBounds(grid.getWidth(), grid.getHeight())
+				   .filter((x, y) -> !grid.isWater(x, y))
+				   .iterate((x, y) -> {
+					   ILogicMovable passenger = passengers.get(passengers.size() - 1);
+
+					   if (grid.isValidPosition(passenger, x, y) && grid.isFreePosition(x,y)) {
+						   passenger.leaveFerryAt(new ShortPoint2D(x, y));
+						   passengers.remove(passengers.size() - 1);
+					   }
+
+					   return !passengers.isEmpty();
+				   });
+	}
+
+	@Override
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
+		stream(passengers).forEach(ILogicMovable::kill);
+		super.strategyKilledEvent(pathTarget);
 	}
 }

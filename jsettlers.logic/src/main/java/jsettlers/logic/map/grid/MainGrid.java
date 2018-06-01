@@ -1312,16 +1312,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isFreePosition(ShortPoint2D position) {
-			short x = position.x;
-			short y = position.y;
-
+		public boolean isFreePosition(int x, int y) {
 			return isInBounds(x, y) && !flagsGrid.isBlocked(x, y) && movableGrid.hasNoMovableAt(x, y);
-		}
-
-		@Override
-		public boolean isFreeShipPosition(ShortPoint2D position) {
-			return isSurroundedByWater(position.x, position.y) && movableGrid.hasNoMovableAt(position.x, position.y);
 		}
 
 		@Override
@@ -1375,11 +1367,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
-		}
-
-		@Override
-		public boolean isWaterSafe(int x, int y) {
-			return MainGrid.this.isWaterSafe(x, y);
 		}
 
 		@Override
@@ -1477,16 +1464,23 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
-			return landscapeGrid.tryTakingResource(position, resource);
+		public int getWidth() {
+			return width;
 		}
 
 		@Override
-		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
-			return HexGridArea.stream(position.x, position.y, 1, 5)
-							  .filterBounds(width, height)
-							  .filter((x, y) -> !isBlocked(x, y))
-							  .getFirst().orElse(null);
+		public int getHeight() {
+			return height;
+		}
+
+		@Override
+		public boolean isWater(int x, int y) {
+			return landscapeGrid.getLandscapeTypeAt(x, y).isWater;
+		}
+
+		@Override
+		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
+			return landscapeGrid.tryTakingResource(position, resource);
 		}
 	}
 

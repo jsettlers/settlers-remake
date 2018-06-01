@@ -408,7 +408,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = movable.getDirection();
-			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPosition()), EResourceType.FISH);
+			return super.getGrid().tryTakingResource(fishDirection.getNextHexPoint(movable.getPosition()), EResourceType.FISH);
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:

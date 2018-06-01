@@ -360,8 +360,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	private ShortPoint2D getRandomFreePosition(ShortPoint2D pos1, ShortPoint2D pos2) {
-		boolean pos1Free = getGrid().isFreePosition(pos1);
-		boolean pos2Free = getGrid().isFreePosition(pos2);
+		boolean pos1Free = getGrid().isFreePosition(pos1.x, pos1.y);
+		boolean pos2Free = getGrid().isFreePosition(pos2.x, pos2.y);
 
 		if (pos1Free && pos2Free) {
 			return MatchConstants.random().nextBoolean() ? pos1 : pos2;

@@ -445,7 +445,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
+		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
 			return false;
 		}
 	};

@@ -17,6 +17,7 @@ package jsettlers.graphics.map.draw;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
@@ -283,7 +284,7 @@ public class MapObjectDrawer {
 		// draw ship body
 		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
 		// prepare freight drawing
-		ArrayList<? extends IMovable> passengerList = ship.getPassengers();
+		List<? extends IMovable> passengerList = ship.getPassengers();
 		byte[] dx = EDirection.getXDeltaArray();
 		byte[] dy = EDirection.getYDeltaArray();
 		float baseViewX = mapCoordinateConverter.getViewX(x, y, height);

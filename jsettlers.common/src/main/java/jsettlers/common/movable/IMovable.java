@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.movable;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
@@ -94,7 +94,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 
 	boolean isShip();
 
-	ArrayList<? extends IMovable> getPassengers();
+	List<? extends IMovable> getPassengers();
 
 	int getNumberOfStacks();
 

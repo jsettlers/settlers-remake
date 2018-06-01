@@ -17,9 +17,9 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -46,16 +46,13 @@ import jsettlers.logic.movable.strategies.military.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 
-import static java8.util.stream.StreamSupport.stream;
-
 /**
  * Central Movable class of JSettlers.
  *
  * @author Andreas Eberle
  */
 public final class Movable implements ILogicMovable {
-	private static final int MAX_NUMBER_OF_PASSENGERS = 7;
-	private static final int CARGO_STACKS             = 3;
+	private static final int CARGO_STACKS = 3;
 
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
@@ -96,10 +93,8 @@ public final class Movable implements ILogicMovable {
 	private transient boolean soundPlayed = false;
 
 	// the following block of data only for ships
-	private ArrayList<ILogicMovable> passengers        = new ArrayList<>();
-	private ShortPoint2D             unloadingPosition = null;
-	private EMaterialType            cargoType[]       = new EMaterialType[CARGO_STACKS];
-	private int                      cargoCount[]      = new int[CARGO_STACKS];
+	private EMaterialType cargoType[]  = new EMaterialType[CARGO_STACKS];
+	private int           cargoCount[] = new int[CARGO_STACKS];
 
 	// the following data only for ship passengers
 	private ILogicMovable ferryToEnter = null;
@@ -222,22 +217,6 @@ public final class Movable implements ILogicMovable {
 				}
 				break;
 
-			case UNLOADING:
-				int numberOfPassengers = passengers.size();
-				if (numberOfPassengers > 0) {
-					Movable movable = (Movable) grid.getMovableAt(this.unloadingPosition.x, this.unloadingPosition.y);
-					if (movable != null) {
-						movable.leavePosition(); // passengers need free space to leave the ferry
-					} else { // one passenger leaves the ferry
-						((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
-						passengers.remove(numberOfPassengers - 1);
-					}
-					animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-				} else {
-					setState(EMovableState.DOING_NOTHING);
-				}
-				break;
-
 			default:
 				break;
 		}
@@ -328,14 +307,7 @@ public final class Movable implements ILogicMovable {
 			movableAction = EMovableAction.NO_ACTION;
 			path = null;
 			if (ferryToEnter != null) {
-				int distanceToFerry = this.getPosition().getOnGridDistTo(ferryToEnter.getPosition());
-				if (distanceToFerry <= Constants.MAX_FERRY_ENTRANCE_DISTANCE) {
-					if (ferryToEnter.addPassenger(this)) {
-						grid.leavePosition(this.getPosition(), this);
-						setState(EMovableState.ON_FERRY);
-					}
-				}
-				ferryToEnter = null;
+				enterFerry();
 			}
 			return;
 		}
@@ -378,6 +350,17 @@ public final class Movable implements ILogicMovable {
 		}
 	}
 
+	private void enterFerry() {
+		int distanceToFerry = this.getPosition().getOnGridDistTo(ferryToEnter.getPosition());
+		if (distanceToFerry <= Constants.MAX_FERRY_ENTRANCE_DISTANCE) {
+			if (ferryToEnter.addPassenger(this)) {
+				grid.leavePosition(this.getPosition(), this);
+				setState(EMovableState.ON_FERRY);
+			}
+		}
+		ferryToEnter = null;
+	}
+
 	private void pushShips() {
 		final int SHIP_PUSH_DISTANCE = 10;
 		ILogicMovable blockingMovable;
@@ -416,7 +399,8 @@ public final class Movable implements ILogicMovable {
 		return this.position;
 	}
 
-	private void leaveFerryAtPosition(ShortPoint2D position) {
+	@Override
+	public void leaveFerryAt(ShortPoint2D position) {
 		this.position = position;
 		setState(EMovableState.DOING_NOTHING);
 		requestedTargetPosition = null;
@@ -561,7 +545,6 @@ public final class Movable implements ILogicMovable {
 			case TAKE:
 			case DROP:
 			case WAITING:
-			case UNLOADING:
 				return false; // we can't do anything
 
 			case DEBUG_STATE:
@@ -612,6 +595,7 @@ public final class Movable implements ILogicMovable {
 	 * Sets the material this movable is carrying to the given one.
 	 *
 	 * @param materialType
+	 * The material type to be set
 	 * @return {@link EMaterialType} that has been set before.
 	 */
 	final EMaterialType setMaterial(EMaterialType materialType) {
@@ -645,6 +629,7 @@ public final class Movable implements ILogicMovable {
 
 	/**
 	 * @param materialToTake
+	 * The material type to take
 	 * @return true if the animation will be executed.
 	 */
 	final boolean take(EMaterialType materialToTake, boolean takeFromMap) {
@@ -681,6 +666,7 @@ public final class Movable implements ILogicMovable {
 	 * Lets this movable look in the given direction.
 	 *
 	 * @param direction
+	 * The direction to look.
 	 */
 	final void lookInDirection(EDirection direction) {
 		this.direction = direction;
@@ -700,7 +686,7 @@ public final class Movable implements ILogicMovable {
 		Path path = grid.calculatePathTo(this, targetPos);
 		if (path == null) {
 			if (ferryToEnter != null) {
-				followPath(path);
+				enterFerry();
 			}
 			return false;
 		} else {
@@ -738,7 +724,7 @@ public final class Movable implements ILogicMovable {
 					break;
 				}
 			case GO_IF_FREE:
-				if (grid.isFreePosition(targetPosition)) {
+				if (grid.isFreePosition(targetPosition.x, targetPosition.y)) {
 					initGoingSingleStep(targetPosition);
 					setState(EMovableState.GOING_SINGLE_STEP);
 					return true;
@@ -855,8 +841,6 @@ public final class Movable implements ILogicMovable {
 		if (state == EMovableState.DEAD) {
 			return; // this movable already died.
 		}
-
-		stream(passengers).forEach(ILogicMovable::kill);
 
 		grid.leavePosition(this.position, this);
 		this.health = -200;
@@ -1082,7 +1066,6 @@ public final class Movable implements ILogicMovable {
 
 		TAKE,
 		DROP,
-		UNLOADING,
 
 		DEAD,
 
@@ -1102,32 +1085,22 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public boolean addPassenger(ILogicMovable movable) {
-		if (passengers.size() < MAX_NUMBER_OF_PASSENGERS) {
-			this.passengers.add(movable);
-			return true;
-		}
-		return false;
+		return strategy.addPassenger(movable);
 	}
 
-	public ArrayList<? extends ILogicMovable> getPassengers() {
-		return this.passengers;
+	public List<? extends ILogicMovable> getPassengers() {
+		return strategy.getPassengers();
 	}
 
 	public void unloadFerry() {
-		if (this.getMovableType() != EMovableType.FERRY || position == null) {
+		if (this.getMovableType() != EMovableType.FERRY) {
 			return;
 		}
-		this.unloadingPosition = grid.getFerryUnloadPosition(position);
-		if (this.unloadingPosition == null) {
-			return;
-		}
-		if (this.passengers.size() > 0 && this.state == EMovableState.DOING_NOTHING) {
-			setState(EMovableState.UNLOADING);
-		}
+		strategy.unloadFerry();
 	}
 
 	private boolean checkStackNumber(int stack) {
-		return stack >= 0 && stack < this.CARGO_STACKS;
+		return stack >= 0 && stack < CARGO_STACKS;
 	}
 
 	public void setCargoType(EMaterialType cargo, int stack) {
@@ -1166,6 +1139,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	public int getNumberOfStacks() {
-		return this.CARGO_STACKS;
+		return CARGO_STACKS;
 	}
 }
