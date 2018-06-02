@@ -24,6 +24,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
+import jsettlers.common.action.Action;
 import jsettlers.common.action.SetMaterialProductionAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -38,6 +39,7 @@ import jsettlers.graphics.ui.SetMaterialProductionButton;
 import jsettlers.graphics.ui.UIPanel;
 
 import java.util.Arrays;
+import java8.util.Optional;
 
 public class MaterialsProductionPanel extends AbstractContentProvider {
 	private static final float contentHeight_px = 216;
@@ -94,7 +96,7 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 			arrows.addChild(upButton, 0f, 0.5f, 1f, 1f);
 			arrows.addChild(downButton, 0f, 0f, 1f, 0.5f);
 
-			barFill = new ActionProvidedBarFill(fillForClick -> new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick));
+			barFill = new ActionProvidedBarFill(fillForClick -> Optional.<Action>of(new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick)));
 
 			float left = 0;
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);

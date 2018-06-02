@@ -15,6 +15,7 @@
 package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -44,6 +45,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 		INIT_GOTO_TOWER,
 		GOING_TO_TOWER,
+		FORCED_MOVE,
 	}
 
 	private final EMovableType movableType;
@@ -70,6 +72,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected void action() {
 		switch (state) {
 		case AGGRESSIVE:
+			break;
+			
+		case FORCED_MOVE:
 			break;
 
 		case HITTING:
@@ -108,7 +113,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
 							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), movable.getPos());
 							super.goInDirection(escapeDirection, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
-							movable.moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+							movable.moveTo(null, EMoveToType.DEFAULT); // reset moveToRequest, so the soldier doesn't go there after fleeing.
 
 						} // else { // we are in the tower, so wait and check again next time.
 
@@ -290,7 +295,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		if (state == ESoldierState.INIT_GOTO_TOWER) {
 			return false; // abort previous path when we just got a tower set
 		}
@@ -312,12 +317,12 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToType moveToType) {
 		if (targetPos != null && this.oldPathTarget != null) {
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
 			inSaveGotoMode = false;
 		}
-		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+		changeStateTo(moveToType.isAttackOnTheWay() ? ESoldierState.SEARCH_FOR_ENEMIES : ESoldierState.FORCED_MOVE);
 	}
 
 	@Override
@@ -327,7 +332,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
-		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
+		if (state == ESoldierState.SEARCH_FOR_ENEMIES || state == ESoldierState.FORCED_MOVE) {
 			EDirection direction = EDirection.getDirection(position, path.getNextPos());
 
 			EDirection rightDir = direction.getNeighbor(-1);

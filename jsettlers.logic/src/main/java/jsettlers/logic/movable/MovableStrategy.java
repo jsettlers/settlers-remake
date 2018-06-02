@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -211,10 +212,11 @@ public abstract class MovableStrategy implements Serializable {
 	 * 		Target of the current path.
 	 * @param step
 	 * 		The number of the current step where 1 means the first step.
+	 * @param moveToType TODO
 	 * @return true if the path should be continued<br>
 	 * false if it must be stopped.
 	 */
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		return true;
 	}
 
@@ -235,8 +237,9 @@ public abstract class MovableStrategy implements Serializable {
 	 * 		The target position of the old path or null if no old path was set.
 	 * @param targetPos
 	 * 		The new target position.
+	 * @param moveToType TODO
 	 */
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToType moveToType) {
 	}
 
 	/**

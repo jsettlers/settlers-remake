@@ -14,13 +14,17 @@
  *******************************************************************************/
 package go.graphics.event.interpreter;
 
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.SingleHandlerGoEvent;
+import go.graphics.event.command.EModifier;
 import go.graphics.event.command.GOCommandEvent;
 
 /**
@@ -189,13 +193,17 @@ public class AbstractEventConverter {
 	}
 
 	protected boolean fireCommandEvent(UIPoint point, boolean isSelect) {
-		ConvertedCommandEvent commandEvent = new ConvertedCommandEvent(point, isSelect);
+		ConvertedCommandEvent commandEvent = new ConvertedCommandEvent(point, isSelect, getCurrentModifiers());
 
 		handleEvent(commandEvent);
 
 		commandEvent.initialized();
 
 		return commandEvent.getHandler() != null;
+	}
+
+	protected Set<EModifier> getCurrentModifiers() {
+		return EnumSet.noneOf(EModifier.class);
 	}
 
 	protected synchronized void startKeyEvent(String string) {
@@ -250,10 +258,12 @@ public class AbstractEventConverter {
 
 		private final UIPoint position;
 		private final boolean selecting;
+		private final Set<EModifier> modifiers;
 
-		public ConvertedCommandEvent(UIPoint position, boolean selecting) {
+		public ConvertedCommandEvent(UIPoint position, boolean selecting, Set<EModifier> modifiers) {
 			this.position = position;
 			this.selecting = selecting;
+			this.modifiers = modifiers;
 		}
 
 		public void initialized() {
@@ -270,6 +280,11 @@ public class AbstractEventConverter {
 		@Override
 		public boolean isSelecting() {
 			return selecting;
+		}
+		
+		@Override
+		public Set<EModifier> getModifiers() {
+			return Collections.unmodifiableSet(modifiers);
 		}
 
 	}
