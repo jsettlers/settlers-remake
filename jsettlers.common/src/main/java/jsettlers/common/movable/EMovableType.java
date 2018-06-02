@@ -72,7 +72,7 @@ public enum EMovableType {
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
 
-	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, true, 0.6, 400f, 0f),
+	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, true, false),
 	CARGO_BOAT(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, false);
 
 	/**
@@ -104,23 +104,33 @@ public enum EMovableType {
 
 	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_BOAT);
 
-	private final EMaterialType  tool;
-	private final ESelectionType selectionType;
-	private final boolean        needsPlayersGround;
-	private final boolean        isPlayerControllable;
-	private final short          stepDurationMs;
-	private final float          health;
-	private final float          strength;
+	public final EMaterialType  tool;
+	public final ESelectionType selectionType;
+	public final boolean        needsPlayersGround;
+	public final boolean        playerControllable;
+	public final boolean        attackable;
+	public final short          stepDurationMs;
+	public final float          health;
+	public final float          strength;
 
-	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean isPlayerControllable) {
-		this(tool, selectionType, needsPlayersGround, isPlayerControllable, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable) {
+		this(tool, selectionType, needsPlayersGround, playerControllable, playerControllable, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
 	}
 
-	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean isPlayerControllable, double stepDurationSec, float health, float strength) {
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable, boolean attackable) {
+		this(tool, selectionType, needsPlayersGround, playerControllable, attackable, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
+	}
+
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable, double stepDurationSec, float health, float strength) {
+		this(tool, selectionType, needsPlayersGround, playerControllable, playerControllable, stepDurationSec, health, strength);
+	}
+
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable, boolean attackable, double stepDurationSec, float health, float strength) {
 		this.tool = tool;
 		this.selectionType = selectionType;
 		this.needsPlayersGround = needsPlayersGround;
-		this.isPlayerControllable = isPlayerControllable;
+		this.playerControllable = playerControllable;
+		this.attackable = attackable;
 		this.stepDurationMs = (short) (stepDurationSec * 1000 * STEP_DURATION_SPEEDUP_FACTOR);
 		this.health = health;
 		this.strength = strength;
@@ -153,7 +163,7 @@ public enum EMovableType {
 	}
 
 	public final boolean isPlayerControllable() {
-		return isPlayerControllable;
+		return playerControllable;
 	}
 
 	public short getStepDurationMs() {

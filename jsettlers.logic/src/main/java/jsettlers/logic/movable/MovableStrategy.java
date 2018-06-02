@@ -264,7 +264,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected boolean isAttackable() {
-		return movable.getMovableType().isPlayerControllable();
+		return movable.getMovableType().attackable;
 	}
 
 	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
