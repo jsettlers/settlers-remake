@@ -103,7 +103,9 @@ public class SettlerImage extends SingleImage {
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 					   float viewY, int iColor) {
 		super.drawAt(gl, buffer, viewX, viewY, iColor);
-		if (Math.abs(buffer.getZ() - PLACEMENT_BUILDING_Z) < 0.1) return;
+		if (Math.abs(buffer.getZ() - PLACEMENT_BUILDING_Z) < 0.1) {
+			return;
+		}
 		if (this.torso != null) {
 			this.torso.drawAt(gl, buffer, viewX, viewY, iColor);
 		}
