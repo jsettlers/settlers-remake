@@ -330,7 +330,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 			return;
 		}
 
-		for (int radius = 0, ringsWithoutSuccessCtr = 0; ringsWithoutSuccessCtr <= 5 && !movables.isEmpty(); radius++) {
+		for (int radius = 0, ringsWithoutSuccessCtr = 0; ringsWithoutSuccessCtr <= Math.max(5, 15 - radius + ringsWithoutSuccessCtr) && !movables.isEmpty(); radius++) {
 			MutableInt numberOfSendMovables = new MutableInt(0);
 
 			HexGridArea
