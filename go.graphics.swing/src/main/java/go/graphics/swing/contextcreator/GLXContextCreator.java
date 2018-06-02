@@ -24,55 +24,55 @@ import go.graphics.swing.GLContainer;
 
 public class GLXContextCreator extends JAWTContextCreator {
 
-    private JAWTX11DrawingSurfaceInfo x11surfaceinfo;
+	private JAWTX11DrawingSurfaceInfo x11surfaceinfo;
 
-    private long display = 0;
-    private long context = 0;
+	private long display = 0;
+	private long context = 0;
 
 	public GLXContextCreator(GLContainer container) {
 		super(container);
 		// do we have xlib support ?
 		X11.getLibrary().getName();
-    }
+	}
 
-    @Override
-    protected void createNewSurfaceInfo() {
-        x11surfaceinfo = JAWTX11DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
-    }
+	@Override
+	protected void createNewSurfaceInfo() {
+		x11surfaceinfo = JAWTX11DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
+	}
 
-    @Override
-    protected void initContext() {
-        display = x11surfaceinfo.display();
+	@Override
+	protected void initContext() {
+		display = x11surfaceinfo.display();
 
-        int[] xvi_attrs = new int[]{
-                GLX.GLX_RGBA,
-                GLX.GLX_DOUBLEBUFFER,
-                0};
+		int[] xvi_attrs = new int[]{
+				GLX.GLX_RGBA,
+				GLX.GLX_DOUBLEBUFFER,
+				0};
 
-        int screen = X11.XDefaultScreen(display);
-        XVisualInfo xvi = GLX.glXChooseVisual(display, screen, xvi_attrs);
+		int screen = X11.XDefaultScreen(display);
+		XVisualInfo xvi = GLX.glXChooseVisual(display, screen, xvi_attrs);
 
 
 		context = GLX.glXCreateContext(display, xvi, 0, true);
 		if (context == 0) throw new Error("Could not create GLX context!");
 	}
 
-    @Override
-    public void stop() {
-        GLX.glXDestroyContext(display, context);
-    }
+	@Override
+	public void stop() {
+		GLX.glXDestroyContext(display, context);
+	}
 
-    @Override
-    protected void swapBuffers() {
-        GLX.glXSwapBuffers(display,x11surfaceinfo.drawable());
-    }
+	@Override
+	protected void swapBuffers() {
+		GLX.glXSwapBuffers(display,x11surfaceinfo.drawable());
+	}
 
-    @Override
-    protected void makeCurrent(boolean draw) {
-        if(draw) {
-            GLX.glXMakeCurrent(display, x11surfaceinfo.drawable(), context);
-        } else {
-            GLX.glXMakeCurrent(display, 0, 0);
-        }
-    }
+	@Override
+	protected void makeCurrent(boolean draw) {
+		if(draw) {
+			GLX.glXMakeCurrent(display, x11surfaceinfo.drawable(), context);
+		} else {
+			GLX.glXMakeCurrent(display, 0, 0);
+		}
+	}
 }

@@ -23,65 +23,65 @@ import go.graphics.swing.GLContainer;
 
 public class WGLContextCreator extends JAWTContextCreator {
 
-    private JAWTWin32DrawingSurfaceInfo win32surfaceinfo;
-    private long hwnd;
-    private long hdc;
-    private long context;
-    private int pixel_format;
+	private JAWTWin32DrawingSurfaceInfo win32surfaceinfo;
+	private long hwnd;
+	private long hdc;
+	private long context;
+	private int pixel_format;
 
-    public WGLContextCreator(GLContainer container) {
-        super(container);
+	public WGLContextCreator(GLContainer container) {
+		super(container);
 		// do we have gdi and wgl support ?
 		GDI32.getLibrary().getName();
-    }
+	}
 
 
-    @Override
-    public void stop() {
-        WGL.wglDeleteContext(context);
-    }
+	@Override
+	public void stop() {
+		WGL.wglDeleteContext(context);
+	}
 
-    @Override
-    protected void swapBuffers() {
-        GDI32.SwapBuffers(hdc);
-    }
+	@Override
+	protected void swapBuffers() {
+		GDI32.SwapBuffers(hdc);
+	}
 
-    @Override
-    protected void makeCurrent(boolean draw) {
-        if(draw) {
-            WGL.wglMakeCurrent(hdc, context);
-        } else {
-            WGL.wglMakeCurrent(0, 0);
-        }
-    }
+	@Override
+	protected void makeCurrent(boolean draw) {
+		if(draw) {
+			WGL.wglMakeCurrent(hdc, context);
+		} else {
+			WGL.wglMakeCurrent(0, 0);
+		}
+	}
 
-    @Override
-    protected void initContext() {
-        hwnd = win32surfaceinfo.hwnd();
-        hdc = win32surfaceinfo.hdc();
+	@Override
+	protected void initContext() {
+		hwnd = win32surfaceinfo.hwnd();
+		hdc = win32surfaceinfo.hdc();
 
 
-        PIXELFORMATDESCRIPTOR pfd = PIXELFORMATDESCRIPTOR.calloc();
-        pfd.dwFlags(GDI32.PFD_DRAW_TO_WINDOW | GDI32.PFD_SUPPORT_OPENGL | GDI32.PFD_DOUBLEBUFFER);
-        pfd.iPixelType(GDI32.PFD_TYPE_RGBA);
-        pfd.cColorBits((byte) 32);
+		PIXELFORMATDESCRIPTOR pfd = PIXELFORMATDESCRIPTOR.calloc();
+		pfd.dwFlags(GDI32.PFD_DRAW_TO_WINDOW | GDI32.PFD_SUPPORT_OPENGL | GDI32.PFD_DOUBLEBUFFER);
+		pfd.iPixelType(GDI32.PFD_TYPE_RGBA);
+		pfd.cColorBits((byte) 32);
 
-        pfd.cDepthBits((byte) 24);
+		pfd.cDepthBits((byte) 24);
 
 		pixel_format = GDI32.ChoosePixelFormat(hdc, pfd);
 		if(pixel_format == 0) throw new Error("Could not find pixel format!");
-        GDI32.SetPixelFormat(hdc, pixel_format, pfd);
+		GDI32.SetPixelFormat(hdc, pixel_format, pfd);
 
-        pfd.free();
+		pfd.free();
 
-        context = WGL.wglCreateContext(hdc);
+		context = WGL.wglCreateContext(hdc);
 		if(context == 0) throw new Error("Could not create WGL context!");
-    }
+	}
 
-    @Override
-    protected void createNewSurfaceInfo() {
-        win32surfaceinfo = JAWTWin32DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
-        hwnd = win32surfaceinfo.hwnd();
-        hdc = win32surfaceinfo.hdc();
-    }
+	@Override
+	protected void createNewSurfaceInfo() {
+		win32surfaceinfo = JAWTWin32DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
+		hwnd = win32surfaceinfo.hwnd();
+		hdc = win32surfaceinfo.hdc();
+	}
 }

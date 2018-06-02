@@ -33,33 +33,33 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	private boolean offscreen = true;
 	private boolean clear_offscreen = true;
-    private boolean continue_run = true;
+	private boolean continue_run = true;
 
 	protected boolean ignore_resize = false;
-    protected BufferedImage bi = null;
-    protected IntBuffer pixels;
+	protected BufferedImage bi = null;
+	protected IntBuffer pixels;
 
-    private Thread render_thread;
+	private Thread render_thread;
 
-    public AsyncContextCreator(GLContainer container)  {
-        super(container);
-    }
+	public AsyncContextCreator(GLContainer container)  {
+		super(container);
+	}
 
-    @Override
-    public void stop() {
-        continue_run = false;
-    }
+	@Override
+	public void stop() {
+		continue_run = false;
+	}
 
-    @Override
-    public void initSpecific() {
-        JPanel panel = new JPanel() {
-            public void paintComponent(Graphics graphics) {
-                super.paintComponent(graphics);
+	@Override
+	public void initSpecific() {
+		JPanel panel = new JPanel() {
+			public void paintComponent(Graphics graphics) {
+				super.paintComponent(graphics);
 
-                if(first_draw) {
-                    SwingUtilities.windowForComponent(this).addKeyListener(new GOSwingEventConverter(parent, parent));
-                    first_draw = false;
-                }
+				if(first_draw) {
+					SwingUtilities.windowForComponent(this).addKeyListener(new GOSwingEventConverter(parent, parent));
+					first_draw = false;
+				}
 
 				if(offscreen) {
 					synchronized (wnd_lock) {
@@ -69,43 +69,43 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				} else {
 					graphics.drawString("Press m to enable offscreen transfer", width/3, height/2);
 				}
-            }
-        };
+			}
+		};
 
-        canvas = panel;
-        render_thread = new Thread(this);
-        render_thread.start();
+		canvas = panel;
+		render_thread = new Thread(this);
+		render_thread.start();
 
 
-    }
+	}
 
-    @Override
-    public void repaint() {
-        canvas.repaint();
-    }
+	@Override
+	public void repaint() {
+		canvas.repaint();
+	}
 
-    @Override
-    public void requestFocus() {
-        canvas.requestFocus();
-    }
+	@Override
+	public void requestFocus() {
+		canvas.requestFocus();
+	}
 
-    public abstract void async_init();
+	public abstract void async_init();
 
-    public abstract void async_set_size(int width, int height);
+	public abstract void async_set_size(int width, int height);
 
-    public abstract void async_refresh();
+	public abstract void async_refresh();
 
-    public abstract void async_swapbuffers();
+	public abstract void async_swapbuffers();
 
-    public abstract void async_stop();
+	public abstract void async_stop();
 
-    @Override
-    public void run() {
-        async_init();
+	@Override
+	public void run() {
+		async_init();
 
-        parent.init();
+		parent.init();
 
-        while(continue_run) {
+		while(continue_run) {
 			if (change_res) {
 				if(!ignore_resize) {
 					width = new_width;
@@ -143,10 +143,10 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				}
 				async_swapbuffers();
 			}
-        }
+		}
 
-        async_stop();
-    }
+		async_stop();
+	}
 
 	@Override
 	public void changeDrawMode() {

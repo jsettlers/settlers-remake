@@ -27,86 +27,86 @@ import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public abstract class JAWTContextCreator extends ContextCreator {
 
-    protected JAWT jawt = JAWT.create();
-    protected JAWTDrawingSurface surface;
-    protected JAWTDrawingSurfaceInfo surfaceinfo;
+	protected JAWT jawt = JAWT.create();
+	protected JAWTDrawingSurface surface;
+	protected JAWTDrawingSurfaceInfo surfaceinfo;
 
-    public JAWTContextCreator(GLContainer container) {
-        super(container);
+	public JAWTContextCreator(GLContainer container) {
+		super(container);
 
-        jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
-        JAWTFunctions.JAWT_GetAWT(jawt);
+		jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
+		JAWTFunctions.JAWT_GetAWT(jawt);
 
-    }
+	}
 
-    @Override
-    public abstract void stop();
+	@Override
+	public abstract void stop();
 
-    @Override
-    public void initSpecific() {
-        canvas = new Canvas() {
-            @Override
-            public void update(Graphics graphics) {
-                if (isShowing()) paint(graphics);
-            }
+	@Override
+	public void initSpecific() {
+		canvas = new Canvas() {
+			@Override
+			public void update(Graphics graphics) {
+				if (isShowing()) paint(graphics);
+			}
 
-            public void paint(Graphics graphics) {
-                surface = JAWTFunctions.JAWT_GetDrawingSurface(jawt.GetDrawingSurface(), canvas);
+			public void paint(Graphics graphics) {
+				surface = JAWTFunctions.JAWT_GetDrawingSurface(jawt.GetDrawingSurface(), canvas);
 
-                JAWTFunctions.JAWT_DrawingSurface_Lock(surface.Lock(), surface);
-                surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface.GetDrawingSurfaceInfo(), surface);
-                createNewSurfaceInfo();
+				JAWTFunctions.JAWT_DrawingSurface_Lock(surface.Lock(), surface);
+				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface.GetDrawingSurfaceInfo(), surface);
+				createNewSurfaceInfo();
 
-                if (first_draw) {
-                    new GOSwingEventConverter(this, parent);
+				if (first_draw) {
+					new GOSwingEventConverter(this, parent);
 
-                    initContext();
-                    makeCurrent(true);
+					initContext();
+					makeCurrent(true);
 
-                    parent.init();
+					parent.init();
 
-                    first_draw = false;
-                }
-                makeCurrent(true);
+					first_draw = false;
+				}
+				makeCurrent(true);
 
-                synchronized (wnd_lock) {
-                    if (change_res) {
-                        width = new_width;
-                        height = new_height;
+				synchronized (wnd_lock) {
+					if (change_res) {
+						width = new_width;
+						height = new_height;
 
-                        parent.resize_gl(width, height);
-                        change_res = false;
-                    }
-                }
+						parent.resize_gl(width, height);
+						change_res = false;
+					}
+				}
 
-                parent.draw();
+				parent.draw();
 
-                swapBuffers();
-                makeCurrent(false);
-                JAWTFunctions.JAWT_DrawingSurface_Unlock(surface.Unlock(), surface);
+				swapBuffers();
+				makeCurrent(false);
+				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface.Unlock(), surface);
 
-                JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surface.FreeDrawingSurfaceInfo(), surfaceinfo);
-                JAWTFunctions.JAWT_FreeDrawingSurface(jawt.FreeDrawingSurface(), surface);
-            }
-        };
-    }
+				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surface.FreeDrawingSurfaceInfo(), surfaceinfo);
+				JAWTFunctions.JAWT_FreeDrawingSurface(jawt.FreeDrawingSurface(), surface);
+			}
+		};
+	}
 
-    protected abstract void swapBuffers();
+	protected abstract void swapBuffers();
 
-    protected abstract void makeCurrent(boolean draw);
+	protected abstract void makeCurrent(boolean draw);
 
-    protected abstract void initContext();
+	protected abstract void initContext();
 
-    protected abstract void createNewSurfaceInfo();
+	protected abstract void createNewSurfaceInfo();
 
-    @Override
-    public void repaint() {
-        canvas.repaint();
-    }
+	@Override
+	public void repaint() {
+		canvas.repaint();
+	}
 
-    @Override
-    public void requestFocus() {
-        canvas.requestFocus();
+	@Override
+	public void requestFocus() {
+		canvas.requestFocus();
 
-    }
+	}
 }

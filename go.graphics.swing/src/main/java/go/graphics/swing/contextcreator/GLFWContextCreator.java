@@ -36,43 +36,43 @@ public class GLFWContextCreator extends AsyncContextCreator {
 
 	private final GLFWEventConverter event_converter;
 
-    public GLFWContextCreator(GLContainer container) {
-        super(container);
+	public GLFWContextCreator(GLContainer container) {
+		super(container);
 		event_converter = new GLFWEventConverter();
-    }
+	}
 
-    private long glfw_wnd;
+	private long glfw_wnd;
 
-    public void async_init() {
-        GLFWErrorCallback ec = GLFWErrorCallback.createPrint(System.err);;
-        GLFW.glfwSetErrorCallback(ec);
+	public void async_init() {
+		GLFWErrorCallback ec = GLFWErrorCallback.createPrint(System.err);;
+		GLFW.glfwSetErrorCallback(ec);
 
 		if(!GLFW.glfwInit()) throw new Error("glfwInit() failed!");
 
-        glfw_wnd = GLFW.glfwCreateWindow(width + 1, width + 1, "lwjgl-offscreen", 0, 0);
-        GLFW.glfwMakeContextCurrent(glfw_wnd);
-        GLFW.glfwSwapInterval(0);
+		glfw_wnd = GLFW.glfwCreateWindow(width + 1, width + 1, "lwjgl-offscreen", 0, 0);
+		GLFW.glfwMakeContextCurrent(glfw_wnd);
+		GLFW.glfwSwapInterval(0);
 
 		event_converter.registerCallbacks();
-    }
+	}
 
-    public void async_set_size(int width, int height) {
-        GLFW.glfwSetWindowSize(glfw_wnd, width, height);
+	public void async_set_size(int width, int height) {
+		GLFW.glfwSetWindowSize(glfw_wnd, width, height);
 
-    }
+	}
 
 
-    public void async_refresh() {
-        GLFW.glfwPollEvents();
-    }
+	public void async_refresh() {
+		GLFW.glfwPollEvents();
+	}
 
-    public void async_swapbuffers() {
-        GLFW.glfwSwapBuffers(glfw_wnd);
-    }
+	public void async_swapbuffers() {
+		GLFW.glfwSwapBuffers(glfw_wnd);
+	}
 
-    public void async_stop() {
-        GLFW.glfwTerminate();
-    }
+	public void async_stop() {
+		GLFW.glfwTerminate();
+	}
 
 	private static final HashMap<Integer, String> keys = new HashMap<>();
 

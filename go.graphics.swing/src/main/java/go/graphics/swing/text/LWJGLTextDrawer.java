@@ -44,7 +44,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	private final GeometryHandle[] rects = new GeometryHandle[256];
 	private final TextureHandle font_tex;
-    private final int line_height;
+	private final int line_height;
 	private final int tex_height;
 	private final int tex_width;
 	private final int[] char_widths;
@@ -134,7 +134,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 		short[] short_tex_data = new short[tex_width*tex_height];
 
-        double f85 = 31.0 / 255.0;
+		double f85 = 31.0 / 255.0;
 
 		for(int x = 0;x != tex_width;x++) {
 			for (int y = 0; y != tex_height; y++) {
@@ -143,12 +143,12 @@ public final class LWJGLTextDrawer implements TextDrawer {
 				short g = (short) (((pixel >> 8) & 0xFF)*f85);
 				short r = (short) (((pixel >> 16) & 0xFF)*f85);
 				short a = (short) ((pixel >> 24) != 0 ? 1 : 0);
-                short_tex_data[y*tex_width+x] = (short) ((a&1) | (b<<1) | (g<<6) | (r<<11));
+				short_tex_data[y*tex_width+x] = (short) ((a&1) | (b<<1) | (g<<6) | (r<<11));
 			}
 		}
-        ShortBuffer bfr = ShortBuffer.wrap(short_tex_data);
+		ShortBuffer bfr = ShortBuffer.wrap(short_tex_data);
 
-        font_tex = drawContext.generateTexture(max_len, tex_height, bfr);
+		font_tex = drawContext.generateTexture(max_len, tex_height, bfr);
 	}
 
 	/*
@@ -158,7 +158,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 	 */
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
-	    drawString(cx-(getWidth(text)/2), cy-(getHeight(text)/2), text);
+		drawString(cx-(getWidth(text)/2), cy-(getHeight(text)/2), text);
 	}
 
 	/**
@@ -169,9 +169,9 @@ public final class LWJGLTextDrawer implements TextDrawer {
 	}
 
 	public void drawChar(float x, float y, char c) {
-        drawContext.color(color.getRed()/255, color.getGreen()/255, color.getBlue()/255, color.getAlpha()/255);
-        drawContext.glPushMatrix();
-        drawContext.glTranslatef(x, y, 0);
+		drawContext.color(color.getRed()/255, color.getGreen()/255, color.getBlue()/255, color.getAlpha()/255);
+		drawContext.glPushMatrix();
+		drawContext.glTranslatef(x, y, 0);
 		try {
 			drawContext.drawQuadWithTexture(font_tex, rects[c]);
 		} catch (IllegalBufferException e) {
@@ -215,12 +215,12 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	@Override
 	public float getHeight(String string) {
-        int tmp_height = line_height;
-        for(int i = 0;i != string.length();i++) {
-            if(string.charAt(i) == '\n') {
-                tmp_height += line_height;
-            }
-        }
+		int tmp_height = line_height;
+		for(int i = 0;i != string.length();i++) {
+			if(string.charAt(i) == '\n') {
+				tmp_height += line_height;
+			}
+		}
 		return tmp_height;
 	}
 }

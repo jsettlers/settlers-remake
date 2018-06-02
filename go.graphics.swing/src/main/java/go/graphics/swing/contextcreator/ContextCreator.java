@@ -22,54 +22,54 @@ import go.graphics.swing.GLContainer;
 
 public abstract class ContextCreator implements ComponentListener{
 
-    public ContextCreator(GLContainer ac) {
-        parent = ac;
-    }
+	public ContextCreator(GLContainer ac) {
+		parent = ac;
+	}
 
-    protected int width = 1, height = 1;
-    protected int new_width = 1, new_height = 1;
-    protected boolean change_res = true;
-    protected Object wnd_lock = new Object();
-    protected boolean first_draw = true;
-    protected Component canvas;
-    protected GLContainer parent;
-
-
-    public abstract void stop();
-    public abstract void initSpecific();
-
-    public abstract void repaint();
-
-    public abstract void requestFocus();
+	protected int width = 1, height = 1;
+	protected int new_width = 1, new_height = 1;
+	protected boolean change_res = true;
+	protected Object wnd_lock = new Object();
+	protected boolean first_draw = true;
+	protected Component canvas;
+	protected GLContainer parent;
 
 
-    public void init() {
-        initSpecific();
+	public abstract void stop();
+	public abstract void initSpecific();
 
-        parent.addCanvas(canvas);
+	public abstract void repaint();
 
-        canvas.addComponentListener(this);
-    }
+	public abstract void requestFocus();
 
-    @Override
-    public void componentResized(ComponentEvent componentEvent) {
-        Component cmp = componentEvent.getComponent();
-        synchronized (wnd_lock) {
-            new_width = cmp.getWidth();
-            new_height = cmp.getHeight();
-            change_res = true;
 
-            if(new_width == 0) new_width = 1;
-            if(new_height == 0) new_height = 1;
-        }
-    }
+	public void init() {
+		initSpecific();
 
-    @Override
-    public void componentHidden(ComponentEvent componentEvent) {}
+		parent.addCanvas(canvas);
 
-    @Override
-    public void componentMoved(ComponentEvent componentEvent) {}
+		canvas.addComponentListener(this);
+	}
 
-    @Override
-    public void componentShown(ComponentEvent componentEvent) {}
+	@Override
+	public void componentResized(ComponentEvent componentEvent) {
+		Component cmp = componentEvent.getComponent();
+		synchronized (wnd_lock) {
+			new_width = cmp.getWidth();
+			new_height = cmp.getHeight();
+			change_res = true;
+
+			if(new_width == 0) new_width = 1;
+			if(new_height == 0) new_height = 1;
+		}
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent componentEvent) {}
+
+	@Override
+	public void componentMoved(ComponentEvent componentEvent) {}
+
+	@Override
+	public void componentShown(ComponentEvent componentEvent) {}
 }
