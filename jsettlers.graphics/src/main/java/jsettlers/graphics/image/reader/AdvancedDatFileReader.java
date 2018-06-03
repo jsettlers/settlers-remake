@@ -336,11 +336,15 @@ public class AdvancedDatFileReader implements DatFileReader {
 				for (; i < settlerStarts.length; i++) {
 					shadowStarts[i] = -1;
 				}
-				if (shadowDifference == 33) { // correct shadows in file 1:
+				if (shadowDifference == 33) { // change shadows in file 1:
 					shadowStarts[26] = -1; // wave gets no shadow
 					shadowStarts[31] = shadowStarts[30]; // cuttable stone
 					shadowStarts[91] = -1; // work area marker pole gets no shadow
 					shadowStarts[92] = shadowStarts[90]; // building site pole
+				} else if (shadowDifference == 26) { // change shadows in file 13:
+					for (i = 0; i < shadowStarts.length; i++) {
+						shadowStarts[i] = shadowStarts[i + 3];
+					}
 				}
 			}
 		}
