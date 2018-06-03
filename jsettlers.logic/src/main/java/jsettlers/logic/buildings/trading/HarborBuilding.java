@@ -96,10 +96,10 @@ public class HarborBuilding extends TradingBuilding implements IDockBuilding {
 			return;
 		}
 
-		removeDock();
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
+		removeDock();
 
 		dockPosition = newDockPosition;
 		grid.setDock(dockPosition, this.getPlayer());
