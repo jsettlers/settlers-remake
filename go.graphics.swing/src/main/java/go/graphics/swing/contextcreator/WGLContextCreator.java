@@ -65,6 +65,7 @@ public class WGLContextCreator extends JAWTContextCreator {
 		pfd.dwFlags(GDI32.PFD_DRAW_TO_WINDOW | GDI32.PFD_SUPPORT_OPENGL | GDI32.PFD_DOUBLEBUFFER);
 		pfd.iPixelType(GDI32.PFD_TYPE_RGBA);
 		pfd.cColorBits((byte) 32);
+		pfd.cStencilBits((byte) 1);
 
 		pfd.cDepthBits((byte) 24);
 

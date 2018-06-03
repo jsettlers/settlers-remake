@@ -15,7 +15,9 @@
 package go.graphics.swing.contextcreator;
 
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 
 import go.graphics.swing.GLContainer;
@@ -34,7 +36,10 @@ public class JOGLContextCreator extends ContextCreator implements GLEventListene
 
 	@Override
 	public void initSpecific() {
-		canvas = new GLJPanel();
+		GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
+		caps.setStencilBits(1);
+
+		canvas = new GLJPanel(caps);
 		((GLJPanel)canvas).addGLEventListener(this);
 
 		new GOSwingEventConverter(canvas, parent);

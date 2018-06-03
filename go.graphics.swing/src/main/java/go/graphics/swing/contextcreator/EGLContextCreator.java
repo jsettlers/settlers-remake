@@ -53,6 +53,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 
 
 		int[] attrs = {EGL13.EGL_CONFORMANT, EGL14.EGL_OPENGL_BIT,
+				EGL10.EGL_STENCIL_SIZE, 1,
 				EGL10.EGL_NONE};
 		PointerBuffer cfgs = BufferUtils.createPointerBuffer(1);
 		int[] num_config = new int[1];
