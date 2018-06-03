@@ -48,27 +48,20 @@ class MinimapShapeCalculator {
                 0,
                 // mid right
                 maxviewx,
-                Math.min(
-                        (Math.max(maxviewx,
-                                (minviewy / height * stride + 1) * width) - width)
-                                / width / stride * height,
-                        maxviewy),
+                Math.max(minviewy, (maxviewx - width) / width / stride * height),
                 0,
                 // top right
                 maxviewx,
                 maxviewy,
                 0,
                 // top left
-                Math.max(minviewx, minviewy / height * stride * width),
+                Math.max(minviewx, (maxviewy / height * stride ) * width),
                 maxviewy,
                 0,
                 // mid left
-                Math.min(minviewx, Math.max(minviewx, maxviewy / height * stride * width)),
-                Math.max(
-                        Math.min(minviewy,
-                                (maxviewy / height * stride + 1) * width) - height
-                                / width / stride * height,
-                        minviewy),
+                minviewx,
+                Math.min(maxviewy,
+                        minviewx  / stride / width * height + 10),
                 0,
         };
         return points;
