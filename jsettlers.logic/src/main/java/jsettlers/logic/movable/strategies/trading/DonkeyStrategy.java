@@ -29,8 +29,8 @@ import jsettlers.logic.movable.strategies.trading.ITradeBuilding.MaterialTypeWit
 public class DonkeyStrategy extends TradingStrategy {
 	private static final short WAYPOINT_SEARCH_RADIUS = 20;
 
-	private Optional<EMaterialType> materialType1;
-	private Optional<EMaterialType> materialType2;
+	private EMaterialType materialType1;
+	private EMaterialType materialType2;
 
 	public DonkeyStrategy(Movable movable) {
 		super(movable);
@@ -47,8 +47,8 @@ public class DonkeyStrategy extends TradingStrategy {
 		} else {
 			super.setMaterial(EMaterialType.BASKET);
 
-			this.materialType1 = materialType1;
-			this.materialType2 = materialType2;
+			this.materialType1 = materialType1.orElse(null);
+			this.materialType2 = materialType2.orElse(null);
 
 			return true;
 		}
@@ -57,13 +57,13 @@ public class DonkeyStrategy extends TradingStrategy {
 
 	protected void dropMaterialIfPossible() {
 		if (movable.getMaterial() != EMaterialType.NO_MATERIAL) {
-			if (materialType1.isPresent()) {
-				super.getGrid().dropMaterial(movable.getPosition(), materialType1.get(), true, true);
-				materialType1 = Optional.empty();
+			if (materialType1 != null) {
+				super.getGrid().dropMaterial(movable.getPosition(), materialType1, true, true);
+				materialType1 = null;
 			}
-			if (materialType2.isPresent()) {
-				super.getGrid().dropMaterial(movable.getPosition(), materialType2.get(), true, true);
-				materialType2 = Optional.empty();
+			if (materialType2 != null) {
+				super.getGrid().dropMaterial(movable.getPosition(), materialType2, true, true);
+				materialType2 = null;
 			}
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
