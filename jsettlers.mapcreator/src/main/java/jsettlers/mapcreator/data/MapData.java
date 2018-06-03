@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,19 +29,19 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
-import jsettlers.logic.map.loading.data.IMapData;
-import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
-import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
-import jsettlers.logic.map.loading.data.objects.MapDataObject;
-import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
-import jsettlers.logic.map.loading.data.objects.MapTreeObject;
-import jsettlers.logic.map.loading.data.objects.MovableObject;
-import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
 import jsettlers.logic.map.loading.newmap.FreshMapSerializer;
 import jsettlers.logic.map.loading.newmap.FreshMapSerializer.IMapDataReceiver;
 import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
@@ -62,38 +62,38 @@ import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition
 
 /**
  * This is the map data of a map that is beeing created by the editor.
- * 
+ *
  * @author michael
  */
 public class MapData implements IMapData {
 	private final int width;
 	private final int height;
 
-	private final ELandscapeType[][] landscapes;
-	private final byte[][] heights;
+	private final ELandscapeType[][]  landscapes;
+	private final byte[][]            heights;
 	private final ObjectContainer[][] objects;
 
 	private final EResourceType[][] resources;
-	private final byte[][] resourceAmount;
-	private final short[][] blockedPartitions;
+	private final byte[][]          resourceAmount;
+	private final short[][]         blockedPartitions;
 
 	private MapDataDelta undoDelta;
-	private int playerCount;
+	private int          playerCount;
 
 	/**
 	 * Start position of all player, will be converted to a border in ValidatePlayerStartPosition
-	 * 
+	 *
 	 * @see ValidatePlayerStartPosition
 	 */
 	private ShortPoint2D[] playerStarts;
 
-	private byte[][] lastPlayers;
-	private boolean[][] lastBorders;
+	private       byte[][]    lastPlayers;
+	private       boolean[][] lastBorders;
 	private final boolean[][] doneBuffer;
-	private boolean[][] failpoints;
+	private       boolean[][] failpoints;
 
-	private final LandscapeFader fader = new LandscapeFader();
-	private IGraphicsBackgroundListener backgroundListener;
+	private final LandscapeFader              fader = new LandscapeFader();
+	private       IGraphicsBackgroundListener backgroundListener;
 
 	public MapData(int width, int height, int playerCount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
@@ -169,7 +169,7 @@ public class MapData implements IMapData {
 
 	/**
 	 * Fills an area with the given landscape type.
-	 * 
+	 *
 	 * @param type
 	 * @param area
 	 */
@@ -315,12 +315,12 @@ public class MapData implements IMapData {
 	private static class FadeTask {
 
 		private final ELandscapeType type;
-		private final int y;
-		private final int x;
+		private final int            y;
+		private final int            x;
 
 		/**
 		 * A task to set the landscape at a given point to the landscpae close to type.
-		 * 
+		 *
 		 * @param x
 		 *            The x position where to fade
 		 * @param y
@@ -368,6 +368,7 @@ public class MapData implements IMapData {
 
 	public void placeObject(MapDataObject object, int x, int y) {
 		ObjectContainer container;
+		boolean isShip = false;
 		ProtectContainer protector = ProtectContainer.getInstance();
 		Set<ELandscapeType> landscapes = null;
 		if (object instanceof MapTreeObject) {
@@ -375,7 +376,9 @@ public class MapData implements IMapData {
 		} else if (object instanceof StoneMapDataObject) {
 			container = new StoneObjectContainer((StoneMapDataObject) object);
 		} else if (object instanceof MovableObject) {
-			container = new MovableObjectContainer((MovableObject) object, x, y);
+			MovableObject movableObject = (MovableObject) object;
+			container = new MovableObjectContainer(movableObject, x, y);
+			isShip = movableObject.getType().isShip();
 		} else if (object instanceof StackMapDataObject) {
 			container = new StackContainer((StackMapDataObject) object);
 		} else if (object instanceof BuildingMapDataObject) {
@@ -388,38 +391,38 @@ public class MapData implements IMapData {
 			return; // error!
 		}
 
-		boolean allowed = true;
 		ShortPoint2D start = new ShortPoint2D(x, y);
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
-			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null || !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
-					|| (landscapes != null && !landscapes.contains(getLandscape(abs.x, abs.y)))) {
-				allowed = false;
+			if (!contains(abs.x, abs.y)
+				|| objects[abs.x][abs.y] != null
+				|| (!isShip && !landscapeAllowsObjects(getLandscape(abs.x, abs.y)))
+				|| (landscapes != null && !landscapes.contains(getLandscape(abs.x, abs.y)))) {
+
+				return;
 			}
 		}
 
-		if (allowed) {
-			for (RelativePoint p : container.getProtectedArea()) {
-				ShortPoint2D abs = p.calculatePoint(start);
-				objects[abs.x][abs.y] = protector;
-				undoDelta.removeObject(abs.x, abs.y);
-			}
-			objects[x][y] = container;
-			undoDelta.removeObject(x, y);
+		for (RelativePoint p : container.getProtectedArea()) {
+			ShortPoint2D abs = p.calculatePoint(start);
+			objects[abs.x][abs.y] = protector;
+			undoDelta.removeObject(abs.x, abs.y);
 		}
+		objects[x][y] = container;
+		undoDelta.removeObject(x, y);
 	}
 
 	public void setHeight(int x, int y, int height) {
-		byte safeheight;
+		byte safeHeight;
 		if (height >= Byte.MAX_VALUE) {
-			safeheight = Byte.MAX_VALUE;
+			safeHeight = Byte.MAX_VALUE;
 		} else if (height <= 0) {
-			safeheight = 0;
+			safeHeight = 0;
 		} else {
-			safeheight = (byte) height;
+			safeHeight = (byte) height;
 		}
 		undoDelta.addHeightChange(x, y, heights[x][y]);
-		heights[x][y] = safeheight;
+		heights[x][y] = safeHeight;
 
 		if (backgroundListener != null) {
 			backgroundListener.backgroundChangedAt((short) x, (short) y);
@@ -428,7 +431,7 @@ public class MapData implements IMapData {
 
 	private static boolean landscapeAllowsObjects(ELandscapeType type) {
 		return !type.isWater() && type != ELandscapeType.SNOW && type != ELandscapeType.RIVER1 && type != ELandscapeType.RIVER2
-				&& type != ELandscapeType.RIVER3 && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
+			&& type != ELandscapeType.RIVER3 && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
 	}
 
 	@Override
@@ -479,7 +482,7 @@ public class MapData implements IMapData {
 
 	/**
 	 * Applys a map delta. Does not do checking, so use with care!
-	 * 
+	 *
 	 * @param delta
 	 */
 	public MapDataDelta apply(MapDataDelta delta) {
@@ -586,7 +589,7 @@ public class MapData implements IMapData {
 
 	/**
 	 * Read serialized file
-	 * 
+	 *
 	 * @param in
 	 *            input stream
 	 * @return MapData
@@ -636,9 +639,9 @@ public class MapData implements IMapData {
 
 	/**
 	 * Start position of a player, will be converted to a border in ValidatePlayerStartPosition
-	 * 
+	 *
 	 * @see ValidatePlayerStartPosition
-	 * 
+	 *
 	 * @param activePlayer
 	 *            Player
 	 * @param pos
@@ -659,7 +662,7 @@ public class MapData implements IMapData {
 
 	/**
 	 * Set the maximum player count
-	 * 
+	 *
 	 * @param maxPlayer
 	 *            Min: 1, Max: CommonConstants.MAX_PLAYERS
 	 */
@@ -725,7 +728,8 @@ public class MapData implements IMapData {
 		}
 
 		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockedSet,
-				IBlockingProvider.DEFAULT_IMPLEMENTATION);
+			IBlockingProvider.DEFAULT_IMPLEMENTATION
+		);
 		partitionCalculator.calculatePartitions();
 
 		for (short y = 0; y < height; y++) {

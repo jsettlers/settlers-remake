@@ -147,7 +147,7 @@ public enum EMapObjectType {
 	INFORMABLE_MAP_OBJECT,
 
 	FERRY,
-	CARGO_BOAT;
+	CARGO_SHIP;
 
 	public static final EMapObjectType[] VALUES = EMapObjectType.values();
 	public final byte ordinal;

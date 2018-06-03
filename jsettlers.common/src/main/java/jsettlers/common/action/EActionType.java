@@ -347,11 +347,11 @@ public enum EActionType {
 	MAKE_FERRY,
 
 	/**
-	 * Order a cargo boat.
+	 * Order a cargo ship.
 	 *
 	 * @see PointAction
 	 */
-	MAKE_CARGO_BOAT,
+	MAKE_CARGO_SHIP,
 
 	/**
 	 * Passengers should leave the ferry.

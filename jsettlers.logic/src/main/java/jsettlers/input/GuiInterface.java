@@ -379,7 +379,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				orderShip(EShipType.FERRY);
 				break;
 
-			case MAKE_CARGO_BOAT:
+			case MAKE_CARGO_SHIP:
 				orderShip(EShipType.CARGO_SHIP);
 				break;
 
