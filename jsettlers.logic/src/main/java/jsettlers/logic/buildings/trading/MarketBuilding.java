@@ -16,13 +16,14 @@ package jsettlers.logic.buildings.trading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import java8.util.stream.Stream;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
@@ -34,8 +35,6 @@ import static java8.util.stream.StreamSupport.stream;
  *
  */
 public class MarketBuilding extends TradingBuilding {
-	private static final long serialVersionUID = 4979115926871683024L;
-
 	private static final List<MarketBuilding> ALL_MARKETS = new ArrayList<>();
 
 	public static Stream<MarketBuilding> getAllMarkets(final Player player) {
@@ -44,6 +43,15 @@ public class MarketBuilding extends TradingBuilding {
 
 	public static void clearState() {
 		ALL_MARKETS.clear();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ALL_MARKETS.addAll((Collection<? extends MarketBuilding>) ois.readObject());
+	}
+
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(ALL_MARKETS);
 	}
 
 	public MarketBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
@@ -56,10 +64,6 @@ public class MarketBuilding extends TradingBuilding {
 		return super.pos;
 	}
 
-	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		ois.defaultReadObject();
-		ALL_MARKETS.add(this);
-	}
 
 	@Override
 	public boolean isSeaTrading() {

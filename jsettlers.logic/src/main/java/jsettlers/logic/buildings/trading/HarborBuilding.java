@@ -16,7 +16,9 @@ package jsettlers.logic.buildings.trading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import java8.util.stream.Stream;
@@ -45,6 +47,15 @@ public class HarborBuilding extends TradingBuilding implements IDockBuilding {
 		ALL_HARBORS.clear();
 	}
 
+	@SuppressWarnings("unchecked")
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ALL_HARBORS.addAll((Collection<? extends HarborBuilding>) ois.readObject());
+	}
+
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(ALL_HARBORS);
+	}
+
 	private DockPosition dockPosition = null;
 
 	public HarborBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
@@ -52,15 +63,12 @@ public class HarborBuilding extends TradingBuilding implements IDockBuilding {
 		ALL_HARBORS.add(this);
 	}
 
+
 	@Override
 	public ShortPoint2D getWaypointsStartPosition() {
 		return dockPosition != null ? dockPosition.getWaterPosition() : null;
 	}
 
-	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		ois.defaultReadObject();
-		ALL_HARBORS.add(this);
-	}
 
 	@Override
 	public boolean isSeaTrading() {
