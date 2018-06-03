@@ -21,7 +21,8 @@
     <string name="skip_1_minute">Eine Minute vorspulen</string>
     <string name="save_string">Speichern</string>
     <string name="stop_string">Stop</string>
-    <string name="kill_string">Töten</string>
+    <string name="kill_string">Vernichten</string>
+    <string name="unload_string">Aussteigen</string>
     <string name="load_string">Laden</string>
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
@@ -53,6 +54,7 @@
     <string name="illegal_playercount_too_high">So viele Spieler können auf der Karte nicht spielen</string>
     <string name="illegal_playercount_too_low">So wenige Spieler können auf der Karte nicht spielen</string>
 
+    <string name="ask_destroy">Dieses Gebäude zerstören?</string>
     <string name="send">Senden</string>
     <string name="accept_start">Start erlauben</string>
     <string name="local_game_delete">Spielstand löschen</string>
@@ -117,6 +119,8 @@
     <string name="normal">Normale Geschwindigkeit</string>
 
     <string name="service_description">JSettlers Spiel-Service, welcher das aktuelle Spiel ausführt.</string>
+    <string name="dock">Dock</string>
+    <string name="destination">Ziel</string>
     <string name="global_stock_message">Die globalen Lagereinstellungen können nur in einer eigenen Siedlung gesetzt werden.</string>
     <string name="goods_stock_title">Globale Lagereinstellungen</string>
 </resources>

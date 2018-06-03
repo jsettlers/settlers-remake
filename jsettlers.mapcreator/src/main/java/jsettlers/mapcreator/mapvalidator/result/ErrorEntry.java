@@ -89,7 +89,7 @@ public class ErrorEntry extends AbstractErrorEntry {
 	/**
 	 * @return Position of the error
 	 */
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return pos;
 	}
 

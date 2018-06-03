@@ -34,7 +34,7 @@ public final class WorkerRequest extends WorkerCreationRequest implements ILocat
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return building.getDoor();
 	}
 
@@ -45,7 +45,7 @@ public final class WorkerRequest extends WorkerCreationRequest implements ILocat
 
 	@Override
 	public boolean isRequestAlive() {
-		return building.isNotDestroyed();
+		return !building.isDestroyed();
 	}
 
 	@Override

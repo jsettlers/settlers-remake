@@ -131,7 +131,6 @@ public class SimpleMessage implements IMessage {
 	 * @return THe messageLabel object
 	 */
 	public static IMessage cannotFindWork(IBuilding building) {
-		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, "cannot_find_work_" + building.getBuildingType(), (byte) -1, building.getPos());
+		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, "cannot_find_work_" + building.getBuildingType(), (byte) -1, building.getPosition());
 	}
-
 }

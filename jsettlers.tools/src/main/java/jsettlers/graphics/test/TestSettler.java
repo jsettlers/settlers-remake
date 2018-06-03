@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,6 +23,8 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+
+import java.util.ArrayList;
 
 public class TestSettler implements IMovable {
 
@@ -62,11 +64,6 @@ public class TestSettler implements IMovable {
 	@Override
 	public EMovableType getMovableType() {
 		return this.type;
-	}
-
-	@Override
-	public ShortPoint2D getPos() {
-		return this.position.getPos();
 	}
 
 	@Override
@@ -112,7 +109,37 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
+	public boolean isAlive() {
+		return false;
+	}
+
+	@Override
 	public final void stopOrStartWorking(boolean stop) {
+	}
+
+	@Override
+	public boolean isShip() {
+		return getMovableType().isShip();
+	}
+
+	@Override
+	public ArrayList<IMovable> getPassengers() {
+		return null;
+	}
+
+	@Override
+	public int getNumberOfCargoStacks() {
+		return 0;
+	}
+
+	@Override
+	public EMaterialType getCargoType(int stack) {
+		return null;
+	}
+
+	@Override
+	public int getCargoCount(int stack) {
+		return 0;
 	}
 
 	@Override
@@ -142,5 +169,10 @@ public class TestSettler implements IMovable {
 	@Override
 	public int getID() {
 		return 0;
+	}
+
+	@Override
+	public ShortPoint2D getPosition() {
+		return position.getPosition();
 	}
 }

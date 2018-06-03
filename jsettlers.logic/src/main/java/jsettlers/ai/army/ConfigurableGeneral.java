@@ -15,27 +15,23 @@
 package jsettlers.ai.army;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import java.util.function.BiFunction;
 
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.action.SetMaterialProductionAction.EMaterialProductionType;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.action.SetMaterialProductionAction.EMaterialProductionType;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
-import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
@@ -101,7 +97,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 				.filter(building -> building instanceof OccupyingBuilding)
 				.map(building -> (OccupyingBuilding) building)
 				.filter(building -> !building.isSetToBeFullyOccupied())
-				.forEach(building -> taskScheduler.scheduleTask(new ChangeTowerSoldiersGuiTask(player.playerId, building.getPos(), ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType.FULL, null)));
+				.forEach(building -> taskScheduler.scheduleTask(new ChangeTowerSoldiersGuiTask(player.playerId, building.getPosition(), ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType.FULL, null)));
 	}
 
 	private boolean attackIsPossible(SoldierPositions soldierPositions, SoldierPositions enemySoldierPositions, boolean infantryWouldDie) {

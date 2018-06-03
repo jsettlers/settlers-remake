@@ -35,7 +35,7 @@ public final class SoldierCreationRequest implements ILocatable, Serializable {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return barrack.getDoor();
 	}
 

@@ -48,7 +48,7 @@ public final class GeologistStrategy extends MovableStrategy {
 			return;
 
 		case GOING_TO_POS: {
-			ShortPoint2D pos = movable.getPos();
+			ShortPoint2D pos = movable.getPosition();
 
 			if (centerPos == null) {
 				this.centerPos = pos;
@@ -71,7 +71,7 @@ public final class GeologistStrategy extends MovableStrategy {
 			break;
 
 		case PLAYING_ACTION_2: {
-			ShortPoint2D pos = movable.getPos();
+			ShortPoint2D pos = movable.getPosition();
 			super.getGrid().setMarked(pos, false);
 			if (canWorkOnPos(pos)) {
 				executeAction(pos);
@@ -93,7 +93,7 @@ public final class GeologistStrategy extends MovableStrategy {
 		}
 		centerPos = null;
 
-		ShortPoint2D pos = movable.getPos();
+		ShortPoint2D pos = movable.getPosition();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE)) {
 			super.followPresearchedPath();
 			this.state = EGeologistState.GOING_TO_POS;
@@ -107,7 +107,7 @@ public final class GeologistStrategy extends MovableStrategy {
 		MutablePoint2D bestNeighbourPos = new MutablePoint2D(-1, -1);
 		MutableDouble bestNeighbourDistance = new MutableDouble(Double.MAX_VALUE); // distance from start point
 
-		HexGridArea.streamBorder(movable.getPos(), 2).filter((x, y) -> super.isValidPosition(x, y) && canWorkOnPos(x, y)).forEach((x, y) -> {
+		HexGridArea.streamBorder(movable.getPosition(), 2).filter((x, y) -> super.isValidPosition(x, y) && canWorkOnPos(x, y)).forEach((x, y) -> {
 			double distance = ShortPoint2D.getOnGridDist(x - centerPos.x, y - centerPos.y);
 			if (distance < bestNeighbourDistance.value) {
 				bestNeighbourDistance.value = distance;
@@ -166,7 +166,7 @@ public final class GeologistStrategy extends MovableStrategy {
 		if (pathTarget != null) {
 			super.getGrid().setMarked(pathTarget, false);
 		} else {
-			super.getGrid().setMarked(movable.getPos(), false);
+			super.getGrid().setMarked(movable.getPosition(), false);
 		}
 	}
 

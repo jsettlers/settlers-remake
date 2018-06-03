@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,15 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.trading;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import java8.util.Optional;
+import java8.util.stream.Collectors;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
@@ -25,33 +30,33 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiMaterialRequestSettings;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
+import jsettlers.logic.movable.strategies.trading.ITradeBuilding;
 import jsettlers.logic.player.Player;
 
-public class TradingBuilding extends Building implements IBuilding.ITrading {
+import static java8.util.stream.StreamSupport.stream;
+
+public abstract class TradingBuilding extends Building implements IBuilding.ITrading, ITradeBuilding {
 	private static final short WAYPOINT_SEARCH_RADIUS = (short) 20;
 
-	private static final long serialVersionUID = -1760409147232184087L;
-
-	private static final EPriority[] SUPPORTED_PRIORITIES = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
-
-	private final boolean isSeaTrading;
+	private static final EPriority[] SUPPORTED_PRIORITIES = new EPriority[]{
+		EPriority.LOW,
+		EPriority.HIGH,
+		EPriority.STOPPED};
 
 	/**
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
 	 */
 	private final MultiMaterialRequestSettings requestedMaterials = new MultiMaterialRequestSettings();
-	private final ShortPoint2D[] waypoints = new ShortPoint2D[EWaypointType.VALUES.length];
+	private final ShortPoint2D[]               waypoints          = new ShortPoint2D[EWaypointType.VALUES.length];
 
-	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {
+	TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(type, player, position, buildingsGrid);
-		this.isSeaTrading = isSeaTrading;
 	}
 
 	@Override
@@ -79,11 +84,6 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		return requestedMaterials.getRequestedAmount(materialType);
 	}
 
-	@Override
-	public boolean isSeaTrading() {
-		return isSeaTrading;
-	}
-
 	public void changeRequestedMaterial(EMaterialType materialType, int amount, boolean relative) {
 		long newValue = amount;
 		if (relative) {
@@ -99,18 +99,21 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	}
 
 	public void setWaypoint(EWaypointType waypointType, ShortPoint2D position) {
-		if (isSelected()) {
-			drawWaypointLine(false);
-		}
-
 		if (waypointType != EWaypointType.DESTINATION && !isTargetSet()) {
 			waypointType = EWaypointType.DESTINATION;
+		}
+
+		if (isSelected()) {
+			drawWaypointLine(false);
 		}
 		if (waypointType == EWaypointType.DESTINATION) {
 			Arrays.fill(waypoints, null);
 		}
 
 		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
+		if (closeReachableLocation != null && !isWaypointFulfillingPreconditions(waypointType, closeReachableLocation)) {
+			return;
+		}
 
 		waypoints[waypointType.ordinal()] = closeReachableLocation;
 
@@ -119,8 +122,13 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 	}
 
+	protected boolean isWaypointFulfillingPreconditions(EWaypointType waypointType, ShortPoint2D position) {
+		return true;
+	}
+
 	private ShortPoint2D findClosestReachablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
-		ShortPoint2D waypointBefore = this.pos;
+		ShortPoint2D waypointBefore = getWaypointsStartPosition();
+
 		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
 			if (waypoints[index] != null) {
 				waypointBefore = waypoints[index];
@@ -128,15 +136,11 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			}
 		}
 
-		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, null, WAYPOINT_SEARCH_RADIUS);
+		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, this.isSeaTrading(), null, WAYPOINT_SEARCH_RADIUS);
 	}
 
 	boolean isTargetSet() {
 		return waypoints[waypoints.length - 1] != null;
-	}
-
-	ShortPoint2D[] getWaypoints() {
-		return waypoints;
 	}
 
 	@Override
@@ -153,9 +157,14 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		super.kill();
 	}
 
-	private void drawWaypointLine(boolean draw) {
-		super.grid.drawTradingPathLine(super.pos, waypoints, draw);
+	protected void drawWaypointLine(boolean draw) {
+		ShortPoint2D waypointStart = getWaypointsStartPosition();
+		if (waypointStart != null) {
+			super.grid.drawTradingPathLine(waypointStart, waypoints, draw);
+		}
 	}
+
+	protected abstract ShortPoint2D getWaypointsStartPosition();
 
 	@Override
 	protected List<IRequestStack> createWorkStacks() {
@@ -173,5 +182,76 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	@Override
 	public EPriority[] getSupportedPriorities() {
 		return SUPPORTED_PRIORITIES;
+	}
+
+
+	@Override
+	public boolean needsTrader() {
+		return isTargetSet() && getPriority() != EPriority.STOPPED && super.getStackWithMaterial() != null;
+	}
+
+	@Override
+	public Optional<MaterialTypeWithCount> tryToTakeMaterial(int maxAmount) {
+		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
+			return Optional.empty();
+		}
+
+		List<? extends IRequestStack> potentialStacks = stream(getStacks()).filter(IRequestStack::hasMaterial).collect(Collectors.toList());
+
+		if (potentialStacks.isEmpty()) {
+			return Optional.empty();
+		}
+
+		EMaterialType resultMaterialType = potentialStacks.get(0).getMaterialType();
+		int resultCount = 0;
+
+		for (IRequestStack stack : potentialStacks) {
+			if (stack.getMaterialType() != resultMaterialType) {
+				continue;
+			}
+
+			while (resultCount < maxAmount && stack.pop()) {
+				resultCount++;
+			}
+
+			if (resultCount >= maxAmount) {
+				break;
+			}
+		}
+
+		return Optional.of(new MaterialTypeWithCount(resultMaterialType, resultCount));
+	}
+
+
+	public Iterator<ShortPoint2D> getWaypointsIterator() {
+		return new WaypointsIterator(waypoints);
+	}
+
+	private static class WaypointsIterator implements Iterator<ShortPoint2D>, Serializable {
+		private static final long serialVersionUID = 5229610228646171358L;
+
+		private final ShortPoint2D[] waypoints;
+		private       int            i = 0;
+
+		WaypointsIterator(ShortPoint2D[] waypoints) {
+			this.waypoints = waypoints;
+			hasNext();
+		}
+
+		@Override
+		public boolean hasNext() {
+			for (; i < waypoints.length && waypoints[i] == null; i++) { ; }
+			return i < waypoints.length;
+		}
+
+		@Override
+		public ShortPoint2D next() {
+			return hasNext() ? waypoints[i++] : null;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

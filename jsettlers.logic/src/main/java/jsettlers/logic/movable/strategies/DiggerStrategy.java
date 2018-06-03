@@ -60,12 +60,12 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		case PLAYING_ACTION:
 			executeDigg();
 			if (!requester.isDiggerRequestActive()) {
-				super.getGrid().setMarked(movable.getPos(), false);
+				super.getGrid().setMarked(movable.getPosition(), false);
 				reportJobless();
 				break;
 			}
 		case GOING_TO_POS:
-			if (needsToBeWorkedOn(movable.getPos())) {
+			if (needsToBeWorkedOn(movable.getPosition())) {
 				super.playAction(EMovableAction.ACTION1, 1f);
 				this.state = EDiggerState.PLAYING_ACTION;
 			} else {
@@ -79,12 +79,12 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	}
 
 	private void executeDigg() {
-		ShortPoint2D pos = movable.getPos();
+		ShortPoint2D pos = movable.getPosition();
 		super.getGrid().changeHeightTowards(pos.x, pos.y, requester.getAverageHeight());
 	}
 
 	private void goToDiggablePosition() {
-		super.getGrid().setMarked(movable.getPos(), false);
+		super.getGrid().setMarked(movable.getPosition(), false);
 		ShortPoint2D diggablePos = getDiggablePosition();
 		if (diggablePos != null) {
 			if (super.goToPos(diggablePos)) {
@@ -102,7 +102,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 
 	private boolean allPositionsFlattened() {
 		for (RelativePoint relativePosition : requester.getBuildingType().getProtectedTiles()) {
-			if (needsToBeWorkedOn(relativePosition.calculatePoint(requester.getPos()))) {
+			if (needsToBeWorkedOn(relativePosition.calculatePoint(requester.getPosition()))) {
 				return false;
 			}
 		}
@@ -111,7 +111,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 
 	private ShortPoint2D getDiggablePosition() {
 		RelativePoint[] blockedTiles = requester.getBuildingType().getProtectedTiles();
-		ShortPoint2D buildingPos = requester.getPos();
+		ShortPoint2D buildingPos = requester.getPosition();
 		int offset = MatchConstants.random().nextInt(blockedTiles.length);
 
 		for (int i = 0; i < blockedTiles.length; i++) {
@@ -168,7 +168,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 			super.getGrid().removeJobless(this);
 			break;
 		case PLAYING_ACTION:
-			super.getGrid().setMarked(movable.getPos(), false);
+			super.getGrid().setMarked(movable.getPosition(), false);
 			break;
 		default:
 			break;
