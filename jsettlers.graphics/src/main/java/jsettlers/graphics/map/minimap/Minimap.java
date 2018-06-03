@@ -42,7 +42,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  *               .--------.
  *           (0 | 0)  (width * 1 | 0)
  * </pre>
- *
+ * the origin of coordinates is in the bottom left and values increase to the top right.
  * currently stride is fixed to (mapwidth / 2) / mapwidth resulting in 0.5.
  *
  * @author michael
@@ -58,7 +58,7 @@ public final class Minimap implements IMinimapData {
 	private final Object updateMutex = new Object();
 	private final MapDrawContext context;
 
-	private MapRectangle mapViewport;
+	private MinimapShapeCalculator minimapShapeCalculator;
 	private short[][] buffer;
 	private final LinkedList<Integer> updatedLines = new LinkedList<>();
 	private final LineLoader lineLoader;
@@ -69,6 +69,7 @@ public final class Minimap implements IMinimapData {
 		IGraphicsGrid map = context.getMap();
 		stride = MiniMapLayoutProperties.getStride(map.getWidth()) / map.getWidth();
 		converter = new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1, 1);
+		minimapShapeCalculator = new MinimapShapeCalculator(stride, converter);
 		lineLoader = new LineLoader(this, modeSettings);
 		Thread minimapThread = new Thread(lineLoader, "minimap loader");
 		minimapThread.setDaemon(true);
@@ -79,6 +80,8 @@ public final class Minimap implements IMinimapData {
 		synchronized (updateMutex) {
 			this.width = width;
 			this.height = height;
+			minimapShapeCalculator.setWidth(width);
+			minimapShapeCalculator.setHeight(height);
 			imageIsValid = false;
 			updateMutex.notifyAll();
 		}
@@ -161,54 +164,11 @@ public final class Minimap implements IMinimapData {
 	}
 
 	private void drawViewmark(GLDrawContext context) {
-		if (mapViewport == null) {
+		float[] minimapShapeNodes = minimapShapeCalculator.getMinimapShapeNodes();
+		if (minimapShapeNodes.length != 18) {
 			return;
 		}
-		int offset = 50;
-		int minX = mapViewport.getMinX();
-		int minY = mapViewport.getMinY();
-		int maxX = minX + mapViewport.getWidth();
-		int maxY = minY + mapViewport.getHeight() - offset;
-		float minviewx = converter.getViewX(minX, minY, 0) * width;
-		float maxviewy = converter.getViewY(minX, minY, 0) * height;
-		float maxviewx = converter.getViewX(maxX, maxY + offset, 0) * width;
-		float minviewy = converter.getViewY(maxX, maxY, 0) * height;
-
-		context.drawLine(
-				new float[] {
-						// bottom left
-						minviewx,
-						minviewy,
-						0,
-						// bottom right
-						Math.min(maxviewx, (minviewy / height * stride + 1) * width),
-						minviewy,
-						0,
-						// mid right
-						maxviewx,
-						Math.min(
-								(Math.max(maxviewx,
-										(minviewy / height * stride + 1) * width) - width)
-										/ width / stride * height,
-								maxviewy),
-						0,
-						// top right
-						maxviewx,
-						maxviewy,
-						0,
-						// top left
-						Math.max(minviewx, minviewy / height * stride * width),
-						maxviewy,
-						0,
-						// mid left
-						Math.min(minviewx, Math.max(minviewx, maxviewy / height * stride * width)),
-						Math.max(
-								Math.min(minviewy,
-										(maxviewy / height * stride + 1) * width) - height
-										/ width / stride * height,
-								maxviewy),
-						0,
-				}, true);
+		context.drawLine(minimapShapeNodes, true);
 	}
 
 	public int getWidth() {
@@ -246,7 +206,7 @@ public final class Minimap implements IMinimapData {
 	}
 
 	public void setMapViewport(MapRectangle rect) {
-		mapViewport = rect;
+		minimapShapeCalculator.setMapViewport(rect);
 	}
 
 	/**
