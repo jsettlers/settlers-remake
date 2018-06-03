@@ -21,8 +21,8 @@
 		<image type="GUI" file="14" sequence="273" />
 	</element>
 
-	<element class="SimpleActionButton" x="11" y="269" maxx="38" maxy="287" id="buttonMakeCargoBoat">
-		<action action="MAKE_CARGO_BOAT" />
+	<element class="SimpleActionButton" x="11" y="269" maxx="38" maxy="287" id="buttonMakeCargoShip">
+		<action action="MAKE_CARGO_SHIP" />
 		<image type="GUI" file="14" sequence="276" />
 		<image type="GUI" file="14" sequence="279" />
 	</element>

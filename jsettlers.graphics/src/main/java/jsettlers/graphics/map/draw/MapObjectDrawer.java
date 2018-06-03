@@ -571,7 +571,7 @@ public class MapObjectDrawer {
 				break;
 
 			case FERRY:
-			case CARGO_BOAT:
+			case CARGO_SHIP:
 				drawShipInConstruction(x, y, (IShipInConstruction) object);
 
 			default:

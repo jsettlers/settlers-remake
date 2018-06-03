@@ -43,7 +43,7 @@ import java.util.List;
 public class ShipsSelectionFragment extends SelectionFragment {
 	private static final EMovableType[] shipTypes = new EMovableType[] {
 			EMovableType.FERRY,
-			EMovableType.CARGO_BOAT,
+			EMovableType.CARGO_SHIP,
 	};
 
 	private static final ImageLink[] shipImageLinks = new ImageLink[] {

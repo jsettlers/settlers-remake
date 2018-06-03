@@ -26,7 +26,7 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 
 	private static final EMovableType[] shiptypes = new EMovableType[] {
 			EMovableType.FERRY,
-			EMovableType.CARGO_BOAT,
+			EMovableType.CARGO_SHIP,
 	};
 
 	/**
