@@ -34,11 +34,16 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * This is the minimap. It is drawn on on the rectangle:
  *
  * <pre>
- *       (width * stride | height)      (width * (stride + 1) | height)
- *  (0 | 0)         (width * 1 | 0)
+ * (width * stride | height)  (width * (stride + 1) | height)
+ *                      .--------.
+ *                    /         /
+ *                  /         /
+ *                /         /
+ *               .--------.
+ *           (0 | 0)  (width * 1 | 0)
  * </pre>
  *
- * currently stride is fixed to (mapwidth / 2) / mapwidth.
+ * currently stride is fixed to (mapwidth / 2) / mapwidth resulting in 0.5.
  *
  * @author michael
  */
@@ -218,7 +223,6 @@ public final class Minimap implements IMinimapData {
 	 * Sets the data
 	 *
 	 * @param line
-	 * @param data
 	 */
 	public void setUpdatedLine(int line) {
 		synchronized (updateMutex) {
