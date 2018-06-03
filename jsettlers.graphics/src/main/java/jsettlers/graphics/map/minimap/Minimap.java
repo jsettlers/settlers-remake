@@ -177,15 +177,15 @@ public final class Minimap implements IMinimapData {
 		context.drawLine(
 				new float[] {
 						// bottom left
-						Math.max(minviewx, maxviewy / height * stride * width),
-						maxviewy,
+						minviewx,
+						minviewy,
 						0,
 						// bottom right
-						Math.min(maxviewx, (maxviewy / height * stride + 1) * width),
-						maxviewy,
+						Math.min(maxviewx, (minviewy / height * stride + 1) * width),
+						minviewy,
 						0,
 						// mid right
-						Math.min(maxviewx, Math.max(maxviewx, (minviewy / height * stride + 1) * width)),
+						maxviewx,
 						Math.min(
 								(Math.max(maxviewx,
 										(minviewy / height * stride + 1) * width) - width)
@@ -193,12 +193,12 @@ public final class Minimap implements IMinimapData {
 								maxviewy),
 						0,
 						// top right
-						Math.min(maxviewx, (minviewy / height * stride + 1) * width),
-						minviewy,
+						maxviewx,
+						maxviewy,
 						0,
 						// top left
 						Math.max(minviewx, minviewy / height * stride * width),
-						minviewy,
+						maxviewy,
 						0,
 						// mid left
 						Math.min(minviewx, Math.max(minviewx, maxviewy / height * stride * width)),
