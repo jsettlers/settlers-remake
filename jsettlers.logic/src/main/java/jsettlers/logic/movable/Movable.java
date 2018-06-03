@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -52,6 +53,8 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  */
 public final class Movable implements ILogicMovable {
+	private static final int SHIP_PUSH_DISTANCE = 10;
+
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
 	private static       int                                  nextID       = Integer.MIN_VALUE;
@@ -349,30 +352,17 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private void pushShips() {
-		final int SHIP_PUSH_DISTANCE = 10;
-		ILogicMovable blockingMovable;
 		final byte[] xDeltaArray = EDirection.getXDeltaArray();
 		final byte[] yDeltaArray = EDirection.getYDeltaArray();
-		int x, y;
-		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
-			for (int distance = 1; distance < SHIP_PUSH_DISTANCE; distance++) {
-				int xBegin = distance * xDeltaArray[direction];
-				int yBegin = distance * yDeltaArray[direction];
-				int nextDirection = (direction + 1) % EDirection.NUMBER_OF_DIRECTIONS;
-				int xEnd = distance * xDeltaArray[nextDirection];
-				int yEnd = distance * yDeltaArray[nextDirection];
-				for (int i = 0; i < distance; i++) {
-					x = this.getPosition().x + xBegin + (xEnd - xBegin) / distance * i;
-					y = this.getPosition().y + yBegin + (yEnd - yBegin) / distance * i;
-					if (grid.isInBounds(x, y)) {
-						blockingMovable = grid.getMovableAt(x, y);
-						if (blockingMovable != null && blockingMovable.isShip()) {
-							blockingMovable.push(this);
-						}
-					}
-				}
-			}
-		}
+
+		HexGridArea.stream(position.x, position.y, 1,SHIP_PUSH_DISTANCE)
+				   .filterBounds(grid		.getWidth(), grid.getHeight())
+				   .forEach((x,y)->{
+					   ILogicMovable blockingMovable = grid.getMovableAt(x, y);
+					   if (blockingMovable != null && blockingMovable.isShip()) {
+						   blockingMovable.push(this);
+					   }
+				   });
 	}
 
 	@Override
