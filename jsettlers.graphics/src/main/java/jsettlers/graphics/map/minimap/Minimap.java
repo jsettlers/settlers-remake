@@ -203,7 +203,7 @@ public final class Minimap implements IMinimapData {
 						// mid left
 						Math.min(minviewx, Math.max(minviewx, maxviewy / height * stride * width)),
 						Math.max(
-								Math.min(minviewx,
+								Math.min(minviewy,
 										(maxviewy / height * stride + 1) * width) - height
 										/ width / stride * height,
 								maxviewy),
