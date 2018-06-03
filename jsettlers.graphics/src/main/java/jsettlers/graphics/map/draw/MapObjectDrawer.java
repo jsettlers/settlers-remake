@@ -360,7 +360,11 @@ public class MapObjectDrawer {
 	private void drawPlacementBuilding(int x, int y, IMapObject object, float color) {
 		float z = context.getDrawBuffer().getZ();
 		context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
-		drawBuilding(x, y, (IBuilding) object, color);
+		ImageLink[] images = ((IBuilding) object).getBuildingType().getImages();
+		if (images.length > 0) {
+			Image image = imageProvider.getImage(images[0]);
+			drawOnlyImage(image, x, y, color);
+		}
 		context.getDrawBuffer().setZ(z);
 	}
 
@@ -946,7 +950,12 @@ public class MapObjectDrawer {
 				if (seq.length() > 0) {
 					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
-					draw(seq.getImageSafe(step), x, y, color);
+					drawOnlyImage(seq.getImageSafe(step), x, y, color);
+					ImageLink[] images = type.getImages();
+					if (images.length > 0) {
+						Image image = imageProvider.getImage(images[0]);
+						drawOnlyShadow(image, x, y, color);
+					}
 				}
 				playSound(building, SOUND_MILL, x, y);
 
@@ -1145,6 +1154,16 @@ public class MapObjectDrawer {
 		draw(image, x, y, iColor);
 	}
 
+	private void drawOnlyImage(Image image, int x, int y, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawOnlyImage(image, x, y, iColor);
+	}
+
+	private void drawOnlyShadow(Image image, int x, int y, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawOnlyShadow(image, x, y, iColor);
+	}
+
 	private void drawWithHeight(Image image, int x, int y, int height, float color) {
 		int iColor = Color.getABGR(color, color, color, 1);
 		drawWithHeight(image, x, y, height, iColor);
@@ -1154,8 +1173,21 @@ public class MapObjectDrawer {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+	}
+
+	private void drawOnlyImage(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		image.drawOnlyImageAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+	}
+
+	private void drawOnlyShadow(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		image.drawOnlyShadowAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
 	}
 
 	private void drawWithHeight(Image image, int x, int y, int height, int color) {

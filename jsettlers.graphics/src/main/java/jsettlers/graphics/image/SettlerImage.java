@@ -29,8 +29,6 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  */
 public class SettlerImage extends SingleImage {
 
-	private static final float PLACEMENT_BUILDING_Z = 0.91f;
-
 	private SingleImage torso = null;
 	private SingleImage shadow = null;
 
@@ -103,12 +101,23 @@ public class SettlerImage extends SingleImage {
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 					   float viewY, int iColor) {
 		super.drawAt(gl, buffer, viewX, viewY, iColor);
-		if (Math.abs(buffer.getZ() - PLACEMENT_BUILDING_Z) < 0.1) {
-			return;
-		}
 		if (this.torso != null) {
 			this.torso.drawAt(gl, buffer, viewX, viewY, iColor);
 		}
+		if (this.shadow != null) {
+			this.shadow.drawAt(gl, buffer, viewX, viewY, -1);
+		}
+	}
+
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+					   float viewY, int iColor) {
+		super.drawAt(gl, buffer, viewX, viewY, iColor);
+	}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+					   float viewY, int iColor) {
 		if (this.shadow != null) {
 			this.shadow.drawAt(gl, buffer, viewX, viewY, -1);
 		}
