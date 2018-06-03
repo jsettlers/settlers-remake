@@ -1841,11 +1841,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround, final boolean isShip, final IPlayer player,
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start,
+														ShortPoint2D target,
+														final boolean needsPlayersGround,
+														final boolean isShip,
+														final IPlayer player,
 														short targetRadius) {
-			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
-				private static final long serialVersionUID = 1L;
-
+			IPathCalculatable pathSearcher = new IPathCalculatable() {
 				@Override
 				public ShortPoint2D getPosition() {
 					return start;
@@ -1865,7 +1867,8 @@ public final class MainGrid implements Serializable {
 				public boolean isShip() {
 					return isShip;
 				}
-			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
+			};
+			Path path = movablePathfinderGrid.searchDijkstra(pathSearcher, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
 
 			return path != null ? path.getTargetPosition() : null;
 		}

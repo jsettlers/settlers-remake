@@ -31,7 +31,7 @@ public abstract class TradingStrategy extends MovableStrategy {
 	private ETraderState state = ETraderState.JOBLESS;
 
 	private ITradeBuilding         tradeBuilding;
-	private   Iterator<ShortPoint2D> waypoints;
+	private Iterator<ShortPoint2D> waypoints;
 
 	TradingStrategy(Movable movable) {
 		super(movable);
@@ -62,6 +62,7 @@ public abstract class TradingStrategy extends MovableStrategy {
 					this.waypoints = tradeBuilding.getWaypointsIterator();
 					state = ETraderState.GOING_TO_TARGET;
 				} else {
+					state = ETraderState.JOBLESS;
 					break;
 				}
 
