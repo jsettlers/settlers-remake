@@ -29,6 +29,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.common.menu.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
@@ -81,10 +82,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	protected void action() {
-		if (isJobless())
+		if (isJobless()) {
 			return;
+		}
 
-		if (!building.isNotDestroyed()) { // check if building is still ok
+		if (building.isDestroyed()) { // check if building is still ok
 			buildingDestroyed();
 			return;
 		}
@@ -104,7 +106,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case TRY_TAKING_FOOD:
-			if (building.tryTakingFoood(currentJob.getFoodOrder())) {
+			if (building.tryTakingFood(currentJob.getFoodOrder())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -177,6 +179,18 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		case LOOK_AT_SEARCHED:
 			lookAtSearched();
 			break;
+
+		case GO_TO_DOCK:
+			gotoDockAction();
+			break;
+
+		case BUILD_SHIP:
+			if (building instanceof DockyardBuilding) {
+				((DockyardBuilding) building).buildShipAction();
+			}
+			jobFinished();
+			break;
+
 		case LOOK_AT:
 			super.lookInDirection(currentJob.getDirection());
 			jobFinished();
@@ -273,6 +287,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		return currentJob == null;
 	}
 
+	private void gotoDockAction() {
+		DockyardBuilding dockyard = (DockyardBuilding) building;
+		if (!done) {
+			this.done = true;
+			ShortPoint2D dockEndPosition = dockyard.getDock().getEndPosition();
+			if (!super.goToPos(dockEndPosition)) {
+				jobFailed();
+			}
+		} else {
+			jobFinished(); // start next action
+		}
+	}
+
 	private void followPreSearchedAction() {
 		ShortPoint2D pathTargetPos = super.followPresearchedPath();
 		mark(pathTargetPos);
@@ -326,7 +353,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void executeAction() {
 		clearMark();
-		if (super.getGrid().executeSearchType(movable, movable.getPos(), currentJob.getSearchType())) {
+		if (super.getGrid().executeSearchType(movable, movable.getPosition(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
@@ -381,7 +408,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = movable.getDirection();
-			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPos()), EResourceType.FISH);
+			return super.getGrid().tryTakingResource(fishDirection.getNextHexPoint(movable.getPosition()), EResourceType.FISH);
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:
@@ -418,7 +445,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void lookAtSearched() {
-		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPos(), currentJob.getSearchType());
+		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPosition(), currentJob.getSearchType());
 		if (direction != null) {
 			super.lookInDirection(direction);
 			jobFinished();
@@ -454,7 +481,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void dropCurrentMaterial() {
 		EMaterialType material = movable.getMaterial();
 		if (material.isDroppable()) {
-			super.getGrid().dropMaterial(movable.getPos(), material, true, false);
+			super.getGrid().dropMaterial(movable.getPosition(), material, true, false);
 		}
 		super.setMaterial(EMaterialType.NO_MATERIAL);
 	}

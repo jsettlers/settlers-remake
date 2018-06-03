@@ -47,7 +47,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	MaterialProductionSettings getMaterialProduction();
 
-	boolean isNotDestroyed();
+	boolean isDestroyed();
 
 	/**
 	 * Causes the given worker to be removed from this building.<br>
@@ -58,7 +58,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	 */
 	void leaveBuilding(IManageableWorker worker);
 
-	boolean tryTakingFoood(EMaterialType[] foodOrder);
+	boolean tryTakingFood(EMaterialType[] foodOrder);
 
 	boolean tryTakingResource();
 

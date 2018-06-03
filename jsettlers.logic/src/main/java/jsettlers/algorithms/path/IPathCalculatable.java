@@ -28,4 +28,5 @@ public interface IPathCalculatable extends IPlayerable, ILocatable, Serializable
 	 */
 	boolean needsPlayersGround();
 
+	boolean isShip();
 }

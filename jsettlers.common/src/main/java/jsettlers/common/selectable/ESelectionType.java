@@ -25,7 +25,8 @@ public enum ESelectionType {
 	BUILDING(1),
 	PEOPLE(Integer.MAX_VALUE),
 	SPECIALISTS(Integer.MAX_VALUE),
-	SOLDIERS(Integer.MAX_VALUE);
+	SOLDIERS(Integer.MAX_VALUE),
+	SHIPS(Integer.MAX_VALUE);
 
 	public final int priority;
 	public final int maxSelected;

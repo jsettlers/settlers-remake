@@ -61,7 +61,7 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 		if (nextErrorEntry == null) {
 			return;
 		}
-		scrollTo.scrollTo(nextErrorEntry.getPos());
+		scrollTo.scrollTo(nextErrorEntry.getPosition());
 	}
 
 	/**

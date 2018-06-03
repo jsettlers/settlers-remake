@@ -27,7 +27,7 @@ public class StartDrawingAction extends Action {
 		this.pos = pos;
 	}
 
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return pos;
 	}
 

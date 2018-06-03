@@ -49,6 +49,9 @@ public abstract class UiContentUpdater<T> {
 	}
 
 	protected void notifyListeners() {
+		if (currentData == null) {
+			return;
+		}
 		synchronized (listeners) {
 			// noinspection unchecked
 			stream(listeners).forEach(listeners -> listeners.update(currentData));

@@ -44,7 +44,7 @@ import jsettlers.graphics.image.reader.bytereader.ByteReader;
  * 13: fire
  * 14: dying pig <br>
  * 15/16/17: fisherman
- * 20: shipyard
+ * 20: dockyard
  * 21: healer
  * 24: geologist
  * 25: bowman

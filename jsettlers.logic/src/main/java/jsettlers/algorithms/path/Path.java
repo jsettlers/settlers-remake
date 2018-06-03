@@ -147,7 +147,7 @@ public class Path implements Serializable {
 		return new ShortPoint2D(getFirstX(), getFirstY());
 	}
 
-	public final ShortPoint2D getTargetPos() {
+	public final ShortPoint2D getTargetPosition() {
 		int lastIdx = pathX.length - 1;
 		return new ShortPoint2D(pathX[lastIdx], pathY[lastIdx]);
 	}

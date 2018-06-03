@@ -226,7 +226,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return false;
 	}
 
-	private boolean addMapObject(ShortPoint2D pos, AbstractHexMapObject mapObject) {
+	public boolean addMapObject(ShortPoint2D pos, AbstractHexMapObject mapObject) {
 		return addMapObject(pos.x, pos.y, mapObject);
 	}
 

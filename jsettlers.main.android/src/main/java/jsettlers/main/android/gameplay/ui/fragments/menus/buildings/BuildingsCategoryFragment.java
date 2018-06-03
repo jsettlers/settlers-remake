@@ -37,7 +37,7 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.presenters.BuildingTile;
+import jsettlers.main.android.gameplay.viewstates.BuildingState;
 import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
@@ -79,11 +79,11 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	 */
 	@UiThread
 	@Override
-	public void setBuildings(List<BuildingTile> buildingTiles) {
+	public void setBuildings(List<BuildingState> buildingStates) {
 		if (adapter == null) {
-			adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingTiles);
+			adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingStates);
 		} else {
-			adapter.setBuildingTiles(buildingTiles);
+			adapter.setBuildingStates(buildingStates);
 		}
 
 		if (recyclerView.getAdapter() == null) {
@@ -101,18 +101,18 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	 * Adapter
 	 */
 	private class BuildingsAdapter extends RecyclerView.Adapter<BuildingsCategoryFragment.BuildingViewHolder> {
-		private List<BuildingTile> buildingTiles;
+		private List<BuildingState> buildingStates;
 
 		private LayoutInflater layoutInflater;
 
-		BuildingsAdapter(List<BuildingTile> buildingTiles) {
-			this.buildingTiles = buildingTiles;
+		BuildingsAdapter(List<BuildingState> buildingStates) {
+			this.buildingStates = buildingStates;
 			layoutInflater = getActivity().getLayoutInflater();
 		}
 
 		@Override
 		public int getItemCount() {
-			return buildingTiles.size();
+			return buildingStates.size();
 		}
 
 		@Override
@@ -122,7 +122,7 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 			itemView.setOnClickListener(view -> {
 				int position = buildingViewHolder.getLayoutPosition();
-				buildingSelected(buildingTiles.get(position).getBuildingType());
+				buildingSelected(buildingStates.get(position).getBuildingType());
 			});
 
 			return buildingViewHolder;
@@ -130,7 +130,7 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 		@Override
 		public void onBindViewHolder(BuildingsCategoryFragment.BuildingViewHolder holder, int position) {
-			holder.setBuilding(buildingTiles.get(position));
+			holder.setBuilding(buildingStates.get(position));
 		}
 
 		@Override
@@ -138,15 +138,15 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 			if (payloads == null || payloads.size() == 0) {
 				onBindViewHolder(holder, position);
 			} else {
-				holder.updateCounts(buildingTiles.get(position));
+				holder.updateCounts(buildingStates.get(position));
 			}
 		}
 
-		public void setBuildingTiles(List<BuildingTile> buildingTiles) {
-			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new BuildingsDiffCallback(this.buildingTiles, buildingTiles));
+		public void setBuildingStates(List<BuildingState> buildingStates) {
+			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new BuildingsDiffCallback(this.buildingStates, buildingStates));
 			diffResult.dispatchUpdatesTo(this);
 
-			this.buildingTiles = buildingTiles;
+			this.buildingStates = buildingStates;
 		}
 	}
 
@@ -164,16 +164,16 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 			buildingConstructionCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_construction_count);
 		}
 
-		void setBuilding(BuildingTile buildingTile) {
-			OriginalImageProvider.get(buildingTile.getBuildingType()).setAsImage(imageView);
-			nameTextView.setText(buildingTile.getName());
-			buildingCountTextView.setText(buildingTile.getCount());
-			buildingConstructionCountTextView.setText(buildingTile.getConstructionCount());
+		void setBuilding(BuildingState buildingState) {
+			OriginalImageProvider.get(buildingState.getBuildingType()).setAsImage(imageView);
+			nameTextView.setText(buildingState.getName());
+			buildingCountTextView.setText(buildingState.getCount());
+			buildingConstructionCountTextView.setText(buildingState.getConstructionCount());
 		}
 
-		void updateCounts(BuildingTile buildingTile) {
-			buildingCountTextView.setText(buildingTile.getCount());
-			buildingConstructionCountTextView.setText(buildingTile.getConstructionCount());
+		void updateCounts(BuildingState buildingState) {
+			buildingCountTextView.setText(buildingState.getCount());
+			buildingConstructionCountTextView.setText(buildingState.getConstructionCount());
 		}
 	}
 
@@ -182,33 +182,33 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	 */
 	private class BuildingsDiffCallback extends DiffUtil.Callback  {
 
-		private final List<BuildingTile> oldBuildingTiles;
-		private final List<BuildingTile> newBuildingTiles;
+		private final List<BuildingState> oldBuildingStates;
+		private final List<BuildingState> newBuildingStates;
 
-		BuildingsDiffCallback(List<BuildingTile> oldBuildingTiles, List<BuildingTile> newBuildingTiles) {
-			this.oldBuildingTiles = oldBuildingTiles;
-			this.newBuildingTiles = newBuildingTiles;
+		BuildingsDiffCallback(List<BuildingState> oldBuildingStates, List<BuildingState> newBuildingStates) {
+			this.oldBuildingStates = oldBuildingStates;
+			this.newBuildingStates = newBuildingStates;
 		}
 
 		@Override
 		public int getOldListSize() {
-			return oldBuildingTiles.size();
+			return oldBuildingStates.size();
 		}
 
 		@Override
 		public int getNewListSize() {
-			return newBuildingTiles.size();
+			return newBuildingStates.size();
 		}
 
 		@Override
 		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-			return oldBuildingTiles.get(oldItemPosition).equals(newBuildingTiles.get(newItemPosition));
+			return oldBuildingStates.get(oldItemPosition).equals(newBuildingStates.get(newItemPosition));
 		}
 
 		@Override
 		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-			boolean constructedCountsEqual = oldBuildingTiles.get(oldItemPosition).getCount().equals(newBuildingTiles.get(newItemPosition).getCount());
-			boolean constructingCountsEqual = oldBuildingTiles.get(oldItemPosition).getConstructionCount().equals(newBuildingTiles.get(newItemPosition).getConstructionCount());
+			boolean constructedCountsEqual = oldBuildingStates.get(oldItemPosition).getCount().equals(newBuildingStates.get(newItemPosition).getCount());
+			boolean constructingCountsEqual = oldBuildingStates.get(oldItemPosition).getConstructionCount().equals(newBuildingStates.get(newItemPosition).getConstructionCount());
 			return constructedCountsEqual && constructingCountsEqual;
 		}
 

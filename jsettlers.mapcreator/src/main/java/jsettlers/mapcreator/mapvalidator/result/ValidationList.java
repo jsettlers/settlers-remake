@@ -142,7 +142,7 @@ public class ValidationList {
 		 */
 		public LocaleGroup(ErrorEntry entry) {
 			this.entries.add(entry);
-			ShortPoint2D pos = entry.getPos();
+			ShortPoint2D pos = entry.getPosition();
 			int x = pos.x;
 			x1 = x;
 			x2 = x;
@@ -160,7 +160,7 @@ public class ValidationList {
 		 */
 		public void add(ErrorEntry entry) {
 			this.entries.add(entry);
-			ShortPoint2D pos = entry.getPos();
+			ShortPoint2D pos = entry.getPosition();
 
 			int x = pos.x;
 			x1 = Math.min(x1, x);
@@ -179,7 +179,7 @@ public class ValidationList {
 		 * @return true if yes
 		 */
 		public boolean matchesGroup(ErrorEntry entry) {
-			ShortPoint2D pos = entry.getPos();
+			ShortPoint2D pos = entry.getPosition();
 
 			return isPointInRange(pos.x, pos.y);
 		}
