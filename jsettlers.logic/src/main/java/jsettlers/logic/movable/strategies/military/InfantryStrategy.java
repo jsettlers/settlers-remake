@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.movable.strategies.soldiers;
+package jsettlers.logic.movable.strategies.military;
 
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
@@ -42,7 +42,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
-		int maxDistance = movable.getPos().getOnGridDistTo(enemy.getPos());
+		int maxDistance = movable.getPosition().getOnGridDistTo(enemy.getPosition());
 		return (maxDistance == 1 || (!enemy.isTower() && super.getMovableType().isPikeman() && maxDistance <= 2));
 	}
 
@@ -53,7 +53,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected void hitEnemy(IAttackable enemy) {
-		enemy.receiveHit(super.getMovableType().getStrength() * getCombatStrength(), movable.getPos(), movable.getPlayer().playerId);
+		enemy.receiveHit(super.getMovableType().getStrength() * getCombatStrength(), movable.getPosition(), movable.getPlayer().playerId);
 		// decrease the enemy's health
 	}
 

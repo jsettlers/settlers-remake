@@ -13,7 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.presenters;
+package jsettlers.main.android.gameplay.viewstates;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
@@ -23,14 +23,14 @@ import jsettlers.graphics.localization.Labels;
  * Created by tompr on 29/05/2017.
  */
 
-public class BuildingTile {
+public class BuildingState {
 
     private final EBuildingType buildingType;
     private final String name;
     private final String count;
     private final String constructionCount;
 
-    public BuildingTile(EBuildingType buildingType, IBuildingCounts buildingCounts) {
+    public BuildingState(EBuildingType buildingType, IBuildingCounts buildingCounts) {
         this.buildingType = buildingType;
         this.name = Labels.getName(buildingType);
 
@@ -67,6 +67,6 @@ public class BuildingTile {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BuildingTile && ((BuildingTile) obj).getBuildingType() == getBuildingType();
+        return obj instanceof BuildingState && ((BuildingState) obj).getBuildingType() == getBuildingType();
     }
 }

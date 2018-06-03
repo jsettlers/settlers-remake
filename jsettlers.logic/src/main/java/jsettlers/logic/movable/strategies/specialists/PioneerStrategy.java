@@ -48,10 +48,10 @@ public final class PioneerStrategy extends MovableStrategy {
 
 		case GOING_TO_POS:
 			if (centerPos == null) {
-				this.centerPos = movable.getPos();
+				this.centerPos = movable.getPosition();
 			}
 
-			if (canWorkOnPos(movable.getPos())) {
+			if (canWorkOnPos(movable.getPosition())) {
 				super.playAction(EMovableAction.ACTION1, ACTION1_DURATION);
 				state = EPioneerState.WORKING_ON_POS;
 			} else {
@@ -60,8 +60,8 @@ public final class PioneerStrategy extends MovableStrategy {
 			break;
 
 		case WORKING_ON_POS:
-			if (canWorkOnPos(movable.getPos())) {
-				executeAction(movable.getPos());
+			if (canWorkOnPos(movable.getPosition())) {
+				executeAction(movable.getPosition());
 			}
 
 			findWorkablePosition();
@@ -78,7 +78,7 @@ public final class PioneerStrategy extends MovableStrategy {
 		}
 		centerPos = null;
 
-		ShortPoint2D pos = movable.getPos();
+		ShortPoint2D pos = movable.getPosition();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.UNENFORCED_FOREIGN_GROUND)) {
 			super.followPresearchedPath();
 			this.state = EPioneerState.GOING_TO_POS;
@@ -91,7 +91,7 @@ public final class PioneerStrategy extends MovableStrategy {
 		EDirection[] bestNeighbourDir = new EDirection[1];
 		double[] bestNeighbourDistance = new double[] { Double.MAX_VALUE }; // distance from start point
 
-		ShortPoint2D position = movable.getPos();
+		ShortPoint2D position = movable.getPosition();
 		HexGridArea.stream(position.x, position.y, 1, 6)
 				.filter((x, y) -> super.isValidPosition(x, y) && canWorkOnPos(x, y))
 				.forEach((x, y) -> {

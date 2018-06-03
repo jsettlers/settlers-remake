@@ -121,6 +121,11 @@ public class MapInterfaceConnector implements ActionFireable, IMapInterfaceConne
 	}
 
 	@Override
+	public void playSound(int soundId, float volume) {
+		content.playSound(soundId, volume);
+	}
+
+	@Override
 	public void showMessage(IMessage message) {
 		content.addMessage(message);
 	}

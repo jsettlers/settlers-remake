@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
-import static java8.util.stream.StreamSupport.stream;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -26,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import java8.util.Lists;
+import java8.util.Maps;
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
@@ -52,8 +52,7 @@ import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
 
-import java8.util.Lists;
-import java8.util.Maps;
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * This class handles the partitions of the map.
@@ -168,7 +167,7 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	public PartitionManager getPartitionAt(ILocatable locatable) {
-		ShortPoint2D pos = locatable.getPos();
+		ShortPoint2D pos = locatable.getPosition();
 		return getPartitionAt(pos.x, pos.y);
 	}
 

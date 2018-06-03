@@ -18,11 +18,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import java8.util.Optional;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.common.utils.mutables.MutableInt;
-
-import java8.util.Optional;
 
 /**
  * Created by Andreas Eberle on 12.01.2017.
@@ -135,6 +134,10 @@ public abstract class CoordinateStream implements Serializable {
 
 	public boolean isEmpty() {
 		return iterate((x, y) -> false);
+	}
+
+	public Optional<ShortPoint2D> getFirst() {
+		return iterateForResult((x, y) -> Optional.of(new ShortPoint2D(x, y)));
 	}
 
 	public List<ShortPoint2D> toList() {

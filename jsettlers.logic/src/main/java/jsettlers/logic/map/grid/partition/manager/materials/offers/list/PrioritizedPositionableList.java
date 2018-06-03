@@ -52,7 +52,7 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 		T closestObject = null;
 		for (int i = lists.length - 1; i >= minimumIncludedPriority.ordinal(); i--) {
 			T object = lists[i].getObjectCloseTo(position);
-			if (closestObject == null || (object != null && MathUtils.squareHypot(object.getPos(), position) < MathUtils.squareHypot(closestObject.getPos(), position))) {
+			if (closestObject == null || (object != null && MathUtils.squareHypot(object.getPosition(), position) < MathUtils.squareHypot(closestObject.getPosition(), position))) {
 				closestObject = object;
 			}
 		}

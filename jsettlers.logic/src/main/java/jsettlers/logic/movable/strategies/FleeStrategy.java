@@ -43,7 +43,7 @@ public class FleeStrategy extends MovableStrategy {
 
 	@Override
 	protected void action() {
-		ShortPoint2D position = movable.getPos();
+		ShortPoint2D position = movable.getPosition();
 		if (!super.isValidPosition(position)) {
 			if (searchesCounter > 120) {
 				movable.kill();
@@ -90,6 +90,6 @@ public class FleeStrategy extends MovableStrategy {
 			lastCheckedPathStep = (short) step;
 		}
 
-		return !super.isValidPosition(movable.getPos()) && pathStepCheckedCounter < 5;
+		return !super.isValidPosition(movable.getPosition()) && pathStepCheckedCounter < 5;
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -27,49 +27,53 @@ import jsettlers.common.selectable.ESelectionType;
  *
  */
 public enum EMovableType {
-	BEARER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	SMITH(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
-	LUMBERJACK(EMaterialType.AXE, ESelectionType.PEOPLE, true),
-	STONECUTTER(EMaterialType.PICK, ESelectionType.PEOPLE, true),
-	SAWMILLER(EMaterialType.SAW, ESelectionType.PEOPLE, true),
-	FORESTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	MELTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	MINER(EMaterialType.PICK, ESelectionType.PEOPLE, true),
-	FISHERMAN(EMaterialType.FISHINGROD, ESelectionType.PEOPLE, true),
-	FARMER(EMaterialType.SCYTHE, ESelectionType.PEOPLE, true),
-	MILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	BAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	PIG_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	DONKEY_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	SLAUGHTERER(EMaterialType.AXE, ESelectionType.PEOPLE, true),
-	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	WINEGROWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	HEALER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
-	DOCKWORKER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
-	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
-	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true),
+	BEARER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	SMITH(EMaterialType.HAMMER, ESelectionType.PEOPLE, true, false),
+	LUMBERJACK(EMaterialType.AXE, ESelectionType.PEOPLE, true, false),
+	STONECUTTER(EMaterialType.PICK, ESelectionType.PEOPLE, true, false),
+	SAWMILLER(EMaterialType.SAW, ESelectionType.PEOPLE, true, false),
+	FORESTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	MELTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	MINER(EMaterialType.PICK, ESelectionType.PEOPLE, true, false),
+	FISHERMAN(EMaterialType.FISHINGROD, ESelectionType.PEOPLE, true, false),
+	FARMER(EMaterialType.SCYTHE, ESelectionType.PEOPLE, true, false),
+	MILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	BAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	PIG_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	DONKEY_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	SLAUGHTERER(EMaterialType.AXE, ESelectionType.PEOPLE, true, false),
+	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	WINEGROWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	HEALER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true, false),
+	DOCKWORKER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true, false),
 
-	THIEF(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
-	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
-	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
+	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true, false),
+	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true, false),
 
-	MAGE(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, 0.7, 100f, 0f),
+	THIEF(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false, true),
+	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false, true),
+	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false, true),
 
-	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, 0.45, 100f, 10f),
-	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, 0.45, 120f, 14f),
-	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, 0.45, 150f, 20f),
+	MAGE(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true, 0.7, 100f, 0f),
 
-	PIKEMAN_L1(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, 0.5, 200f, 4f),
-	PIKEMAN_L2(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, 0.5, 240f, 5f),
-	PIKEMAN_L3(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, 0.5, 300f, 6f),
+	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, true, 0.45, 100f, 10f),
+	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, true, 0.45, 120f, 14f),
+	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, true, 0.45, 150f, 20f),
 
-	BOWMAN_L1(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6, 100f, 5f),
-	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6, 120f, 6f),
-	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6, 150f, 7f),
+	PIKEMAN_L1(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, true, 0.5, 200f, 4f),
+	PIKEMAN_L2(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, true, 0.5, 240f, 5f),
+	PIKEMAN_L3(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, true, 0.5, 300f, 6f),
 
-	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
-	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
+	BOWMAN_L1(EMaterialType.BOW, ESelectionType.SOLDIERS, false, true, 0.6, 100f, 5f),
+	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS, false, true, 0.6, 120f, 6f),
+	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false, true, 0.6, 150f, 7f),
+
+	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
+	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
+
+	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, true, false),
+	CARGO_BOAT(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, false);
 
 	/**
 	 * All step durations will be multiplied with this speedup factor.
@@ -77,40 +81,56 @@ public enum EMovableType {
 	private static final float STEP_DURATION_SPEEDUP_FACTOR = 0.75f;
 
 	public static final double DEFAULT_STEP_DURATION_SECONDS = 0.6;
-	public static final float DEFAULT_HEALTH = 100f;
-	public static final float DEFAULT_STRENGTH = 0f;
+	public static final float  DEFAULT_HEALTH                = 100f;
+	public static final float  DEFAULT_STRENGTH              = 0f;
 
-	public static final EMovableType[] VALUES = EMovableType.values();
-	public static final int NUMBER_OF_MOVABLETYPES = VALUES.length;
+	public static final EMovableType[] VALUES                 = EMovableType.values();
+	public static final int            NUMBER_OF_MOVABLETYPES = VALUES.length;
 
 	public static final Set<EMovableType> SWORDSMEN = EnumSet.of(SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3);
-	public static final Set<EMovableType> PIKEMEN = EnumSet.of(PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
-	public static final Set<EMovableType> BOWMEN = EnumSet.of(BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
+	public static final Set<EMovableType> PIKEMEN   = EnumSet.of(PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
+	public static final Set<EMovableType> BOWMEN    = EnumSet.of(BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
 
 	public static final Set<EMovableType> SOLDIERS = EnumSet.of(
-			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
-			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3,
-			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
+		SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
+		PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3,
+		BOWMAN_L1, BOWMAN_L2, BOWMAN_L3
+	);
 
 	public static final Set<EMovableType> INFANTRY = EnumSet.of(
-			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
-			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
+		SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
+		PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3
+	);
 
-	private final EMaterialType tool;
-	private final ESelectionType selectionType;
-	private final boolean needsPlayersGround;
-	private final short stepDurationMs;
-	private final float health;
-	private final float strength;
+	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_BOAT);
 
-	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround) {
-		this(tool, selectionType, needsPlayersGround, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
+	public final EMaterialType  tool;
+	public final ESelectionType selectionType;
+	public final boolean        needsPlayersGround;
+	public final boolean        playerControllable;
+	public final boolean        attackable;
+	public final short          stepDurationMs;
+	public final float          health;
+	public final float          strength;
+
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable) {
+		this(tool, selectionType, needsPlayersGround, playerControllable, playerControllable, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
 	}
 
-	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, double stepDurationSec, float health, float strength) {
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable, boolean attackable) {
+		this(tool, selectionType, needsPlayersGround, playerControllable, attackable, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
+	}
+
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable, double stepDurationSec, float health, float strength) {
+		this(tool, selectionType, needsPlayersGround, playerControllable, playerControllable, stepDurationSec, health, strength);
+	}
+
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, boolean playerControllable, boolean attackable, double stepDurationSec, float health, float strength) {
 		this.tool = tool;
 		this.selectionType = selectionType;
 		this.needsPlayersGround = needsPlayersGround;
+		this.playerControllable = playerControllable;
+		this.attackable = attackable;
 		this.stepDurationMs = (short) (stepDurationSec * 1000 * STEP_DURATION_SPEEDUP_FACTOR);
 		this.health = health;
 		this.strength = strength;
@@ -143,7 +163,7 @@ public enum EMovableType {
 	}
 
 	public final boolean isPlayerControllable() {
-		return !needsPlayersGround;
+		return playerControllable;
 	}
 
 	public short getStepDurationMs() {
@@ -168,6 +188,10 @@ public enum EMovableType {
 
 	public boolean isInfantry() {
 		return INFANTRY.contains(this);
+	}
+
+	public boolean isShip() {
+		return SHIPS.contains(this);
 	}
 
 	public ESoldierType getSoldierType() {

@@ -76,8 +76,9 @@ public final class DijkstraAlgorithm {
 						map.setDijkstraSearched(x, y);
 						if (map.fitsSearchType(x, y, type, requester)) {
 							Path path = findPathTo(requester, x, y);
-							if (path != null)
+							if (path != null) {
 								return path;
+							}
 						}
 					}
 				}
@@ -88,7 +89,7 @@ public final class DijkstraAlgorithm {
 	}
 
 	private final Path findPathTo(IPathCalculatable requester, short tx, short ty) {
-		ShortPoint2D pos = requester.getPos();
+		ShortPoint2D pos = requester.getPosition();
 		return aStar.findPath(requester, pos.x, pos.y, tx, ty);
 	}
 

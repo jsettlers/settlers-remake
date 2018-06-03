@@ -57,7 +57,7 @@ public class PredicatedPositionableList<T extends ILocatable> extends Positionab
 				continue;
 			}
 
-			int currDist = MathUtils.squareHypot(position, currEntry.getPos());
+			int currDist = MathUtils.squareHypot(position, currEntry.getPosition());
 
 			if (bestDistance > currDist) {
 				bestDistance = currDist;

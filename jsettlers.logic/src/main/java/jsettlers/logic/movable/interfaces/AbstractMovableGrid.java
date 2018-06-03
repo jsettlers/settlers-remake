@@ -94,4 +94,10 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 	public abstract boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y);
 
 	public abstract boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos);
+
+	public abstract int getWidth();
+
+	public abstract int getHeight();
+
+	public abstract boolean isWater(int x, int y);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -27,15 +27,17 @@ import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MovableObject;
 
+import java.util.ArrayList;
+
 public class MovableObjectContainer implements ObjectContainer, IMovable {
 
 	private final MovableObject movableObject;
-	private final ShortPoint2D pos;
+	private final ShortPoint2D position;
 	private final IPlayer.DummyPlayer player;
 
 	public MovableObjectContainer(MovableObject movableObject, int x, int y) {
 		this.movableObject = movableObject;
-		this.pos = new ShortPoint2D(x, y);
+		this.position = new ShortPoint2D(x, y);
 		this.player = new IPlayer.DummyPlayer(movableObject.getPlayerId());
 	}
 
@@ -60,6 +62,31 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
+	}
+
+	@Override
+	public boolean isShip() {
+		return false;
+	}
+
+	@Override
+	public ArrayList<IMovable> getPassengers() {
+		return null;
+	}
+
+	@Override
+	public int getNumberOfCargoStacks() {
+		return 0;
+	}
+
+	@Override
+	public EMaterialType getCargoType(int stack) {
+		return null;
+	}
+
+	@Override
+	public int getCargoCount(int stack) {
+		return 0;
 	}
 
 	@Override
@@ -93,13 +120,13 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
-		return pos;
+	public float getHealth() {
+		return 1;
 	}
 
 	@Override
-	public float getHealth() {
-		return 1;
+	public boolean isAlive() {
+		return true;
 	}
 
 	@Override
@@ -129,5 +156,10 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	@Override
 	public int getID() {
 		return 0;
+	}
+
+	@Override
+	public ShortPoint2D getPosition() {
+		return position;
 	}
 }
