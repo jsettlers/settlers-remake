@@ -15,13 +15,7 @@
 
 package jsettlers.graphics.image.reader;
 
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
-import jsettlers.graphics.image.reader.AdvancedDatFileReader;
-import jsettlers.graphics.image.reader.DatFileType;
-
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,22 +28,17 @@ public class DatFileUtils {
 		File[] gfxDatFiles = gfxDirectory.listFiles();
 		List<File> distinctGfxDatFiles = distinctFileNames(gfxDatFiles);
 
-		List<Long> allHashes = stream(distinctGfxDatFiles)
-				.filter(file -> file.getName().toLowerCase().endsWith(".dat"))
-				.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile))).map(reader -> {
-					List<Long> hashes = new ArrayList<>();
-					hashes.addAll(reader.getSettlersHashes());
-					hashes.addAll(reader.getGuiHashes());
-					return hashes;
-				}).flatMap(StreamSupport::stream).collect(Collectors.toList());
+		Hashes.Builder hashesBuilder = new Hashes.Builder();
+		stream(distinctGfxDatFiles)
+			.filter(file -> file.getName().toLowerCase().endsWith(".dat"))
+			.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile)))
+			.forEach(reader -> {
+				hashesBuilder.add(reader.getSettlersHashes())
+						.add(reader.getGuiHashes());
+			});
 
-		long hashCode = 1L;
-		long multiplier = 1L;
-		for (Long hash : allHashes) {
-			multiplier *= 31L;
-			hashCode += (hash + 27L) * multiplier;
-		}
-		return Long.toString(hashCode);
+		Hashes allHashes = hashesBuilder.build();
+		return allHashes.hash();
 	}
 
 	public static List<File> distinctFileNames(File[] files) {
