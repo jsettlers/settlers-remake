@@ -23,7 +23,8 @@ package jsettlers.logic.constants;
 public final class Constants {
 
 	public static final int MAX_FERRY_ENTRANCE_SEARCH_DISTANCE = 4;
-	public static final int MAX_FERRY_ENTRANCE_DISTANCE = 6;
+	public static final int MAX_FERRY_ENTRANCE_DISTANCE        = 6;
+	public static final int MAX_FERRY_UNLOADING_RADIUS         = 8;
 
 	public static boolean FOG_OF_WAR_DEFAULT_ENABLED = true;
 

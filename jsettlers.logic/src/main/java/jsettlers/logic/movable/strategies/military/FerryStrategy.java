@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
@@ -62,7 +63,7 @@ public class FerryStrategy extends MovableStrategy {
 		ShortPoint2D position = super.getPosition();
 		AbstractMovableGrid grid = super.getGrid();
 
-		HexGridArea.stream(position.x, position.y, 2, 6)
+		HexGridArea.stream(position.x, position.y, 2, Constants.MAX_FERRY_UNLOADING_RADIUS)
 				   .filterBounds(grid.getWidth(), grid.getHeight())
 				   .filter((x, y) -> !grid.isWater(x, y))
 				   .iterate((x, y) -> {
