@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
+import java.util.ArrayList;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -24,18 +26,17 @@ import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
-import java.util.ArrayList;
-
 public class TestSettler implements IMovable {
 
-	private EDirection direction;
-	private TestTile position;
-	private short progress = 0;
-	private final IPlayer player;
-	private EMaterialType material = EMaterialType.NO_MATERIAL;
+	private final IPlayer      player;
 	private final EMovableType type;
+	
+	private EDirection    direction;
+	private TestTile      position;
+	private short         progress = 0;
+	private EMaterialType material = EMaterialType.NO_MATERIAL;
 
-	public TestSettler(EDirection direction, EMovableType type, TestTile tile, byte player) {
+	TestSettler(EDirection direction, EMovableType type, TestTile tile, byte player) {
 		this.type = type;
 		this.setDirection(direction);
 		this.setPosition(tile);
@@ -57,7 +58,7 @@ public class TestSettler implements IMovable {
 		return this.material;
 	}
 
-	public void setMaterial(EMaterialType material) {
+	void setMaterial(EMaterialType material) {
 		this.material = material;
 	}
 
@@ -71,7 +72,7 @@ public class TestSettler implements IMovable {
 		return this.player;
 	}
 
-	public void increaseProgress() {
+	void increaseProgress() {
 		this.progress++;
 	}
 
@@ -80,16 +81,16 @@ public class TestSettler implements IMovable {
 		return Math.min(0.1f * this.progress, 1);
 	}
 
-	public boolean moveOn() {
+	boolean moveOn() {
 		return (0.1f * this.progress) > 1;
 	}
 
-	public void setPosition(TestTile position) {
+	void setPosition(TestTile position) {
 		this.position = position;
 		this.progress = 0;
 	}
 
-	public void setDirection(EDirection direction) {
+	void setDirection(EDirection direction) {
 		this.direction = direction;
 		this.progress = 0;
 	}
@@ -115,11 +116,6 @@ public class TestSettler implements IMovable {
 
 	@Override
 	public final void stopOrStartWorking(boolean stop) {
-	}
-
-	@Override
-	public boolean isShip() {
-		return getMovableType().isShip();
 	}
 
 	@Override

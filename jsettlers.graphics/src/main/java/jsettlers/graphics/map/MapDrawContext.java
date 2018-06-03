@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -63,42 +63,42 @@ public final class MapDrawContext implements IGLProvider {
 	 * Color for settler player, the first 20 colors are copied from an original settler 3 editor screenshot, the other 12 colors are choosen so they
 	 * are unique
 	 */
-	private static final Color[] PLAYER_COLORS = new Color[] {
-			// Color 0 .. 19 Original settler colors
-			new Color(0xFFF71000),
-			new Color(0xFF108CF7),
-			new Color(0xFFF7F700),
-			new Color(0xFF29B552),
-			new Color(0xFFF78C00),
-			new Color(0xFF00F7F7),
-			new Color(0xFFF700F7),
-			new Color(0xFF292929),
-			new Color(0xFFF7F7F7),
-			new Color(0xFF0010F7),
-			new Color(0xFFCE4A10),
-			new Color(0xFF8C8C8C),
-			new Color(0xFFAD08DE),
-			new Color(0xFF006B00),
-			new Color(0xFFF7BDBD),
-			new Color(0xFF84EFA5),
-			new Color(0xFF9C0831),
-			new Color(0xFFCE8CE7),
-			new Color(0xFFF7CE94),
-			new Color(0xFF8CBDEF),
+	private static final Color[] PLAYER_COLORS = new Color[]{
+		// Color 0 .. 19 Original settler colors
+		new Color(0xFFF71000),
+		new Color(0xFF108CF7),
+		new Color(0xFFF7F700),
+		new Color(0xFF29B552),
+		new Color(0xFFF78C00),
+		new Color(0xFF00F7F7),
+		new Color(0xFFF700F7),
+		new Color(0xFF292929),
+		new Color(0xFFF7F7F7),
+		new Color(0xFF0010F7),
+		new Color(0xFFCE4A10),
+		new Color(0xFF8C8C8C),
+		new Color(0xFFAD08DE),
+		new Color(0xFF006B00),
+		new Color(0xFFF7BDBD),
+		new Color(0xFF84EFA5),
+		new Color(0xFF9C0831),
+		new Color(0xFFCE8CE7),
+		new Color(0xFFF7CE94),
+		new Color(0xFF8CBDEF),
 
-			// Additional 12 Colors
-			new Color(0xFFBAFF45),
-			new Color(0xFFCD0973),
-			new Color(0xFFD9F1AF),
-			new Color(0xFF6E005F),
-			new Color(0xFFA3C503),
-			new Color(0xFF64B3B9),
-			new Color(0xFFB3F6FB),
-			new Color(0xFF8E592B),
-			new Color(0xFF8E882B),
-			new Color(0xFFD9E0FF),
-			new Color(0xFFD4D4D4),
-			new Color(0xFFFF578F)
+		// Additional 12 Colors
+		new Color(0xFFBAFF45),
+		new Color(0xFFCD0973),
+		new Color(0xFFD9F1AF),
+		new Color(0xFF6E005F),
+		new Color(0xFFA3C503),
+		new Color(0xFF64B3B9),
+		new Color(0xFFB3F6FB),
+		new Color(0xFF8E592B),
+		new Color(0xFF8E882B),
+		new Color(0xFFD9E0FF),
+		new Color(0xFFD4D4D4),
+		new Color(0xFFFF578F)
 	};
 
 	public boolean ENABLE_ORIGINAL = true;
@@ -122,8 +122,9 @@ public final class MapDrawContext implements IGLProvider {
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
 		this.converter = MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
-				DrawConstants.DISTANCE_Y, map.getWidth(),
-				map.getHeight());
+			DrawConstants.DISTANCE_Y, map.getWidth(),
+			map.getHeight()
+		);
 
 		buffer = new DrawBuffer(this);
 	}
@@ -156,7 +157,8 @@ public final class MapDrawContext implements IGLProvider {
 		float zoom = screen.getZoom();
 		gl2.glScalef(zoom, zoom, 1);
 		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
-				(int) -this.screen.getBottom() + .5f, 0);
+			(int) -this.screen.getBottom() + .5f, 0
+		);
 	}
 
 	/**
@@ -230,8 +232,8 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public ShortPoint2D getPositionOnScreen(float x, float y) {
 		return getPositionUnder(
-				x / this.screen.getZoom() + this.screen.getLeft(), y
-						/ this.screen.getZoom() + this.screen.getBottom());
+			x / this.screen.getZoom() + this.screen.getLeft(), y
+				/ this.screen.getZoom() + this.screen.getBottom());
 	}
 
 	/**
@@ -245,7 +247,7 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public boolean checkMapCoordinates(int x, int y) {
 		return x >= 0 && x < this.map.getWidth() && y >= 0
-				&& y < this.map.getHeight();
+			&& y < this.map.getHeight();
 	}
 
 	/**
@@ -284,7 +286,8 @@ public final class MapDrawContext implements IGLProvider {
 		this.gl.glPushMatrix();
 		int height = getHeight(x, y);
 		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
-				this.converter.getViewY(x, y, height), 0);
+			this.converter.getViewY(x, y, height), 0
+		);
 	}
 
 	/**
@@ -335,7 +338,7 @@ public final class MapDrawContext implements IGLProvider {
 		/**
 		 * Helper rectangle.
 		 */
-		private final MapRectangle base;
+		private final MapRectangle   base;
 		private final FloatRectangle drawRect;
 
 		/**
@@ -377,8 +380,8 @@ public final class MapDrawContext implements IGLProvider {
 			 * How many lines to search at least.
 			 */
 			private ShortPoint2D next;
-			private int currentLine = 0;
-			private int currentX;
+			private int          currentLine = 0;
+			private int          currentX;
 
 			private ScreenIterator() {
 				currentX = base.getLineStartX(0);

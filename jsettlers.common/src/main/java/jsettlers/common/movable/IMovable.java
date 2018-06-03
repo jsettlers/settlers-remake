@@ -92,8 +92,6 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 */
 	void stopOrStartWorking(boolean stop);
 
-	boolean isShip();
-
 	List<? extends IMovable> getPassengers();
 
 	int getNumberOfCargoStacks();

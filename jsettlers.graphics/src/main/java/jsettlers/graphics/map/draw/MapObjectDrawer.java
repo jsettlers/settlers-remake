@@ -668,7 +668,7 @@ public class MapObjectDrawer {
 		forceSetup();
 
 		final ShortPoint2D pos = movable.getPosition();
-		if (movable.isShip()) {
+		if (movable.getMovableType().isShip()) {
 			drawShip(movable, pos.x, pos.y);
 		} else {
 			drawMovableAt(movable, pos.x, pos.y);
