@@ -29,7 +29,7 @@ import jsettlers.main.swing.lookandfeel.ui.img.UiImageLoader;
 
 /**
  * Background Panel UI
- * 
+ *
  * @author Andreas Butti
  */
 public class BackgroundPanelUi extends PanelUI {
@@ -37,7 +37,7 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Background texture
 	 */
-	private final BufferedImage backgroundTextture = UiImageLoader.get("ui_bg/ui_background.png");
+	private final BufferedImage backgroundTexture = UiImageLoader.get("ui_bg/ui_background.png");
 
 	/**
 	 * Border texture for the border line
@@ -75,8 +75,7 @@ public class BackgroundPanelUi extends PanelUI {
 		super.paint(graphics, component);
 
 		Graphics2D graphics2D = DrawHelper.enableAntialiasing(graphics);
-		if (cachedBackground == null || cachedBackground.getWidth() != component.getWidth()
-				|| cachedBackground.getHeight() != component.getHeight()) {
+		if (cachedBackground == null || cachedBackground.getWidth() != component.getWidth() || cachedBackground.getHeight() != component.getHeight()) {
 			recreateBackgroundImage(component);
 		}
 
@@ -85,7 +84,7 @@ public class BackgroundPanelUi extends PanelUI {
 
 	/**
 	 * Paint the leaves in the foreground
-	 * 
+	 *
 	 * @param graphics
 	 *            Graphics
 	 * @param component
@@ -97,7 +96,7 @@ public class BackgroundPanelUi extends PanelUI {
 
 	/**
 	 * Recreate the cached background image, if needed
-	 * 
+	 *
 	 * @param component
 	 *            The component
 	 */
@@ -111,7 +110,7 @@ public class BackgroundPanelUi extends PanelUI {
 		Graphics2D graphics = cachedBackground.createGraphics();
 
 		// scale the background color image
-		graphics.drawImage(backgroundTextture, 0, 0, width, height, component);
+		graphics.drawImage(backgroundTexture, 0, 0, width, height, component);
 
 		BorderDrawer border = new BorderDrawer(graphics, 3, 0, 0, width, height);
 		BufferedImage scaledTexture = DrawHelper.toBufferedImage(borderTexture.getScaledInstance(width, height, BufferedImage.SCALE_FAST));
