@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
+import java.util.ArrayList;
+
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
@@ -25,14 +28,15 @@ import jsettlers.common.selectable.ESelectionType;
 
 public class TestSettler implements IMovable {
 
-	private EDirection direction;
-	private TestTile position;
-	private short progress = 0;
-	private final IPlayer player;
-	private EMaterialType material = EMaterialType.NO_MATERIAL;
+	private final IPlayer      player;
 	private final EMovableType type;
+	
+	private EDirection    direction;
+	private TestTile      position;
+	private short         progress = 0;
+	private EMaterialType material = EMaterialType.NO_MATERIAL;
 
-	public TestSettler(EDirection direction, EMovableType type, TestTile tile, byte player) {
+	TestSettler(EDirection direction, EMovableType type, TestTile tile, byte player) {
 		this.type = type;
 		this.setDirection(direction);
 		this.setPosition(tile);
@@ -54,7 +58,7 @@ public class TestSettler implements IMovable {
 		return this.material;
 	}
 
-	public void setMaterial(EMaterialType material) {
+	void setMaterial(EMaterialType material) {
 		this.material = material;
 	}
 
@@ -64,16 +68,11 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
-		return this.position.getPos();
-	}
-
-	@Override
 	public IPlayer getPlayer() {
 		return this.player;
 	}
 
-	public void increaseProgress() {
+	void increaseProgress() {
 		this.progress++;
 	}
 
@@ -82,16 +81,16 @@ public class TestSettler implements IMovable {
 		return Math.min(0.1f * this.progress, 1);
 	}
 
-	public boolean moveOn() {
+	boolean moveOn() {
 		return (0.1f * this.progress) > 1;
 	}
 
-	public void setPosition(TestTile position) {
+	void setPosition(TestTile position) {
 		this.position = position;
 		this.progress = 0;
 	}
 
-	public void setDirection(EDirection direction) {
+	void setDirection(EDirection direction) {
 		this.direction = direction;
 		this.progress = 0;
 	}
@@ -111,7 +110,37 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
+	public boolean isAlive() {
+		return false;
+	}
+
+	@Override
 	public final void stopOrStartWorking(boolean stop) {
+	}
+
+	@Override
+	public ArrayList<IMovable> getPassengers() {
+		return null;
+	}
+
+	@Override
+	public int getNumberOfCargoStacks() {
+		return 0;
+	}
+
+	@Override
+	public EMaterialType getCargoType(int stack) {
+		return null;
+	}
+
+	@Override
+	public int getCargoCount(int stack) {
+		return 0;
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return null;
 	}
 
 	@Override
@@ -136,5 +165,10 @@ public class TestSettler implements IMovable {
 	@Override
 	public int getID() {
 		return 0;
+	}
+
+	@Override
+	public ShortPoint2D getPosition() {
+		return position.getPosition();
 	}
 }

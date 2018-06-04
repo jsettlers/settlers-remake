@@ -42,7 +42,7 @@ public class RegenerateAutoReplayITReferences {
 		TestUtils.setupTempResourceManager();
 	}
 
-	public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException, SwingResourceLoader.ResourceSetupException {
+	public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException {
 		System.out.println("Creating reference files for replays...");
 
 		for (AutoReplaySetting setting : AutoReplaySetting.getDefaultSettings()) {

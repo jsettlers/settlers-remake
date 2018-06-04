@@ -20,17 +20,17 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.graphics.action.PointAction;
+import jsettlers.common.action.PointAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
@@ -38,6 +38,7 @@ import jsettlers.graphics.map.controls.original.panel.content.ContentType;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BearerSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent;
+import jsettlers.graphics.map.controls.original.panel.selection.ShipSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.SoilderSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.SpecialistSelectionContent;
 import jsettlers.graphics.map.minimap.Minimap;
@@ -384,7 +385,9 @@ public class OriginalControls implements IControls {
 			case SPECIALISTS:
 				mainPanel.setContent(new SpecialistSelectionContent(selection));
 				break;
-
+			case SHIPS:
+				mainPanel.setContent(new ShipSelectionContent(selection));
+				break;
 			case BUILDING:
 				mainPanel.setContent(new BuildingSelectionContent(selection));
 				break;

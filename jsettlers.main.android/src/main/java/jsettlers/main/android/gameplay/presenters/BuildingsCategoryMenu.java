@@ -18,8 +18,8 @@ package jsettlers.main.android.gameplay.presenters;
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ShowConstructionMarksAction;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
@@ -27,6 +27,7 @@ import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+import jsettlers.main.android.gameplay.viewstates.BuildingState;
 
 import java.util.List;
 
@@ -81,10 +82,10 @@ public class BuildingsCategoryMenu implements DrawListener {
 		view.setBuildings(buildingTiles(buildingCounts));
 	}
 
-	private List<BuildingTile> buildingTiles(IBuildingCounts buildingCounts) {
+	private List<BuildingState> buildingTiles(IBuildingCounts buildingCounts) {
 
 		return stream(buildingsCategory.buildingTypes)
-				.map(buildingType -> new BuildingTile(buildingType, buildingCounts))
+				.map(buildingType -> new BuildingState(buildingType, buildingCounts))
 				.collect(Collectors.toList());
 	}
 }

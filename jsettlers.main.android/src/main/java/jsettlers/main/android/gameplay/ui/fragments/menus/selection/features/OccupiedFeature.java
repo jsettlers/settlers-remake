@@ -20,11 +20,11 @@ import java.util.List;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.SoldierAction;
+import jsettlers.common.action.SoldierAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
@@ -134,7 +134,7 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
 	}
 
 	private void update() {
-		if (getBuildingState().isOccupied()) {
+		if (!getBuildingState().isConstruction()) {
 			controlsLayout.setVisibility(View.VISIBLE);
 			infantryLayout.removeAllViews();
 			bowmenLayout.removeAllViews();

@@ -30,7 +30,6 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
@@ -48,22 +47,22 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.UIState;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.statistics.IGameTimeProvider;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.action.ScreenChangeAction;
-import jsettlers.graphics.action.SelectAreaAction;
-import jsettlers.graphics.action.ShowConstructionMarksAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.ScreenChangeAction;
+import jsettlers.common.action.SelectAreaAction;
+import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
@@ -324,7 +323,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (timeDifference > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			ImageLink image = GOTO_ANIMATION.getImage(timeDifference < GOTO_MARK_TIME / 2 ? 0 : 1);
+			ImageLink image = GOTO_ANIMATION.getImageLink(timeDifference < GOTO_MARK_TIME / 2 ? 0 : 1);
 			objectDrawer.drawGotoMarker(scrollMarker, ImageProvider.getInstance().getImage(image));
 		}
 	}
@@ -374,7 +373,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 
 			drawer.setColor(1, 1, 1, a);
-			drawer.drawString(x, y, m.getMessage());
+			drawer.drawString(x, y, Labels.getString(m.getMessageLabel()));
 
 			messageIndex++;
 		}
@@ -930,6 +929,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				break;
 			}
 		}
+	}
+
+	public void playSound(int soundId, float volume) {
+		soundmanager.playSound(soundId, volume);
 	}
 
 	@Override

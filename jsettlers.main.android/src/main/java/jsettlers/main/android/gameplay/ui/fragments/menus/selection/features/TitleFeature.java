@@ -67,14 +67,15 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 	@Override
 	public void draw() {
 		if (hasNewState()) {
+			getView().post(this::update);
+		}
+	}
 
-			getView().post(() -> {
-				if (!getBuildingState().isConstruction()) {
-					String name = Labels.getName(getBuilding().getBuildingType());
-					nameTextView.setText(name);
-					drawControls.removeInfrequentDrawListener(TitleFeature.this);
-				}
-			});
+	private void update() {
+		if (!getBuildingState().isConstruction()) {
+			String name = Labels.getName(getBuilding().getBuildingType());
+			nameTextView.setText(name);
+			drawControls.removeInfrequentDrawListener(TitleFeature.this);
 		}
 	}
 }

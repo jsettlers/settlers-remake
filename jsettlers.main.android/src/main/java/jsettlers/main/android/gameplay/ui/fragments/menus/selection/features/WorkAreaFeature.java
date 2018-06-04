@@ -17,9 +17,9 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
@@ -40,6 +40,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
 
 	private final ActionControls actionControls;
 	private final TaskControls taskControls;
+	private final MenuNavigator menuNavigator;
 
 	private Snackbar snackbar;
 
@@ -47,6 +48,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
 		super(view, building, menuNavigator);
 		this.actionControls = actionControls;
 		this.taskControls = taskControls;
+		this.menuNavigator = menuNavigator;
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
 		ImageLink imageLink = ImageLink.fromName(image, 0);
 		OriginalImageProvider.get(imageLink).setAsImage(workAreaButton.getImageView());
 
-		workAreaButton.setOnClickListener(view -> actionControls.fireAction(new Action(EActionType.ASK_SET_WORK_AREA)));
+		workAreaButton.setOnClickListener(this::workAreaClicked);
 
 		actionControls.addActionListener(this);
 	}
@@ -83,6 +85,11 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
 		case ABORT:
 			dismissSnackbar();
 		}
+	}
+
+	private void workAreaClicked(View view) {
+		actionControls.fireAction(new Action(EActionType.ASK_SET_WORK_AREA));
+		menuNavigator.dismissMenu();
 	}
 
 	private void dismissSnackbar() {

@@ -53,7 +53,7 @@ public abstract class CommonConstants {
 	/**
 	 * This is the default address the network game connects to.
 	 */
-	public static String DEFAULT_SERVER_ADDRESS = "217.160.141.89";
+	public static final String DEFAULT_SERVER_ADDRESS = "217.160.141.89";
 
 	/**
 	 * If this is set to <code>true</code> the UI allows you to control all players.
@@ -64,21 +64,6 @@ public abstract class CommonConstants {
 	 * If set to <code>true</code>, save games are compressed.
 	 */
 	public static boolean USE_SAVEGAME_COMPRESSION = false;
-
-	/**
-	 * Enables the AI submodule.
-	 */
-	public static boolean ENABLE_AI = true;
-
-	/**
-	 * If set to <code>true</code>, all players - including the player controlled by the user - are controlled by the AI.
-	 */
-	public static boolean ALL_AI = false;
-
-	/**
-	 * If set, only this AI type is used.
-	 */
-	public static EPlayerType FIXED_AI_TYPE = null; // TODO remove
 
 	/**
 	 * Option to disable the loading of original maps.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -57,7 +57,7 @@ public class SettingsMenuPanel extends JPanel {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param mainMenuPanel
 	 *            Reference to main panel
 	 */
@@ -78,7 +78,7 @@ public class SettingsMenuPanel extends JPanel {
 
 	/**
 	 * Add a settings entry
-	 * 
+	 *
 	 * @param translationKey
 	 *            Translation key to read translation
 	 * @param settingComponent
@@ -103,8 +103,8 @@ public class SettingsMenuPanel extends JPanel {
 		saveButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
 		saveButton.addActionListener(e -> {
 			SettingsManager settingsManager = SettingsManager.getInstance();
-			settingsManager.set(SettingsManager.SETTING_USERNAME, playerNameField.getText());
-			settingsManager.set(SettingsManager.SETTING_VOLUME, (volumeSlider.getValue() / 100d) + "");
+			settingsManager.setUserName(playerNameField.getText());
+			settingsManager.setVolume((volumeSlider.getValue() / 100f));
 			mainMenuPanel.reset();
 		});
 

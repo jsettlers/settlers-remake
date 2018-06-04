@@ -18,6 +18,8 @@ import java.util.Locale;
 
 /**
  * This is a virtual link to a image in a settler image file.
+ * <p>
+ * Files indexes are always the ones of the gold editon of settlers 3. Internal translating allows to migtrate between gold and demo.
  * 
  * @author Michael Zangl
  * @see EImageLinkType
@@ -143,5 +145,9 @@ public final class OriginalImageLink extends ImageLink {
 	@Override
 	public int getImageIndex() {
 		return image;
+	}
+
+	public EImageLinkType type() {
+		return type;
 	}
 }

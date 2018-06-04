@@ -22,7 +22,7 @@ import java.util.List;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
+import jsettlers.common.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
@@ -87,11 +87,11 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	}
 
 	private void materialSelected(StockMaterialState stockMaterialState) {
-		actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), stockMaterialState.getMaterialType(), !stockMaterialState.isStocked(), true));
+		actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPosition(), stockMaterialState.getMaterialType(), !stockMaterialState.isStocked(), true));
 	}
 
 	private void update() {
-		if (getBuildingState().isStock()) {
+		if (!getBuildingState().isConstruction()) {
 			recyclerView.setVisibility(View.VISIBLE);
 			buildingImageView.setVisibility(View.INVISIBLE);
 

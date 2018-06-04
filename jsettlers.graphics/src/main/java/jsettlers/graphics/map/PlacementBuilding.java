@@ -33,7 +33,7 @@ import jsettlers.common.selectable.ESelectionType;
  * @author ?
  *
  */
-public class PlacementBuilding implements IBuilding, IBuilding.IMill {
+public class PlacementBuilding implements IBuilding, IBuilding.IMill, IBuilding.ISoundRequestable {
 	private final DummyPlayer player = new DummyPlayer();
 	private final EBuildingType typeToPlace;
 
@@ -92,7 +92,7 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return null;
 	}
 
@@ -137,5 +137,15 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	@Override
 	public boolean cannotWork() {
 		return false;
+	}
+
+	@Override
+	public boolean isSoundRequested() {
+		return false;
+	}
+
+	@Override
+	public void requestSound() {
+
 	}
 }

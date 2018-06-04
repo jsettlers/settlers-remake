@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.util.Iterator;
+
 import go.graphics.GLDrawContext;
-import go.graphics.UIPoint;
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -29,8 +29,6 @@ import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
-
-import java.util.Iterator;
 
 /**
  * This is the drawing context for a map. It is used to translate the visible screen space to local coordinate space and holds the current gl context.
@@ -65,42 +63,42 @@ public final class MapDrawContext implements IGLProvider {
 	 * Color for settler player, the first 20 colors are copied from an original settler 3 editor screenshot, the other 12 colors are choosen so they
 	 * are unique
 	 */
-	private static final Color[] PLAYER_COLORS = new Color[] {
-			// Color 0 .. 19 Original settler colors
-			new Color(0xFFF71000),
-			new Color(0xFF108CF7),
-			new Color(0xFFF7F700),
-			new Color(0xFF29B552),
-			new Color(0xFFF78C00),
-			new Color(0xFF00F7F7),
-			new Color(0xFFF700F7),
-			new Color(0xFF292929),
-			new Color(0xFFF7F7F7),
-			new Color(0xFF0010F7),
-			new Color(0xFFCE4A10),
-			new Color(0xFF8C8C8C),
-			new Color(0xFFAD08DE),
-			new Color(0xFF006B00),
-			new Color(0xFFF7BDBD),
-			new Color(0xFF84EFA5),
-			new Color(0xFF9C0831),
-			new Color(0xFFCE8CE7),
-			new Color(0xFFF7CE94),
-			new Color(0xFF8CBDEF),
+	private static final Color[] PLAYER_COLORS = new Color[]{
+		// Color 0 .. 19 Original settler colors
+		new Color(0xFFF71000),
+		new Color(0xFF108CF7),
+		new Color(0xFFF7F700),
+		new Color(0xFF29B552),
+		new Color(0xFFF78C00),
+		new Color(0xFF00F7F7),
+		new Color(0xFFF700F7),
+		new Color(0xFF292929),
+		new Color(0xFFF7F7F7),
+		new Color(0xFF0010F7),
+		new Color(0xFFCE4A10),
+		new Color(0xFF8C8C8C),
+		new Color(0xFFAD08DE),
+		new Color(0xFF006B00),
+		new Color(0xFFF7BDBD),
+		new Color(0xFF84EFA5),
+		new Color(0xFF9C0831),
+		new Color(0xFFCE8CE7),
+		new Color(0xFFF7CE94),
+		new Color(0xFF8CBDEF),
 
-			// Additional 12 Colors
-			new Color(0xFFBAFF45),
-			new Color(0xFFCD0973),
-			new Color(0xFFD9F1AF),
-			new Color(0xFF6E005F),
-			new Color(0xFFA3C503),
-			new Color(0xFF64B3B9),
-			new Color(0xFFB3F6FB),
-			new Color(0xFF8E592B),
-			new Color(0xFF8E882B),
-			new Color(0xFFD9E0FF),
-			new Color(0xFFD4D4D4),
-			new Color(0xFFFF578F)
+		// Additional 12 Colors
+		new Color(0xFFBAFF45),
+		new Color(0xFFCD0973),
+		new Color(0xFFD9F1AF),
+		new Color(0xFF6E005F),
+		new Color(0xFFA3C503),
+		new Color(0xFF64B3B9),
+		new Color(0xFFB3F6FB),
+		new Color(0xFF8E592B),
+		new Color(0xFF8E882B),
+		new Color(0xFFD9E0FF),
+		new Color(0xFFD4D4D4),
+		new Color(0xFFFF578F)
 	};
 
 	public boolean ENABLE_ORIGINAL = true;
@@ -124,8 +122,9 @@ public final class MapDrawContext implements IGLProvider {
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
 		this.converter = MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
-				DrawConstants.DISTANCE_Y, map.getWidth(),
-				map.getHeight());
+			DrawConstants.DISTANCE_Y, map.getWidth(),
+			map.getHeight()
+		);
 
 		buffer = new DrawBuffer(this);
 	}
@@ -158,7 +157,8 @@ public final class MapDrawContext implements IGLProvider {
 		float zoom = screen.getZoom();
 		gl2.glScalef(zoom, zoom, 1);
 		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
-				(int) -this.screen.getBottom() + .5f, 0);
+			(int) -this.screen.getBottom() + .5f, 0
+		);
 	}
 
 	/**
@@ -205,30 +205,22 @@ public final class MapDrawContext implements IGLProvider {
 	 *            The y coordinate in draw space.
 	 * @return The map position under the point.
 	 */
-	public ShortPoint2D getPositionUnder(float screenX, float screenY) {
-		ShortPoint2D currentPoint = converter.getMap(screenX, screenY);
-		UIPoint desiredOnScreen = new UIPoint(screenX, screenY);
+	private ShortPoint2D getPositionUnder(float screenX, float screenY) {
+		// do a three step iteration by using the coordinate transformation and the map height
+		int mapX = getConverter().getMapX(screenX, screenY);
+		int mapY = getConverter().getMapY(screenX, screenY);
 
-		UIPoint onScreen = converter.getView(currentPoint.x, currentPoint.y, getHeight(currentPoint.x, currentPoint.y));
-		double currentBest = onScreen.distance(desiredOnScreen);
+		if (mapX < 0 || map.getWidth() <= mapX || mapY < 0 || map.getHeight() <= mapY) {
+			return new ShortPoint2D(mapX, mapY);
+		}
 
-		boolean couldBeImproved;
-		do {
-			couldBeImproved = false;
-
-			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
-				onScreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
-				double newDistance = onScreen.distance(desiredOnScreen);
-				if (newDistance < currentBest) {
-					currentBest = newDistance;
-					currentPoint = p;
-					couldBeImproved = true;
-				}
-			}
-
-		} while (couldBeImproved);
-
-		return currentPoint;
+		float height = map.getHeightAt(mapX, mapY);
+		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
+		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
+		height = map.getHeightAt(mapX, mapY);
+		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
+		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
+		return new ShortPoint2D(mapX, mapY);
 	}
 
 	/**
@@ -240,8 +232,8 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public ShortPoint2D getPositionOnScreen(float x, float y) {
 		return getPositionUnder(
-				x / this.screen.getZoom() + this.screen.getLeft(), y
-						/ this.screen.getZoom() + this.screen.getBottom());
+			x / this.screen.getZoom() + this.screen.getLeft(), y
+				/ this.screen.getZoom() + this.screen.getBottom());
 	}
 
 	/**
@@ -255,7 +247,7 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public boolean checkMapCoordinates(int x, int y) {
 		return x >= 0 && x < this.map.getWidth() && y >= 0
-				&& y < this.map.getHeight();
+			&& y < this.map.getHeight();
 	}
 
 	/**
@@ -294,7 +286,8 @@ public final class MapDrawContext implements IGLProvider {
 		this.gl.glPushMatrix();
 		int height = getHeight(x, y);
 		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
-				this.converter.getViewY(x, y, height), 0);
+			this.converter.getViewY(x, y, height), 0
+		);
 	}
 
 	/**
@@ -345,7 +338,7 @@ public final class MapDrawContext implements IGLProvider {
 		/**
 		 * Helper rectangle.
 		 */
-		private final MapRectangle base;
+		private final MapRectangle   base;
 		private final FloatRectangle drawRect;
 
 		/**
@@ -387,8 +380,8 @@ public final class MapDrawContext implements IGLProvider {
 			 * How many lines to search at least.
 			 */
 			private ShortPoint2D next;
-			private int currentLine = 0;
-			private int currentX;
+			private int          currentLine = 0;
+			private int          currentX;
 
 			private ScreenIterator() {
 				currentX = base.getLineStartX(0);
@@ -437,18 +430,10 @@ public final class MapDrawContext implements IGLProvider {
 			return new CoordinateStream() {
 				@Override
 				public boolean iterate(IBooleanCoordinateFunction function) {
-					int width = base.getWidth();
-					int lastRelativeYWithPoint = 0;
-
-					for (int relativeY = 0; relativeY < MIN_SEARCH_LINES || relativeY - lastRelativeYWithPoint <= 2; relativeY++) {
-						int lineStartX = base.getLineStartX(relativeY);
-
-						for (int relativeX = 0; relativeX < width; relativeX++) {
-							int x = lineStartX + relativeX;
-							int y = base.getLineY(relativeY);
-
+					MapRectangle rect = getConverter().getMapForScreen(drawRect);
+					for (int x = rect.getMinX(); x <= rect.getMinX() + rect.getHeight(); x++) {
+						for (int y = rect.getMinY(); y <= rect.getMinY() + rect.getHeight(); y++) {
 							if (HeightedMapRectangle.this.contains(x, y)) {
-								lastRelativeYWithPoint = relativeY;
 								if (!function.apply(x, y)) {
 									return false;
 								}

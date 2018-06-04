@@ -18,7 +18,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * This is the image of something that is displayed as an object on the map, e.g. an settler.

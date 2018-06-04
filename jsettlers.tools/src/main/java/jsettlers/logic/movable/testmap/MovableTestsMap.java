@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -51,13 +51,13 @@ import jsettlers.logic.player.Player;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
-	private final short width;
-	private final short height;
+	private final short  width;
+	private final short  height;
 	private final Player defaultPlayer;
 
-	private final ILogicMovable movableMap[][];
-	private final EMaterialType materialTypeMap[][];
-	private final byte materialAmountMap[][];
+	private final ILogicMovable    movableMap[][];
+	private final EMaterialType    materialTypeMap[][];
+	private final byte             materialAmountMap[][];
 	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
@@ -151,10 +151,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isFreePosition(ShortPoint2D position) {
-			short x = position.x;
-			short y = position.y;
-
+		public boolean isFreePosition(int x, int y) {
 			return isInBounds(x, y) && !isBlocked(x, y) && movableMap[x][y] == null;
 		}
 
@@ -192,13 +189,13 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 					}
 
 					@Override
-					public ShortPoint2D getPos() {
+					public ShortPoint2D getPosition() {
 						return source;
 					}
 				}, new IMaterialRequest() {
 
 					@Override
-					public ShortPoint2D getPos() {
+					public ShortPoint2D getPosition() {
 						return targetPos;
 					}
 
@@ -430,7 +427,22 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
+		public int getWidth() {
+			return width;
+		}
+
+		@Override
+		public int getHeight() {
+			return height;
+		}
+
+		@Override
+		public boolean isWater(int x, int y) {
+			return getLandscapeTypeAt(x, y).isWater;
+		}
+
+		@Override
+		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
 			return false;
 		}
 	};

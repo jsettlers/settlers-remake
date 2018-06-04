@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -47,7 +47,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		Iterator<T> iterator = data.iterator();
 		while (iterator.hasNext()) {
 			T curr = iterator.next();
-			if (curr.getPos().equals(position)) {
+			if (curr.getPosition().equals(position)) {
 				iterator.remove();
 				return curr;
 			}
@@ -64,7 +64,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 	 */
 	public T getObjectAt(ShortPoint2D position) {
 		for (T curr : data) {
-			if (curr.getPos().equals(position)) {
+			if (curr.getPosition().equals(position)) {
 				return curr;
 			}
 		}
@@ -93,7 +93,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		T currBest = null;
 
 		for (T currEntry : data) {
-			int currDist = MathUtils.squareHypot(position, currEntry.getPos());
+			int currDist = MathUtils.squareHypot(position, currEntry.getPosition());
 
 			if (bestDistance > currDist) {
 				bestDistance = currDist;
@@ -135,7 +135,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		Iterator<T> iterator = data.iterator();
 		while (iterator.hasNext()) {
 			T curr = iterator.next();
-			if (curr.getPos().equals(position)) {
+			if (curr.getPosition().equals(position)) {
 				iterator.remove();
 				movedVisitor.accept(curr);
 				newList.data.add(curr);

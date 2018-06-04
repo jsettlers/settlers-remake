@@ -51,8 +51,8 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
 		layoutInflater = LayoutInflater.from(getView().getContext());
 		materialsLayout = (LinearLayout) getView().findViewById(R.id.layout_materials);
 
-		if (getBuilding() instanceof IBuilding.IOccupied || getBuilding() instanceof IBuilding.IStock
-				|| getBuilding() instanceof IBuilding.ITrading) {
+		BuildingState state = getBuildingState();
+		if (state.isOccupied() || state.isStock() || state.isTrading()) {
 			hasPostConstructionMaterials = false;
 		}
 
@@ -73,7 +73,6 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
 
 	@Override
 	public void draw() {
-		// TODO would be more efficient to compare the stacks rather than the entire building state to avoid unnecessary work
 		if (hasNewState()) {
 			getView().post(this::update);
 		}

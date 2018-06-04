@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,16 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -37,6 +29,13 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TestMap implements IGraphicsGrid {
 	private static final int HEIGHT = 150;
@@ -159,11 +158,11 @@ public class TestMap implements IGraphicsGrid {
 			TestTile tile = getTile(cx, cy);
 			TestBuilding building = null;
 			if (tile.getLandscapeType() == ELandscapeType.GRASS) {
-				building = new TestBuilding(tile.getPos(), EBuildingType.LUMBERJACK);
+				building = new TestBuilding(tile.getPosition(), EBuildingType.LUMBERJACK);
 			} else if (tile.getLandscapeType() == ELandscapeType.MOUNTAIN) {
-				building = new TestBuilding(tile.getPos(), EBuildingType.COALMINE);
+				building = new TestBuilding(tile.getPosition(), EBuildingType.COALMINE);
 			} else if (tile.getLandscapeType() == ELandscapeType.SAND) {
-				building = new TestBuilding(tile.getPos(), EBuildingType.FISHER);
+				building = new TestBuilding(tile.getPosition(), EBuildingType.FISHER);
 			}
 			if (building != null) {
 				this.buildings.add(building);
@@ -359,7 +358,7 @@ public class TestMap implements IGraphicsGrid {
 				Collections.shuffle(directions);
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
-					TestTile tile = this.getTile(possibleDirection.getNextHexPoint(current.getPos()));
+					TestTile tile = this.getTile(possibleDirection.getNextHexPoint(current.getPosition()));
 					if (tile != null && tile.getHeight() <= current.getHeight() && tile.getLandscapeType() != ELandscapeType.RIVER1
 							&& tile.getLandscapeType() != ELandscapeType.RIVER2 && tile.getLandscapeType() != ELandscapeType.RIVER3
 							&& tile.getLandscapeType() != ELandscapeType.RIVER4 && getNeighbourRiverCount(tile) < 2) {
@@ -376,10 +375,10 @@ public class TestMap implements IGraphicsGrid {
 	private int getNeighbourRiverCount(TestTile tile) {
 		int rivers = 0;
 		for (EDirection dir : EDirection.VALUES) {
-			TestTile toTest = this.getTile(dir.getNextHexPoint(tile.getPos()));
+			TestTile toTest = this.getTile(dir.getNextHexPoint(tile.getPosition()));
 			if (toTest != null
 					&& (toTest.getLandscapeType() == ELandscapeType.RIVER1 || toTest.getLandscapeType() == ELandscapeType.RIVER2
-							|| toTest.getLandscapeType() == ELandscapeType.RIVER3 || toTest.getLandscapeType() == ELandscapeType.RIVER4)) {
+					|| toTest.getLandscapeType() == ELandscapeType.RIVER3 || toTest.getLandscapeType() == ELandscapeType.RIVER4)) {
 				rivers++;
 			}
 		}
@@ -411,16 +410,16 @@ public class TestMap implements IGraphicsGrid {
 		for (TestSettler settler : this.settlers) {
 			settler.increaseProgress();
 			if (settler.moveOn()) {
-				TestTile newPosition = this.getTile(settler.getDirection().getNextHexPoint(settler.getPos()));
+				TestTile newPosition = this.getTile(settler.getDirection().getNextHexPoint(settler.getPosition()));
 				if (newPosition == null) {
 					// should not happen
 					EDirection direction = getRandomDirection();
 					settler.setDirection(direction);
 				} else {
 
-					TestTile nextPosition = this.getTile(settler.getDirection().getNextHexPoint(newPosition.getPos()));
+					TestTile nextPosition = this.getTile(settler.getDirection().getNextHexPoint(newPosition.getPosition()));
 
-					this.getTile(settler.getPos()).setMovable(null);
+					this.getTile(settler.getPosition()).setMovable(null);
 					newPosition.setMovable(settler);
 					settler.setPosition(newPosition);
 
@@ -437,10 +436,6 @@ public class TestMap implements IGraphicsGrid {
 		}
 	}
 
-	public EBuildingType getConstructionPreviewBuilding() {
-		return null;
-	}
-
 	@Override
 	public short getHeight() {
 		return HEIGHT;
@@ -453,15 +448,6 @@ public class TestMap implements IGraphicsGrid {
 
 	public TestTile getTile(short x, short y) {
 		return getTile((int) x, (int) y);
-	}
-
-	/**
-	 * Gets any unspecified building.
-	 * 
-	 * @return The building.
-	 */
-	public IBuilding getAnyBuilding() {
-		return this.buildings.get(0);
 	}
 
 	public List<? extends IMovable> getAllSettlers() {

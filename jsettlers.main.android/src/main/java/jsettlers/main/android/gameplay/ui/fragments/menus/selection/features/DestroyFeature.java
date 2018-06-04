@@ -15,11 +15,14 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
+import android.support.design.widget.Snackbar;
+import android.view.View;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
@@ -27,9 +30,6 @@ import jsettlers.main.android.core.controls.ActionListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 import jsettlers.main.android.utils.OriginalImageProvider;
-
-import android.support.design.widget.Snackbar;
-import android.view.View;
 
 /**
  * Created by tompr on 10/01/2017.
@@ -66,7 +66,7 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
 	@Override
 	public void actionFired(IAction action) {
 		if (action.getActionType() == EActionType.ASK_DESTROY) {
-			Snackbar.make(getView(), "Destroy this building?", Snackbar.LENGTH_SHORT)
+			Snackbar.make(getView(), R.string.ask_destroy, Snackbar.LENGTH_SHORT)
 					.setAction("Yes", view -> {
 						actionControls.fireAction(new Action(EActionType.DESTROY));
 						getMenuNavigator().dismissMenu();

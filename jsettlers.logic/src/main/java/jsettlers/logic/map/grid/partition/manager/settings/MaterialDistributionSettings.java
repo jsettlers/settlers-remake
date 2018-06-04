@@ -33,7 +33,7 @@ public final class MaterialDistributionSettings implements IMaterialDistribution
 
 	private final EMaterialType materialType;
 	private final RelativeSettings<EBuildingType> distributionSettings = new RelativeSettings<>(EBuildingType.NUMBER_OF_BUILDINGS, index -> EBuildingType.VALUES[index], false);
-
+	private float requestValueSum = 0f;
 	/**
 	 * Creates a new object of {@link MaterialDistributionSettings} holding the settings for the given {@link EMaterialType}.
 	 *
@@ -44,7 +44,8 @@ public final class MaterialDistributionSettings implements IMaterialDistribution
 		this.materialType = materialType;
 
 		EBuildingType[] requestingBuildings = getBuildingTypes();
-		float initialValue = 1.0f / requestingBuildings.length;
+		requestValueSum = requestingBuildings.length;
+		float initialValue = 1.0f;
 		J8Arrays.stream(requestingBuildings).forEach(buildingType -> distributionSettings.setUserValue(buildingType, initialValue));
 	}
 
@@ -53,6 +54,9 @@ public final class MaterialDistributionSettings implements IMaterialDistribution
 	}
 
 	public void setUserConfiguredDistributionValue(EBuildingType buildingType, float value) {
+		float oldValue = distributionSettings.getUserValue(buildingType);
+		requestValueSum -= oldValue;
+		requestValueSum += value;
 		distributionSettings.setUserValue(buildingType, value);
 	}
 
@@ -63,7 +67,7 @@ public final class MaterialDistributionSettings implements IMaterialDistribution
 
 	@Override
 	public float getDistributionProbability(EBuildingType buildingType) {
-		return distributionSettings.getUserValue(buildingType);
+		return distributionSettings.getUserValue(buildingType) / requestValueSum;
 	}
 
 	@Override

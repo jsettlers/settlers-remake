@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 - 2017
+ * Copyright (c) 2016 - 2018
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -30,26 +30,26 @@ import jsettlers.testutils.map.MapUtils;
 public class AutoReplaySetting {
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return Arrays.asList(
-				new AutoReplaySetting("fullproduction", 10, 20, 40, 65));
+			new AutoReplaySetting("fullproduction", 0, 10, 20, 40, 65, 90));
 	}
 
 	private final String typeName;
-	private final int[] timeMinutes;
+	private final int[]  timeMinutes;
 
-	public AutoReplaySetting(String typeName, int... timeMinutes) {
+	private AutoReplaySetting(String typeName, int... timeMinutes) {
 		this.typeName = typeName;
 		this.timeMinutes = timeMinutes;
 	}
 
-	public String getTypeName() {
+	private String getTypeName() {
 		return typeName;
 	}
 
-	public int[] getTimeMinutes() {
+	int[] getTimeMinutes() {
 		return timeMinutes;
 	}
 
-	public String getPath(int index) {
+	private String getPath(int index) {
 		return getTypeName() + "/savegame-" + timeMinutes[index] + "m.zmap";
 	}
 
@@ -57,7 +57,7 @@ public class AutoReplaySetting {
 		return MapUtils.getMap(getClass(), getTypeName() + "/base.rmap");
 	}
 
-	public String getReplayName() {
+	private String getReplayName() {
 		return getTypeName() + "/replay.log";
 	}
 
@@ -65,26 +65,26 @@ public class AutoReplaySetting {
 		return MapUtils.createReplayForResource(getClass(), getReplayName(), getMap());
 	}
 
-	MapLoader getReferenceSavegame(int index) throws MapLoadException, IOException {
+	MapLoader getReferenceSavegame(int index) throws MapLoadException {
 		String replayPath = getReplayPath(index);
 
 		System.out.println("Using reference file: " + replayPath);
 		return MapLoader.getLoaderForListedMap(new MapList.ListedResourceMap(replayPath));
 	}
 
-	public String getReplayPath(int index) {
+	String getReplayPath(int index) {
 		return "/" + getClass().getPackage().getName().replace('.', '/') + "/" + getPath(index);
 	}
 
 	@Override
 	public String toString() {
 		return "AutoReplaySetting{" +
-				"typeName='" + typeName + '\'' +
-				", timeMinutes=" + Arrays.toString(timeMinutes) +
-				'}';
+			"typeName='" + typeName + '\'' +
+			", timeMinutes=" + Arrays.toString(timeMinutes) +
+			'}';
 	}
 
-	public void compareSaveGamesAndDelete(MapLoader[] actualSaveGames) throws MapLoadException, IOException, ClassNotFoundException {
+	void compareSaveGamesAndDelete(MapLoader[] actualSaveGames) throws MapLoadException, IOException, ClassNotFoundException {
 		for (int i = 0; i < actualSaveGames.length; i++) {
 			MapLoader actualSaveGame = actualSaveGames[i];
 			MapLoader expectedSaveGame = getReferenceSavegame(i);
