@@ -73,7 +73,7 @@ public enum EMovableType {
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, true),
 
 	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, true, false),
-	CARGO_BOAT(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, false);
+	CARGO_SHIP(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false, false);
 
 	/**
 	 * All step durations will be multiplied with this speedup factor.
@@ -102,7 +102,7 @@ public enum EMovableType {
 		PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3
 	);
 
-	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_BOAT);
+	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_SHIP);
 
 	public final EMaterialType  tool;
 	public final ESelectionType selectionType;

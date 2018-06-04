@@ -26,14 +26,14 @@ import jsettlers.logic.movable.Movable;
  * @author Rudolf Polzer
  *
  */
-public class CargoBoatStrategy extends TradingStrategy {
+public class CargoShipStrategy extends TradingStrategy {
 	private static final int   CARGO_STACKS           = 3;
 	private static final short WAYPOINT_SEARCH_RADIUS = 50;
 
 	private final EMaterialType cargoType[]  = new EMaterialType[CARGO_STACKS];
 	private final int           cargoCount[] = new int[CARGO_STACKS];
 
-	public CargoBoatStrategy(Movable movable) {
+	public CargoShipStrategy(Movable movable) {
 		super(movable);
 	}
 
