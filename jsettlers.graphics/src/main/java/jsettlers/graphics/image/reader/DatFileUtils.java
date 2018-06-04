@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import java8.util.stream.Collectors;
+
 import static java8.util.stream.StreamSupport.stream;
 
 public class DatFileUtils {
@@ -28,17 +30,14 @@ public class DatFileUtils {
 		File[] gfxDatFiles = gfxDirectory.listFiles();
 		List<File> distinctGfxDatFiles = distinctFileNames(gfxDatFiles);
 
-		Hashes.Builder hashesBuilder = new Hashes.Builder();
-		stream(distinctGfxDatFiles)
+		Hashes hashes = new Hashes(stream(distinctGfxDatFiles)
 			.filter(file -> file.getName().toLowerCase().endsWith(".dat"))
 			.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile)))
-			.forEach(reader -> {
-				hashesBuilder.add(reader.getSettlersHashes())
-						.add(reader.getGuiHashes());
-			});
+			.flatMap(reader -> stream(Arrays.asList(reader.getSettlersHashes(), reader.getGuiHashes())))
+			.flatMap(hash -> stream(hash.getHashes()))
+			.collect(Collectors.toList()));
 
-		Hashes allHashes = hashesBuilder.build();
-		return allHashes.hash();
+		return Long.toString(hashes.hash());
 	}
 
 	public static List<File> distinctFileNames(File[] files) {
