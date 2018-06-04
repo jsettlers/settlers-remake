@@ -104,24 +104,11 @@ public class DatFileMappingComparator {
 		AdvancedDatFileReader reader2 = new AdvancedDatFileReader(file2, DatFileType.getForPath(file2));
 
 		System.out.println("Comparing settlers hashes for files " + file1 + " and " + file2);
-		int[] settlersMapping = compareHashes(reader1.getSettlersHashes(), reader2.getSettlersHashes());
+		int[] settlersMapping = reader1.getSettlersHashes().compareAndCreateMapping(reader2.getSettlersHashes());
 		System.out.println("Comparing gui hashes for files " + file1 + " and " + file2);
-		int[] guiMapping = compareHashes(reader1.getGuiHashes(), reader2.getGuiHashes());
+		int[] guiMapping = reader1.getGuiHashes().compareAndCreateMapping(reader2.getGuiHashes());
 
 		return new IndexingDatFileMapping(settlersMapping, guiMapping);
-	}
-
-	private static int[] compareHashes(List<Long> hashes1, List<Long> hashes2) {
-		int[] mapping = new int[hashes1.size()];
-
-		for (int i1 = 0; i1 < hashes1.size(); i1++) {
-			Long h1 = hashes1.get(i1);
-			int i2 = i1 < hashes2.size() && h1.equals(hashes2.get(i1)) ? i1 : hashes2.indexOf(h1);
-			mapping[i1] = i2;
-			System.out.println(i1 + " -> " + i2);
-		}
-
-		return mapping;
 	}
 
 	private static void ensureReadable(File f2) {
