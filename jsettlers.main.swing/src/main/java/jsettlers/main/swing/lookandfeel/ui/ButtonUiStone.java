@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -40,37 +40,37 @@ public class ButtonUiStone extends BasicButtonUI {
 	/**
 	 * Background Image
 	 */
-	private final BufferedImage backgroundImage = UiImageLoader.get("sr_ui_button/sr_ui_button-bg.png");
+	private final BufferedImage backgroundImage = UiImageLoader.get("ui_button/ui_button-bg.png");
 
 	/**
 	 * Background Image pressed
 	 */
-	private final BufferedImage backgroundImagePressed = UiImageLoader.get("sr_ui_button_down/sr_ui_button-bg.png");
+	private final BufferedImage backgroundImagePressed = UiImageLoader.get("ui_button_down/ui_button-bg.png");
 
 	/**
 	 * Border images if the Button is not pressed
 	 */
-	private final BufferedImage[] BORDER_NORMAL = { UiImageLoader.get("sr_ui_button/sr_ui_button-corner-upper-left.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-border-top.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-corner-upper-right.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-border-right.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-corner-bottom-right.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-border-bottom.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-corner-bottom_left.png"),
-			UiImageLoader.get("sr_ui_button/sr_ui_button-border-left.png")
+	private final BufferedImage[] BORDER_NORMAL = { UiImageLoader.get("ui_button/ui_button-corner-upper-left.png"),
+			UiImageLoader.get("ui_button/ui_button-border-top.png"),
+			UiImageLoader.get("ui_button/ui_button-corner-upper-right.png"),
+			UiImageLoader.get("ui_button/ui_button-border-right.png"),
+			UiImageLoader.get("ui_button/ui_button-corner-bottom-right.png"),
+			UiImageLoader.get("ui_button/ui_button-border-bottom.png"),
+			UiImageLoader.get("ui_button/ui_button-corner-bottom_left.png"),
+			UiImageLoader.get("ui_button/ui_button-border-left.png")
 	};
 
 	/**
 	 * Border images if the Button is pressed
 	 */
-	private final BufferedImage[] BORDER_DOWN = { UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-upper-left.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-top.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-upper-right.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-right.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-bottom-right.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-bottom.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-bottom_left.png"),
-			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-left.png")
+	private final BufferedImage[] BORDER_DOWN = { UiImageLoader.get("ui_button_down/ui_button-corner-upper-left.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-top.png"),
+			UiImageLoader.get("ui_button_down/ui_button-corner-upper-right.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-right.png"),
+			UiImageLoader.get("ui_button_down/ui_button-corner-bottom-right.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-bottom.png"),
+			UiImageLoader.get("ui_button_down/ui_button-corner-bottom_left.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-left.png")
 	};
 
 	/**

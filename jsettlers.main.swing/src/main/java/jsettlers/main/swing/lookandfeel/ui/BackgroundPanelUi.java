@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,7 +37,7 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Background texture
 	 */
-	private final BufferedImage backgroundTextture = UiImageLoader.get("sr_ui_bg/sr_ui_background.png");
+	private final BufferedImage backgroundTextture = UiImageLoader.get("ui_bg/ui_background.png");
 
 	/**
 	 * Border texture for the border line
@@ -47,12 +47,12 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Leaf image at the right corner
 	 */
-	private final BufferedImage leavesLeft = UiImageLoader.get("sr_ui_leafs/sr_ui_leafs-left.png");
+	private final BufferedImage leavesLeft = UiImageLoader.get("ui_leafs/ui_leafs-left.png");
 
 	/**
 	 * Leaf image at the left side
 	 */
-	private final BufferedImage leavesRight = UiImageLoader.get("sr_ui_leafs/sr_ui_leafs-right.png");
+	private final BufferedImage leavesRight = UiImageLoader.get("ui_leafs/ui_leafs-right.png");
 
 	/**
 	 * Current background cache

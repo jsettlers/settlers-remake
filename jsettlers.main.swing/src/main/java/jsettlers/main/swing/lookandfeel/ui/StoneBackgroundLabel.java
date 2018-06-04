@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -27,7 +27,7 @@ import jsettlers.main.swing.lookandfeel.ui.img.UiImageLoader;
 
 /**
  * Label UI, with stone background
- * 
+ *
  * @author Andreas Butti
  *
  */
@@ -41,7 +41,7 @@ public class StoneBackgroundLabel extends BasicLabelUI {
 	/**
 	 * Background Image
 	 */
-	private final BufferedImage backgroundImage = UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info-bg.png");
+	private final BufferedImage backgroundImage = UiImageLoader.get("ui_static_info_bg/ui_static-info-bg.png");
 
 	/**
 	 * border scale factor
@@ -51,14 +51,15 @@ public class StoneBackgroundLabel extends BasicLabelUI {
 	/**
 	 * Border images if the Button is not pressed
 	 */
-	private final BufferedImage[] BORDER = { UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info-corner-upper-left.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info_border-top.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info-corner-upper-right.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info_border-right.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info-corner-bottom-right.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info_border-bottom.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info-corner-bottom_left.png"),
-			UiImageLoader.get("sr_ui_static_info_bg/sr_ui_static-info_border-left.png")
+	private final BufferedImage[] BORDER = {
+		UiImageLoader.get("ui_static_info_bg/ui_static-info-corner-upper-left.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info_border-top.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info-corner-upper-right.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info_border-right.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info-corner-bottom-right.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info_border-bottom.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info-corner-bottom_left.png"),
+		UiImageLoader.get("ui_static_info_bg/ui_static-info_border-left.png")
 	};
 
 	/**
@@ -73,7 +74,7 @@ public class StoneBackgroundLabel extends BasicLabelUI {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param foregroundColor
 	 *            Foreground color of the Label
 	 */
@@ -87,7 +88,8 @@ public class StoneBackgroundLabel extends BasicLabelUI {
 		c.setForeground(foregroundColor);
 		c.setFont(UIDefaults.FONT);
 		c.setBorder(BorderFactory.createEmptyBorder(paddingTop, (int) (BORDER[7/* left */].getWidth() * BORDER_FACTOR),
-				paddingBottom, (int) (BORDER[3/* right */].getWidth() * BORDER_FACTOR)));
+			paddingBottom, (int) (BORDER[3/* right */].getWidth() * BORDER_FACTOR)
+		));
 		c.setOpaque(false);
 	}
 
