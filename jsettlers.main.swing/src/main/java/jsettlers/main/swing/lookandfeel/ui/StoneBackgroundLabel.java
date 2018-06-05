@@ -88,8 +88,7 @@ public class StoneBackgroundLabel extends BasicLabelUI {
 		c.setForeground(foregroundColor);
 		c.setFont(UIDefaults.FONT);
 		c.setBorder(BorderFactory.createEmptyBorder(paddingTop, (int) (BORDER[7/* left */].getWidth() * BORDER_FACTOR),
-			paddingBottom, (int) (BORDER[3/* right */].getWidth() * BORDER_FACTOR)
-		));
+				paddingBottom, (int) (BORDER[3/* right */].getWidth() * BORDER_FACTOR)));
 		c.setOpaque(false);
 	}
 
@@ -105,7 +104,10 @@ public class StoneBackgroundLabel extends BasicLabelUI {
 
 	@Override
 	public void paint(Graphics g, JComponent c) {
-		g.drawImage(backgroundImage, 0, 0, c);
+		// Repeat the graphic as much as needed, the graphic is designed for this, so the start fits to the end of the graphic
+		for (int i = 0; i < c.getWidth(); i += backgroundImage.getWidth()) {
+			g.drawImage(backgroundImage, i, 0, c);
+		}
 		BorderHelper.drawBorder(g, c, BORDER, BORDER_FACTOR);
 		super.paint(g, c);
 	}
