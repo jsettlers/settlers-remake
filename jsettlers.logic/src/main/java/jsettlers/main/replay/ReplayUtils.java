@@ -49,8 +49,7 @@ import jsettlers.network.client.interfaces.INetworkConnector;
  */
 public class ReplayUtils {
 
-	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, int targetGameTimeMinutes, String newReplayFile)
-		throws MapLoadException, IOException {
+	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, int targetGameTimeMinutes, String newReplayFile) throws MapLoadException, IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
@@ -101,7 +100,7 @@ public class ReplayUtils {
 			networkConnector.scheduleTaskAt(targetGameTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD,
 				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0)
 			);
-			MatchConstants.clock().fastForwardTo(targetGameTimeMs + 1000);
+			MatchConstants.clock().fastForwardTo(targetGameTimeMs);
 			savegames[i] = getNewestSavegame();
 		}
 
