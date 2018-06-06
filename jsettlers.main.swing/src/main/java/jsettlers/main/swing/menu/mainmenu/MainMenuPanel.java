@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,7 +18,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -26,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import java8.util.stream.Collectors;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -48,6 +48,8 @@ import jsettlers.main.swing.menu.settingsmenu.SettingsMenuPanel;
 import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.main.swing.settings.UiPlayer;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * @author codingberlin
  */
@@ -56,20 +58,20 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	private static final Dimension PREFERRED_WEST_PANEL_SIZE = new Dimension(300, 300);
 
-	private final JSettlersFrame settlersFrame;
-	private final JPanel emptyPanel = new JPanel();
+	private final JSettlersFrame    settlersFrame;
+	private final JPanel            emptyPanel                = new JPanel();
 	private final SettingsMenuPanel settingsPanel;
-	private final JButton exitButton = new JButton();
-	private final JToggleButton newSinglePlayerGameButton = new JToggleButton();
-	private final JToggleButton loadSaveGameButton = new JToggleButton();
-	private final JToggleButton settingsButton = new JToggleButton();
-	private final JToggleButton newNetworkGameButton = new JToggleButton();
-	private final JToggleButton joinNetworkGameButton = new JToggleButton();
-	private final OpenPanel openSinglePlayerPanel;
-	private final OpenPanel openSaveGamePanel;
-	private final OpenPanel newMultiPlayerGamePanel;
-	private final OpenPanel joinMultiPlayerGamePanel;
-	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private final JButton           exitButton                = new JButton();
+	private final JToggleButton     newSinglePlayerGameButton = new JToggleButton();
+	private final JToggleButton     loadSaveGameButton        = new JToggleButton();
+	private final JToggleButton     settingsButton            = new JToggleButton();
+	private final JToggleButton     newNetworkGameButton      = new JToggleButton();
+	private final JToggleButton     joinNetworkGameButton     = new JToggleButton();
+	private final OpenPanel         openSinglePlayerPanel;
+	private final OpenPanel         openSaveGamePanel;
+	private final OpenPanel         newMultiPlayerGamePanel;
+	private final OpenPanel         joinMultiPlayerGamePanel;
+	private final ButtonGroup       buttonGroup               = new ButtonGroup();
 
 	public MainMenuPanel(JSettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
@@ -106,8 +108,9 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private void showNewMultiplayerGamePanel(MapLoader map) {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		UiPlayer uiPlayer = settingsManager.getPlayer();
-		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER),
-				uiPlayer.getId(), uiPlayer.getName());
+		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.getServer(),
+			uiPlayer.getId(), uiPlayer.getName()
+		);
 		settlersFrame.showNewMultiPlayerGameMenu(map, connector);
 	}
 
@@ -122,7 +125,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 			@Override
 			public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
 				SwingUtilities.invokeLater(
-						() -> settlersFrame.showJoinMultiplayerMenu(connector, MapList.getDefaultList().getMapById(networkGameMapLoader.getMapId())));
+					() -> settlersFrame.showJoinMultiplayerMenu(connector, MapList.getDefaultList().getMapById(networkGameMapLoader.getMapId())));
 			}
 		});
 	}
@@ -163,14 +166,13 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 			settingsPanel.initializeValues();
 		});
 		multiPlayerConnector
-				.getJoinableMultiplayerGames()
-				.setListener(networkGames -> {
-					List<MapLoader> mapLoaders = networkGames.getItems()
-							.stream()
-							.map(NetworkGameMapLoader::new)
-							.collect(Collectors.toList());
-					SwingUtilities.invokeLater(() -> joinMultiPlayerGamePanel.setMapLoaders(mapLoaders));
-				});
+			.getJoinableMultiplayerGames()
+			.setListener(networkGames -> {
+				List<MapLoader> mapLoaders = stream(networkGames.getItems())
+					.map(NetworkGameMapLoader::new)
+					.collect(Collectors.toList());
+				SwingUtilities.invokeLater(() -> joinMultiPlayerGamePanel.setMapLoaders(mapLoaders));
+			});
 	}
 
 	private void createStructure() {

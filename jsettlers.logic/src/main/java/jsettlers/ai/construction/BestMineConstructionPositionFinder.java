@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
@@ -25,15 +22,19 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the amount of resource
- * 
+ *
  * @author codingberlin
  */
 public class BestMineConstructionPositionFinder implements IBestConstructionPositionFinder {
+	private static final float DISTANCE_PENALTY_FACTOR = 0.01f;
 
-	EBuildingType buildingType;
-	EResourceType resourceType;
+	private final EBuildingType buildingType;
+	private final EResourceType resourceType;
 
 	public BestMineConstructionPositionFinder(EBuildingType buildingType, EResourceType resourceType) {
 		this.buildingType = buildingType;
@@ -51,16 +52,18 @@ public class BestMineConstructionPositionFinder implements IBestConstructionPosi
 					int x = point.x + relativePoint.getDx();
 					int y = point.y + relativePoint.getDy();
 					if (landscapeGrid.getResourceTypeAt(x, y) == resourceType) {
-						resourceAmount -= landscapeGrid.getResourceAmountAt(x, y);
+						resourceAmount += landscapeGrid.getResourceAmountAt(x, y);
 					}
 				}
+
 				if (resourceAmount != 0) {
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, resourceAmount));
+					int distanceToCenter = aiStatistics.getPositionOfPartition(playerId).getOnGridDistTo(point);
+					int score = resourceAmount - (int) (distanceToCenter * DISTANCE_PENALTY_FACTOR);
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, -score));
 				}
 			}
 		}
 
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
-
 }

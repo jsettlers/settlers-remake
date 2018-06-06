@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main.action;
 
-import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.action.Action;
 
 public class StartDrawingAction extends Action {
 
@@ -27,7 +27,7 @@ public class StartDrawingAction extends Action {
 		this.pos = pos;
 	}
 
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return pos;
 	}
 

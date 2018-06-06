@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,40 +21,44 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
+import jsettlers.common.action.BuildAction;
+import jsettlers.common.action.ChangeTradingRequestAction;
+import jsettlers.common.action.ConvertAction;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.ScreenChangeAction;
+import jsettlers.common.action.SelectAreaAction;
+import jsettlers.common.action.SetAcceptedStockMaterialAction;
+import jsettlers.common.action.SetBuildingPriorityAction;
+import jsettlers.common.action.SetDockAction;
+import jsettlers.common.action.SetMaterialDistributionSettingsAction;
+import jsettlers.common.action.SetMaterialPrioritiesAction;
+import jsettlers.common.action.SetMaterialProductionAction;
+import jsettlers.common.action.SetTradingWaypointAction;
+import jsettlers.common.action.ShowConstructionMarksAction;
+import jsettlers.common.action.SoldierAction;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.UIState;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.EShipType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.graphics.action.BuildAction;
-import jsettlers.graphics.action.ChangeTradingRequestAction;
-import jsettlers.graphics.action.ConvertAction;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.action.ScreenChangeAction;
-import jsettlers.graphics.action.SelectAreaAction;
-import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
-import jsettlers.graphics.action.SetBuildingPriorityAction;
-import jsettlers.graphics.action.SetDockAction;
-import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
-import jsettlers.graphics.action.SetMaterialPrioritiesAction;
-import jsettlers.graphics.action.SetMaterialProductionAction;
-import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.action.SoldierAction;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
@@ -85,9 +89,6 @@ import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
-import java8.util.Optional;
-import java8.util.stream.Collectors;
-
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
  *
@@ -99,14 +100,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private final IMapInterfaceConnector connector;
 
-	private final IGameClock clock;
-	private final ITaskScheduler taskScheduler;
-	private final IGuiInputGrid grid;
-	private final IGameStoppable gameStoppable;
-	private final byte playerId;
-	private final boolean multiplayer;
+	private final IGameClock              clock;
+	private final ITaskScheduler          taskScheduler;
+	private final IGuiInputGrid           grid;
+	private final IGameStoppable          gameStoppable;
+	private final byte                    playerId;
+	private final boolean                 multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
-	private final Timer refreshSelectionTimer;
+	private final Timer                   refreshSelectionTimer;
 
 	/**
 	 * The current selection. This is updated by game logic.
@@ -146,246 +147,248 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		switch (action.getActionType()) {
-		case BUILD:
-			handleBuildAction((BuildAction) action);
-			break;
+			case BUILD:
+				handleBuildAction((BuildAction) action);
+				break;
 
-		case SHOW_CONSTRUCTION_MARK:
-			constructionMarksCalculator.setBuildingType(((ShowConstructionMarksAction) action).getBuildingType());
-			break;
+			case SHOW_CONSTRUCTION_MARK:
+				constructionMarksCalculator.setBuildingType(((ShowConstructionMarksAction) action).getBuildingType());
+				break;
 
-		case DEBUG_ACTION:
-			for (final ISelectable curr : currentSelection) {
-				if (curr instanceof IDebugable) {
-					((IDebugable) curr).debug();
+			case DEBUG_ACTION:
+				for (final ISelectable curr : currentSelection) {
+					if (curr instanceof IDebugable) {
+						((IDebugable) curr).debug();
+					}
 				}
-			}
-			break;
+				break;
 
-		case SPEED_TOGGLE_PAUSE:
-			clock.invertPausing();
-			break;
+			case SPEED_TOGGLE_PAUSE:
+				clock.invertPausing();
+				break;
 
-		case SPEED_SET_PAUSE:
-			clock.setPausing(true);
-			break;
+			case SPEED_SET_PAUSE:
+				clock.setPausing(true);
+				break;
 
-		case SPEED_UNSET_PAUSE:
-			clock.setPausing(false);
-			break;
+			case SPEED_UNSET_PAUSE:
+				clock.setPausing(false);
+				break;
 
-		case SPEED_SLOW:
-			if (!multiplayer) {
-				clock.setGameSpeed(0.5f);
-			}
-			break;
-		case SPEED_FAST:
-			if (!multiplayer) {
-				clock.setGameSpeed(5.0f);
-			}
-			break;
-		case SPEED_FASTER:
-			if (!multiplayer) {
-				clock.multiplyGameSpeed(1.2f);
-			}
-			break;
-		case SPEED_SLOWER:
-			if (!multiplayer) {
-				clock.multiplyGameSpeed(1 / 1.2f);
-			}
-			break;
-		case SPEED_NORMAL:
-			if (!multiplayer) {
-				clock.setGameSpeed(1.0f);
-			}
-			break;
-
-		case FAST_FORWARD:
-			if (!multiplayer) {
-				clock.fastForward();
-			}
-			break;
-
-		case SELECT_POINT:
-			handleSelectPointAction((PointAction) action);
-			break;
-
-		case SELECT_AREA:
-			selectArea((SelectAreaAction) action);
-			break;
-
-		case DESELECT:
-			deselect();
-			break;
-
-		case SELECT_POINT_TYPE:
-			selectPointType((PointAction) action);
-			break;
-
-		case MOVE_TO: {
-			final PointAction moveToAction = (PointAction) action;
-
-			if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
-				Building building = (Building) currentSelection.getSingle();
-				if (building == null) {
-					return;
+			case SPEED_SLOW:
+				if (!multiplayer) {
+					clock.setGameSpeed(0.5f);
 				}
+				break;
+			case SPEED_FAST:
+				if (!multiplayer) {
+					clock.setGameSpeed(5.0f);
+				}
+				break;
+			case SPEED_FASTER:
+				if (!multiplayer) {
+					clock.multiplyGameSpeed(1.2f);
+				}
+				break;
+			case SPEED_SLOWER:
+				if (!multiplayer) {
+					clock.multiplyGameSpeed(1 / 1.2f);
+				}
+				break;
+			case SPEED_NORMAL:
+				if (!multiplayer) {
+					clock.setGameSpeed(1.0f);
+				}
+				break;
 
-				if (building instanceof IDockBuilding) {
-					setDock(moveToAction.getPosition());
+			case FAST_FORWARD:
+				if (!multiplayer) {
+					clock.fastForward();
+				}
+				break;
+
+			case SELECT_POINT:
+				handleSelectPointAction((PointAction) action);
+				break;
+
+			case SELECT_AREA:
+				selectArea((SelectAreaAction) action);
+				break;
+
+			case DESELECT:
+				deselect();
+				break;
+
+			case SELECT_POINT_TYPE:
+				selectPointType((PointAction) action);
+				break;
+
+			case MOVE_TO: {
+				final PointAction moveToAction = (PointAction) action;
+
+				if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+					Building building = (Building) currentSelection.getSingle();
+					if (building == null) {
+						return;
+					}
+
+					if (building instanceof IDockBuilding) {
+						setDock(moveToAction.getPosition());
+					} else {
+						setBuildingWorkArea(moveToAction.getPosition());
+					}
 				} else {
-					setBuildingWorkArea(moveToAction.getPosition());
+					moveTo(moveToAction.getPosition());
 				}
-			} else {
-				moveTo(moveToAction.getPosition());
+				break;
 			}
-			break;
-		}
 
-		case SHOW_MESSAGE: {
-			break;
-		}
-
-		case SET_WORK_AREA:
-			setBuildingWorkArea(((PointAction) action).getPosition());
-			break;
-
-		case DESTROY:
-			destroySelected();
-			break;
-
-		case STOP_WORKING:
-			stopOrStartWorkingAction(true);
-			break;
-		case START_WORKING:
-			stopOrStartWorkingAction(false);
-			break;
-
-		case SHOW_SELECTION:
-			showSelection();
-			break;
-
-		case SCREEN_CHANGE:
-			constructionMarksCalculator.setScreen(((ScreenChangeAction) action).getScreenArea());
-			break;
-
-		case TOGGLE_DEBUG:
-			grid.resetDebugColors();
-			break;
-
-		case TOGGLE_FOG_OF_WAR:
-			if (MatchConstants.ENABLE_FOG_OF_WAR_DISABLING) {
-				grid.toggleFogOfWar();
+			case SHOW_MESSAGE: {
+				break;
 			}
-			break;
 
-		case SAVE:
-			taskScheduler.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE, playerId));
-			break;
+			case SET_WORK_AREA:
+				setBuildingWorkArea(((PointAction) action).getPosition());
+				break;
 
-		case CONVERT:
-			sendConvertAction((ConvertAction) action);
-			break;
+			case DESTROY:
+				destroySelected();
+				break;
 
-		case SET_BUILDING_PRIORITY:
-			setBuildingPriority(((SetBuildingPriorityAction) action).getNewPriority());
-			break;
+			case STOP_WORKING:
+				stopOrStartWorkingAction(true);
+				break;
+			case START_WORKING:
+				stopOrStartWorkingAction(false);
+				break;
 
-		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
-			final SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
-			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a.getBuildingType(), a.getRatio()));
-			break;
-		}
+			case SHOW_SELECTION:
+				showSelection();
+				break;
 
-		case SET_MATERIAL_PRIORITIES: {
-			final SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
-			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getPosition(), a.getMaterialTypeForPriority()));
-			break;
-		}
+			case SCREEN_CHANGE:
+				constructionMarksCalculator.setScreen(((ScreenChangeAction) action).getScreenArea());
+				break;
 
-		case SET_MATERIAL_STOCK_ACCEPTED: {
-			final SetAcceptedStockMaterialAction a = (SetAcceptedStockMaterialAction) action;
-			taskScheduler.scheduleTask(new SetAcceptedStockMaterialGuiTask(playerId, a.getPosition(), a.getMaterial(), a.shouldAccept(), a
+			case TOGGLE_DEBUG:
+				grid.resetDebugColors();
+				break;
+
+			case TOGGLE_FOG_OF_WAR:
+				if (MatchConstants.ENABLE_FOG_OF_WAR_DISABLING) {
+					grid.toggleFogOfWar();
+				}
+				break;
+
+			case SAVE:
+				taskScheduler.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE, playerId));
+				break;
+
+			case CONVERT:
+				sendConvertAction((ConvertAction) action);
+				break;
+
+			case SET_BUILDING_PRIORITY:
+				setBuildingPriority(((SetBuildingPriorityAction) action).getNewPriority());
+				break;
+
+			case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
+				final SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
+				taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a.getBuildingType(), a.getRatio()));
+				break;
+			}
+
+			case SET_MATERIAL_PRIORITIES: {
+				final SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
+				taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getPosition(), a.getMaterialTypeForPriority()));
+				break;
+			}
+
+			case SET_MATERIAL_STOCK_ACCEPTED: {
+				final SetAcceptedStockMaterialAction a = (SetAcceptedStockMaterialAction) action;
+				taskScheduler.scheduleTask(new SetAcceptedStockMaterialGuiTask(playerId, a.getPosition(), a.getMaterial(), a.shouldAccept(), a
 					.isLocalSetting()));
-			break;
-		}
+				break;
+			}
 
-		case SET_MATERIAL_PRODUCTION: {
-			final SetMaterialProductionAction a = (SetMaterialProductionAction) action;
-			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, a.getPosition(), a.getMaterialType(), a.getProductionType(), a
+			case SET_MATERIAL_PRODUCTION: {
+				final SetMaterialProductionAction a = (SetMaterialProductionAction) action;
+				taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, a.getPosition(), a.getMaterialType(), a.getProductionType(), a
 					.getRatio()));
-			break;
-		}
-
-		case NEXT_OF_TYPE:
-			selectNextOfType();
-			break;
-
-		case UPGRADE_SOLDIERS: {
-			final SoldierAction a = (SoldierAction) action;
-			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getSoldierType()));
-			break;
-		}
-
-		case CHANGE_TRADING_REQUEST: {
-			final ISelectable selected = currentSelection.getSingle();
-			if (selected instanceof Building) {
-				final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
-				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
-						a.getAmount(), a.isRelative()));
+				break;
 			}
-			break;
-		}
 
-		case SET_TRADING_WAYPOINT: {
-			final ISelectable selected = currentSelection.getSingle();
-			if (selected instanceof Building) {
-				final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
-				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
-						a.getWaypointType(), a.getPosition()));
+			case NEXT_OF_TYPE:
+				selectNextOfType();
+				break;
+
+			case UPGRADE_SOLDIERS: {
+				final SoldierAction a = (SoldierAction) action;
+				taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getSoldierType()));
+				break;
 			}
-			break;
-		}
 
-		case SET_DOCK: {
-			setDock(((SetDockAction) action).getPosition());
-			break;
-		}
+			case CHANGE_TRADING_REQUEST: {
+				final ISelectable selected = currentSelection.getSingle();
+				if (selected instanceof Building) {
+					final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
+					scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
+						a.getAmount(), a.isRelative()
+					));
+				}
+				break;
+			}
 
-		case SOLDIERS_ALL:
-			requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);
-			break;
-		case SOLDIERS_ONE:
-			requestSoldiers(EChangeTowerSoldierTaskType.ONE, null);
-			break;
-		case SOLDIERS_LESS:
-			requestSoldiers(EChangeTowerSoldierTaskType.LESS, ((SoldierAction) action).getSoldierType());
-			break;
-		case SOLDIERS_MORE:
-			requestSoldiers(EChangeTowerSoldierTaskType.MORE, ((SoldierAction) action).getSoldierType());
-			break;
+			case SET_TRADING_WAYPOINT: {
+				final ISelectable selected = currentSelection.getSingle();
+				if (selected instanceof Building) {
+					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
+					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
+						a.getWaypointType(), a.getPosition()
+					));
+				}
+				break;
+			}
 
-		case ABORT:
-			break;
+			case SET_DOCK: {
+				setDock(((SetDockAction) action).getPosition());
+				break;
+			}
 
-		case EXIT:
-			gameStoppable.stopGame();
-			break;
+			case SOLDIERS_ALL:
+				requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);
+				break;
+			case SOLDIERS_ONE:
+				requestSoldiers(EChangeTowerSoldierTaskType.ONE, null);
+				break;
+			case SOLDIERS_LESS:
+				requestSoldiers(EChangeTowerSoldierTaskType.LESS, ((SoldierAction) action).getSoldierType());
+				break;
+			case SOLDIERS_MORE:
+				requestSoldiers(EChangeTowerSoldierTaskType.MORE, ((SoldierAction) action).getSoldierType());
+				break;
 
-		case MAKE_FERRY:
-			orderShip(EShipType.FERRY);
-			break;
+			case ABORT:
+				break;
 
-		case MAKE_CARGO_BOAT:
-			orderShip(EShipType.CARGO_SHIP);
-			break;
+			case EXIT:
+				gameStoppable.stopGame();
+				break;
 
-		case UNLOAD_FERRIES:
-			unloadFerries();
-			break;
+			case MAKE_FERRY:
+				orderShip(EShipType.FERRY);
+				break;
 
-		default:
-			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+			case MAKE_CARGO_SHIP:
+				orderShip(EShipType.CARGO_SHIP);
+				break;
+
+			case UNLOAD_FERRIES:
+				unloadFerries();
+				break;
+
+			default:
+				System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
 	}
 
@@ -467,37 +470,37 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void sendConvertAction(ConvertAction action) {
 		final List<ISelectable> convertables = new LinkedList<>();
 		switch (action.getTargetType()) {
-		case BEARER:
-			for (final ISelectable curr : currentSelection) {
-				if (curr instanceof IMovable) {
-					final EMovableType currType = ((IMovable) curr).getMovableType();
-					if (currType == EMovableType.PIONEER) {
-						convertables.add(curr);
-						if (convertables.size() >= action.getAmount()) {
-							break;
+			case BEARER:
+				for (final ISelectable curr : currentSelection) {
+					if (curr instanceof IMovable) {
+						final EMovableType currType = ((IMovable) curr).getMovableType();
+						if (currType == EMovableType.PIONEER) {
+							convertables.add(curr);
+							if (convertables.size() >= action.getAmount()) {
+								break;
+							}
 						}
 					}
 				}
-			}
-			break;
-		case PIONEER:
-		case GEOLOGIST:
-		case THIEF:
-			for (final ISelectable curr : currentSelection) {
-				if (curr instanceof IMovable) {
-					final EMovableType currType = ((IMovable) curr).getMovableType();
-					if (currType == EMovableType.BEARER) {
-						convertables.add(curr);
-						if (convertables.size() >= action.getAmount()) {
-							break;
+				break;
+			case PIONEER:
+			case GEOLOGIST:
+			case THIEF:
+				for (final ISelectable curr : currentSelection) {
+					if (curr instanceof IMovable) {
+						final EMovableType currType = ((IMovable) curr).getMovableType();
+						if (currType == EMovableType.BEARER) {
+							convertables.add(curr);
+							if (convertables.size() >= action.getAmount()) {
+								break;
+							}
 						}
 					}
 				}
-			}
-			break;
-		default:
-			System.out.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
-			return;
+				break;
+			default:
+				System.out.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
+				return;
 		}
 
 		if (convertables.size() > 0) {
@@ -519,7 +522,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setBuildingPriority(EPriority newPriority) {
 		if (currentSelection != null && currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
 			taskScheduler
-					.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPosition(), newPriority));
+				.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPosition(), newPriority));
 		}
 	}
 
@@ -543,8 +546,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	/**
 	 * @param stop
-	 *            if true the members of currentSelection will stop working<br>
-	 *            if false, they will start working
+	 * 		if true the members of currentSelection will stop working<br>
+	 * 		if false, they will start working
 	 */
 	private void stopOrStartWorkingAction(boolean stop) {
 		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, playerId, getIDsOfSelected()));
@@ -596,6 +599,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		setSelection(selectionSet);
 	}
 
+	private boolean canSelectPlayer(IPlayer player) {
+		return canSelectPlayer(player.getPlayerId());
+	}
+
 	private boolean canSelectPlayer(byte playerIdOfSelected) {
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
 	}
@@ -626,48 +633,35 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private ISelectable getSelectableAt(ShortPoint2D pos) {
 		if (grid.isInBounds(pos)) {
-			final short x = pos.x;
-			final short y = pos.y;
+			final IBuilding building = grid.getBuildingAt(pos.x, pos.y);
+			if (building != null && canSelectPlayer(building.getPlayer().getPlayerId())) {
+				return building;
 
-			final IGuiMovable selectableMovable = getSelectableMovable(x, y);
-			if (selectableMovable != null) {
-				return selectableMovable;
 			} else {
-				// search buildings
-				final IBuilding building = grid.getBuildingAt(pos.x, pos.y);
-				if (building != null && canSelectPlayer(building.getPlayer().getPlayerId())) {
-					return building;
-				} else {
-					return null;
+				final IGuiMovable selectableMovable = getSelectableMovable(pos.x, pos.y).orElse(null);
+				if (selectableMovable != null) {
+					return selectableMovable;
 				}
 			}
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
-	private IGuiMovable getSelectableMovable(short x, short y) {
-		final IGuiMovable m1 = grid.getMovable(x, y);
-		final IGuiMovable m3 = grid.getMovable((short) (x + 1), (short) (y + 1));
-		final IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
-		final IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
-
-		if (m1 != null && canSelectPlayer(m1.getPlayer().getPlayerId())) {
-			return m1;
-		} else if (m2 != null && canSelectPlayer(m2.getPlayer().getPlayerId())) {
-			return m2;
-		} else if (m3 != null && canSelectPlayer(m3.getPlayer().getPlayerId())) {
-			return m3;
-		} else if (m4 != null && canSelectPlayer(m4.getPlayer().getPlayerId())) {
-			return m4;
-		} else {
-			return null;
-		}
+	private Optional<IGuiMovable> getSelectableMovable(short selectedX, short selectedY) {
+		return HexGridArea.stream(selectedX, selectedY, 0, 2).iterateForResult((x, y) -> {
+			IGuiMovable movable = grid.getMovable(x, y);
+			if (movable != null && canSelectPlayer(movable.getPlayer())) {
+				return Optional.of(movable);
+			} else {
+				return Optional.empty();
+			}
+		});
 	}
 
 	private void selectPointType(PointAction action) {
 		final ShortPoint2D actionPosition = action.getPosition();
-		final IGuiMovable selectedMovable = getSelectableMovable(actionPosition.x, actionPosition.y);
+		final IGuiMovable selectedMovable = getSelectableMovable(actionPosition.x, actionPosition.y).orElse(null);
 
 		if (selectedMovable == null) { // nothing found at the location
 			setSelection(new SelectionSet());
@@ -691,13 +685,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		final List<ISelectable> selected = new LinkedList<>();
 
 		MapCircle.stream(actionPosition, SELECT_BY_TYPE_RADIUS)
-				.filterBounds(grid.getWidth(), grid.getHeight())
-				.forEach((x, y) -> {
-					final IGuiMovable movable = grid.getMovable(x, y);
-					if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayer().getPlayerId()) {
-						selected.add(movable);
-					}
-				});
+				 .filterBounds(grid.getWidth(), grid.getHeight())
+				 .forEach((x, y) -> {
+					 final IGuiMovable movable = grid.getMovable(x, y);
+					 if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayer().getPlayerId()) {
+						 selected.add(movable);
+					 }
+				 });
 		setSelection(new SelectionSet(selected));
 	}
 
@@ -705,7 +699,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 * Sets the selection.
 	 *
 	 * @param selection
-	 *            The selected items. Not null!
+	 * 		The selected items. Not null!
 	 */
 	private void setSelection(SelectionSet selection) {
 		currentSelection.setSelected(false);
@@ -719,9 +713,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	public void refreshSelection() {
 		if (!currentSelection.isEmpty()) {
 			SelectionSet newSelection = new SelectionSet(currentSelection.stream()
-					.filter(ISelectable::isSelected)
-					.filter(selected -> canSelectPlayer(selected.getPlayer().getPlayerId()))
-					.collect(Collectors.toList()));
+																		 .filter(ISelectable::isSelected)
+																		 .filter(selected -> canSelectPlayer(selected.getPlayer().getPlayerId()))
+																		 .collect(Collectors.toList()));
 
 			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
 				setSelection(newSelection);

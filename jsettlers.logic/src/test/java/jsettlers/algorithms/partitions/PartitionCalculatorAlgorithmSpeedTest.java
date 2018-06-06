@@ -52,7 +52,7 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 			}
 		}
 
-		Thread.sleep(500);
+		Thread.sleep(500L);
 
 		MilliStopWatch watch = new MilliStopWatch();
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 - 2017
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,35 +16,42 @@ package jsettlers.logic.buildings.trading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import java8.util.stream.Stream;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.stack.IRequestStack;
-import jsettlers.logic.movable.strategies.trading.IDonkeyMarket;
 import jsettlers.logic.player.Player;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
- * 
+ *
  * @author Andreas Eberle
  *
  */
-public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
-	private static final long serialVersionUID = 4979115926871683024L;
-
+public class MarketBuilding extends TradingBuilding {
 	private static final List<MarketBuilding> ALL_MARKETS = new ArrayList<>();
 
-	public static Iterable<MarketBuilding> getAllMarkets(final Player player) {
-		return new IteratorFilter<>(ALL_MARKETS, building -> building.getPlayer() == player);
+	public static Stream<MarketBuilding> getAllMarkets(final Player player) {
+		return stream(ALL_MARKETS).filter(building -> building.getPlayer() == player);
 	}
 
 	public static void clearState() {
 		ALL_MARKETS.clear();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ALL_MARKETS.addAll((Collection<? extends MarketBuilding>) ois.readObject());
+	}
+
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(ALL_MARKETS);
 	}
 
 	public MarketBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
@@ -57,10 +64,6 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 		return super.pos;
 	}
 
-	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		ois.defaultReadObject();
-		ALL_MARKETS.add(this);
-	}
 
 	@Override
 	public boolean isSeaTrading() {
@@ -74,26 +77,7 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 	}
 
 	@Override
-	public boolean needsDonkey() {
-		return isTargetSet() && getPriority() != EPriority.STOPPED && super.getStackWithMaterial() != null;
+	public ShortPoint2D getPickUpPosition() {
+		return getDoor();
 	}
-
-	@Override
-	public EMaterialType tryToTakeDonkeyMaterial() {
-		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
-			return null;
-		}
-
-		IRequestStack stack = super.getStackWithMaterial();
-
-		if (stack != null) {
-			EMaterialType materialType = stack.getMaterialType(); // get this before pop, as pop may reset the currentType of the stack
-			if (stack.pop()) {
-				return materialType;
-			}
-		}
-
-		return null;
-	}
-
 }

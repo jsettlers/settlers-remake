@@ -23,7 +23,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.PointAction;
+import jsettlers.common.action.PointAction;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
@@ -92,7 +92,7 @@ public class MovableTestWindow {
 		}
 
 		{
-			Thread.sleep(3000);
+			Thread.sleep(3000L);
 			// circle of three movables blocking each others path
 			ILogicMovable m1 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 65), PLAYER_0);
 			ILogicMovable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);

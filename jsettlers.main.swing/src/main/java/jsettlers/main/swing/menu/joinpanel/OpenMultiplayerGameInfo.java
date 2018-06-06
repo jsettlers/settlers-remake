@@ -32,7 +32,7 @@ final class OpenMultiPlayerGameInfo implements IOpenMultiplayerGameInfo {
 
 	@Override
 	public String getMatchName() {
-		return "TODO Matchname (" + SettingsManager.getInstance().get(SettingsManager.SETTING_USERNAME) + ")";
+		return "TODO Matchname (" + SettingsManager.getInstance().getUserName() + ")";
 	}
 
 	@Override

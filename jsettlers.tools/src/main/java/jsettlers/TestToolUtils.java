@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,34 +14,32 @@
  */
 package jsettlers;
 
-import java.io.IOException;
-
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.PointAction;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.menu.FakeMapGame;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.player.ECivilisation;
-import jsettlers.common.utils.OptionableProperties;
-import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
-import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.testutils.TestUtils;
 
+import java.io.IOException;
+
 public class TestToolUtils extends TestUtils {
-	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
+	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption, IOException {
 		Player player = new Player((byte) 0, new Team((byte) 0), (byte) 42, EPlayerType.HUMAN, ECivilisation.ROMAN);
 		IStartedGame game = new FakeMapGame(map, player);
 		return openTestWindow(game);
 	}
 
-	public static IMapInterfaceConnector openTestWindow(IStartedGame startedGame) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
-		SwingManagedJSettlers.setupResourceManagers(new OptionableProperties());
+	public static IMapInterfaceConnector openTestWindow(IStartedGame startedGame) throws JSettlersLookAndFeelExecption, IOException {
+		SwingManagedJSettlers.setupResources(false);
 		ImageProvider.getInstance().startPreloading();
 
 		IMapInterfaceConnector mapInterfaceConnector = SwingManagedJSettlers.showJSettlers(startedGame);

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -123,8 +124,6 @@ import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 
-import java8.util.Optional;
-
 /**
  * This is the main grid offering an interface for interacting with the grid.
  *
@@ -139,21 +138,21 @@ public final class MainGrid implements Serializable {
 	final short width;
 	final short height;
 
-	final LandscapeGrid landscapeGrid;
-	final ObjectsGrid objectsGrid;
+	final LandscapeGrid  landscapeGrid;
+	final ObjectsGrid    objectsGrid;
 	final PartitionsGrid partitionsGrid;
-	final MovableGrid movableGrid;
-	final FlagsGrid flagsGrid;
+	final MovableGrid    movableGrid;
+	final FlagsGrid      flagsGrid;
 
 	final MovablePathfinderGrid movablePathfinderGrid;
-	final MapObjectsManager mapObjectsManager;
-	final BuildingsGrid buildingsGrid;
+	final MapObjectsManager     mapObjectsManager;
+	final BuildingsGrid         buildingsGrid;
 
-	transient FogOfWar fogOfWar;
-	transient GraphicsGrid graphicsGrid;
-	transient ConstructionMarksGrid constructionMarksGrid;
-	transient BordersThread bordersThread;
-	transient IGuiInputGrid guiInputGrid;
+	transient         FogOfWar                       fogOfWar;
+	transient         GraphicsGrid                   graphicsGrid;
+	transient         ConstructionMarksGrid          constructionMarksGrid;
+	transient         BordersThread                  bordersThread;
+	transient         IGuiInputGrid                  guiInputGrid;
 	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
 	public MainGrid(String mapId, String mapName, short width, short height, PlayerSetting[] playerSettings) {
@@ -332,7 +331,7 @@ public final class MainGrid implements Serializable {
 		boolean savedPausingState = MatchConstants.clock().isPausing();
 		MatchConstants.clock().setPausing(true);
 		try {
-			Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
+			Thread.sleep(300L); // FIXME @Andreas serializer should wait until threads did their work!
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -374,7 +373,8 @@ public final class MainGrid implements Serializable {
 	public MapFileHeader generateSaveHeader(Byte playerId) {
 		// TODO: description
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
-				landscapeGrid.getPreviewImageDataSupplier());
+			landscapeGrid.getPreviewImageDataSupplier()
+		);
 
 		short[] bgImage = previewImageCreator.getPreviewImage();
 
@@ -390,17 +390,18 @@ public final class MainGrid implements Serializable {
 		}
 
 		return new MapFileHeader(
-				MapType.SAVED_SINGLE,
-				mapName,
-				mapId,
-				"TODO: description",
-				width,
-				height,
-				(short) 1,
-				playerConfigurations,
-				new Date(),
-				bgImage,
-				playerId);
+			MapType.SAVED_SINGLE,
+			mapName,
+			mapId,
+			"TODO: description",
+			width,
+			height,
+			(short) 1,
+			playerConfigurations,
+			new Date(),
+			bgImage,
+			playerId
+		);
 	}
 
 	public ConstructionMarksGrid getConstructionMarksGrid() {
@@ -496,7 +497,7 @@ public final class MainGrid implements Serializable {
 			return isSurroundedByWater((short) x, (short) y);
 		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
-				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
+			&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
 	}
 
 	public FlagsGrid getFlagsGrid() {
@@ -513,7 +514,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 			if (requester.isShip()) {
-				return !isSurroundedByWater((short) x, (short) y);
+				return !isWaterSafe(x, y);
 			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
@@ -543,64 +544,64 @@ public final class MainGrid implements Serializable {
 		public final boolean fitsSearchType(int x, int y, ESearchType searchType, IPathCalculatable pathCalculable) {
 			switch (searchType) {
 
-			case UNENFORCED_FOREIGN_GROUND:
-				return !objectsGrid.isBuildingAt(x, y) && !hasSameTeam(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+				case UNENFORCED_FOREIGN_GROUND:
+					return !objectsGrid.isBuildingAt(x, y) && !hasSameTeam(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
-			case VALID_FREE_POSITION:
-				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
+				case VALID_FREE_POSITION:
+					return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
 
-			case PLANTABLE_TREE:
-				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
+				case PLANTABLE_TREE:
+					return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
 						&& hasSamePlayer(x, y + 1, pathCalculable) && !isMarked(x, y);
-			case CUTTABLE_TREE:
-				return isInBounds(x - 1, y - 1)
+				case CUTTABLE_TREE:
+					return isInBounds(x - 1, y - 1)
 						&& isMapObjectCuttable(x - 1, y - 1, EMapObjectType.TREE_ADULT)
 						&& hasSamePlayer(x - 1, y - 1, pathCalculable) && !isMarked(x, y);
 
-			case PLANTABLE_CORN:
-				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
-			case CUTTABLE_CORN:
-				return isMapObjectCuttable(x, y, EMapObjectType.CORN_ADULT) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+				case PLANTABLE_CORN:
+					return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
+				case CUTTABLE_CORN:
+					return isMapObjectCuttable(x, y, EMapObjectType.CORN_ADULT) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-			case PLANTABLE_WINE:
-				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isWinePlantable(x, y);
-			case HARVESTABLE_WINE:
-				return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+				case PLANTABLE_WINE:
+					return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isWinePlantable(x, y);
+				case HARVESTABLE_WINE:
+					return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-			case CUTTABLE_STONE:
-				return y + 1 < height && x - 1 > 0 && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
+				case CUTTABLE_STONE:
+					return y + 1 < height && x - 1 > 0 && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
 						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-			case RIVER:
-				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+				case RIVER:
+					return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-			case FISHABLE:
-				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER1);
+				case FISHABLE:
+					return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER1);
 
-			case NON_BLOCKED_OR_PROTECTED:
-				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y))
+				case NON_BLOCKED_OR_PROTECTED:
+					return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y))
 						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
-			case SOLDIER_BOWMAN:
-			case SOLDIER_SWORDSMAN:
-			case SOLDIER_PIKEMAN:
-			case SOLDIER_INFANTRY:
-				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
+				case SOLDIER_BOWMAN:
+				case SOLDIER_SWORDSMAN:
+				case SOLDIER_PIKEMAN:
+				case SOLDIER_INFANTRY:
+					return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 
-			case RESOURCE_SIGNABLE:
-				return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddResourceSign(x, y);
+				case RESOURCE_SIGNABLE:
+					return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddResourceSign(x, y);
 
-			case FOREIGN_MATERIAL:
-				return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
+				case FOREIGN_MATERIAL:
+					return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
 
-			case ENEMY: {
-				IMovable movable = movableGrid.getMovableAt(x, y);
-				return movable != null && movable.getPlayer().getTeamId() != pathCalculable.getPlayer().getTeamId();
-			}
+				case ENEMY: {
+					IMovable movable = movableGrid.getMovableAt(x, y);
+					return movable != null && movable.getPlayer().getTeamId() != pathCalculable.getPlayer().getTeamId();
+				}
 
-			default:
-				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
-				return false;
+				default:
+					System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
+					return false;
 			}
 		}
 
@@ -616,15 +617,16 @@ public final class MainGrid implements Serializable {
 
 		final boolean canAddResourceSign(int x, int y) {
 			return x % 2 == 0
-					&& y % 2 == 0
-					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
-					&& !objectsGrid.hasMapObjectType(x, y,
-							EMapObjectType.FOUND_COAL,
-							EMapObjectType.FOUND_IRON,
-							EMapObjectType.FOUND_GOLD,
-							EMapObjectType.FOUND_NOTHING,
-							EMapObjectType.FOUND_GEMSTONE,
-							EMapObjectType.FOUND_BRIMSTONE);
+				&& y % 2 == 0
+				&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
+				&& !objectsGrid.hasMapObjectType(x, y,
+				EMapObjectType.FOUND_COAL,
+				EMapObjectType.FOUND_IRON,
+				EMapObjectType.FOUND_GOLD,
+				EMapObjectType.FOUND_NOTHING,
+				EMapObjectType.FOUND_GEMSTONE,
+				EMapObjectType.FOUND_BRIMSTONE
+			);
 		}
 
 		private boolean isSoldierAt(int x, int y, ESearchType searchType, IPlayer player) {
@@ -636,16 +638,16 @@ public final class MainGrid implements Serializable {
 					EMovableType movableType = movable.getMovableType();
 
 					switch (searchType) {
-					case SOLDIER_BOWMAN:
-						return movableType.isBowman();
-					case SOLDIER_SWORDSMAN:
-						return movableType.isSwordsman();
-					case SOLDIER_PIKEMAN:
-						return movableType.isPikeman();
-					case SOLDIER_INFANTRY:
-						return movableType.isInfantry();
-					default:
-						return false;
+						case SOLDIER_BOWMAN:
+							return movableType.isBowman();
+						case SOLDIER_SWORDSMAN:
+							return movableType.isSwordsman();
+						case SOLDIER_PIKEMAN:
+							return movableType.isPikeman();
+						case SOLDIER_INFANTRY:
+							return movableType.isInfantry();
+						default:
+							return false;
 					}
 				} else {
 					return false;
@@ -659,8 +661,7 @@ public final class MainGrid implements Serializable {
 
 		private boolean hasProtectedNeighbor(int x, int y) {
 			for (EDirection currDir : EDirection.VALUES) {
-				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
-					return true;
+				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y))) { return true; }
 			}
 			return false;
 		}
@@ -698,10 +699,10 @@ public final class MainGrid implements Serializable {
 
 		private boolean isCornPlantable(int x, int y) {
 			return !flagsGrid.isProtected(x, y)
-					&& !hasProtectedNeighbor(x, y)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
-					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_GROWING)
-					&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+				&& !hasProtectedNeighbor(x, y)
+				&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
+				&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_GROWING)
+				&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
 		private boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
@@ -710,8 +711,8 @@ public final class MainGrid implements Serializable {
 
 		private boolean isWinePlantable(int x, int y) {
 			if (!flagsGrid.isProtected(x, y)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
-					&& landscapeGrid.isHexAreaOfType(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)) {
+				&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
+				&& landscapeGrid.isHexAreaOfType(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)) {
 
 				EDirection direction = getDirectionOfMaximumHeightDifference(x, y, 2);
 				if (direction != null) { // if minimum height difference has been found
@@ -719,7 +720,7 @@ public final class MainGrid implements Serializable {
 					ShortPoint2D invDirPos = direction.getInverseDirection().getNextHexPoint(x, y);
 
 					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
-							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD);
+						&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD);
 				}
 			}
 			return false;
@@ -787,38 +788,39 @@ public final class MainGrid implements Serializable {
 			}
 
 			switch (debugColorMode) {
-			case BLOCKED_PARTITIONS:
-				return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
-			case PARTITION_ID:
-				return getScaledColor(partitionsGrid.getPartitionIdAt(x, y));
-			case REAL_PARTITION_ID:
-				return getScaledColor(partitionsGrid.getRealPartitionIdAt(x, y));
-			case PLAYER_ID:
-				return getScaledColor(partitionsGrid.getPlayerIdAt(x, y) + 1);
-			case TOWER_COUNT:
-				return getScaledColor(partitionsGrid.getTowerCountAt(x, y) + 1);
-			case DEBUG_COLOR:
-				return landscapeGrid.getDebugColor(x, y);
-			case MARKS_AND_OBJECTS:
-				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+				case BLOCKED_PARTITIONS:
+					return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
+				case PARTITION_ID:
+					return getScaledColor(partitionsGrid.getPartitionIdAt(x, y));
+				case REAL_PARTITION_ID:
+					return getScaledColor(partitionsGrid.getRealPartitionIdAt(x, y));
+				case PLAYER_ID:
+					return getScaledColor(partitionsGrid.getPlayerIdAt(x, y) + 1);
+				case TOWER_COUNT:
+					return getScaledColor(partitionsGrid.getTowerCountAt(x, y) + 1);
+				case DEBUG_COLOR:
+					return landscapeGrid.getDebugColor(x, y);
+				case MARKS_AND_OBJECTS:
+					return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB()
-								: (objectsGrid
-										.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-												: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-														: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
-			case RESOURCE_AMOUNTS:
-				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
-				return Color.getARGB(1, .6f, 0, resource);
-			case NONE:
-			default:
-				return 0;
+						: (objectsGrid
+						.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+						: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+						: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+				case RESOURCE_AMOUNTS:
+					float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
+					return Color.getARGB(1, .6f, 0, resource);
+				case NONE:
+				default:
+					return 0;
 			}
 		}
 
 		private int getScaledColor(int value) {
 			final int SCALE = 4;
 			return Color.getABGR(((float) (value % SCALE)) / SCALE, ((float) ((value / SCALE) % SCALE)) / SCALE,
-					((float) ((value / SCALE / SCALE) % SCALE)) / SCALE, 1);
+				((float) ((value / SCALE / SCALE) % SCALE)) / SCALE, 1
+			);
 		}
 
 		@Override
@@ -1056,9 +1058,9 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedGroundTypes, short partitionId) {
 			return isInBounds(x, y)
-					&& !flagsGrid.isProtected(x, y)
-					&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
-					&& allowedGroundTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
+				&& !flagsGrid.isProtected(x, y)
+				&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
+				&& allowedGroundTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override
@@ -1078,7 +1080,7 @@ public final class MainGrid implements Serializable {
 			}
 
 			int result = (int) (Constants.CONSTRUCTION_MARK_SCALE_FACTOR * Math.pow(diff, Constants.CONSTRUCTION_MARK_POW_FACTOR)
-					/ flattenPositions.length);
+				/ flattenPositions.length);
 
 			if (result <= Byte.MAX_VALUE) {
 				return (byte) result;
@@ -1095,7 +1097,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
 			return (playerId == 0 && MatchConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
-					|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
+				|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
 		}
 
 		@Override
@@ -1107,10 +1109,10 @@ public final class MainGrid implements Serializable {
 	final class MovablePathfinderGrid extends AbstractMovableGrid {
 		private static final long serialVersionUID = 4006228724969442801L;
 
-		private transient PathfinderGrid pathfinderGrid;
-		private transient AbstractAStar aStar;
-		transient DijkstraAlgorithm dijkstra; // not private, because it's used by BuildingsGrid
-		private transient InAreaFinder inAreaFinder;
+		private transient PathfinderGrid    pathfinderGrid;
+		private transient AbstractAStar     aStar;
+		transient         DijkstraAlgorithm dijkstra; // not private, because it's used by BuildingsGrid
+		private transient InAreaFinder      inAreaFinder;
 
 		public MovablePathfinderGrid() {
 			initPathfinders();
@@ -1310,16 +1312,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isFreePosition(ShortPoint2D position) {
-			short x = position.x;
-			short y = position.y;
-
+		public boolean isFreePosition(int x, int y) {
 			return isInBounds(x, y) && !flagsGrid.isBlocked(x, y) && movableGrid.hasNoMovableAt(x, y);
-		}
-
-		@Override
-		public boolean isFreeShipPosition(ShortPoint2D position) {
-			return isSurroundedByWater(position.x, position.y) && movableGrid.hasNoMovableAt(position.x, position.y);
 		}
 
 		@Override
@@ -1376,11 +1370,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isWaterSafe(int x, int y) {
-			return MainGrid.this.isWaterSafe(x, y);
-		}
-
-		@Override
 		public boolean fitsSearchType(IPathCalculatable pathCalculable, int x, int y, ESearchType searchType) {
 			return pathfinderGrid.fitsSearchType(x, y, searchType, pathCalculable);
 		}
@@ -1401,14 +1390,16 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public IAttackable getEnemyInSearchArea(final ShortPoint2D position, final IAttackable searchingAttackable, final short minSearchRadius,
-				final short maxSearchRadius, final boolean includeTowers) {
+												final short maxSearchRadius, final boolean includeTowers) {
 			boolean isBowman = searchingAttackable.getMovableType().isBowman();
 
 			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.x, position.y, minSearchRadius,
-					maxSearchRadius), isBowman, includeTowers);
+				maxSearchRadius
+			), isBowman, includeTowers);
 			if (includeTowers && !isBowman && enemy == null) {
 				enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.x, position.y, maxSearchRadius,
-						Constants.TOWER_SEARCH_RADIUS), false, true);
+					Constants.TOWER_SEARCH_RADIUS
+				), false, true);
 			}
 
 			return enemy;
@@ -1469,20 +1460,27 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
 			return isValidPosition(pathCalculatable, nextPos.x, nextPos.y) && (!pathCalculatable.needsPlayersGround()
-					|| partitionsGrid.getPartitionAt(pathCalculatable) == partitionsGrid.getPartitionAt(targetPos.x, targetPos.y));
+				|| partitionsGrid.getPartitionAt(pathCalculatable) == partitionsGrid.getPartitionAt(targetPos.x, targetPos.y));
 		}
 
 		@Override
-		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
+		public int getWidth() {
+			return width;
+		}
+
+		@Override
+		public int getHeight() {
+			return height;
+		}
+
+		@Override
+		public boolean isWater(int x, int y) {
+			return landscapeGrid.getLandscapeTypeAt(x, y).isWater;
+		}
+
+		@Override
+		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
 			return landscapeGrid.tryTakingResource(position, resource);
-		}
-
-		@Override
-		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
-			return HexGridArea.stream(position.x, position.y, 1, 5)
-					.filterBounds(width, height)
-					.filter((x, y) -> !isBlocked(x, y))
-					.getFirst().orElse(null);
 		}
 	}
 
@@ -1534,18 +1532,22 @@ public final class MainGrid implements Serializable {
 			short buildingPartition = partitionsGrid.getPartitionIdAt(buildingPosition.x, buildingPosition.y);
 
 			Optional<ShortPoint2D> coastPosition = HexGridArea.stream(requestedPosition.x, requestedPosition.y, 0, 12)
-					.filterBounds(width, height)
-					.filter((x, y) -> ShortPoint2D.getOnGridDist(buildingPosition.x, buildingPosition.y, x, y) <= maximumDistance)
-					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
-					.filter((x, y) -> partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) // ensure the dock is the same partition (accessible by worker of building)
-					.filter((x, y) -> { // check that the dock goes from land to water
-						EDirection direction = EDirection.getApproxDirection(x, y, requestedPosition.x, requestedPosition.y);
-						ShortPoint2D firstDockWaterPosition = direction.getNextHexPoint(x, y);
-						ShortPoint2D secondDockWaterPosition = direction.getNextHexPoint(x, y);
+															  .filterBounds(width, height)
+															  .filter((x, y) -> ShortPoint2D.getOnGridDist(buildingPosition.x, buildingPosition.y, x, y) <= maximumDistance)
+															  .filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
+															  .filter((x, y) -> partitionsGrid.getPartitionIdAt(x,
+																  y
+															  ) == buildingPartition) // ensure the dock is the same partition (accessible by worker of building)
+															  .filter((x, y) -> { // check that the dock goes from land to water
+																  EDirection direction = EDirection.getApproxDirection(x, y, requestedPosition.x, requestedPosition.y);
+																  ShortPoint2D firstDockWaterPosition = direction.getNextHexPoint(x, y);
+																  ShortPoint2D secondDockWaterPosition = direction.getNextHexPoint(x, y);
 
-						return isWaterSafe(firstDockWaterPosition.x, firstDockWaterPosition.y) && isWaterSafe(secondDockWaterPosition.x, secondDockWaterPosition.y);
-					})
-					.getFirst();
+																  return isWaterSafe(firstDockWaterPosition.x, firstDockWaterPosition.y) && isWaterSafe(secondDockWaterPosition.x,
+																	  secondDockWaterPosition.y
+																  );
+															  })
+															  .getFirst();
 
 			if (!coastPosition.isPresent()) {
 				return null;
@@ -1574,16 +1576,15 @@ public final class MainGrid implements Serializable {
 				ShortPoint2D point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
 				mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
 				flagsGrid.setBlockedAndProtected(point.x, point.y, true);
-				landscapeGrid.setBlockedPartition(point.x, point.y, LandscapeGrid.SEA_BLOCKED_PARTITION);
 			}
 		}
 
 		@Override
 		public boolean isCoastReachable(ShortPoint2D position) {
 			return !HexGridArea.stream(position.x, position.y, 0, 2)
-					.filterBounds(width, height)
-					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater)
-					.isEmpty();
+							   .filterBounds(width, height)
+							   .filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater)
+							   .isEmpty();
 		}
 
 		@Override
@@ -1779,8 +1780,8 @@ public final class MainGrid implements Serializable {
 				float mapObjectProgress = (circle - 1) / (float) (numCircles - 1);
 
 				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius)
-						.filterBounds(width, height)
-						.forEach((x, y) -> addOrRemoveMarkObject(buildingPartition, draw, x, y, mapObjectProgress));
+						 .filterBounds(width, height)
+						 .forEach((x, y) -> addOrRemoveMarkObject(buildingPartition, draw, x, y, mapObjectProgress));
 			}
 		}
 
@@ -1795,14 +1796,14 @@ public final class MainGrid implements Serializable {
 
 				float fixedProgress = progress;
 				MapLine.stream(lastWaypoint, currentWaypoint)
-						.filterBounds(width, height)
-						.forEach((x, y) -> {
-							if (draw) {
-								mapObjectsManager.addBuildingWorkAreaObject(x, y, fixedProgress);
-							} else {
-								mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.WORKAREA_MARK);
-							}
-						});
+					   .filterBounds(width, height)
+					   .forEach((x, y) -> {
+						   if (draw) {
+							   mapObjectsManager.addBuildingWorkAreaObject(x, y, fixedProgress);
+						   } else {
+							   mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.WORKAREA_MARK);
+						   }
+					   });
 				lastWaypoint = currentWaypoint;
 				progress += 1f / (waypoints.length - 1);
 			}
@@ -1840,11 +1841,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround, final boolean isShip, final IPlayer player,
-				short targetRadius) {
-			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
-				private static final long serialVersionUID = 1L;
-
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start,
+														ShortPoint2D target,
+														final boolean needsPlayersGround,
+														final boolean isShip,
+														final IPlayer player,
+														short targetRadius) {
+			IPathCalculatable pathSearcher = new IPathCalculatable() {
 				@Override
 				public ShortPoint2D getPosition() {
 					return start;
@@ -1864,9 +1867,10 @@ public final class MainGrid implements Serializable {
 				public boolean isShip() {
 					return isShip;
 				}
-			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
+			};
+			Path path = movablePathfinderGrid.searchDijkstra(pathSearcher, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
 
-			return path != null ? path.getTargetPos() : null;
+			return path != null ? path.getTargetPosition() : null;
 		}
 	}
 
@@ -1896,33 +1900,37 @@ public final class MainGrid implements Serializable {
 			return MainGrid.this.isInBounds(position.x, position.y);
 		}
 
+		@Override
 		public FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId) {
-			if (!isWaterSafe(position.x, position.y)) {
+			Optional<ILogicMovable> ferryOptional = HexGridArea.stream(position.x, position.y, 0, Constants.MAX_FERRY_ENTRANCE_SEARCH_DISTANCE)
+															   .filterBounds(width, height)
+															   .filter((x, y) -> landscapeGrid.getLandscapeTypeAt(x, y).isWater())
+															   .iterateForResult((x, y) -> {
+																   ILogicMovable movable = movableGrid.getMovableAt(x, y);
+																   return Optional.ofNullable(movable).filter(m -> m.getMovableType() == EMovableType.FERRY);
+															   });
+
+			if (!ferryOptional.isPresent()) {
 				return null;
 			}
-			ShortPoint2D ferryPosition = position;
-			ShortPoint2D entrance = position;
-			boolean searching = true;
-			ILogicMovable ship = null;
-			EDirection direction = EDirection.getDirection(0, 1);
-			for (int r1 = -1; r1 < EDirection.NUMBER_OF_DIRECTIONS && searching; r1++) { // search ferry
-				if (r1 >= 0) {
-					ferryPosition = direction.rotateRight(r1).getNextHexPoint(position);
-				}
-				ship = getMovableGrid().getMovableAt(ferryPosition.x, ferryPosition.y);
-				if (ship != null && ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
-					for (int r2 = 0; r2 < EDirection.NUMBER_OF_DIRECTIONS && searching; r2++) { // search ferry entrance
-						entrance = direction.rotateRight(r2).getNextHexPoint(ferryPosition, 3);
-						if (!this.isBlocked(entrance.x, entrance.y)) {
-							searching = false;
-						}
-					}
-				}
-			}
-			if (searching) {
+
+			ILogicMovable ferry = ferryOptional.get();
+			ShortPoint2D ferryPosition = ferry.getPosition();
+			Optional<ShortPoint2D> entranceOptional = HexGridArea.stream(ferryPosition.x, ferryPosition.y, 0, Constants.MAX_FERRY_ENTRANCE_SEARCH_DISTANCE)
+																 .filterBounds(width, height)
+																 .filter((x, y) -> !isBlocked(x, y))
+																 .getFirst();
+
+			if (!entranceOptional.isPresent()) {
 				return null;
 			}
-			return new FerryEntrance((Movable) ship, entrance);
+
+			return new FerryEntrance(ferry, entranceOptional.get());
+		}
+
+		@Override
+		public boolean isWater(int x, int y) {
+			return landscapeGrid.getLandscapeTypeAt(x, y).isWater;
 		}
 
 		@Override
@@ -1933,9 +1941,9 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId) {
 			return MapCircle.stream(pos, Constants.BUILDING_PLACEMENT_MAX_SEARCH_RADIUS)
-					.filterBounds(width, height)
-					.filter((x, y) -> constructionMarksGrid.canConstructAt(x, y, type, playerId))
-					.min((x, y) -> ShortPoint2D.getOnGridDist(pos.x, pos.y, x, y));
+							.filterBounds(width, height)
+							.filter((x, y) -> constructionMarksGrid.canConstructAt(x, y, type, playerId))
+							.min((x, y) -> ShortPoint2D.getOnGridDist(pos.x, pos.y, x, y));
 		}
 
 		@Override
@@ -1959,16 +1967,16 @@ public final class MainGrid implements Serializable {
 				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
 			} else {
 				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING WHERE IT WASN'T POSSIBLE! Type: " + type + "  pos: " + position
-						+ "  playerId: " + playerId);
+					+ "  playerId: " + playerId);
 			}
 		}
 
 		@Override
 		public void positionClicked(int x, int y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  player: " + partitionsGrid.getPlayerIdAt(x, y) + "  partition: "
-					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
-					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y) + " landscapeType: "
-					+ landscapeGrid.getLandscapeTypeAt(x, y));
+				+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
+				+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y) + " landscapeType: "
+				+ landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override

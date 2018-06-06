@@ -37,9 +37,9 @@ import jsettlers.logic.player.Player;
  * An extension to the worker building for dockyards
  */
 public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction, IDockBuilding {
-	private EShipType orderedShipType = null;
-	private ShipInConstructionMapObject ship = null;
-	private DockPosition dockPosition = null;
+	private EShipType                   orderedShipType = null;
+	private ShipInConstructionMapObject ship            = null;
+	private DockPosition                dockPosition    = null;
 
 	public DockyardBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(EBuildingType.DOCKYARD, player, position, buildingsGrid);
@@ -68,16 +68,12 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		}
 
 		if (ship == null) {
-			ShortPoint2D shipPosition = getShipPosition();
-			// push old ship
-			Movable existingShip = (Movable) grid.getMovableGrid().getMovableAt(shipPosition.x, shipPosition.y);
-			if (existingShip != null) {
-				existingShip.leavePosition();
-			}
+			pushShipAtShipPosition();
+
 			// make new ship
 			EDirection direction = dockPosition.getDirection().getNeighbor(-1);
 			ship = new ShipInConstructionMapObject(orderedShipType, direction);
-			grid.getMapObjectsManager().addMapObject(shipPosition, ship);
+			grid.getMapObjectsManager().addMapObject(getShipPosition(), ship);
 		}
 
 		ship.workOnShip();
@@ -87,8 +83,22 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 			shipMovable.setDirection(ship.getDirection());
 			removeShipInConstructionMapObject();
 
+
 			ship = null;
 			orderedShipType = null;
+			pushShipAtShipPosition();
+		}
+	}
+
+	private void pushShipAtShipPosition() {
+		if (dockPosition == null) {
+			return;
+		}
+
+		ShortPoint2D shipPosition = getShipPosition();
+		Movable existingShip = (Movable) grid.getMovableGrid().getMovableAt(shipPosition.x, getShipPosition().y);
+		if (existingShip != null) {
+			existingShip.leavePosition();
 		}
 	}
 
@@ -140,7 +150,9 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 
 	@Override
 	protected void killedEvent() {
-		removeShipInConstructionMapObject();
+		if (ship != null) {
+			removeShipInConstructionMapObject();
+		}
 		removeDock();
 		super.killedEvent();
 	}

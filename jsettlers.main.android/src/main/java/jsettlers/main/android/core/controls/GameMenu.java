@@ -24,10 +24,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import go.graphics.android.AndroidSoundPlayer;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.graphics.action.Action;
 import jsettlers.main.android.R;
 
 /**

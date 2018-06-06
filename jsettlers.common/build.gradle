@@ -1,32 +1,33 @@
 apply plugin: 'java'
 
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+
+import jsettlers.textures.generation.TextureGenerationTask
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 
-configurations {
-    generated
+
+def generatedDirectory = 'src/generated/'
+def generatedCommitInfoDirectory = generatedDirectory + 'commitInfo/'
+def generatedTexturesDirectory = generatedDirectory + 'textures/'
+
+
+task compileTextures(type: TextureGenerationTask) {
+    resourceDirectory = file('raw_images_for_textures')
+    generatedSourcesDirectory = file(generatedTexturesDirectory + 'java')
+    generatedResourcesDirectory = file(generatedTexturesDirectory + 'resources')
 }
 
-sourceSets {
-    generated {
-        output.dir('src/generated/java', builtBy: 'findGitRevision')
-    }
-}
-
-
-def commitFile = new File(new File(new File(sourceSets.generated.java.srcDirs[0], 'jsettlers'), 'common'), 'CommitInfo.java');
 task findGitRevision {
-    FileRepositoryBuilder builder = new FileRepositoryBuilder();
-    Repository repository = builder.readEnvironment().findGitDir(file('.')).build();
+    def commitFile = file(generatedCommitInfoDirectory + 'java/jsettlers/common/CommitInfo.java')
+
+    FileRepositoryBuilder builder = new FileRepositoryBuilder()
+    Repository repository = builder.readEnvironment().findGitDir(file('.')).build()
     def headRef = repository.getRef("HEAD")
     def localRev = headRef.objectId.name
-    repository.close();
+    repository.close()
 
-    ext {
-        rev = localRev;
-    }
     onlyIf {
-        !commitFile.isFile() || !commitFile.text.contains(rev)
+        !commitFile.isFile() || !commitFile.text.contains(localRev)
     }
     doLast {
         commitFile.parentFile.mkdirs()
@@ -40,36 +41,26 @@ public final class CommitInfo {
 	public static final String BUILD_TIME = "%s";
 	private CommitInfo() {
 	}
-}""", rev.substring(0, 8), rev, (new Date()).format('yyyy-MM-dd-HH-mm-ss'))
+}""", localRev.substring(0, 8), localRev, (new Date()).format('yyyy-MM-dd-HH-mm-ss'))
     }
 }
+
+
 
 sourceSets {
-    main {
-        compileClasspath += sourceSets.generated.output
-        runtimeClasspath += sourceSets.generated.output
-    }
-}
-
-jar {
-    from sourceSets.generated.output
-    dependsOn generatedClasses
+    main.java.srcDirs = [generatedTexturesDirectory + 'java', generatedCommitInfoDirectory + 'java', "src/main/java"]
+    main.resources.srcDirs = [generatedTexturesDirectory + 'resources', 'src/main/resources']
 }
 
 compileJava {
-    dependsOn compileGeneratedJava
-}
-
-compileGeneratedJava {
+    dependsOn compileTextures
     dependsOn findGitRevision
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
 }
 
 clean {
-    delete commitFile
+    delete generatedDirectory
 }
 
 dependencies {
-    testCompile project(':jsettlers.testutils')
+    testImplementation project(':jsettlers.testutils')
 }

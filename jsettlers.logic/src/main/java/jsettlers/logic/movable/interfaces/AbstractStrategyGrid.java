@@ -32,9 +32,9 @@ import jsettlers.logic.player.Player;
 
 /**
  * Defines methods needed by the {@link MovableStrategy}.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public abstract class AbstractStrategyGrid implements Serializable {
 	private static final long serialVersionUID = 5560951888790865783L;
@@ -57,7 +57,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Take a material from the stack at given position of given {@link EMaterialType}.
-	 * 
+	 *
 	 * @param pos
 	 * @param materialType
 	 * @return true if the material was available<br>
@@ -67,7 +67,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Drop a material of given type at given position.
-	 * 
+	 *
 	 * @param pos
 	 * @param materialType
 	 * @param offer
@@ -77,7 +77,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer, boolean forced);
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 * @param searchType
 	 * @return in what direction you have to look from the given position to directly look at the given search type<br>
@@ -101,7 +101,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, int x, int y, ESearchType searchType);
 
 	/**
-	 * 
+	 *
 	 * @param pathCalculatable
 	 *            requester
 	 * @param position
@@ -117,7 +117,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract void placePigAt(ShortPoint2D pos, boolean place);
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 * @return true if there is a pig at given pos<br>
 	 *         false otherwise.
@@ -125,7 +125,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract boolean hasPigAt(ShortPoint2D position);
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 * @return true if there is a pig on given position.
 	 */
@@ -135,7 +135,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Show smoke or remove it at the given position.
-	 * 
+	 *
 	 * @param position
 	 *            position to let the smoke appear.
 	 * @param smokeOn
@@ -146,7 +146,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * checks if there can be put any more materials on the given position.
-	 * 
+	 *
 	 * @param position
 	 * @return
 	 */
@@ -154,7 +154,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Checks if the given {@link EMaterialType} can be popped from the given position.
-	 * 
+	 *
 	 * @param position
 	 * @param material
 	 * @return
@@ -169,7 +169,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Changes the height of the given position towards the given targetHeight and changes the landscape type to {@link ELandscapeType}.FLATTENED
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param targetHeight
@@ -178,7 +178,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Changes the player at the given position to the given player.
-	 * 
+	 *
 	 * @param pos
 	 * @param player
 	 */
@@ -186,7 +186,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Gets the landscape type at the given position.
-	 * 
+	 *
 	 * @param x
 	 *            x coordinate of the position to get the landscape type.
 	 * @param y
@@ -197,7 +197,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Searches for an enemy around the position of the given movable in it's search radius.
-	 * 
+	 *
 	 * @param centerPos
 	 *            The center position to start the search.
 	 * @param movable
@@ -211,11 +211,11 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 * @return The closest enemy or null if none exists in the search radius.
 	 */
 	public abstract IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short minSearchRadius, short maxSearchRadius,
-			boolean includeTowers);
+													 boolean includeTowers);
 
 	/**
 	 * Adds an arrow object to the map flying from
-	 * 
+	 *
 	 * @param attackedPos
 	 *            Attacked position.
 	 * @param shooterPos
@@ -230,19 +230,15 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract boolean hasNoMovableAt(int x, int y);
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 *            The position to be checked.
 	 * @return true if the position is on the grid, not blocked and free of other movables. <br>
 	 *         false otherwise.
 	 */
-	public abstract boolean isFreePosition(ShortPoint2D position);
+	public abstract boolean isFreePosition(int x, int y);
 
-	public abstract boolean isFreeShipPosition(ShortPoint2D position);
-
-	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
+	public abstract boolean tryTakingResource(ShortPoint2D position, EResourceType resource);
 
 	public abstract ILogicMovable getMovableAt(int x, int y);
-
-	public abstract ShortPoint2D getFerryUnloadPosition(ShortPoint2D position);
 }
