@@ -28,24 +28,30 @@ import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 @EFragment
 public class DirectoryPickerDialog extends DialogFragment {
 
 	@Bean
 	DirectoryAdapter directoryAdapter;
-	@Bean
-	AndroidResourcesLoader androidResourcesLoader;
+
+	private AsyncTask setDirectoryTask;
 
 	public interface Listener {
 		void onDirectorySelected();
@@ -64,21 +70,35 @@ public class DirectoryPickerDialog extends DialogFragment {
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		ListView listView = new ListView(getActivity());
+		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+		View view = layoutInflater.inflate(R.layout.dialog_directory_picker, null);
+
+		ProgressBar progressBar = view.findViewById(R.id.progressBar);
+
+		ListView listView = view.findViewById(R.id.listView);
 		listView.setAdapter(directoryAdapter);
 		listView.setOnItemClickListener((arg0, arg1, position, arg3) -> {
 			directoryAdapter.positionSelected(position);
 			setButtonState();
 		});
 
-		return new AlertDialog.Builder(getActivity())
+		AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
 				.setTitle(R.string.resource_selection_dialog_title)
-				.setView(listView)
-				.setPositiveButton(R.string.ok, (dialog, which) -> {
-					androidResourcesLoader.setResourcesDirectory(directoryAdapter.getCurrentDirectory().getAbsolutePath());
-					((Listener) getParentFragment()).onDirectorySelected();
-				})
+				.setView(view)
+				.setPositiveButton(R.string.ok, null)
 				.create();
+
+		alertDialog.setOnShowListener(dialog -> {
+			Button button = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+
+			button.setOnClickListener(v -> {
+				button.setEnabled(false);
+				progressBar.setVisibility(View.VISIBLE);
+				setDirectoryTask = new SetResourcesTask(getActivity().getApplication()).execute(directoryAdapter.getCurrentDirectory());
+			});
+		});
+
+		return alertDialog;
 	}
 
 	@Override
@@ -87,11 +107,40 @@ public class DirectoryPickerDialog extends DialogFragment {
 		setButtonState();
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		if (setDirectoryTask != null) {
+			setDirectoryTask.cancel(true);
+		}
+	}
+
 	private void setButtonState() {
 		AlertDialog dialog = (AlertDialog) getDialog();
 		boolean hasGameFiles = SettlersFolderChecker.checkSettlersFolder(directoryAdapter.getCurrentDirectory()).isValidSettlersFolder();
 		Button button = dialog.getButton(Dialog.BUTTON_POSITIVE);
 		button.setEnabled(hasGameFiles);
+	}
+
+	class SetResourcesTask extends AsyncTask<File, Void, Void> {
+		private final Application application;
+
+		SetResourcesTask(Application application) {
+			this.application = application;
+		}
+
+		@Override
+		protected Void doInBackground(File... files) {
+			new AndroidResourcesLoader(application).setResourcesDirectory(files[0].getAbsolutePath());
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			super.onPostExecute(aVoid);
+			((Listener) getParentFragment()).onDirectorySelected();
+			dismiss();
+		}
 	}
 
 	@EBean
