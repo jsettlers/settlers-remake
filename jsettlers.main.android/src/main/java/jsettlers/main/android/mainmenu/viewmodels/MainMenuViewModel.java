@@ -7,6 +7,14 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import java.io.File;
+
+import io.reactivex.Scheduler;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
@@ -59,13 +67,15 @@ public class MainMenuViewModel extends ViewModel {
         return showJoinMultiplayerPlayer;
     }
 
-    public void resourceDirectoryChosen() {
-        boolean resourcesLoaded = androidResourcesLoader.setup();
-        if (resourcesLoaded) {
-            areResourcesLoaded.setValue(true);
-        } else {
-            throw new RuntimeException("Resources not found or not valid after directory chosen by user");
-        }
+    public void resourceDirectoryChosen(File resourceDirectory) {
+        androidResourcesLoader.setResourcesDirectory(resourceDirectory.getAbsolutePath());
+
+        Disposable resourceSetupSubscription = androidResourcesLoader.setupSingle()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    areResourcesLoaded.postValue(true);
+                });
     }
     public void quitSelected() {
         if (gameManager.getGameMenu().getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {

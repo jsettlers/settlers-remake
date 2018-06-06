@@ -24,15 +24,9 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 
-import jsettlers.common.resources.SettlersFolderChecker;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
-
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -45,16 +39,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import jsettlers.common.resources.SettlersFolderChecker;
+import jsettlers.main.android.R;
+
 @EFragment
 public class DirectoryPickerDialog extends DialogFragment {
 
 	@Bean
 	DirectoryAdapter directoryAdapter;
 
-	private AsyncTask setDirectoryTask;
-
 	public interface Listener {
-		void onDirectorySelected();
+		void onDirectorySelected(File resourceDirectory);
 	}
 
 	public static DirectoryPickerDialog newInstance() {
@@ -92,9 +87,11 @@ public class DirectoryPickerDialog extends DialogFragment {
 			Button button = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
 
 			button.setOnClickListener(v -> {
+				setCancelable(false);
+				listView.setEnabled(false);
 				button.setEnabled(false);
 				progressBar.setVisibility(View.VISIBLE);
-				setDirectoryTask = new SetResourcesTask(getActivity().getApplication()).execute(directoryAdapter.getCurrentDirectory());
+				((Listener) getParentFragment()).onDirectorySelected(directoryAdapter.getCurrentDirectory());
 			});
 		});
 
@@ -107,40 +104,11 @@ public class DirectoryPickerDialog extends DialogFragment {
 		setButtonState();
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		if (setDirectoryTask != null) {
-			setDirectoryTask.cancel(true);
-		}
-	}
-
 	private void setButtonState() {
 		AlertDialog dialog = (AlertDialog) getDialog();
 		boolean hasGameFiles = SettlersFolderChecker.checkSettlersFolder(directoryAdapter.getCurrentDirectory()).isValidSettlersFolder();
 		Button button = dialog.getButton(Dialog.BUTTON_POSITIVE);
 		button.setEnabled(hasGameFiles);
-	}
-
-	class SetResourcesTask extends AsyncTask<File, Void, Void> {
-		private final Application application;
-
-		SetResourcesTask(Application application) {
-			this.application = application;
-		}
-
-		@Override
-		protected Void doInBackground(File... files) {
-			new AndroidResourcesLoader(application).setResourcesDirectory(files[0].getAbsolutePath());
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void aVoid) {
-			super.onPostExecute(aVoid);
-			((Listener) getParentFragment()).onDirectorySelected();
-			dismiss();
-		}
 	}
 
 	@EBean

@@ -15,19 +15,7 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments;
 
-import android.Manifest;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import java.io.File;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.BindingObject;
@@ -36,6 +24,21 @@ import org.androidannotations.annotations.DataBound;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
+
+import android.Manifest;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
@@ -53,6 +56,7 @@ import jsettlers.main.android.mainmenu.viewmodels.MainMenuViewModel;
 @OptionsMenu(R.menu.fragment_mainmenu)
 public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
+	private static final String TAG_RESOURCE_DIALOG = "resourcedialog";
 
 	private MainMenuViewModel viewModel;
     private MainMenuNavigator mainMenuNavigator;
@@ -108,6 +112,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		viewModel.getAreResourcesLoaded().observe(this, loadSinglePlayerButton::setEnabled);
 		viewModel.getAreResourcesLoaded().observe(this, newMultiPlayerButton::setEnabled);
 		viewModel.getAreResourcesLoaded().observe(this, joinMultiPlayerButton::setEnabled);
+		viewModel.getAreResourcesLoaded().observe(this, this::dismissResourceDialog);
 		viewModel.getShowSinglePlayer().observe(this, z -> mainMenuNavigator.showNewSinglePlayerPicker());
 		viewModel.getShowLoadSinglePlayer().observe(this, z -> mainMenuNavigator.showLoadSinglePlayerPicker());
 		viewModel.getShowMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showNewMultiPlayerPicker());
@@ -142,8 +147,8 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	 * DirectoryPickerDialog.Listener implementation
 	 */
 	@Override
-	public void onDirectorySelected() {
-		viewModel.resourceDirectoryChosen();
+	public void onDirectorySelected(File resourceDirectory) {
+		viewModel.resourceDirectoryChosen(resourceDirectory);
 	}
 
 
@@ -152,7 +157,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
 		} else {
-			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), null);
+			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), TAG_RESOURCE_DIALOG);
 		}
 	}
 
@@ -161,7 +166,14 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		mainMenuNavigator.resumeGame();
 	}
 
-
+	private void dismissResourceDialog(Boolean areResourcesLoaded) {
+		if (areResourcesLoaded) {
+			DialogFragment dialog = (DialogFragment) getChildFragmentManager().findFragmentByTag(TAG_RESOURCE_DIALOG);
+			if (dialog != null) {
+				dialog.dismiss();
+			}
+		}
+	}
 
 	private void updateResumeView(MainMenuViewModel.ResumeViewState resumeViewState) {
 		if (resumeViewState == null){
