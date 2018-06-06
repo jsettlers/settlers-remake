@@ -6,13 +6,13 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.SoldierAction;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;

@@ -70,7 +70,7 @@ public class TaskCollectingListenerTest {
 		TestTaskPacket testPacket2 = new TestTaskPacket("Bla B�b B�n0928�38(/�/)\"=$(;:I\"H))!", -2342323, (byte) 4);
 		client.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, testPacket2); // send packet 2 to server
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		List<ServersideTaskPacket> serversideTaskPackets = serverListener.getAndResetTasks(); // get collected tasks of server
 
@@ -82,7 +82,7 @@ public class TaskCollectingListenerTest {
 			server.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, curr);
 		}
 
-		Thread.sleep(50);
+		Thread.sleep(50L);
 
 		List<TaskPacket> packets = clientListener.popBufferedPackets();
 

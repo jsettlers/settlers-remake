@@ -1,10 +1,10 @@
 apply plugin: 'java'
 
 dependencies {
-    compile project(':go.graphics')
+    implementation project(':go.graphics')
 
-    compile "org.jogamp.gluegen:gluegen-rt:2.3.2"
-    compile "org.jogamp.jogl:jogl-all:2.3.2"
+    implementation "org.jogamp.gluegen:gluegen-rt:2.3.2"
+    implementation "org.jogamp.jogl:jogl-all:2.3.2"
 
     runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-aarch64"
     runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-armv6"

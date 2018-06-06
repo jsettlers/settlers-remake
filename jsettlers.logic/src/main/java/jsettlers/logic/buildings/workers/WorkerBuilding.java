@@ -32,9 +32,9 @@ import jsettlers.logic.player.Player;
 
 /**
  * This class is a building with a worker that can fulfill it's job.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBuilding {
 	private static final long serialVersionUID = 7050284039312172046L;
@@ -56,7 +56,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	protected final int constructionFinishedEvent() {
+	protected  int constructionFinishedEvent() {
 		requestWorker();
 		return -1; // no scheduling required
 	}
@@ -66,7 +66,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	protected final int subTimerEvent() {
+	protected int subTimerEvent() {
 		assert false : "This should never be called, as this building should not be scheduled.";
 		return -1;
 	}

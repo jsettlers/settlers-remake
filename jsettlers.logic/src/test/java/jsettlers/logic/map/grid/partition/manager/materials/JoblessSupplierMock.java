@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,13 +28,13 @@ public class JoblessSupplierMock implements IJoblessSupplier {
 
 	private LinkedList<IManagerBearer> jobless = new LinkedList<>();
 
-	public void addJoblessAt(final ShortPoint2D pos) {
+	public void addJoblessAt(final ShortPoint2D position) {
 		jobless.add(new IManagerBearer() {
 			private static final long serialVersionUID = 3833820381369081344L;
 
 			@Override
 			public ShortPoint2D getPosition() {
-				return pos;
+				return position;
 			}
 
 			@Override

@@ -135,4 +135,6 @@ public interface IGuiInputGrid {
 	void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted);
 
 	FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
+
+	boolean isWater(int x, int y);
 }

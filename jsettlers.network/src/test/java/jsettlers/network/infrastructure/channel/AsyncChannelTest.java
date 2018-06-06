@@ -64,7 +64,7 @@ public class AsyncChannelTest {
 		c1.sendPacketAsync(ENetworkKey.TEST_PACKET, testPackage);
 		assertTrue(System.currentTimeMillis() - start < 5); // check that the sending is asynchronous
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 
 		List<BlockingTestPacket> packets = listener.popBufferedPackets();
 
@@ -86,7 +86,7 @@ public class AsyncChannelTest {
 			c1.sendPacketAsync(ENetworkKey.TEST_PACKET, testPackage);
 		}
 
-		Thread.sleep(40);
+		Thread.sleep(40L);
 
 		List<TestPacket> packets = listener.popBufferedPackets();
 
@@ -117,7 +117,7 @@ public class AsyncChannelTest {
 		@Override
 		public void serialize(DataOutputStream oos) throws IOException {
 			try {
-				Thread.sleep(50);
+				Thread.sleep(50L);
 			} catch (InterruptedException e) {
 			}
 			super.serialize(oos);

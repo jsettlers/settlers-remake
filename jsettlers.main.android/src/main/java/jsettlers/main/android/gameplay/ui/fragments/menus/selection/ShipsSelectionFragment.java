@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,77 +23,74 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import jsettlers.common.action.EActionType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.utils.OriginalImageProvider;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewsById;
 
 import java.util.List;
 
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionControls;
-import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.utils.OriginalImageProvider;
-
 /**
  * Created by Rudolf Polzer
  */
 @EFragment(R.layout.menu_selection_ships)
 public class ShipsSelectionFragment extends SelectionFragment {
-    private static final EMovableType[] shipTypes = new EMovableType[] {
-            EMovableType.FERRY,
-            EMovableType.CARGO_BOAT,
-    };
+	private static final EMovableType[] shipTypes = new EMovableType[] {
+			EMovableType.FERRY,
+			EMovableType.CARGO_SHIP,
+	};
 
-    private static final ImageLink[] shipImageLinks = new ImageLink[] {
-            ImageLink.fromName("original_14_GUI_272", 0),
-            ImageLink.fromName("original_14_GUI_278", 0)
-    };
+	private static final ImageLink[] shipImageLinks = new ImageLink[] {
+			ImageLink.fromName("original_14_GUI_272", 0),
+			ImageLink.fromName("original_14_GUI_278", 0)
+	};
 
-    @ViewsById({R.id.layout_ferries, R.id.layout_tradeShips})
-    List<LinearLayout> shipLayouts;
-    @ViewsById({R.id.textView_ferriesCount, R.id.textView_tradeShipsCount})
-    List<TextView> countTextViews;
-    @ViewsById({R.id.imageView_ferry, R.id.imageView_tradeShip})
-    List<ImageView> shipImageViews;
+	@ViewsById({ R.id.layout_ferries, R.id.layout_tradeShips })
+	List<LinearLayout> shipLayouts;
+	@ViewsById({ R.id.textView_ferriesCount, R.id.textView_tradeShipsCount })
+	List<TextView> countTextViews;
+	@ViewsById({ R.id.imageView_ferry, R.id.imageView_tradeShip })
+	List<ImageView> shipImageViews;
 
-    private ActionControls actionControls;
+	private ActionControls actionControls;
 
+	public static Fragment newInstance() {
+		return ShipsSelectionFragment_.builder().build();
+	}
 
-    public static Fragment newInstance() {
-        return ShipsSelectionFragment_.builder().build();
-    }
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		actionControls = new ControlsResolver(getActivity()).getActionControls();
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        actionControls = new ControlsResolver(getActivity()).getActionControls();
+		for (int i = 0; i < shipTypes.length; i++) {
+			EMovableType shipType = shipTypes[i];
+			int count = getSelection().getMovableCount(shipType);
 
-        for (int i = 0; i < shipTypes.length; i++) {
-            EMovableType shipType = shipTypes[i];
-            int count = getSelection().getMovableCount(shipType);
+			if (count > 0) {
+				OriginalImageProvider.get(shipImageLinks[i]).setAsImage(shipImageViews.get(i));
+				countTextViews.get(i).setText(count + "");
+			} else {
+				shipLayouts.get(i).setVisibility(View.GONE);
+			}
+		}
+	}
 
-            if (count > 0) {
-                OriginalImageProvider.get(shipImageLinks[i]).setAsImage(shipImageViews.get(i));
-                countTextViews.get(i).setText(count + "");
-            } else {
-                shipLayouts.get(i).setVisibility(View.GONE);
-            }
-        }
-    }
+	@Click(R.id.button_unload)
+	void unloadClicked() {
+		actionControls.fireAction(EActionType.UNLOAD_FERRIES);
+	}
 
-    @Click(R.id.button_unload)
-    void unloadClicked() {
-        actionControls.fireAction(EActionType.UNLOAD_FERRIES);
-    }
-
-    @Click(R.id.button_kill)
-    void killClicked() {
-        Snackbar.make(getView(), R.string.confirm_destory_ships, Snackbar.LENGTH_SHORT)
-                .setAction(R.string.yes, view1 -> actionControls.fireAction(EActionType.DESTROY))
-                .show();
-    }
+	@Click(R.id.button_kill)
+	void killClicked() {
+		Snackbar.make(getView(), R.string.confirm_destory_ships, Snackbar.LENGTH_SHORT)
+				.setAction(R.string.yes, view1 -> actionControls.fireAction(EActionType.DESTROY))
+				.show();
+	}
 }

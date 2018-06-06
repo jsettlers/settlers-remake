@@ -18,7 +18,7 @@ import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
  * This is a null image.

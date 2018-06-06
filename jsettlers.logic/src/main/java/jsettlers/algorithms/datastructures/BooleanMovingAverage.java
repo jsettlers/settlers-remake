@@ -15,6 +15,7 @@
 package jsettlers.algorithms.datastructures;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Class to calculate the moving average of a sequence of boolean values.
@@ -26,34 +27,42 @@ public class BooleanMovingAverage implements Serializable {
 	private static final long serialVersionUID = -8487849794368180355L;
 
 	private final boolean[] values;
-	private int count;
+	private int countTrue;
 	private int index = 0;
 
+	/**
+	 * Creates a fix sized boolean array filled with the default value.
+	 * @param numberOfValues the length of the array
+	 * @param defaultValue the default value to fill all entries of the array
+	 */
 	public BooleanMovingAverage(int numberOfValues, boolean defaultValue) {
 		values = new boolean[numberOfValues];
 
 		if (defaultValue) {
-			for (int i = 0; i < numberOfValues; i++) {
-				values[i] = defaultValue;
-			}
-			count = numberOfValues;
+			Arrays.fill(values, defaultValue);
+			countTrue = numberOfValues;
 		}
 	}
 
-	public void inserValue(boolean value) {
+	/**
+	 * Inserts the given value and replaces the existing value at the current index and increases the index.
+	 * If the index exceeds the length it restarts to override the value from the beginning like a circular list.
+	 * @param value
+	 */
+	public void insertValue(boolean value) {
 		boolean oldValue = values[index];
 		values[index] = value;
 		index = (index + 1) % values.length;
 
 		if (oldValue) {
-			count--;
+			countTrue--;
 		}
 		if (value) {
-			count++;
+			countTrue++;
 		}
 	}
 
 	public float getAverage() {
-		return ((float) count) / values.length;
+		return ((float) countTrue) / values.length;
 	}
 }

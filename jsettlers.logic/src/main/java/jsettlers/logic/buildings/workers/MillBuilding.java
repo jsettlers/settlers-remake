@@ -29,7 +29,7 @@ public final class MillBuilding extends WorkerBuilding implements IBuilding.IMil
 	private static final long serialVersionUID = -8586862770507050382L;
 
 	private boolean rotating;
-	private boolean soundPlayed;
+	private transient boolean soundPlayed;
 
 	public MillBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(EBuildingType.MILL, player, position, buildingsGrid);

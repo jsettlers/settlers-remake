@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,9 +26,9 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class BucketQueueAStar extends AbstractAStar {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
@@ -42,9 +42,8 @@ public final class BucketQueueAStar extends AbstractAStar {
 	private final BitSet openBitSet;
 	private final BitSet closedBitSet;
 
-	final float[] costs;
-
-	final int[] depthParentHeap;
+	private final float[] costs;
+	private final int[]   depthParentHeap;
 
 	private final AbstractBucketQueue open;
 
@@ -73,8 +72,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 		final short blockedAtStartPartition;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
-		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)
-				|| map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
+		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || (!requester.isShip() && map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty))) {
 			return null; // target can not be reached
 		} else if (sx == tx && sy == ty) {
 			return null;
@@ -163,62 +161,62 @@ public final class BucketQueueAStar extends AbstractAStar {
 		return null;
 	}
 
-	private static final int getDepthIdx(int flatIdx) {
+	private static int getDepthIdx(int flatIdx) {
 		return 2 * flatIdx;
 	}
 
-	private static final int getParentIdx(int flatIdx) {
+	private static int getParentIdx(int flatIdx) {
 		return 2 * flatIdx + 1;
 	}
 
-	private final void setClosed(int x, int y) {
+	private void setClosed(int x, int y) {
 		closedBitSet.set(getFlatIdx(x, y));
 		map.markAsClosed(x, y);
 	}
 
-	private final void initStartNode(int sx, int sy, int tx, int ty) {
+	private void initStartNode(int sx, int sy, int tx, int ty) {
 		int flatIdx = getFlatIdx(sx, sy);
 		depthParentHeap[getDepthIdx(flatIdx)] = 0;
 		depthParentHeap[getParentIdx(flatIdx)] = -1;
 		costs[flatIdx] = 0;
 
-		open.insert(flatIdx, 0 + getHeuristicCost(sx, sy, tx, ty));
+		open.insert(flatIdx, getHeuristicCost(sx, sy, tx, ty));
 		openBitSet.set(flatIdx);
 	}
 
-	private final boolean isValidPosition(IPathCalculatable requester, int fromX, int fromY, int toX, int toY, short blockedAtStartPartition) {
-		return 	isInBounds(toX, toY)
-				&& (
-					!isBlocked(requester, toX, toY)
-					|| (
-							blockedAtStartPartition >= 0 // if the start position was blocked, we can use blocked positions on the same island until
-									&& map.getBlockedPartition(toX, toY) == blockedAtStartPartition // we leave the blocked area
-									&& isBlocked(requester, fromX, fromY) // prevent reentering blocked positions when we left them already
-						)
-					);
+	private boolean isValidPosition(IPathCalculatable requester, int fromX, int fromY, int toX, int toY, short blockedAtStartPartition) {
+		return isInBounds(toX, toY)
+			&& (
+			!isBlocked(requester, toX, toY)
+				|| (
+				blockedAtStartPartition >= 0 // if the start position was blocked, we can use blocked positions on the same island until
+					&& map.getBlockedPartition(toX, toY) == blockedAtStartPartition // we leave the blocked area
+					&& isBlocked(requester, fromX, fromY) // prevent reentering blocked positions when we left them already
+			)
+		);
 	}
 
-	private final boolean isInBounds(int x, int y) {
+	private boolean isInBounds(int x, int y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	private final boolean isBlocked(IPathCalculatable requester, int x, int y) {
+	private boolean isBlocked(IPathCalculatable requester, int x, int y) {
 		return map.isBlocked(requester, x, y);
 	}
 
-	private final int getFlatIdx(int x, int y) {
+	private int getFlatIdx(int x, int y) {
 		return y * width + x;
 	}
 
-	private final int getX(int flatIdx) {
+	private int getX(int flatIdx) {
 		return flatIdx % width;
 	}
 
-	private final int getY(int flatIdx) {
+	private int getY(int flatIdx) {
 		return flatIdx / width;
 	}
 
-	private final int getHeuristicCost(final int sx, final int sy, final int tx, final int ty) {
+	private int getHeuristicCost(final int sx, final int sy, final int tx, final int ty) {
 		final int dx = (tx - sx);
 		final int dy = (ty - sy);
 		final int absDx = Math.abs(dx);

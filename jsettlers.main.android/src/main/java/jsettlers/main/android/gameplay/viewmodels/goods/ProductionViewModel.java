@@ -21,13 +21,12 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import jsettlers.common.action.SetMaterialProductionAction;
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.action.SetMaterialProductionAction;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
-import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
 import jsettlers.main.android.core.events.DrawEvents;
 import jsettlers.main.android.gameplay.viewstates.ProductionState;

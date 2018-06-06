@@ -89,7 +89,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mainMenuNavigator = (MainMenuNavigator)getActivity();
-		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity())).get(MainMenuViewModel.class);
+		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity().getApplication())).get(MainMenuViewModel.class);
 	}
 
 	@AfterViews

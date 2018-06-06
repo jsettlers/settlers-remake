@@ -164,8 +164,9 @@
 	<job name="feedCropShow1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="feedCropShow2" failjob="wait" />
 	<job name="feedCropShow2" type="LOOK_AT" direction="SOUTH_EAST" successjob="feedCropShow3" failjob="wait" />
 	<job name="feedCropShow3" type="SHOW" dx="0" dy="1" successjob="feedCropGoTo" failjob="hide" />
-	<job name="feedCropGoTo" type="GO_TO" dx="5" dy="5" successjob="feedCropTake1" failjob="gohome" />
+	<job name="feedCropGoTo" type="GO_TO" dx="5" dy="5" successjob="lookatcrop" failjob="gohome" />
 
+	<job name="lookatcrop" type="LOOK_AT" direction="NORTH_WEST" successjob="feedCropTake1" failjob="gohome" />
 	<job name="feedCropTake1" type="TAKE" material="CROP" successjob="feedCropTake2" failjob="gohome" />
 	<job name="feedCropTake2" type="SET_MATERIAL" material="CROP" successjob="feedCropGoHome1" failjob="gohome" />
 
@@ -178,13 +179,16 @@
 	<job name="feedWaterShow1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="feedWaterShow2" failjob="wait" />
 	<job name="feedWaterShow2" type="LOOK_AT" direction="SOUTH_EAST" successjob="feedWaterShow3" failjob="wait" />
 	<job name="feedWaterShow3" type="SHOW" dx="0" dy="1" successjob="feedWaterGoTo" failjob="hide" />
-	<job name="feedWaterGoTo" type="GO_TO" dx="3" dy="6" successjob="feedWaterTake1" failjob="gohome" />
+	<job name="feedWaterGoTo" type="GO_TO" dx="3" dy="6" successjob="lookatwater" failjob="gohome" />
 
+	<job name="lookatwater" type="LOOK_AT" direction="NORTH_EAST" successjob="feedWaterTake1" failjob="gohome" />
 	<job name="feedWaterTake1" type="TAKE" material="WATER" successjob="feedWaterTake2" failjob="gohome" />
 	<job name="feedWaterTake2" type="SET_MATERIAL" material="WATER" successjob="feedWaterGoHome1" failjob="gohome" />
 
 	<job name="feedWaterGoHome1" type="GO_TO" dx="0" dy="1" successjob="feedWaterGoHome2" failjob="gohome" />
-	<job name="feedWaterGoHome2" type="HIDE" successjob="PIG1_tryplace" failjob="wait" />
+	<job name="feedWaterGoHome2" type="HIDE" successjob="feedWait1" failjob="feedWait1" />
+
+	<job name="feedWait1" type="WAIT" time="1" successjob="PIG1_tryplace" failjob="wait" />
 
 	<!-- place pig -->
 	<job name="PIG1_tryplace" type="PIG_IS_THERE" dx="2" dy="2" successjob="PIG2_tryplace" failjob="PLACE1" />
@@ -192,58 +196,69 @@
 	<job name="PIG3_tryplace" type="PIG_IS_THERE" dx="3" dy="2" successjob="PIG4_tryplace" failjob="PLACE3" />
 	<job name="PIG4_tryplace" type="PIG_IS_THERE" dx="3" dy="3" successjob="wait" failjob="PLACE4" />
 
-	<job name="PLACE1" type="PIG_PLACE" dx="2" dy="2" successjob="wait" failjob="wait" />
-	<job name="PLACE2" type="PIG_PLACE" dx="2" dy="1" successjob="wait" failjob="wait" />
-	<job name="PLACE3" type="PIG_PLACE" dx="3" dy="2" successjob="wait" failjob="wait" />
-	<job name="PLACE4" type="PIG_PLACE" dx="3" dy="3" successjob="wait" failjob="wait" />
+	<job name="PLACE1" type="PIG_PLACE" dx="2" dy="2" successjob="feed1" failjob="wait" />
+	<job name="PLACE2" type="PIG_PLACE" dx="2" dy="1" successjob="feed1" failjob="wait" />
+	<job name="PLACE3" type="PIG_PLACE" dx="3" dy="2" successjob="feed1" failjob="wait" />
+	<job name="PLACE4" type="PIG_PLACE" dx="3" dy="3" successjob="feed1" failjob="wait" />
+
+	<!-- feed pigs -->
+	<job name="feed1" type="SET_MATERIAL" material="BASKET" successjob="feed2" failjob="wait" />
+	<job name="feed2" type="LOOK_AT" direction="SOUTH_EAST" successjob="feed3" failjob="wait" />
+	<job name="feed3" type="SHOW" dx="0" dy="1" successjob="feed4" failjob="hide" />
+	<job name="feed4" type="GO_TO" dx="2" dy="3" successjob="feed5" failjob="gohome" />
+	<job name="feed5" type="LOOK_AT" direction="NORTH_EAST" successjob="feed6" failjob="gohome" />
+	<job name="feed6" type="PLAY_ACTION1" successjob="feed7" failjob="gohome" time="2"/>
+	<job name="feed7" type="GO_TO" dx="0" dy="1" successjob="feed8" failjob="gohome" />
+	<job name="feed8" type="HIDE" successjob="wait" failjob="wait" />
 
 
-	<!-- kill pig1 at 2,2 -->
+	<!-- take pig1 at 2,2 -->
 	<job name="killPig1Show1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="killPig1Show2" failjob="wait" />
 	<job name="killPig1Show2" type="LOOK_AT" direction="SOUTH_EAST" successjob="killPig1Show3" failjob="wait" />
 	<job name="killPig1Show3" type="SHOW" dx="0" dy="1" successjob="killPig1GoTo" failjob="hide" />
-	<job name="killPig1GoTo" type="GO_TO" dx="2" dy="2" successjob="killPig1Kill1" failjob="gohome" />
-
+	<job name="killPig1GoTo" type="GO_TO" dx="2" dy="2" successjob="lookatpig1" failjob="gohome" />
+	<job name="lookatpig1" type="LOOK_AT" direction="NORTH_EAST" successjob="killPig1Kill1" failjob="gohome" />
 	<job name="killPig1Kill1" type="TAKE" material="PIG" successjob="killPig1Kill2" failjob="gohome" takeMaterialFromMap="false" />
 	<job name="killPig1Kill2" type="PIG_REMOVE" dx="2" dy="2" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
-	<!-- kill pig2 at 2, 1 -->
+	<!-- take pig2 at 2, 1 -->
 	<job name="killPig2Show1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="killPig2Show2" failjob="wait" />
 	<job name="killPig2Show2" type="LOOK_AT" direction="SOUTH_EAST" successjob="killPig2Show3" failjob="wait" />
 	<job name="killPig2Show3" type="SHOW" dx="0" dy="1" successjob="killPig2GoTo" failjob="hide" />
-	<job name="killPig2GoTo" type="GO_TO" dx="2" dy="1" successjob="killPig2Kill1" failjob="gohome" />
-
+	<job name="killPig2GoTo" type="GO_TO" dx="2" dy="1" successjob="lookatpig2" failjob="gohome" />
+	<job name="lookatpig2" type="LOOK_AT" direction="NORTH_EAST" successjob="killPig2Kill1" failjob="gohome" />
 	<job name="killPig2Kill1" type="TAKE" material="PIG" successjob="killPig2Kill2" failjob="gohome" takeMaterialFromMap="false" />
 	<job name="killPig2Kill2" type="PIG_REMOVE" dx="2" dy="1" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
-	<!-- kill pig3 at 3,2 -->
+	<!-- take pig3 at 3,2 -->
 	<job name="killPig3Show1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="killPig3Show2" failjob="wait" />
 	<job name="killPig3Show2" type="LOOK_AT" direction="SOUTH_EAST" successjob="killPig3Show3" failjob="wait" />
 	<job name="killPig3Show3" type="SHOW" dx="0" dy="1" successjob="killPig3GoTo" failjob="hide" />
-	<job name="killPig3GoTo" type="GO_TO" dx="3" dy="2" successjob="killPig3Kill1" failjob="gohome" />
-
+	<job name="killPig3GoTo" type="GO_TO" dx="3" dy="2" successjob="lookatpig3" failjob="gohome" />
+	<job name="lookatpig3" type="LOOK_AT" direction="NORTH_EAST" successjob="killPig3Kill1" failjob="gohome" />
 	<job name="killPig3Kill1" type="TAKE" material="PIG" successjob="killPig3Kill2" failjob="gohome" takeMaterialFromMap="false" />
 	<job name="killPig3Kill2" type="PIG_REMOVE" dx="3" dy="2" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
-	<!-- kill pig4 at 3,3 -->
+	<!-- take pig4 at 3,3 -->
 	<job name="killPig4Show1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="killPig4Show2" failjob="wait" />
 	<job name="killPig4Show2" type="LOOK_AT" direction="SOUTH_EAST" successjob="killPig4Show3" failjob="wait" />
 	<job name="killPig4Show3" type="SHOW" dx="0" dy="1" successjob="killPig4GoTo" failjob="hide" />
-	<job name="killPig4GoTo" type="GO_TO" dx="3" dy="3" successjob="killPig4Kill1" failjob="gohome" />
-
+	<job name="killPig4GoTo" type="GO_TO" dx="3" dy="3" successjob="lookatpig4" failjob="gohome" />
+	<job name="lookatpig4" type="LOOK_AT" direction="NORTH_EAST" successjob="killPig4Kill1" failjob="gohome" />
 	<job name="killPig4Kill1" type="TAKE" material="PIG" successjob="killPig4Kill2" failjob="gohome" takeMaterialFromMap="false" />
 	<job name="killPig4Kill2" type="PIG_REMOVE" dx="3" dy="3" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
-	<!-- Common to all kills: walk from 1, 2 -->
-	<job name="deliverPigToStack1" type="GO_TO" dx="-1" dy="4" successjob="deliverPigToStack2" failjob="gohome" />
+	<!-- deliver pig -->
+	<job name="deliverPigToStack1" type="GO_TO" dx="-1" dy="4" successjob="lookatpig" failjob="gohome" />
+	<job name="lookatpig" type="LOOK_AT" direction="NORTH_WEST" successjob="deliverPigToStack2" failjob="gohome" />
 	<job name="deliverPigToStack2" type="DROP" material="PIG" successjob="gohome" failjob="gohome" />
 
 

@@ -1,6 +1,6 @@
 package jsettlers.main.android.mainmenu.viewmodels;
 
-import android.app.Activity;
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -181,12 +181,12 @@ public class MainMenuViewModel extends ViewModel {
      */
     public static class Factory implements ViewModelProvider.Factory {
 
-        private final Activity activity;
+        private final Application application;
         private final GameManager gameManager;
 
-        public Factory(Activity activity) {
-            this.activity = activity;
-            gameManager = (GameManager)activity.getApplication();
+        public Factory(Application application) {
+            this.application = application;
+            gameManager = (GameManager)application;
         }
 
         @Override
@@ -194,7 +194,7 @@ public class MainMenuViewModel extends ViewModel {
             if (modelClass == MainMenuViewModel.class) {
                 return (T) new MainMenuViewModel(
                         gameManager,
-                        new AndroidResourcesLoader(activity));
+                        new AndroidResourcesLoader(application));
             }
             throw new RuntimeException("MainMenuViewModel.Factory doesn't know how to create a: " + modelClass.toString());
         }

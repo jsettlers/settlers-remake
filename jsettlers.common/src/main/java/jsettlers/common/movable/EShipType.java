@@ -23,7 +23,7 @@ import jsettlers.common.material.EMaterialType;
  */
 public enum EShipType {
 	FERRY(EMovableType.FERRY, 4, 1, EMapObjectType.FERRY),
-	CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1, EMapObjectType.CARGO_BOAT);
+	CARGO_SHIP(EMovableType.CARGO_SHIP, 6, 1, EMapObjectType.CARGO_SHIP);
 
 	public static final EShipType[] VALUES = values();
 	private static final int BUILD_STEPS_PER_MATERIAL = 6;
@@ -46,7 +46,7 @@ public enum EShipType {
 		switch (movableType) {
 		case FERRY:
 			return FERRY;
-		case CARGO_BOAT:
+		case CARGO_SHIP:
 			return CARGO_SHIP;
 		default:
 			throw new IllegalArgumentException("MovableType is no ship: " + movableType);

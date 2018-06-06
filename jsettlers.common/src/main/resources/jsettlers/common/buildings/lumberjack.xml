@@ -105,9 +105,24 @@
 
 	<job name="presearch"	successjob="show"		failjob="start"		type="PRE_SEARCH" search="CUTTABLE_TREE" dx="-1" dy="1"/>
 	<job name="show"		successjob="search"		failjob="hide"		type="SHOW" dx="-1" dy="1"/>
-	<job name="search"		successjob="lookA"		failjob="hide"		type="FOLLOW_SEARCHED"/>
+	<job name="search"		successjob="walk"		failjob="hide"		type="FOLLOW_SEARCHED"/>
 
 	<!-- hack 9 times - tree falls - hack trice - hack trice - hack trice -->
+	<!-- either east of the tree - so the axe hits the wood -->
+	<job name="walk"		successjob="look"		failjob="lookA"		type="WALK" direction="EAST"/>
+	<job name="look"		successjob="hack1"		failjob="gohome"	type="LOOK_AT" direction="NORTH_WEST"/>
+	<job name="hack1"		successjob="hack2"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack2"		successjob="hack3"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack3"		successjob="hack4"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack4"		successjob="hack5"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack5"		successjob="hack6"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack6"		successjob="hack7"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack7"		successjob="hack8"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack8"		successjob="hack9"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hack9"		successjob="walkE1"  	failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="walkE1"		successjob="execute"    failjob="looktake"	type="WALK" direction="WEST"/>
+
+	<!-- or directly at the tree if there is no place eastwards -->
 	<job name="lookA"		successjob="hackA1"		failjob="gohome"	type="LOOK_AT" direction="NORTH_WEST"/>
 	<job name="hackA1"		successjob="hackA2"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
 	<job name="hackA2"		successjob="hackA3"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
@@ -117,34 +132,36 @@
 	<job name="hackA6"		successjob="hackA7"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
 	<job name="hackA7"		successjob="hackA8"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
 	<job name="hackA8"		successjob="hackA9"		failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
-	<job name="hackA9"		successjob="execute"	failjob="gohome"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hackA9"		successjob="execute"  	failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 
-	<job name="execute"		successjob="walkA"		failjob="gohome"	type="EXECUTE" search="CUTTABLE_TREE"/>
+	<job name="execute"		successjob="walkE2"		failjob="gohome"	type="EXECUTE" search="CUTTABLE_TREE"/>
+	<job name="walkE2"		successjob="walkB"		failjob="looktake"	type="WALK" direction="SOUTH_EAST"/>
 
-	<job name="walkA"		successjob="lookB"		failjob="looktake"	type="WALK" direction="NORTH_EAST"/>
+	<job name="walkB"		successjob="lookB"		failjob="looktake"	type="WALK" direction="NORTH_EAST"/>
 	<job name="lookB"		successjob="hackB1"		failjob="looktake"	type="LOOK_AT" direction="NORTH_WEST"/>
 	<job name="hackB1"		successjob="hackB2"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 	<job name="hackB2"		successjob="hackB3"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
-	<job name="hackB3"		successjob="walkB"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hackB3"		successjob="walkC"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 
-	<job name="walkB"		successjob="lookC"		failjob="looktake"	type="WALK" direction="NORTH_EAST"/>
+	<job name="walkC"		successjob="lookC"		failjob="looktake"	type="WALK" direction="NORTH_EAST"/>
 	<job name="lookC"		successjob="hackC1"		failjob="looktake"	type="LOOK_AT" direction="NORTH_WEST"/>
 	<job name="hackC1"		successjob="hackC2"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 	<job name="hackC2"		successjob="hackC3"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
-	<job name="hackC3"		successjob="walkC"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hackC3"		successjob="walkD"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 
-	<job name="walkC"		successjob="lookD"		failjob="looktake"	type="WALK" direction="NORTH_EAST"/>
+	<job name="walkD"		successjob="lookD"		failjob="looktake"	type="WALK" direction="NORTH_EAST"/>
 	<job name="lookD"		successjob="hackD1"		failjob="looktake"	type="LOOK_AT" direction="NORTH_WEST"/>
 	<job name="hackD1"		successjob="hackD2"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 	<job name="hackD2"		successjob="hackD3"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
-	<job name="hackD3"		successjob="walkD"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
+	<job name="hackD3"		successjob="walkE"		failjob="looktake"	type="PLAY_ACTION1" time="1.0"/>
 
-	<job name="walkD"		successjob="looktake"	failjob="looktake"	type="WALK" direction="SOUTH_WEST"/>
+	<job name="walkE"		successjob="looktake"	failjob="looktake"	type="WALK" direction="SOUTH_WEST"/>
 	<job name="looktake"	successjob="take"		failjob="gohome"	type="LOOK_AT" direction="NORTH_WEST"/>
-	<job name="take"		successjob="goback"		failjob="gohome"	type="TAKE" material="TRUNK" takeMaterialFromMap="false"/>
+	<job name="take"		successjob="set"		failjob="gohome"	type="TAKE" material="TRUNK" takeMaterialFromMap="false"/>
+	<job name="set"			successjob="goback"		failjob="gohome"	type="SET_MATERIAL" material="TRUNK"/>
 
-	<job name="goback"		successjob="look"		failjob="hide"		type="GO_TO" dx="0" dy="3"/>
-	<job name="look"		successjob="drop"		failjob="hide"		type="LOOK_AT" direction="NORTH_EAST"/>
+	<job name="goback"		successjob="looktrunk"	failjob="hide"		type="GO_TO" dx="0" dy="3"/>
+	<job name="looktrunk"	successjob="drop"		failjob="hide"		type="LOOK_AT" direction="NORTH_EAST"/>
 	<job name="drop"		successjob="walk2"		failjob="hide"		type="DROP" material="TRUNK"/>
 	<job name="walk2"		successjob="walk3"		failjob="hide"		type="WALK" direction="NORTH_WEST"/>
 	<job name="walk3"		successjob="hide"		failjob="hide"		type="WALK" direction="NORTH_EAST"/>

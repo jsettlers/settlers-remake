@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,9 +15,12 @@
 package jsettlers.logic.movable;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
@@ -31,20 +34,19 @@ import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
 import jsettlers.logic.movable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.movable.strategies.DiggerStrategy;
-import jsettlers.logic.movable.strategies.ferries.FerryStrategy;
-import jsettlers.logic.movable.strategies.soldiers.BowmanStrategy;
-import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
+import jsettlers.logic.movable.strategies.military.BowmanStrategy;
+import jsettlers.logic.movable.strategies.military.FerryStrategy;
+import jsettlers.logic.movable.strategies.military.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
-import jsettlers.logic.movable.strategies.trading.CargoBoatStrategy;
+import jsettlers.logic.movable.strategies.trading.CargoShipStrategy;
 import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
 
 /**
  * Abstract super class of all movable strategies.
  *
  * @author Andreas Eberle
- *
  */
 public abstract class MovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
@@ -57,67 +59,68 @@ public abstract class MovableStrategy implements Serializable {
 
 	public static MovableStrategy getStrategy(Movable movable, EMovableType movableType) {
 		switch (movableType) {
-		case BEARER:
-			return new BearerMovableStrategy(movable);
+			case BEARER:
+				return new BearerMovableStrategy(movable);
 
-		case SWORDSMAN_L1:
-		case SWORDSMAN_L2:
-		case SWORDSMAN_L3:
-		case PIKEMAN_L1:
-		case PIKEMAN_L2:
-		case PIKEMAN_L3:
-			return new InfantryStrategy(movable, movableType);
-		case BOWMAN_L1:
-		case BOWMAN_L2:
-		case BOWMAN_L3:
-			return new BowmanStrategy(movable, movableType);
+			case SWORDSMAN_L1:
+			case SWORDSMAN_L2:
+			case SWORDSMAN_L3:
+			case PIKEMAN_L1:
+			case PIKEMAN_L2:
+			case PIKEMAN_L3:
+				return new InfantryStrategy(movable, movableType);
+			case BOWMAN_L1:
+			case BOWMAN_L2:
+			case BOWMAN_L3:
+				return new BowmanStrategy(movable, movableType);
 
-		case BAKER:
-		case CHARCOAL_BURNER:
-		case FARMER:
-		case FISHERMAN:
-		case FORESTER:
-		case MELTER:
-		case MILLER:
-		case MINER:
-		case PIG_FARMER:
-		case LUMBERJACK:
-		case SAWMILLER:
-		case SLAUGHTERER:
-		case SMITH:
-		case STONECUTTER:
-		case WATERWORKER:
-		case WINEGROWER:
-		case HEALER:
-		case DOCKWORKER:
-			return new BuildingWorkerStrategy(movable);
+			case BAKER:
+			case CHARCOAL_BURNER:
+			case FARMER:
+			case FISHERMAN:
+			case FORESTER:
+			case MELTER:
+			case MILLER:
+			case MINER:
+			case PIG_FARMER:
+			case DONKEY_FARMER:
+			case LUMBERJACK:
+			case SAWMILLER:
+			case SLAUGHTERER:
+			case SMITH:
+			case STONECUTTER:
+			case WATERWORKER:
+			case WINEGROWER:
+			case HEALER:
+			case DOCKWORKER:
+				return new BuildingWorkerStrategy(movable);
 
-		case DIGGER:
-			return new DiggerStrategy(movable);
+			case DIGGER:
+				return new DiggerStrategy(movable);
 
-		case BRICKLAYER:
-			return new BricklayerStrategy(movable);
+			case BRICKLAYER:
+				return new BricklayerStrategy(movable);
 
-		case PIONEER:
-			return new PioneerStrategy(movable);
-		case GEOLOGIST:
-			return new GeologistStrategy(movable);
-		case THIEF:
-		case MAGE:
-			return new DummySpecialistStrategy(movable);
+			case PIONEER:
+				return new PioneerStrategy(movable);
+			case GEOLOGIST:
+				return new GeologistStrategy(movable);
+			case THIEF:
+			case MAGE:
+				return new DummySpecialistStrategy(movable);
 
-		case DONKEY:
-			return new DonkeyStrategy(movable);
+			case DONKEY:
+				return new DonkeyStrategy(movable);
 
-		case FERRY:
-			return new FerryStrategy(movable);
+			case FERRY:
+				return new FerryStrategy(movable);
 
-		case CARGO_BOAT:
-			return new CargoBoatStrategy(movable);
+			case CARGO_SHIP:
+				return new CargoShipStrategy(movable);
 
-		default:
-			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
-			return null;
+			default:
+				assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
+				return null;
 		}
 	}
 
@@ -148,11 +151,11 @@ public abstract class MovableStrategy implements Serializable {
 	 * Tries to go a step in the given direction.
 	 *
 	 * @param direction
-	 *            direction to go
+	 * 		direction to go
 	 * @param mode
-	 *            The mode used for this operation
+	 * 		The mode used for this operation
 	 * @return true if the step can and will immediately be executed. <br>
-	 *         false if the target position is generally blocked or a movable occupies that position.
+	 * false if the target position is generally blocked or a movable occupies that position.
 	 */
 	protected final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
 		return movable.goInDirection(direction, mode);
@@ -167,10 +170,9 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	/**
-	 *
 	 * @param dijkstra
-	 *            if true, dijkstra algorithm is used<br>
-	 *            if false, in area finder is used.
+	 * 		if true, dijkstra algorithm is used<br>
+	 * 		if false, in area finder is used.
 	 * @param centerX
 	 * @param centerY
 	 * @param radius
@@ -217,12 +219,11 @@ public abstract class MovableStrategy implements Serializable {
 	 * Checks preconditions before the next path step can be gone.
 	 *
 	 * @param pathTarget
-	 *            Target of the current path.
+	 * 		Target of the current path.
 	 * @param step
-	 *            The number of the current step where 1 means the first step.
-	 *
+	 * 		The number of the current step where 1 means the first step.
 	 * @return true if the path should be continued<br>
-	 *         false if it must be stopped.
+	 * false if it must be stopped.
 	 */
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
 		return true;
@@ -232,20 +233,19 @@ public abstract class MovableStrategy implements Serializable {
 	 * This method is called when a movable is killed or converted to another strategy and can be used for finalization work in the strategy.
 	 *
 	 * @param pathTarget
-	 *            if the movable is currently walking on a path, this is the target of the path<br>
-	 *            else it is null.
+	 * 		if the movable is currently walking on a path, this is the target of the path<br>
+	 * 		else it is null.
 	 */
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 	}
 
 	/**
-	 *
 	 * @param oldPosition
-	 *            The position the movable was positioned before the new path has been calculated and the first step on the new path has been done.
+	 * 		The position the movable was positioned before the new path has been calculated and the first step on the new path has been done.
 	 * @param oldTargetPos
-	 *            The target position of the old path or null if no old path was set.
+	 * 		The target position of the old path or null if no old path was set.
 	 * @param targetPos
-	 *            The new target position.
+	 * 		The new target position.
 	 */
 	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 	}
@@ -254,7 +254,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
 	 *
 	 * @param other
-	 *            The other movable.
+	 * 		The other movable.
 	 */
 	protected void informAboutAttackable(IAttackable other) {
 	}
@@ -264,7 +264,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected boolean isAttackable() {
-		return movable.getMovableType().isPlayerControllable();
+		return movable.getMovableType().attackable;
 	}
 
 	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
@@ -296,24 +296,28 @@ public abstract class MovableStrategy implements Serializable {
 
 		if (twoStraightPos.equals(overNextPos)) {
 			if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {
-				possiblePaths.add(new ShortPoint2D[] { rightPos, rightStraightPos });
+				possiblePaths.add(new ShortPoint2D[]{
+					rightPos,
+					rightStraightPos});
 			} else if (isValidPosition(leftPos) && isValidPosition(leftStraightPos)) {
-				possiblePaths.add(new ShortPoint2D[] { leftPos, leftStraightPos });
+				possiblePaths.add(new ShortPoint2D[]{
+					leftPos,
+					leftStraightPos});
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
 		}
 
 		if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos)) {
-			possiblePaths.add(new ShortPoint2D[] { rightPos });
+			possiblePaths.add(new ShortPoint2D[]{rightPos});
 		}
 		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
-			possiblePaths.add(new ShortPoint2D[] { leftPos });
+			possiblePaths.add(new ShortPoint2D[]{leftPos});
 		}
 
 		if ((straightRightPos.equals(overNextPos) || straightLeftPos.equals(overNextPos))
-				&& isValidPosition(straightPos) && grid.hasNoMovableAt(straightPos.x, straightPos.y)) {
-			possiblePaths.add(new ShortPoint2D[] { straightPos });
+			&& isValidPosition(straightPos) && grid.hasNoMovableAt(straightPos.x, straightPos.y)) {
+			possiblePaths.add(new ShortPoint2D[]{straightPos});
 
 		} else {
 			// TODO @Andreas Eberle maybe calculate a new path
@@ -344,7 +348,7 @@ public abstract class MovableStrategy implements Serializable {
 
 	/**
 	 * This method is called before a material is dropped during a {@link EMovableType}.DROP action.
-	 * 
+	 *
 	 * @return If true is returned, the dropped material is offered, if false, it isn't.
 	 */
 	protected boolean droppingMaterial() {
@@ -364,7 +368,6 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	/**
-	 * 
 	 * @return If true, the hit is received, if false, the hit is ignored.
 	 */
 	protected boolean receiveHit() {
@@ -372,5 +375,32 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected void tookMaterial() {
+	}
+
+	public EBuildingType getBuildingType() {
+		return null;
+	}
+
+	protected boolean addPassenger(ILogicMovable movable) {
+		return false;
+	}
+
+	protected List<? extends ILogicMovable> getPassengers() {
+		return Collections.emptyList();
+	}
+
+	protected void unloadFerry() {
+	}
+
+	protected EMaterialType getCargoType(int stack) {
+		return null;
+	}
+
+	protected int getCargoCount(int stack) {
+		return 0;
+	}
+
+	protected int getNumberOfCargoStacks() {
+		return 0;
 	}
 }

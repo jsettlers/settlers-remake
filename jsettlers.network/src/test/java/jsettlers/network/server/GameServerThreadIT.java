@@ -43,13 +43,13 @@ public class GameServerThreadIT {
 		GameServerThread gameServer = new GameServerThread(true);
 		gameServer.start();
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 		assertTrue(gameServer.isAlive());
 		assertTrue(gameServer.isLanBroadcasterAlive());
 
 		gameServer.shutdown();
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 		assertFalse(gameServer.isAlive());
 		assertFalse(gameServer.isLanBroadcasterAlive());
 	}
@@ -59,7 +59,7 @@ public class GameServerThreadIT {
 		GameServerThread gameServer = new GameServerThread(true);
 		gameServer.start();
 
-		Thread.sleep(100);
+		Thread.sleep(100L);
 
 		String serverAddress = GameServerThread.retrieveLanServerAddress(1);
 

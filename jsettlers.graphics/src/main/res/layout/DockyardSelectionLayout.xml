@@ -15,23 +15,20 @@
 		<image type="GUI" file="3" sequence="390" />
 	</element>
 
-	<element class="SimpleActionButton" x="11" y="245" maxx="38"
-			 maxy="263" id="buttonMakeFerry">
+	<element class="SimpleActionButton" x="11" y="245" maxx="38" maxy="263" id="buttonMakeFerry">
 		<action action="MAKE_FERRY" />
-		<image type="GUI" file="14" sequence="272" />
-		<image type="GUI" file="14" sequence="272" />
+		<image type="GUI" file="14" sequence="270" />
+		<image type="GUI" file="14" sequence="273" />
 	</element>
 
-	<element class="SimpleActionButton" x="11" y="269" maxx="38"
-			 maxy="287" id="buttonMakeCargoBoat">
-		<action action="MAKE_CARGO_BOAT" />
-		<image type="GUI" file="14" sequence="278" />
-		<image type="GUI" file="14" sequence="278" />
+	<element class="SimpleActionButton" x="11" y="269" maxx="38" maxy="287" id="buttonMakeCargoShip">
+		<action action="MAKE_CARGO_SHIP" />
+		<image type="GUI" file="14" sequence="276" />
+		<image type="GUI" file="14" sequence="279" />
 	</element>
 
 	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
 		<action action="ASK_DESTROY" />
-		<image type="GUI" file="3" sequence="198" />
 		<image type="GUI" file="3" sequence="198" />
 	</element>
 
