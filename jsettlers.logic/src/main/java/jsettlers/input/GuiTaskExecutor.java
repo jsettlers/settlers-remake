@@ -306,30 +306,27 @@ class GuiTaskExecutor implements ITaskExecutor {
 	 *            A list of the id's of the movables.
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
-		if (movableIds.isEmpty()) {
-			return;
-		}
-
-		FerryEntrance ferryEntrance = null;
-		if (!Movable.getMovableByID(movableIds.get(0)).isShip() && grid.isBlocked(targetPosition.x, targetPosition.y)) {
-			ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
-		}
-		if (ferryEntrance != null) { // enter a ferry
-			for (int movableId : movableIds) {
-				ILogicMovable movable = (Movable.getMovableByID(movableId));
-				movable.moveToFerry(ferryEntrance.ferry, ferryEntrance.entrance);
-			}
-		} else {
-			sendManyMovables(targetPosition, movableIds);
-		}
-	}
-
-	private void sendManyMovables(ShortPoint2D targetPosition, List<Integer> movableIds) {
 		List<ILogicMovable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
+
 		if (movables.isEmpty()) {
 			return;
 		}
 
+		final FerryEntrance ferryEntrance;
+		if (!movables.get(0).isShip() && grid.isBlocked(targetPosition.x, targetPosition.y)) {
+			ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
+		} else {
+			ferryEntrance = null;
+		}
+
+		if (ferryEntrance != null) { // enter a ferry
+			stream(movables).forEach(movable -> movable.moveToFerry(ferryEntrance.ferry, ferryEntrance.entrance));
+		} else {
+			sendManyMovables(targetPosition, movables);
+		}
+	}
+
+	private void sendManyMovables(ShortPoint2D targetPosition, List<ILogicMovable> movables) {
 		for (int radius = 0, ringsWithoutSuccessCtr = 0; ringsWithoutSuccessCtr <= Math.max(5, 15 - radius + ringsWithoutSuccessCtr) && !movables.isEmpty(); radius++) {
 			MutableInt numberOfSendMovables = new MutableInt(0);
 
