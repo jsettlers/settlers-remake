@@ -156,18 +156,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isFreeShipPosition(ShortPoint2D position) {
-			return false;
-		}
-
-		@Override
 		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
-		}
-
-		@Override
-		public boolean isWaterSafe(int x, int y) {
-			return false;
 		}
 
 		@Override
@@ -259,11 +249,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public ILogicMovable getMovableAt(int x, int y) {
 			return movableMap[x][y];
-		}
-
-		@Override
-		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
-			return null;
 		}
 
 		@Override
