@@ -1531,23 +1531,20 @@ public final class MainGrid implements Serializable {
 
 			short buildingPartition = partitionsGrid.getPartitionIdAt(buildingPosition.x, buildingPosition.y);
 
-			Optional<ShortPoint2D> coastPosition = HexGridArea.stream(requestedPosition.x, requestedPosition.y, 0, 12)
-															  .filterBounds(width, height)
-															  .filter((x, y) -> ShortPoint2D.getOnGridDist(buildingPosition.x, buildingPosition.y, x, y) <= maximumDistance)
-															  .filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
-															  .filter((x, y) -> partitionsGrid.getPartitionIdAt(x,
-																  y
-															  ) == buildingPartition) // ensure the dock is the same partition (accessible by worker of building)
-															  .filter((x, y) -> { // check that the dock goes from land to water
-																  EDirection direction = EDirection.getApproxDirection(x, y, requestedPosition.x, requestedPosition.y);
-																  ShortPoint2D firstDockWaterPosition = direction.getNextHexPoint(x, y);
-																  ShortPoint2D secondDockWaterPosition = direction.getNextHexPoint(x, y);
+			Optional<ShortPoint2D> coastPosition = HexGridArea
+				.stream(requestedPosition.x, requestedPosition.y, 0, 10)
+				.filterBounds(width, height)
+				.filter((x, y) -> ShortPoint2D.getOnGridDist(buildingPosition.x, buildingPosition.y, x, y) <= maximumDistance)
+				.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
+				.filter((x, y) -> partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) // ensure the dock is the same partition (accessible by worker of building)
+				.filter((x, y) -> { // check that the dock goes from land to water
+					EDirection direction = EDirection.getApproxDirection(x, y, requestedPosition.x, requestedPosition.y);
+					ShortPoint2D firstDockWaterPosition = direction.getNextHexPoint(x, y);
+					ShortPoint2D secondDockWaterPosition = direction.getNextHexPoint(firstDockWaterPosition.x, firstDockWaterPosition.y);
 
-																  return isWaterSafe(firstDockWaterPosition.x, firstDockWaterPosition.y) && isWaterSafe(secondDockWaterPosition.x,
-																	  secondDockWaterPosition.y
-																  );
-															  })
-															  .getFirst();
+					return isWaterSafe(firstDockWaterPosition.x, firstDockWaterPosition.y) && isWaterSafe(secondDockWaterPosition.x, secondDockWaterPosition.y);
+				})
+				.getFirst();
 
 			if (!coastPosition.isPresent()) {
 				return null;
