@@ -100,7 +100,7 @@ public class ReplayUtils {
 			networkConnector.scheduleTaskAt(targetGameTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD,
 				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0)
 			);
-			MatchConstants.clock().fastForwardTo(targetGameTimeMs);
+			MatchConstants.clock().fastForwardTo(targetGameTimeMs + 1000);
 			savegames[i] = getNewestSavegame();
 		}
 
