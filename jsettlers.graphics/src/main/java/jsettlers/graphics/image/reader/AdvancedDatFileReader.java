@@ -345,12 +345,18 @@ public class AdvancedDatFileReader implements DatFileReader {
 					for (i = 0; i < 27; i++) {
 						shadowStarts[i] = shadowStarts[i + 3];
 					}
-					for (i = 27; i < shadowStarts.length - 2; i++) {
+					for (i = 27; i < 36; i++) {
 						shadowStarts[i] = shadowStarts[i + 2];
 					}
 					shadowStarts[28] = -1; // market place gets no shadow (has it already)
-					shadowStarts[44] = shadowStarts[36]; // dock
-					shadowStarts[45] = shadowStarts[37]; // harbour
+					shadowStarts[44] = shadowStarts[38]; // dock
+					shadowStarts[45] = shadowStarts[39]; // harbour
+					for (i = 36; i < 44; i++) {
+						shadowStarts[i] = -1; // rest has no shadow
+					}
+					for (i = 46; i < shadowStarts.length; i++) {
+						shadowStarts[i] = -1; // rest has no shadow
+					}
 				}
 			}
 		}
