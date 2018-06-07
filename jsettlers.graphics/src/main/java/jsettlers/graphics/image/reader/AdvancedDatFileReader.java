@@ -342,7 +342,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 					shadowStarts[91] = -1; // work area marker pole gets no shadow
 					shadowStarts[92] = shadowStarts[90]; // building site pole
 				} else if (shadowDifference == 26) { // change shadows in file 13:
-					for (i = 0; i < shadowStarts.length; i++) {
+					for (i = 0; i < shadowStarts.length - 3; i++) {
 						shadowStarts[i] = shadowStarts[i + 3];
 					}
 				}
