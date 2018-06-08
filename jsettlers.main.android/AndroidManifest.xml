@@ -19,7 +19,7 @@
         android:largeHeap="true"
         android:theme="@style/SettlersTheme">
 
-        <activity android:name=".mainmenu.ui.activities.MainActivity_">
+        <activity android:name=".mainmenu.MainActivity_">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -38,7 +38,7 @@
             android:description="@string/service_description"/>
 
         <activity
-            android:name=".mainmenu.ui.activities.SettingsActivity_"
+            android:name=".mainmenu.settings.SettingsActivity_"
             android:label="@string/settings"/>
     </application>
 
