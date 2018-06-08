@@ -241,6 +241,10 @@ class GuiTaskExecutor implements ITaskExecutor {
 		ShortPoint2D buildingPosition = soldierTask.getBuildingPos();
 		OccupyingBuilding occupyingBuilding = (OccupyingBuilding) grid.getBuildingAt(buildingPosition.x, buildingPosition.y);
 
+		if (occupyingBuilding == null) {
+			return;
+		}
+
 		switch (soldierTask.getTaskType()) {
 			case FULL:
 				occupyingBuilding.requestFullSoldiers();

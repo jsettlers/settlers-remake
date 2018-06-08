@@ -1397,9 +1397,7 @@ public final class MainGrid implements Serializable {
 				maxSearchRadius
 			), isBowman, includeTowers);
 			if (includeTowers && !isBowman && enemy == null) {
-				enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.x, position.y, maxSearchRadius,
-					Constants.TOWER_SEARCH_RADIUS
-				), false, true);
+				enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.x, position.y, maxSearchRadius, Constants.TOWER_ATTACKABLE_SEARCH_RADIUS), false, true);
 			}
 
 			return enemy;
