@@ -280,7 +280,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 				movable.convertTo(guiTask.getTargetType());
 			}
 		}
-		guiInterface.refreshSelection();
+		guiInterface.renewSelection();
 	}
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
