@@ -183,6 +183,7 @@ public class OpenPanel extends JPanel {
 	private void initFilter() {
 		JLabel filterLabel = new JLabel(Labels.getString("mapfilter.title"));
 		filterLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+
 		filterPanel.add(filterLabel);
 
 		boolean first = true;
