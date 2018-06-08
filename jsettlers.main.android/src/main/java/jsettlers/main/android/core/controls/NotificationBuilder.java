@@ -21,7 +21,7 @@ import org.androidannotations.annotations.res.StringRes;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameService;
-import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
+import jsettlers.main.android.gameplay.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
 import android.app.Notification;

@@ -21,7 +21,6 @@ import android.support.v4.app.Fragment;
 import org.androidannotations.annotations.EFragment;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.ui.fragments.setup.NewSinglePlayerSetupFragment_;
 
 @EFragment(R.layout.fragment_new_single_player_setup)
 public class NewSinglePlayerSetupFragment extends MapSetupFragment {

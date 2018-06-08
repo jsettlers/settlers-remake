@@ -22,7 +22,6 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.ui.fragments.setup.JoinMultiPlayerSetupFragment_;
 
 /**
  * Created by tompr on 22/01/2017.

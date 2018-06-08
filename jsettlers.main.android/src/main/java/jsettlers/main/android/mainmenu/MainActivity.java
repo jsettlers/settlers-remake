@@ -19,7 +19,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
+import jsettlers.main.android.gameplay.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.home.MainMenuFragment;

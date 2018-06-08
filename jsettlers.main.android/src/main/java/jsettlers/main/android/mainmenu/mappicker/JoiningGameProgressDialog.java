@@ -25,8 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import org.androidannotations.annotations.UiThread;
 
-import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog_;
-
 /**
  * Created by tompr on 22/01/2017.
  */

@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name=".gameplay.ui.activities.GameActivity_"
+            android:name=".gameplay.GameActivity_"
             android:launchMode="singleTask"
             android:theme="@style/InGameTheme"/>
 

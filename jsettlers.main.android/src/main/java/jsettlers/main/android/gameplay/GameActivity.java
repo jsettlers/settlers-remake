@@ -28,7 +28,6 @@ import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.gameplay.navigation.GameNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
-import jsettlers.main.android.gameplay.ui.fragments.MapFragment_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
 @EActivity(R.layout.activity_game)
