@@ -361,8 +361,9 @@ public class MapObjectDrawer {
 		float z = context.getDrawBuffer().getZ();
 		context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
 		ImageLink[] images = ((IBuilding) object).getBuildingType().getImages();
-		if (images.length > 0) {
-			Image image = imageProvider.getImage(images[0]);
+		Image image;
+		for (int i = 0; i < images.length; i++) {
+			image = imageProvider.getImage(images[i]);
 			drawOnlyImage(image, x, y, color);
 		}
 		context.getDrawBuffer().setZ(z);
