@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
+import java.io.Serializable;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
@@ -21,8 +23,6 @@ import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.list.IListManageable;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.list.IPrioritizable;
-
-import java.io.Serializable;
 
 /**
  * This class is used by {@link MaterialsManager} to store offers of materials.
@@ -50,7 +50,7 @@ public class MaterialOffer implements Serializable, ILocatable, IPrioritizable<E
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return position;
 	}
 

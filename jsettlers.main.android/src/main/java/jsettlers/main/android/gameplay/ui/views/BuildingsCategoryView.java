@@ -17,11 +17,11 @@ package jsettlers.main.android.gameplay.ui.views;
 
 import java.util.List;
 
-import jsettlers.main.android.gameplay.presenters.BuildingTile;
+import jsettlers.main.android.gameplay.viewstates.BuildingState;
 
 /**
  * Created by tompr on 10/03/2017.
  */
 public interface BuildingsCategoryView {
-	void setBuildings(List<BuildingTile> buildingTiles);
+	void setBuildings(List<BuildingState> buildingStates);
 }

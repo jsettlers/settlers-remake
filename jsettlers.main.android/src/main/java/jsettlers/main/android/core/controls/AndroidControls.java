@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2017 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,16 +18,19 @@ package jsettlers.main.android.core.controls;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
-import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.IAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.SetDockAction;
+import jsettlers.common.action.SetTradingWaypointAction;
+import jsettlers.common.action.ShowConstructionMarksAction;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.common.action.BuildAction;
-import jsettlers.common.action.PointAction;
-import jsettlers.common.action.ShowConstructionMarksAction;
+import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 
@@ -71,7 +74,15 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 		case ASK_SET_WORK_AREA:
 			startTask(action);
 			break;
+		case ASK_SET_DOCK:
+			startTask(action);
+			break;
+		case ASK_SET_TRADING_WAYPOINT:
+			startTask(action);
+			break;
 		case SET_WORK_AREA:
+		case SET_DOCK:
+		case SET_TRADING_WAYPOINT:
 		case BUILD:
 		case ABORT:
 			endTask();
@@ -96,6 +107,11 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 					return new BuildAction(showConstructionMarksAction.getBuildingType(), pointAction.getPosition());
 				case ASK_SET_WORK_AREA:
 					return new PointAction(EActionType.SET_WORK_AREA, pointAction.getPosition());
+				case ASK_SET_DOCK:
+					return new SetDockAction(pointAction.getPosition());
+				case ASK_SET_TRADING_WAYPOINT:
+					AskSetTradingWaypointAction askSetTradingWaypointAction = (AskSetTradingWaypointAction) taskAction;
+					return new SetTradingWaypointAction(askSetTradingWaypointAction.getWaypoint(), pointAction.getPosition());
 				}
 			}
 
@@ -181,7 +197,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 
 	/**
 	 * TaskControls implementation
-	 * 
+	 *
 	 * @return
 	 */
 	@Override

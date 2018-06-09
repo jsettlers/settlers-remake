@@ -30,6 +30,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsFo
 import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 
+
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
  *
@@ -107,11 +108,11 @@ public final class MaterialsManager implements Serializable {
 			return; // no offers => return
 		}
 
-		MaterialOffer offer = offersList.getOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPos());
+		MaterialOffer offer = offersList.getOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPosition());
 
 		assert offer != null : "The offer can't be null here!";
 
-		IManagerBearer jobless = joblessSupplier.removeJoblessCloseTo(offer.getPos());
+		IManagerBearer jobless = joblessSupplier.removeJoblessCloseTo(offer.getPosition());
 
 		assert jobless != null : "The jobless can't be null here!";
 

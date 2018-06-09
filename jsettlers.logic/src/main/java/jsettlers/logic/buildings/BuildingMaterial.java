@@ -17,13 +17,13 @@ package jsettlers.logic.buildings;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.material.EMaterialType;
 
-class BuildingMaterial implements IBuildingMaterial {
+public class BuildingMaterial implements IBuildingMaterial {
 
 	private final EMaterialType materialType;
 	private final int materialCount;
 	private final boolean offering;
 
-	BuildingMaterial(EMaterialType materialType, int stillRequired) {
+	public BuildingMaterial(EMaterialType materialType, int stillRequired) {
 		this(materialType, stillRequired, false);
 	}
 

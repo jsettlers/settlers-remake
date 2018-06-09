@@ -42,7 +42,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 			}
 		}
 		PseudoTile middle = tiles[OFFSET][OFFSET];
-		IBuilding building = new PseudoBuilding(definition.getType(), middle.getPos());
+		IBuilding building = new PseudoBuilding(definition.getType(), middle.getPosition());
 		middle.setBuilding(building);
 	}
 

@@ -53,7 +53,7 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 			Iterator<MaterialRequestObject> iter = queues[queueIdx].iterator();
 			while (iter.hasNext()) {
 				MaterialRequestObject curr = iter.next();
-				if (curr.getPos().equals(position)) {
+				if (curr.getPosition().equals(position)) {
 					iter.remove();
 					newQueue.queues[queueIdx].pushEnd(curr);
 					curr.requestQueue = newQueue;

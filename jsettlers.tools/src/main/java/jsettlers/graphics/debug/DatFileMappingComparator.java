@@ -1,5 +1,12 @@
 package jsettlers.graphics.debug;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import java8.util.stream.Collectors;
 import jsettlers.common.utils.Tuple;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileType;
@@ -8,13 +15,7 @@ import jsettlers.graphics.image.reader.versions.IndexingDatFileMapping;
 import jsettlers.graphics.image.reader.versions.IndexingGfxFolderMapping;
 import jsettlers.graphics.image.reader.versions.SettlersVersionMapping;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import static java8.util.stream.StreamSupport.stream;
 import static jsettlers.graphics.image.reader.DatFileUtils.distinctFileNames;
 import static jsettlers.graphics.image.reader.DatFileUtils.getDatFileIndex;
 import static jsettlers.graphics.image.reader.DatFileUtils.getDatFileName;
@@ -29,7 +30,7 @@ import static jsettlers.graphics.image.reader.DatFileUtils.getDatFileName;
  */
 public class DatFileMappingComparator {
 
-	public static final String GRAPHICS_RESOURCE_DIRECTORY = "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/";
+	private static final String GRAPHICS_RESOURCE_DIRECTORY = "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/";
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
@@ -63,7 +64,7 @@ public class DatFileMappingComparator {
 
 		String settlersVersionHash = DatFileUtils.generateOriginalVersionId(gfxFolder2);
 
-		Map<String, File> datFiles2ByName = datFiles2.stream().map(file -> new Tuple<>(getDatFileName(file), file)).collect(Collectors.toMap(Tuple::getE1, Tuple::getE2));
+		Map<String, File> datFiles2ByName = stream(datFiles2).map(file -> new Tuple<>(getDatFileName(file), file)).collect(Collectors.toMap(Tuple::getE1, Tuple::getE2));
 
 		int highestIndex = datFiles1.stream().mapToInt(DatFileUtils::getDatFileIndex).max().orElse(0);
 		IndexingDatFileMapping[] datFileMappings = new IndexingDatFileMapping[highestIndex + 1];
@@ -103,24 +104,11 @@ public class DatFileMappingComparator {
 		AdvancedDatFileReader reader2 = new AdvancedDatFileReader(file2, DatFileType.getForPath(file2));
 
 		System.out.println("Comparing settlers hashes for files " + file1 + " and " + file2);
-		int[] settlersMapping = compareHashes(reader1.getSettlersHashes(), reader2.getSettlersHashes());
+		int[] settlersMapping = reader1.getSettlersHashes().compareAndCreateMapping(reader2.getSettlersHashes());
 		System.out.println("Comparing gui hashes for files " + file1 + " and " + file2);
-		int[] guiMapping = compareHashes(reader1.getGuiHashes(), reader2.getGuiHashes());
+		int[] guiMapping = reader1.getGuiHashes().compareAndCreateMapping(reader2.getGuiHashes());
 
 		return new IndexingDatFileMapping(settlersMapping, guiMapping);
-	}
-
-	private static int[] compareHashes(List<Long> hashes1, List<Long> hashes2) {
-		int[] mapping = new int[hashes1.size()];
-
-		for (int i1 = 0; i1 < hashes1.size(); i1++) {
-			Long h1 = hashes1.get(i1);
-			int i2 = i1 < hashes2.size() && h1.equals(hashes2.get(i1)) ? i1 : hashes2.indexOf(h1);
-			mapping[i1] = i2;
-			System.out.println(i1 + " -> " + i2);
-		}
-
-		return mapping;
 	}
 
 	private static void ensureReadable(File f2) {
@@ -133,7 +121,7 @@ public class DatFileMappingComparator {
 		System.err.println("Compares two GFX folders or two dat files:");
 		System.err.println("To compare two dat files, start the program with the paths of the two files as arguments");
 		System.err.println("To compare two dat gfx folders, start the program with the paths of the two gfx folders and the name of the settlers version. A mapping file will be created"
-				+ " in the resources of jsettlers.graphics");
+			+ " in the resources of jsettlers.graphics");
 		System.exit(1);
 	}
 }

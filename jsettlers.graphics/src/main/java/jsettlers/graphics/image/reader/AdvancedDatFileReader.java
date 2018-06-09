@@ -17,7 +17,6 @@ package jsettlers.graphics.image.reader;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.List;
 
 import java8.util.stream.Collectors;
 import java8.util.stream.IntStreams;
@@ -259,25 +258,25 @@ public class AdvancedDatFileReader implements DatFileReader {
 		guiTranslator = new GuiTranslator(type);
 	}
 
-	public List<Long> getSettlersHashes() {
+	public Hashes getSettlersHashes() {
 		SequenceList<Image> settlers = getSettlers();
 
-		return IntStreams.range(0, settlers.size())
-						 .mapToObj(settlers::get)
-						 .map(sequence -> sequence.getImage(0))
-						 .filter(image -> image instanceof SingleImage)
-						 .map(image -> (SingleImage) image)
-						 .map(SingleImage::hash)
-						 .collect(Collectors.toList());
+		return new Hashes(IntStreams.range(0, settlers.size())
+				.mapToObj(settlers::get)
+				.map(sequence -> sequence.getImage(0))
+				.filter(image -> image instanceof SingleImage)
+				.map(image -> (SingleImage) image)
+				.map(SingleImage::hash)
+				.collect(Collectors.toList()));
 	}
 
-	public List<Long> getGuiHashes() {
+	public Hashes getGuiHashes() {
 		Sequence<GuiImage> sequence = getGuis();
 
-		return IntStreams.range(0, sequence.length())
-						 .mapToObj(sequence::getImage)
-						 .map(SingleImage::hash)
-						 .collect(Collectors.toList());
+		return new Hashes(IntStreams.range(0, sequence.length())
+				.mapToObj(sequence::getImage)
+				.map(SingleImage::hash)
+				.collect(Collectors.toList()));
 	}
 
 	/**

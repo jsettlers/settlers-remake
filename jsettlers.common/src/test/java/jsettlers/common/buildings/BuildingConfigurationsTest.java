@@ -60,16 +60,16 @@ public class BuildingConfigurationsTest {
 	@Test
 	public void testStacksAreNotBlockedButProtected() {
 		for (RelativeStack stack : buildingType.getConstructionStacks()) {
-			assertFalse(isBlocked(stack));
-			assertTrue(isProtected(stack));
+			assertFalse(buildingType + "", isBlocked(stack));
+			assertTrue(buildingType + "", isProtected(stack));
 		}
 		for (RelativeStack stack : buildingType.getRequestStacks()) {
-			assertFalse(isBlocked(stack));
-			assertTrue(isProtected(stack));
+			assertFalse(buildingType + "", isBlocked(stack));
+			assertTrue(buildingType + "", isProtected(stack));
 		}
 		for (RelativeStack stack : buildingType.getOfferStacks()) {
-			assertFalse(isBlocked(stack));
-			assertTrue(isProtected(stack));
+			assertFalse(buildingType + "", isBlocked(stack));
+			assertTrue(buildingType + "", isProtected(stack));
 		}
 	}
 

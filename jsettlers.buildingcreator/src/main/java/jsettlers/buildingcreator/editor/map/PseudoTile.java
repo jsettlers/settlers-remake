@@ -87,7 +87,7 @@ public class PseudoTile {
 		this.stack = stack;
 	}
 
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return new ShortPoint2D(x, y);
 	}
 }

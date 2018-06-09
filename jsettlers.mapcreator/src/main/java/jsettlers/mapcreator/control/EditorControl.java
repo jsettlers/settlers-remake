@@ -764,7 +764,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				// only getter call, no Swing calls
 				ShapeType shape = toolSidebar.getActiveShape();
 
-				tool.start(mapData, shape, lineAction.getPos());
+				tool.start(mapData, shape, lineAction.getPosition());
 
 				validator.reValidate();
 			}

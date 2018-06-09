@@ -42,7 +42,7 @@ public interface IOccupyableBuilding extends ILocatable{
 
 	ShortPoint2D getPosition(IBuildingOccupyableMovable soldier);
 
-	boolean isNotDestroyed();
+	boolean isDestroyed();
 
 	/**
 	 * This method is called by the soldier when he finished defending the tower.

@@ -44,7 +44,7 @@ public final class MineBuilding extends ResourceBuilding {
 	}
 
 	@Override
-	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
+	public boolean tryTakingFood(EMaterialType[] foodOrder) {
 		if (feedWorkPackages <= 0) {
 			for (int i = 0; i < foodOrder.length; i++) { // check the types of food by order
 				if (super.popMaterialFromStack(foodOrder[i])) {
