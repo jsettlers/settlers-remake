@@ -28,6 +28,8 @@ import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MovableObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MovableObjectContainer implements ObjectContainer, IMovable {
 
@@ -65,13 +67,8 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public boolean isShip() {
-		return false;
-	}
-
-	@Override
-	public ArrayList<IMovable> getPassengers() {
-		return null;
+	public List<IMovable> getPassengers() {
+		return Collections.emptyList();
 	}
 
 	@Override

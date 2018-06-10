@@ -76,7 +76,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 		OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
 
 		tradeShipImageView = (ImageView) getView().findViewById(R.id.imageView_tradeShip);
-		tradeShipImageView.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_CARGO_BOAT)));
+		tradeShipImageView.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_CARGO_SHIP)));
 		OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
 	}
 

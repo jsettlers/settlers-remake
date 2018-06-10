@@ -40,7 +40,7 @@ import jsettlers.logic.movable.strategies.military.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
-import jsettlers.logic.movable.strategies.trading.CargoBoatStrategy;
+import jsettlers.logic.movable.strategies.trading.CargoShipStrategy;
 import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
 
 /**
@@ -115,8 +115,8 @@ public abstract class MovableStrategy implements Serializable {
 			case FERRY:
 				return new FerryStrategy(movable);
 
-			case CARGO_BOAT:
-				return new CargoBoatStrategy(movable);
+			case CARGO_SHIP:
+				return new CargoShipStrategy(movable);
 
 			default:
 				assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
