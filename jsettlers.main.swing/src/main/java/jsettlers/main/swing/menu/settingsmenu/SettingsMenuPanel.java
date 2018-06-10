@@ -70,42 +70,6 @@ public class SettingsMenuPanel extends JPanel {
 		backendSelector.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
 		
 		SwingUtilities.updateComponentTreeUI(playerNameField);
-		panel.add(playerNameField);
-		panel.add(volumeLabel);
-		panel.add(volumeSlider);
-		panel.add(fpsLimitLabel);
-		panel.add(fpsLimitSlider);
-		panel.add(backendLabel);
-		panel.add(backendSelector);
-		panel.add(cancelButton);
-		panel.add(saveButton);
-		add(panel);
-	}
-
-	private void setStyle() {
-		saveButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
-		cancelButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
-		playerNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-		volumeLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-		fpsLimitLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-		backendLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-	}
-
-	private void localize() {
-		playerNameLabel.setText(Labels.getString("settings-name"));
-		volumeLabel.setText(Labels.getString("settings-volume"));
-		fpsLimitLabel.setText(Labels.getString("settings-fps-limit"));
-		backendLabel.setText(Labels.getString("settings-backend"));
-		saveButton.setText(Labels.getString("settings-ok"));
-		cancelButton.setText(Labels.getString("settings-back"));
-	}
-
-	public void initializeValues() {
-		SettingsManager settingsManager = SettingsManager.getInstance();
-		playerNameField.setText(settingsManager.getPlayer().getName());
-		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
-		fpsLimitSlider.setValue(settingsManager.getFpsLimit());
-		backendSelector.setSelectedItem(settingsManager.getBackend());
 		addSetting("settings-name", playerNameField);
 
 		addSetting("settings-volume", volumeSlider);
@@ -162,5 +126,7 @@ public class SettingsMenuPanel extends JPanel {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		playerNameField.setText(settingsManager.getPlayer().getName());
 		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
+		fpsLimitSlider.setValue(settingsManager.getFpsLimit());
+		backendSelector.setSelectedItem(settingsManager.getBackend());
 	}
 }

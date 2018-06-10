@@ -145,6 +145,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	private synchronized void set(String key, String value) {
 		storedSettings.setProperty(key, value);
+		runtimeProperties.put(key, value);
 		try {
 			storedSettings.store(ResourceManager.writeConfigurationFile(CONFIGURATION_FILE), new Date().toString());
 		} catch (IOException e) {
