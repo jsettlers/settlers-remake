@@ -48,7 +48,7 @@ public class GameMenu implements IGameExitListener {
 
 	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
 	public LiveData<GameState> getGameState() {
-		return  gameState;
+		return gameState;
 	}
 
 	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();

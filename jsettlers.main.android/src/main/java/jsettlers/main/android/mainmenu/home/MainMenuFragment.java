@@ -15,12 +15,10 @@
 
 package jsettlers.main.android.mainmenu.home;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.BindingObject;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.DataBound;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
@@ -31,57 +29,34 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.databinding.FragmentMainMenuBinding;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.settings.SettingsActivity_;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-@DataBound
 @EFragment(R.layout.fragment_main_menu)
 @OptionsMenu(R.menu.fragment_mainmenu)
-public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
+public class MainMenuFragment extends Fragment {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
-	private static final String TAG_RESOURCE_DIALOG = "resourcedialog";
 
 	private MainMenuViewModel viewModel;
     private MainMenuNavigator mainMenuNavigator;
+	private HomeAdapter homeAdapter;
 
-	@ViewById(R.id.linearLayout_main)
-	LinearLayout mainLinearLayout;
-	@ViewById(R.id.cardView_resume)
-	View resumeView;
-	@ViewById(R.id.cardView_resourcePicker)
-	View resourcePickerView;
-	@ViewById(R.id.button_pause)
-	Button pauseButton;
-	@ViewById(R.id.button_quit)
-	Button quitButton;
-    @ViewById(R.id.button_new_single_player_game)
-    Button newSinglePlayerButton;
-    @ViewById(R.id.button_load_single_player_game)
-    Button loadSinglePlayerButton;
-    @ViewById(R.id.button_new_multi_player_game)
-    Button newMultiPlayerButton;
-    @ViewById(R.id.button_join_multi_player_game)
-    Button joinMultiPlayerButton;
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
-
-	@BindingObject
-	FragmentMainMenuBinding binding;
+	@ViewById(R.id.recyclerView)
+	RecyclerView recyclerView;
 
 	public static MainMenuFragment create() {
 		return new MainMenuFragment_();
@@ -98,23 +73,17 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	public void afterViews() {
 		FragmentUtil.setActionBar(this, toolbar);
 		toolbar.setTitle(R.string.app_name);
-		binding.setViewmodel(viewModel);
+
+		homeAdapter = new HomeAdapter(LayoutInflater.from(getActivity()), this, mainMenuNavigator);
+		homeAdapter.setHasStableIds(true);
+		recyclerView.setAdapter(homeAdapter);
 	}
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		viewModel.getResumeState().observe(this, this::updateResumeView);
-		viewModel.getAreResourcesLoaded().observe(this, this::updateResourceView);
-		viewModel.getAreResourcesLoaded().observe(this, newSinglePlayerButton::setEnabled);
-		viewModel.getAreResourcesLoaded().observe(this, loadSinglePlayerButton::setEnabled);
-		viewModel.getAreResourcesLoaded().observe(this, newMultiPlayerButton::setEnabled);
-		viewModel.getAreResourcesLoaded().observe(this, joinMultiPlayerButton::setEnabled);
-		viewModel.getAreResourcesLoaded().observe(this, this::dismissResourceDialog);
-		viewModel.getShowSinglePlayer().observe(this, z -> mainMenuNavigator.showNewSinglePlayerPicker());
-		viewModel.getShowLoadSinglePlayer().observe(this, z -> mainMenuNavigator.showLoadSinglePlayerPicker());
-		viewModel.getShowMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showNewMultiPlayerPicker());
-		viewModel.getShowJoinMultiplayerPlayer().observe(this, z -> mainMenuNavigator.showJoinMultiPlayerPicker());
+		viewModel.getResumeState().observe(this, homeAdapter::showOrHideGameInProgress);
+		viewModel.getAreResourcesLoaded().observe(this, homeAdapter::showOrHideDirectoryPicker);
 	}
 
 	@Override
@@ -134,60 +103,111 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		switch (requestCode) {
 		case REQUEST_CODE_PERMISSION_STORAGE:
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				showDirectoryPicker();
+				DirectoryPickerViewHolder directoryPickerViewHolder = (DirectoryPickerViewHolder) recyclerView.findViewHolderForItemId(R.layout.vh_directory_picker);
+				homeAdapter.expandDirectoryPicker(directoryPickerViewHolder);
 			}
 			break;
 		}
 	}
 
+	private class HomeAdapter extends RecyclerView.Adapter {
+		private final LayoutInflater layoutInflater;
+		private final Fragment viewModelOwner;
+		private final MainMenuNavigator mainMenuNavigator;
 
-	/**
-	 * DirectoryPickerDialog.Listener implementation
-	 */
-	@Override
-	public void onDirectorySelected(File resourceDirectory) {
-		viewModel.resourceDirectoryChosen(resourceDirectory);
-	}
+		private final List<Integer> layouts = new ArrayList<>();
 
+		public HomeAdapter(LayoutInflater layoutInflater, Fragment parent, MainMenuNavigator mainMenuNavigator) {
+			this.layoutInflater = layoutInflater;
+			this.viewModelOwner = parent;
+			this.mainMenuNavigator = mainMenuNavigator;
 
-	@Click(R.id.button_resources)
-	void showDirectoryPicker() {
-		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
-		} else {
-			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), TAG_RESOURCE_DIALOG);
+			layouts.add(R.layout.vh_single_player);
+			layouts.add(R.layout.vh_multi_player);
 		}
-	}
 
-	@Click(R.id.cardView_resume)
-	void resumeView() {
-		mainMenuNavigator.resumeGame();
-	}
+		@Override
+		public int getItemCount() {
+			return layouts.size();
+		}
 
-	private void dismissResourceDialog(Boolean areResourcesLoaded) {
-		if (areResourcesLoaded) {
-			DialogFragment dialog = (DialogFragment) getChildFragmentManager().findFragmentByTag(TAG_RESOURCE_DIALOG);
-			if (dialog != null) {
-				dialog.dismiss();
+		@Override
+		public int getItemViewType(int position) {
+			return layouts.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return layouts.get(position);
+		}
+
+		@NonNull
+		@Override
+		public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			View view = layoutInflater.inflate(viewType, parent, false);
+
+			switch (viewType) {
+				case R.layout.vh_directory_picker: {
+					DirectoryPickerViewHolder viewHolder = new DirectoryPickerViewHolder(view, viewModelOwner);
+
+					Button chooseDirectoryButton = view.findViewById(R.id.button_resources);
+					chooseDirectoryButton.setOnClickListener(v -> {
+						if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+							requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
+						} else {
+							expandDirectoryPicker(viewHolder);
+							//TODO save expanded state for rotation
+						}
+					});
+
+					return viewHolder;
+				}
+				case R.layout.vh_game_in_progress:
+					return new GameInProgressViewHolder(view, viewModelOwner, mainMenuNavigator);
+				case R.layout.vh_single_player:
+					return new SinglePlayerViewHolder(view, viewModelOwner, mainMenuNavigator);
+				case R.layout.vh_multi_player:
+					return new MultiPlayerViewHolder(view, viewModelOwner, mainMenuNavigator);
+				default:
+					throw new RuntimeException("Layout not support");
 			}
 		}
-	}
 
-	private void updateResumeView(MainMenuViewModel.ResumeViewState resumeViewState) {
-		if (resumeViewState == null){
-			resumeView.setVisibility(View.GONE);
-		} else {
-			pauseButton.setText(resumeViewState.isPaused() ? R.string.game_menu_unpause : R.string.game_menu_pause);
-			quitButton.setText(resumeViewState.isConfirmQuit() ? R.string.game_menu_quit_confirm : R.string.game_menu_quit);
-			resumeView.setVisibility(View.VISIBLE);
+		@Override
+		public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 		}
-	}
 
-	private void updateResourceView(boolean areResourcesLoaded) {
-		if (areResourcesLoaded) {
-			resourcePickerView.setVisibility(View.GONE);
-		} else  {
-			resourcePickerView.setVisibility(View.VISIBLE);
+		private void expandDirectoryPicker(DirectoryPickerViewHolder viewHolder) {
+			ViewGroup.LayoutParams layoutParams = viewHolder.itemView.getLayoutParams();
+			layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+			viewHolder.itemView.setLayoutParams(layoutParams);
+			notifyItemChanged(viewHolder.getAdapterPosition(), new Object());
+			viewHolder.onExpand();
 		}
-	}
+
+		private void showOrHideDirectoryPicker(boolean areResourcesLoaded) {
+			showOrHide(!areResourcesLoaded, R.layout.vh_directory_picker);
+		}
+
+        private void showOrHideGameInProgress(MainMenuViewModel.ResumeViewState resumeViewState) {
+			showOrHide(resumeViewState != null, R.layout.vh_game_in_progress);
+        }
+
+        private void showOrHide(boolean show, int layout) {
+			Integer layoutInteger = layout;
+			int index = layouts.indexOf(layoutInteger);
+
+			if (show) {
+				if (index == -1) {
+					layouts.add(0, layoutInteger);
+					notifyItemInserted(0);
+				}
+			} else {
+				if (index > -1) {
+					layouts.remove(layoutInteger);
+					notifyItemRemoved(index);
+				}
+			}
+		}
+    }
 }

@@ -91,12 +91,12 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 	public void showMap() {
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.frame_layout, MapFragment_.builder().build(), TAG_FRAGMENT_MAP)
-				.commitNow();
+				.commit();
 	}
 
 	private void showLoading() {
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.frame_layout, LoadingFragment.newInstance(), TAG_FRAGMENT_LOADING)
-				.commitNow();
+				.commit();
 	}
 }

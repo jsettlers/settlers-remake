@@ -44,7 +44,7 @@ public class MainMenuViewModel extends ViewModel {
         return resumeStateData;
     }
 
-    public MutableLiveData<Boolean> getAreResourcesLoaded() {
+    public LiveData<Boolean> getAreResourcesLoaded() {
         return areResourcesLoaded;
     }
 
