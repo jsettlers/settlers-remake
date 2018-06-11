@@ -19,17 +19,53 @@ import go.graphics.swing.opengl.JOGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
+import java.awt.Font;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.ArrayList;
 
 /**
  * This class is a text drawer used to wrap the text renderer.
- * 
+ *
  * @author michael
  */
 public final class JOGLTextDrawer implements TextDrawer {
 
+<<<<<<< HEAD
+	private static final int INTERVAL_SCALING_UPDATE = 10000;
+	private static final int DEFAULT_DPI = 96;
 	private static final String FONTNAME = "Arial";
+
+	private static ArrayList<JOGLTextDrawer> JOGLTextDrawers = new ArrayList<JOGLTextDrawer>();
+	private static float scalingFactor = 1;
+
+	static {
+		Timer scalingUpdateTimer = new Timer();
+		scalingUpdateTimer.schedule(new TimerTask() {
+			public void run() {
+				scalingFactor = Toolkit.getDefaultToolkit().getScreenResolution();
+				scalingFactor /= DEFAULT_DPI;
+				scalingFactor = Math.min(scalingFactor, 1);
+				for (JOGLTextDrawer drawer : JOGLTextDrawers) {
+					drawer.renderer.getFont().
+				}
+			}
+		}, 0, INTERVAL_SCALING_UPDATE);
+=======
+	private static final String FONT_NAME = "Arial";
+
+	private static final int DEFAULT_DPI_WIDTH = 1920;
+	private static final float SCALING_FACTOR;
+
+	static {
+		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+		SCALING_FACTOR = Math.min((float) screenWidth / DEFAULT_DPI_WIDTH, 1);
+>>>>>>> 0381dce4d157ce2e7caf66db40ff9fbb1cb7ecfc
+	}
+
 
 	private final TextRenderer renderer;
 
@@ -37,15 +73,22 @@ public final class JOGLTextDrawer implements TextDrawer {
 
 	/**
 	 * Creates a new text drawer.
-	 * 
+	 *
 	 * @param size
 	 *            The size of the text.
 	 * @param drawContext
 	 */
 	public JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
 		this.drawContext = drawContext;
-		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, size.getSize());
+<<<<<<< HEAD
+		int scaledFontSize = Math.round(size.getSize() * scalingFactor);
+		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, scaledFontSize);
+=======
+		int scaledFontSize = Math.round(size.getSize() * SCALING_FACTOR);
+		Font font = new Font(FONT_NAME, Font.TRUETYPE_FONT, scaledFontSize);
+>>>>>>> 0381dce4d157ce2e7caf66db40ff9fbb1cb7ecfc
 		this.renderer = new TextRenderer(font, true, true, null, true);
+		JOGLTextDrawers.add(this);
 	}
 
 	/*
