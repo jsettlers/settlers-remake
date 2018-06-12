@@ -46,6 +46,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.MapDrawContext;
@@ -1290,6 +1291,7 @@ public class MapObjectDrawer {
 					case INFANTRY:
 						OriginalImageLink imageLink = place.looksRight() ? INSIDE_BUILDING_RIGHT : INSIDE_BUILDING_LEFT;
 						image = imageProvider.getImage(imageLink);
+						((SettlerImage)image).setShadow(null);
 						break;
 					case BOWMAN:
 					default:
