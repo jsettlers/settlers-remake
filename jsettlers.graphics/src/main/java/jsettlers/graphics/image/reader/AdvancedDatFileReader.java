@@ -335,28 +335,33 @@ public class AdvancedDatFileReader implements DatFileReader {
 				for (; i < settlerStarts.length; i++) {
 					shadowStarts[i] = -1;
 				}
-				if (shadowDifference == 33) { // change shadows in file 1:
-					shadowStarts[26] = -1; // wave gets no shadow
-					shadowStarts[31] = shadowStarts[30]; // cuttable stone
-					shadowStarts[91] = -1; // work area marker pole gets no shadow
-					shadowStarts[92] = shadowStarts[90]; // building site pole
-				} else if (shadowDifference == 26) { // change shadows in file 13:
-					for (i = 0; i < 27; i++) {
-						shadowStarts[i] = shadowStarts[i + 3];
-					}
-					for (i = 27; i < 36; i++) {
-						shadowStarts[i] = shadowStarts[i + 2];
-					}
-					shadowStarts[28] = -1; // market place gets no shadow (has it already)
-					shadowStarts[44] = shadowStarts[38]; // dock
-					shadowStarts[45] = shadowStarts[39]; // harbour
-					for (i = 36; i < 44; i++) {
-						shadowStarts[i] = -1; // rest has no shadow
-					}
-					for (i = 46; i < shadowStarts.length; i++) {
-						shadowStarts[i] = -1; // rest has no shadow
-					}
+			}
+			if (shadowDifference == 33) { // change shadows in file 1:
+				shadowStarts[26] = -1; // wave gets no shadow
+				shadowStarts[31] = shadowStarts[30]; // cuttable stone
+				shadowStarts[91] = -1; // work area marker pole gets no shadow
+				shadowStarts[92] = shadowStarts[90]; // building site pole
+			} else if (shadowDifference == 26) { // change shadows in file 13:
+				for (i = 0; i < 27; i++) {
+					shadowStarts[i] = shadowStarts[i + 3];
 				}
+				for (i = 27; i < 36; i++) {
+					shadowStarts[i] = shadowStarts[i + 2];
+				}
+				shadowStarts[28] = -1; // market place gets no shadow (has it already)
+				shadowStarts[44] = shadowStarts[38]; // dock
+				shadowStarts[45] = shadowStarts[39]; // harbour
+				for (i = 36; i < 44; i++) {
+					shadowStarts[i] = -1; // rest has no shadow
+				}
+				for (i = 46; i < shadowStarts.length; i++) {
+					shadowStarts[i] = -1; // rest has no shadow
+				}
+			} else if (shadowDifference == 7) { // change shadows in file 6:
+				shadowStarts[18] = shadowStarts[10]; // donkey
+				shadowStarts[17] = shadowStarts[9]; // donkey
+				shadowStarts[16] = shadowStarts[8]; // donkey
+				shadowStarts[15] = shadowStarts[7]; // donkey
 			}
 		}
 	}
