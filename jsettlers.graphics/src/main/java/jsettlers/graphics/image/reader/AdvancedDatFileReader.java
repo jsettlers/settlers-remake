@@ -315,10 +315,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		int shadowDifference = settlerStarts.length - shadowStarts.length;
+		int i;
 		if (shadowDifference > 0) {
 			int[] oldShadows = shadowStarts;
 			shadowStarts = new int[settlerStarts.length];
-			int i;
 			if (shadowDifference == 8 || shadowDifference == 7) {
 				// push shadows to end of settler images
 				for (i = 0; i < shadowDifference; i++) {
@@ -362,6 +362,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 				shadowStarts[17] = shadowStarts[9]; // donkey
 				shadowStarts[16] = shadowStarts[8]; // donkey
 				shadowStarts[15] = shadowStarts[7]; // donkey
+			}
+		} else if (shadowDifference == 0) {
+			if (settlerStarts.length == 239) { // change shadows in file 11:
+				for (i = 171; i >= 13; i--) {
+					shadowStarts[i] = shadowStarts[i - 13]; // several specialists
+				}
 			}
 		}
 	}
