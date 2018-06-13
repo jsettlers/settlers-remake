@@ -88,7 +88,8 @@ import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
-import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
+import static jsettlers.logic.constants.Constants.TOWER_ATTACKABLE_SEARCH_RADIUS;
+import static jsettlers.logic.constants.Constants.TOWER_SEARCH_SOLDIERS_RADIUS;
 
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes care against lack of settlers and it builds a
@@ -215,12 +216,11 @@ class WhatToDoAi implements IWhatToDoAi {
 		Set<Integer> soldiersWithOrders = new HashSet<>();
 
 		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.MILITARY_BUILDINGS, playerId)) {
-
 			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
 			if (!militaryBuilding.isOccupied()) {
 				ShortPoint2D door = militaryBuilding.getDoor();
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
-				if (soldier != null && militaryBuilding.getPosition().getOnGridDistTo(soldier.getPosition()) > TOWER_SEARCH_RADIUS) {
+				if (soldier != null && militaryBuilding.getPosition().getOnGridDistTo(soldier.getPosition()) > TOWER_SEARCH_SOLDIERS_RADIUS) {
 					soldiersWithOrders.add(soldier.getID());
 					sendMovableTo(soldier, door);
 				}
