@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,138 +15,161 @@
 package jsettlers.main.swing.lookandfeel.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
-import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicToggleButtonUI;
+import javax.swing.plaf.basic.BasicButtonUI;
 
+import jsettlers.main.swing.lookandfeel.DrawHelper;
 import jsettlers.main.swing.lookandfeel.ui.img.UiImageLoader;
-import sun.swing.SwingUtilities2;
 
 /**
- * Stone toggle Button UI
- * 
+ * Button UI Implementation
+ *
  * @author Andreas Butti
  */
-public class ButtonUiStone extends BasicToggleButtonUI {
-
-	private static final String CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET = "ButtonUiStone.randomBackgroundXOffset";
-	private static final String CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET = "ButtonUiStone.randomBackgroundYOffset";
+public class ButtonUiStone extends BasicButtonUI {
 
 	/**
 	 * Background Image
 	 */
-	private final BufferedImage backgroundImage = UiImageLoader.get("granit_texture1.png");
+	private final BufferedImage backgroundImage = UiImageLoader.get("ui_button/ui_button-bg.png");
 
 	/**
-	 * Button down
+	 * Background Image pressed
 	 */
-	private final Border borderDown;
+	private final BufferedImage backgroundImagePressed = UiImageLoader.get("ui_button_down/ui_button-bg.png");
 
 	/**
-	 * Button up
+	 * Border images if the Button is not pressed
 	 */
-	private final Border borderUp;
+	private final BufferedImage[] BORDER_NORMAL = { UiImageLoader.get("ui_button/ui_button-corner-upper-left.png"),
+			UiImageLoader.get("ui_button/ui_button-border-top.png"),
+			UiImageLoader.get("ui_button/ui_button-corner-upper-right.png"),
+			UiImageLoader.get("ui_button/ui_button-border-right.png"),
+			UiImageLoader.get("ui_button/ui_button-corner-bottom-right.png"),
+			UiImageLoader.get("ui_button/ui_button-border-bottom.png"),
+			UiImageLoader.get("ui_button/ui_button-corner-bottom_left.png"),
+			UiImageLoader.get("ui_button/ui_button-border-left.png")
+	};
 
 	/**
-	 * Offset
+	 * Border images if the Button is pressed
 	 */
-	private int shiftOffset = 0;
+	private final BufferedImage[] BORDER_DOWN = { UiImageLoader.get("ui_button_down/ui_button-corner-upper-left.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-top.png"),
+			UiImageLoader.get("ui_button_down/ui_button-corner-upper-right.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-right.png"),
+			UiImageLoader.get("ui_button_down/ui_button-corner-bottom-right.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-bottom.png"),
+			UiImageLoader.get("ui_button_down/ui_button-corner-bottom_left.png"),
+			UiImageLoader.get("ui_button_down/ui_button-border-left.png")
+	};
+
+	/**
+	 * Scale factor of the border
+	 */
+	private final float scale;
+
+	/**
+	 * Text padding
+	 */
+	private int textPaddingTopBottom;
+
+	/**
+	 * Text padding
+	 */
+	private int textPaddingLeftRight;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param borderUp
-	 *            Button up
-	 * @param borderDown
-	 *            Button down
+	 * @param scale
+	 *            Scale factor of the border
+	 * @param textPaddingTopBottom
+	 *            Text padding
+	 * @param textPaddingLeftRight
+	 *            Text padding
 	 */
-	public ButtonUiStone(Border borderUp, Border borderDown) {
-		this.borderUp = borderUp;
-		this.borderDown = borderDown;
+	public ButtonUiStone(float scale, int textPaddingTopBottom, int textPaddingLeftRight) {
+		this.scale = scale;
+		this.textPaddingTopBottom = textPaddingTopBottom;
+		this.textPaddingLeftRight = textPaddingLeftRight;
 	}
 
 	@Override
-	public void installUI(JComponent c) {
-		super.installUI(c);
-		c.setOpaque(false);
-		c.setBorder(borderUp);
-		c.setFont(UIDefaults.FONT_PLAIN);
-		c.setForeground(UIDefaults.LABEL_TEXT_COLOR);
+	public void installDefaults(AbstractButton button) {
+		button.setFont(UIDefaults.FONT);
+		button.setForeground(UIDefaults.LABEL_TEXT_COLOR);
 	}
 
 	@Override
-	public void update(Graphics graphics, JComponent component) {
-		int width = component.getWidth();
-		int height = component.getHeight();
+	public void uninstallDefaults(AbstractButton b) {
+	}
 
-		Integer randomBackgroundXOffset = (Integer) component.getClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET);
-		Integer randomBackgroundYOffset = (Integer) component.getClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET);
+	@Override
+	public void paint(Graphics g1, JComponent c) {
+		Graphics2D g = DrawHelper.enableAntialiasing(g1);
 
-		if (randomBackgroundXOffset == null || randomBackgroundYOffset == null) {
-			randomBackgroundXOffset = (int) (Math.random() * backgroundImage.getWidth());
-			randomBackgroundYOffset = (int) (Math.random() * backgroundImage.getHeight());
-			component.putClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET, randomBackgroundXOffset);
-			component.putClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET, randomBackgroundYOffset);
-		}
-
-		for (int x = -randomBackgroundXOffset; x < component.getWidth(); x += backgroundImage.getWidth()) {
-			for (int y = -randomBackgroundYOffset; y < component.getHeight(); y += backgroundImage.getHeight()) {
-				graphics.drawImage(backgroundImage, x, y, component);
-			}
-		}
+		AbstractButton b = (AbstractButton) c;
+		ButtonModel model = b.getModel();
 
 		boolean down;
-		if (component instanceof JToggleButton) {
-			down = ((JToggleButton) component).isSelected();
+		if (c instanceof JToggleButton) {
+			down = ((JToggleButton) c).isSelected();
 		} else {
-			AbstractButton b = (AbstractButton) component;
-			ButtonModel model = b.getModel();
 			down = model.isArmed() && model.isPressed();
 		}
 
+		BufferedImage bg;
+		BufferedImage[] border;
+		float scale = this.scale;
+
 		if (down) {
-			component.setBorder(borderDown);
-			graphics.setColor(new Color(0, 0, 0, 90));
-			graphics.fillRect(2, 2, width - 4, height - 4);
-			shiftOffset = 1;
+			border = BORDER_DOWN;
+			scale /= 2;
+			bg = backgroundImagePressed;
 		} else {
-			component.setBorder(borderUp);
-			shiftOffset = 0;
+			bg = backgroundImage;
+			border = BORDER_NORMAL;
 		}
 
-		super.update(graphics, component);
-	}
+		// Draw background
+		g.drawImage(bg, 0, 0, c);
 
-	@Override
-	protected int getTextShiftOffset() {
-		return shiftOffset;
-	}
+		BorderHelper.drawBorder(g1, c, border, scale);
 
-	@Override
-	protected void paintText(Graphics g, AbstractButton b, Rectangle textRect, String text) {
-		FontMetrics fm = SwingUtilities2.getFontMetrics(b, g);
-		int mnemonicIndex = b.getDisplayedMnemonicIndex();
+		FontMetrics fm = g.getFontMetrics();
+		int y = (b.getHeight() - fm.getAscent() - fm.getDescent()) / 2 + fm.getAscent();
+		int x = textPaddingLeftRight;
 
+		if (down) {
+			x += 1;
+			y += 1;
+		}
+
+		g.setFont(c.getFont());
+
+		// draw shadow
 		g.setColor(Color.BLACK);
-		SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
-				textRect.x + getTextShiftOffset() + 1,
-				textRect.y + fm.getAscent() + getTextShiftOffset() + 1);
-
-		g.setColor(b.getForeground());
-		SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
-				textRect.x + getTextShiftOffset(),
-				textRect.y + fm.getAscent() + getTextShiftOffset());
+		g.drawString(b.getText(), x + 1, y + 1);
+		g.setColor(c.getForeground());
+		g.drawString(b.getText(), x, y);
 	}
 
 	@Override
-	protected void paintButtonPressed(Graphics g, AbstractButton b) {
+	public Dimension getPreferredSize(JComponent c) {
+		Dimension size = super.getPreferredSize(c);
+		size.width += textPaddingLeftRight * 2;
+		size.height += textPaddingTopBottom * 2;
+		return size;
 	}
+
 }

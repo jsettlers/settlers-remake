@@ -193,7 +193,7 @@ public class BorderDrawer {
 
 		// draw shadow
 		graphics.setColor(new Color(0, 0, 0, 150));
-		drawRectInternal(x1 += SHADOW_OFFSET_X, y1 += SHADOW_OFFSET_Y, x2 += SHADOW_OFFSET_X, y2 += SHADOW_OFFSET_Y);
+		drawRectInternal(x1 + SHADOW_OFFSET_X, y1 + SHADOW_OFFSET_Y, x2 + SHADOW_OFFSET_X, y2 + SHADOW_OFFSET_Y);
 
 		graphics.setPaint(paint);
 		drawRectInternal(x1, y1, x2, y2);

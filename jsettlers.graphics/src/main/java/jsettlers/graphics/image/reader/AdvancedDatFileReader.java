@@ -40,7 +40,6 @@ import jsettlers.graphics.image.sequence.SequenceList;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.List;
 
 import static jsettlers.graphics.image.reader.versions.GfxFolderMapping.DatFileMapping;
 
@@ -253,25 +252,25 @@ public class AdvancedDatFileReader implements DatFileReader {
 		guiTranslator = new GuiTranslator(type);
 	}
 
-	public List<Long> getSettlersHashes() {
+	public Hashes getSettlersHashes() {
 		SequenceList<Image> settlers = getSettlers();
 
-		return IntStreams.range(0, settlers.size())
+		return new Hashes(IntStreams.range(0, settlers.size())
 				.mapToObj(settlers::get)
 				.map(sequence -> sequence.getImage(0))
 				.filter(image -> image instanceof SingleImage)
 				.map(image -> (SingleImage) image)
 				.map(SingleImage::hash)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 	}
 
-	public List<Long> getGuiHashes() {
+	public Hashes getGuiHashes() {
 		Sequence<GuiImage> sequence = getGuis();
 
-		return IntStreams.range(0, sequence.length())
+		return new Hashes(IntStreams.range(0, sequence.length())
 				.mapToObj(sequence::getImage)
 				.map(SingleImage::hash)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 	}
 
 	/**
