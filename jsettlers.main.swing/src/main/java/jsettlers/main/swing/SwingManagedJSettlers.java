@@ -14,6 +14,12 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
@@ -39,11 +45,6 @@ import jsettlers.main.swing.resources.SwingResourceProvider;
 import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.network.client.OfflineNetworkConnector;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.io.File;
-import java.io.IOException;
-
 /**
  * @author codingberlin
  * @author Andreas Eberle
@@ -68,7 +69,7 @@ public class SwingManagedJSettlers {
 		setupResourceManagers(interactive);
 	}
 
-	public static void loadCommandLineSettings() {
+	private static void loadCommandLineSettings() {
 		CommonConstants.CONTROL_ALL = SettingsManager.getInstance().isControllAll();
 		CommonConstants.ACTIVATE_ALL_PLAYERS = SettingsManager.getInstance().isActivateAllPlayers();
 		CommonConstants.ENABLE_CONSOLE_LOGGING = SettingsManager.getInstance().useConsoleOutput();
@@ -81,7 +82,7 @@ public class SwingManagedJSettlers {
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 */
-	public static void setupResourceManagers(boolean interactive) {
+	private static void setupResourceManagers(boolean interactive) {
 		boolean wasSuccessful = false;
 		boolean firstRun = true;
 		while (!wasSuccessful) {
@@ -134,7 +135,7 @@ public class SwingManagedJSettlers {
 			}
 		}).orElse(null);
 
-		int targetGameTime = SettingsManager.getInstance().getTargetTime().orElse(0);
+		int targetGameTime = SettingsManager.getInstance().getTargetTimeMinutes().orElse(0);
 
 		String mapFile = SettingsManager.getInstance().getMapFile();
 		if (mapFile != null || loadableReplayFile != null) {
@@ -161,7 +162,7 @@ public class SwingManagedJSettlers {
 					} catch (InterruptedException e) {
 					}
 				}
-				MatchConstants.clock().fastForwardTo(targetGameTime);
+				MatchConstants.clock().fastForwardTo(targetGameTime * 60 * 1000);
 			}
 		}
 	}

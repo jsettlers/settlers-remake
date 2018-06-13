@@ -15,12 +15,18 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 
-import static java8.util.stream.StreamSupport.stream;
-
-import java.util.LinkedList;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.androidannotations.annotations.EFragment;
 
+import java.util.LinkedList;
+
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
@@ -30,20 +36,17 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.DestroyFeature;
+import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.DockFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.OccupiedFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.PriorityFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.SelectionFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.StockFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.TitleFeature;
+import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.TradingFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.WorkAreaFeature;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance. So the buildings menu is made up of composable "features" which are a bit like mini
@@ -97,9 +100,14 @@ public class BuildingSelectionFragment extends SelectionFragment {
 			layoutInflater.inflate(R.layout.menu_selection_building_stock, rootView, true);
 			features.add(new StockFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls));
 
+		} else if (building instanceof IBuilding.ITrading) {
+			layoutInflater.inflate(R.layout.menu_selection_building_trading, rootView, true);
+			features.add(new TradingFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls));
 
+		} else if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+			layoutInflater.inflate(R.layout.menu_selection_building_dock, rootView, true);
+			features.add(new DockFeature(getView(), building, menuNavigator, drawControls, actionControls, taskControls));
 
-			// } else if (building instanceof IBuilding.ITrading) {
 		} else {
 			layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
 		}

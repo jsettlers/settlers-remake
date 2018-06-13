@@ -31,4 +31,5 @@ public interface IMapInterfaceListener {
 	 *            The action the user performed.
 	 */
 	void action(IAction action);
+
 }

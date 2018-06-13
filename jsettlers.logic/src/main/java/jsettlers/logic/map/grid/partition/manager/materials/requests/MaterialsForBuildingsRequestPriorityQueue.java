@@ -129,7 +129,7 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 				Iterator<MaterialRequestObject> iterator = priorityQueue[queueIdx].iterator();
 				while (iterator.hasNext()) {
 					MaterialRequestObject curr = iterator.next();
-					if (curr.getPos().equals(position)) {
+					if (curr.getPosition().equals(position)) {
 						iterator.remove();
 						newQueue.queues[priorityIndex][queueIdx].pushEnd(curr);
 						curr.requestQueue = newQueue;

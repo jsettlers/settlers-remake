@@ -82,4 +82,6 @@ public interface IMapInterfaceConnector extends IMessenger {
 	void shutdown();
 
 	void fireAction(IAction action);
+
+	void playSound(int soundId, float volume);
 }

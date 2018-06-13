@@ -31,8 +31,8 @@ public final class MillBuilding extends WorkerBuilding implements IBuilding.IMil
 	private boolean rotating;
 	private transient boolean soundPlayed;
 
-	public MillBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
-		super(type, player, position, buildingsGrid);
+	public MillBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.MILL, player, position, buildingsGrid);
 	}
 
 	@Override

@@ -42,8 +42,8 @@ public final class BricklayerRequest extends WorkerCreationRequest implements IL
 	}
 
 	@Override
-	public final ShortPoint2D getPos() {
-		return building.getPos();
+	public final ShortPoint2D getPosition() {
+		return building.getPosition();
 	}
 
 	public boolean isCreationRequested() {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd" >
-<building worker="">
+<building worker="DOCKWORKER">
     <ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
-	
+
 	<blocked dx="0" dy="0" block="true" />
 	<blocked dx="-2" dy="1" block="true" />
 	<blocked dx="-1" dy="1" block="true" />
@@ -13,7 +13,7 @@
 	<blocked dx="0" dy="1" block="true" />
 	<blocked dx="1" dy="1" block="true" />
 	<blocked dx="2" dy="2" block="true" />
-	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="2" dy="1" block="false" />
 	<blocked dx="1" dy="-1" block="true" />
 	<blocked dx="1" dy="0" block="true" />
 	<blocked dx="0" dy="-1" block="true" />
@@ -63,7 +63,7 @@
 
 	<constructionStack dx="1" dy="4" material="PLANK" buildrequired="3" />
 	<constructionStack dx="3" dy="4" material="STONE" buildrequired="5" />
-	
+
 	<requestStack dx="-2" dy="2" material="PLANK" />
 	<requestStack dx="0" dy="4" material="IRON" />
 
@@ -84,5 +84,45 @@
 	<image file="14" for="GUI" type="GUI" sequence="108" image="0" />
 	<image file="13" type="SETTLER" for="FINAL" image="0" sequence="44" />
 	<image file="13" type="SETTLER" for="BUILD" image="1" sequence="44" />
- 
+
+	<startjob name="gohome"/>
+
+	<!-- go home -->
+	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome"		dx="2" dy="0"/>
+	<job name="hide" 			type="HIDE" 			successjob="reset" 			failjob="gohome"/>
+	<job name="reset" 			type="SET_MATERIAL"		successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
+
+	<!-- wait some time -->
+	<job name="wait_at_home" 	type="WAIT" 			successjob="check_planks" 	failjob="wait_at_home" 	time="3.0"/>
+	<job name="check_planks"	type="AVAILABLE" 		successjob="get_plank_show" failjob="check_iron"	dx="-2" dy="2" material="PLANK"/>
+	<job name="check_iron"		type="AVAILABLE" 		successjob="get_iron_show"  failjob="wait_at_home"	dx="0" dy="4" material="IRON"/>
+
+	<!-- show and take the plank to the dock -->
+	<job name="get_plank_show"	type="SHOW" 			successjob="go_to_plank"    failjob="hide"			dx="2" dy="0"/>
+    <job name="go_to_plank" 	type="GO_TO" 			successjob="take_plank" 	failjob="gohome"		dx="-2" dy="2"/>
+    <job name="take_plank"	 	type="TAKE" 	        successjob="go_to_ship" 	failjob="gohome"        material="PLANK"/>
+
+    <!-- show and take the iron to the dock -->
+    <job name="get_iron_show"	type="SHOW" 			successjob="go_to_iron"     failjob="hide"			dx="2" dy="0"/>
+    <job name="go_to_iron"   	type="GO_TO" 			successjob="take_iron" 	    failjob="gohome"		dx="0" dy="4"/>
+    <job name="take_iron"	 	type="TAKE" 	        successjob="go_to_ship" 	failjob="gohome"        material="IRON"/>
+
+    <!-- go to the ship at the dock -->
+    <job name="go_to_ship"		type="GO_TO_DOCK"		successjob="at_dock"        failjob="gohome"/>
+
+	<!-- build the ship -->
+	<job name="at_dock"			type="SET_MATERIAL"		successjob="hammer1"		failjob="hammer1"		material="NO_MATERIAL"/>
+	<job name="hammer1" 		type="PLAY_ACTION1" 	successjob="build1" 		failjob="build1" 		time="0.75"/>
+	<job name="build1"			type="BUILD_SHIP"		successjob="hammer2"		failjob="hammer2"/>
+	<job name="hammer2" 		type="PLAY_ACTION1" 	successjob="build2" 		failjob="build2" 		time="0.75"/>
+	<job name="build2"			type="BUILD_SHIP"		successjob="hammer3"		failjob="hammer3"/>
+	<job name="hammer3" 		type="PLAY_ACTION1" 	successjob="build3" 		failjob="build3" 		time="0.75"/>
+	<job name="build3"			type="BUILD_SHIP"		successjob="hammer4"		failjob="hammer4"/>
+	<job name="hammer4" 		type="PLAY_ACTION1" 	successjob="build4" 		failjob="build4" 		time="0.75"/>
+	<job name="build4"			type="BUILD_SHIP"		successjob="hammer5"		failjob="hammer5"/>
+	<job name="hammer5" 		type="PLAY_ACTION1" 	successjob="build5" 		failjob="build5" 		time="0.75"/>
+	<job name="build5"			type="BUILD_SHIP"		successjob="hammer6"		failjob="hammer6"/>
+	<job name="hammer6" 		type="PLAY_ACTION1" 	successjob="build6" 		failjob="build6" 		time="0.75"/>
+	<job name="build6"			type="BUILD_SHIP"		successjob="gohome"			failjob="gohome"/>
+
 </building>

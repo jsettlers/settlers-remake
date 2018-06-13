@@ -16,23 +16,24 @@
 package jsettlers.graphics.image.reader;
 
 import java.io.File;
-import java.util.stream.Stream;
 
 import jsettlers.common.Color;
 
+import static java8.util.J8Arrays.stream;
+
 public enum DatFileType {
-	RGB555(".7c003e01f.dat", new byte[] {
-			(byte) 0x7c,
-			0x00,
-			0x00,
-			(byte) 0xe0,
-			0x03, }),
-	RGB565(".f8007e01f.dat", new byte[] {
-			(byte) 0xf8,
-			0x00,
-			0x00,
-			(byte) 0xe0,
-			0x07, }), ;
+	RGB555(".7c003e01f.dat", new byte[]{
+		(byte) 0x7c,
+		0x00,
+		0x00,
+		(byte) 0xe0,
+		0x03,}),
+	RGB565(".f8007e01f.dat", new byte[]{
+		(byte) 0xf8,
+		0x00,
+		0x00,
+		(byte) 0xe0,
+		0x07,}),;
 
 	private final String fileSuffix;
 	private final byte[] startMagic;
@@ -52,9 +53,6 @@ public enum DatFileType {
 
 	/**
 	 * Converts a color in the current format to a rgba 5551 color.
-	 * 
-	 * @param color
-	 * @return
 	 */
 	public short convertTo5551(int color) {
 		if (this == RGB565) {
@@ -62,9 +60,9 @@ public enum DatFileType {
 		}
 		return (short) ((color << 1) | 0x01);
 	}
-	
+
 	public static DatFileType getForPath(File path) {
-		return Stream.of(values()).filter(v -> path.getName().endsWith(v.fileSuffix)).findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Could not determine type of " + path.getName()));
+		return stream(values()).filter(v -> path.getName().endsWith(v.fileSuffix)).findFirst()
+							   .orElseThrow(() -> new IllegalArgumentException("Could not determine type of " + path.getName()));
 	}
 }

@@ -14,7 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.mapobject;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Set;
 
 public enum EMapObjectType {
 	TREE_GROWING,
@@ -127,6 +128,7 @@ public enum EMapObjectType {
 	BUILDING_DECONSTRUCTION_SMOKE,
 	PLANT_DECORATION,
 	DESERT_DECORATION,
+	DOCK,
 
 	/**
 	 * Animated fish in the water.
@@ -142,7 +144,10 @@ public enum EMapObjectType {
 	/**
 	 * doesn't need to be drawn.
 	 */
-	INFORMABLE_MAP_OBJECT;
+	INFORMABLE_MAP_OBJECT,
+
+	FERRY,
+	CARGO_SHIP;
 
 	public static final EMapObjectType[] VALUES = EMapObjectType.values();
 	public final byte ordinal;
@@ -162,8 +167,7 @@ public enum EMapObjectType {
 			EMapObjectType.CUT_OFF_STONE,
 			EMapObjectType.DESERT_DECORATION,
 			EMapObjectType.PLANT_DECORATION,
-			EMapObjectType.TREE_DEAD
-	);
+			EMapObjectType.TREE_DEAD);
 
 	EMapObjectType() {
 		this(true);

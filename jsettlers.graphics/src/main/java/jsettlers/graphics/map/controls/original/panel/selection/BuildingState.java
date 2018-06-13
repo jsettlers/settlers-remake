@@ -14,6 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
@@ -22,13 +30,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
 
 /**
  * This class saves the state parts of the building that is displayed by the gui, to detect changes.
@@ -49,6 +50,8 @@ public class BuildingState {
 	private final BitSet stockStates;
 	private final int[] tradingCounts;
 	private final boolean isSeaTrading;
+	private final boolean isDockyard;
+	private final boolean isWorkingDockyard;
 
 	/**
 	 * This is the state for a building stack.
@@ -166,6 +169,8 @@ public class BuildingState {
 			stackStates.add(new StackState(mat));
 		}
 		isSeaTrading = building instanceof IBuilding.ITrading && ((IBuilding.ITrading) building).isSeaTrading();
+		isDockyard = building.getBuildingType() == EBuildingType.DOCKYARD;
+		isWorkingDockyard = (building instanceof IBuilding.IShipConstruction && ((IBuilding.IShipConstruction) building).getOrderedShipType() != null);
 	}
 
 	private int[] computeTradingCounts(IBuilding building) {
@@ -309,21 +314,21 @@ public class BuildingState {
 	 * @return <code>true</code> if we are a constructed occupied building.
 	 */
 	public boolean isOccupied() {
-		return occupierStates != null && !construction;
+		return occupierStates != null;
 	}
 
 	/**
 	 * @return <code>true</code> if we are a constructed stock building.
 	 */
 	public boolean isStock() {
-		return stockStates != null && !construction;
+		return stockStates != null;
 	}
 
 	/**
 	 * @return <code>true</code> if we are a constructed trading building.
 	 */
 	public boolean isTrading() {
-		return tradingCounts != null && !construction;
+		return tradingCounts != null;
 	}
 
 	/**
@@ -331,5 +336,19 @@ public class BuildingState {
 	 */
 	public boolean isSeaTrading() {
 		return isSeaTrading;
+	}
+
+	/**
+	 * @return <code>true</code> if this is a dockyard building
+	 */
+	public boolean isDockyard() {
+		return isDockyard;
+	}
+
+	/**
+	 * @return <code>true</code> if this dockyard is currently building a ship.
+	 */
+	public boolean isWorkingDockyard() {
+		return isWorkingDockyard;
 	}
 }

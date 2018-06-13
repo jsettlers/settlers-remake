@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
-import java.awt.Color;
-
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+
+import java.awt.Color;
 
 public class TestTile {
 	private final short y;
@@ -134,7 +134,7 @@ public class TestTile {
 		return null;
 	}
 
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return new ShortPoint2D(x, y);
 	}
 

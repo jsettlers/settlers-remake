@@ -22,5 +22,5 @@ package jsettlers.common.position;
  * 
  */
 public interface ILocatable {
-	ShortPoint2D getPos();
+	ShortPoint2D getPosition();
 }
