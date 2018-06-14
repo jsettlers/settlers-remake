@@ -236,6 +236,32 @@ public class MapObjectDrawer {
 		}
 	}
 
+	public void drawStockBack(int x, int y) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		ImageLink[] images = EBuildingType.STOCK.getImages();
+		draw(imageProvider.getImage(images[0]), x, y, color);
+		draw(imageProvider.getImage(images[1]), x, y, color);
+		draw(imageProvider.getImage(images[5]), x, y, color);
+	}
+
+	public void drawStockFront(int x, int y) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		ImageLink[] images = EBuildingType.STOCK.getImages();
+		for (int i = 2; i < 5; i++) {
+			draw(imageProvider.getImage(images[i]), x, y, color);
+		}
+	}
+
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
 		byte fogOfWarVisibleStatus = context.getVisibleStatus(x, y);
 		EDirection direction = ship.getDirection();
@@ -524,7 +550,9 @@ public class MapObjectDrawer {
 				break;
 
 			case BUILDING:
-				drawBuilding(x, y, (IBuilding) object, color);
+				if (((IBuilding)object).getBuildingType() != EBuildingType.STOCK) {
+					drawBuilding(x, y, (IBuilding) object, color);
+				}
 				break;
 
 			case PLACEMENT_BUILDING:
