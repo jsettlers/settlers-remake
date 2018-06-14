@@ -337,10 +337,15 @@ public class AdvancedDatFileReader implements DatFileReader {
 				}
 			}
 			if (shadowDifference == 33) { // change shadows in file 1:
+				shadowStarts[106] = -1;
+				for (i = 105; i >= 33; i--) {
+					shadowStarts[i] = shadowStarts[i - 2]; // material...
+				}
+				shadowStarts[32] = -1;
+				for (i = 31; i >= 27; i--) {
+					shadowStarts[i] = shadowStarts[i - 1]; // decorations
+				}
 				shadowStarts[26] = -1; // wave gets no shadow
-				shadowStarts[31] = shadowStarts[30]; // cuttable stone
-				shadowStarts[91] = -1; // work area marker pole gets no shadow
-				shadowStarts[92] = shadowStarts[90]; // building site pole
 			} else if (shadowDifference == 26) { // change shadows in file 13:
 				for (i = 0; i < 27; i++) {
 					shadowStarts[i] = shadowStarts[i + 3];
