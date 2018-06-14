@@ -42,6 +42,8 @@ import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.INetworkConnector;
 
+import static java8.util.J8Arrays.stream;
+
 /**
  *
  * @author Andreas Eberle
@@ -49,8 +51,7 @@ import jsettlers.network.client.interfaces.INetworkConnector;
  */
 public class ReplayUtils {
 
-	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, int targetGameTimeMinutes, String newReplayFile)
-		throws MapLoadException, IOException {
+	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, int targetGameTimeMinutes, String newReplayFile) throws MapLoadException, IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
@@ -111,12 +112,7 @@ public class ReplayUtils {
 	}
 
 	private static int[] getGameTimeMsFromMinutes(final int... targetGameTimesMinutes) {
-		final int[] targetGameTimesMs = new int[targetGameTimesMinutes.length];
-		for (int i = 0; i < targetGameTimesMinutes.length; i++) {
-			targetGameTimesMs[i] = targetGameTimesMinutes[i] * 60 * 1000;
-		}
-		Arrays.sort(targetGameTimesMs);
-		return targetGameTimesMs;
+		return stream(targetGameTimesMinutes).map(minute -> minute * 60 * 1000).sorted().toArray();
 	}
 
 	public static MapLoader getNewestSavegame() {

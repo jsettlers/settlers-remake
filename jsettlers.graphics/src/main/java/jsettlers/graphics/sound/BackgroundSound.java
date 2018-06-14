@@ -74,10 +74,10 @@ public class BackgroundSound implements Runnable {
 					continue;
 				}
 				sound.setMap(map);
-				int line = (int) (Math.random() * screen.getLines());
+				int line = (int) (Math.random() * screen.getHeight());
 
 				int x0 = screen.getLineStartX(line);
-				int x = x0 + (int) (Math.random() * screen.getLineLength());
+				int x = x0 + (int) (Math.random() * screen.getWidth());
 				int y = screen.getLineY(line);
 
 				if (hasTree(x, y) && Math.random() < BIRDS_FREQUENCY) {
@@ -92,7 +92,7 @@ public class BackgroundSound implements Runnable {
 					sound.playSound(INDEX_WATER, WATER_VOLUME, x, y);
 				} else if (hasMountain(x, y)) {
 					sound.playSound(INDEX_MOUNTAIN, MOUNTAIN_VOLUME, x, y);
-				} else for (int x1 = 0; x1 < screen.getLineLength(); x1++) {
+				} else for (int x1 = 0; x1 < screen.getWidth(); x1++) {
 					if (hasRiver(x0 + x1, y)) {
 						sound.playSound(INDEX_RIVER, RIVER_VOLUME, x0 + x1, y);
 					}

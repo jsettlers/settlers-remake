@@ -65,8 +65,8 @@ All the options above can also be specified as command line options. For this, y
 3. Download the newest stable JSettlers-Android_v*.apk onto your Android device.
 4. Install JSettlers by running the downloaded file.
 
-## Developer's Guide
-The [Developer's Guide](https://github.com/jsettlers/settlers-remake/wiki/Developer's%20Guide) can be found in our wiki.
+## Build instructions and developer's guide
+The [build instructions](https://github.com/jsettlers/settlers-remake/wiki/Compiling-using-gradle) and the [developer's guide](https://github.com/jsettlers/settlers-remake/wiki/Developer's%20Guide) can be found in our wiki.
 
 ## Getting in Touch
 Besides the possibility to report bugs on Github you can also join our [JSettlers Discord](https://discord.gg/2hVV4u6). Here you can discuss on development questions and find other players to meet with. 

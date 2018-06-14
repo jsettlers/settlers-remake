@@ -478,7 +478,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
 
 		boolean linePartiallyVisible = true;
-		for (int line = 0; line < area.getLines() + 50 && linePartiallyVisible; line++) {
+		for (int line = 0; line < area.getHeight() + 50 && linePartiallyVisible; line++) {
 			int y = area.getLineY(line);
 			if (y < 0) {
 				continue;
