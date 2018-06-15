@@ -17,9 +17,16 @@ package jsettlers.graphics.map.draw;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 
 public class ImagePreloadTask implements Runnable {
+
+	private final SettlerImageMap settlerImageMap;
+
+	public ImagePreloadTask(SettlerImageMap settlerImageMap) {
+		this.settlerImageMap = settlerImageMap;
+	}
+
 	@Override
 	public void run() {
-		SettlerImageMap.getInstance();
+		settlerImageMap.loadFromMoveablesTextFile();
 
 		Background.preloadTexture();
 
