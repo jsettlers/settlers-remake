@@ -24,7 +24,10 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageFlavor;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageMapItem;
 import jsettlers.graphics.ui.UIPanel;
 
 public class SelectionRow extends UIPanel {
@@ -48,10 +51,10 @@ public class SelectionRow extends UIPanel {
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		float width = getPosition().getWidth();
-		Image image =
-				SettlerImageMap.getInstance().getImageForSettler(type,
-						EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL,
-						EDirection.SOUTH_EAST, 0);
+		Image image = SettlerImageMap.getInstance().getImageForSettler(
+				new SettlerImageFlavor(type, EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, EDirection.SOUTH_EAST),
+				0.0f
+		);
 
 		Color color = getColor();
 		float bottomy = getPosition()

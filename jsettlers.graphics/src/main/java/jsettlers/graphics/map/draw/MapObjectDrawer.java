@@ -49,6 +49,7 @@ import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageFlavor;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 import jsettlers.graphics.sound.SoundManager;
@@ -332,8 +333,8 @@ public class MapObjectDrawer {
 				if (yShift >= 0) {
 					float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 					IMovable passenger = passengerList.get(j);
-					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
-						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
+					Image image = this.imageMap.getImageForSettler(
+                            new SettlerImageFlavor(passenger.getMovableType(), EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i)), 0
 					);
 					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
@@ -365,8 +366,8 @@ public class MapObjectDrawer {
 				if (yShift < 0) {
 					float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 					IMovable passenger = passengerList.get(j);
-					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
-						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
+					Image image = this.imageMap.getImageForSettler(
+                            new SettlerImageFlavor(passenger.getMovableType(), EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i)), 0
 					);
 					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}

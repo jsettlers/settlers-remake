@@ -14,19 +14,19 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw.settlerimages;
 
+import java.util.Objects;
+
 /**
  * This is a map item of settler images.
  * 
  * @author michael
  *
  */
-public class SettlerImageMapItem {
+public final class SettlerImageMapItem {
+
 	private final int file;
-
 	private final int sequenceIndex;
-
 	private final int start;
-
 	private final int duration;
 
 	public SettlerImageMapItem(int file, int sequenceIndex, int start,
@@ -52,4 +52,31 @@ public class SettlerImageMapItem {
 	public int getDuration() {
 		return this.duration;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SettlerImageMapItem that = (SettlerImageMapItem) o;
+		return file == that.file &&
+				sequenceIndex == that.sequenceIndex &&
+				start == that.start &&
+				duration == that.duration;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(file, sequenceIndex, start, duration);
+	}
+
+    public int imageIndex(float progress) {
+        int duration = getDuration();
+        int imageIndex;
+        if (duration >= 0) {
+            imageIndex = getStart() + Math.min((int) (progress * duration), duration - 1);
+        } else {
+            imageIndex = getStart() + Math.max((int) (progress * duration), duration + 1);
+        }
+        return imageIndex;
+    }
 }
