@@ -99,7 +99,7 @@ public class MapAreasTest {
 
 		for (int x = 0; x < TEST_WIDTH; x++) {
 			for (int y = 0; y < TEST_WIDTH; y++) {
-				assertEquals("contains() incosistent with iterator for " + x + "," + y, circle.contains(new ShortPoint2D(x, y)),
+				assertEquals("contains() inconsistent with iterator for " + x + "," + y, circle.contains(new ShortPoint2D(x, y)),
 						foundByIterator[x][y]);
 			}
 		}

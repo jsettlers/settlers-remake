@@ -352,12 +352,9 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private void pushShips() {
-		final byte[] xDeltaArray = EDirection.getXDeltaArray();
-		final byte[] yDeltaArray = EDirection.getYDeltaArray();
-
-		HexGridArea.stream(position.x, position.y, 1,SHIP_PUSH_DISTANCE)
-				   .filterBounds(grid		.getWidth(), grid.getHeight())
-				   .forEach((x,y)->{
+		HexGridArea.stream(position.x, position.y, 1, SHIP_PUSH_DISTANCE)
+				   .filterBounds(grid.getWidth(), grid.getHeight())
+				   .forEach((x, y) -> {
 					   ILogicMovable blockingMovable = grid.getMovableAt(x, y);
 					   if (blockingMovable != null && blockingMovable.isShip()) {
 						   blockingMovable.push(this);

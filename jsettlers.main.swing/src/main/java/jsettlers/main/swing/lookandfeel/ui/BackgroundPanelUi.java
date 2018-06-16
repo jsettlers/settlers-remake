@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.swing.lookandfeel.ui;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.TexturePaint;
@@ -30,7 +29,7 @@ import jsettlers.main.swing.lookandfeel.ui.img.UiImageLoader;
 
 /**
  * Background Panel UI
- * 
+ *
  * @author Andreas Butti
  */
 public class BackgroundPanelUi extends PanelUI {
@@ -38,12 +37,7 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Background texture
 	 */
-	private final BufferedImage backgroundTextture = UiImageLoader.get("test-pattern-bg.jpg");
-
-	/**
-	 * Background color image
-	 */
-	private final BufferedImage backgroundColor = UiImageLoader.get("stone-background-colors.jpg");
+	private final BufferedImage backgroundTexture = UiImageLoader.get("ui_bg/ui_background.png");
 
 	/**
 	 * Border texture for the border line
@@ -53,22 +47,22 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Leaf image at the right corner
 	 */
-	private final BufferedImage leaves1 = UiImageLoader.get("leaves1b.png");
+	private final BufferedImage leavesLeft = UiImageLoader.get("ui_leafs/ui_leafs-left.png");
 
 	/**
 	 * Leaf image at the left side
 	 */
-	private final BufferedImage leaves2 = UiImageLoader.get("leaves2.png");
-
-	/**
-	 * Leaf image at the bottom
-	 */
-	private final BufferedImage leaves3 = UiImageLoader.get("leaves3.png");
+	private final BufferedImage leavesRight = UiImageLoader.get("ui_leafs/ui_leafs-right.png");
 
 	/**
 	 * Current background cache
 	 */
 	private BufferedImage cachedBackground = null;
+
+	/**
+	 * Current foreground cache
+	 */
+	private BufferedImage cachedForeground = null;
 
 	@Override
 	public void installUI(JComponent c) {
@@ -81,8 +75,7 @@ public class BackgroundPanelUi extends PanelUI {
 		super.paint(graphics, component);
 
 		Graphics2D graphics2D = DrawHelper.enableAntialiasing(graphics);
-		if (cachedBackground == null || cachedBackground.getWidth() != component.getWidth()
-				|| cachedBackground.getHeight() != component.getHeight()) {
+		if (cachedBackground == null || cachedBackground.getWidth() != component.getWidth() || cachedBackground.getHeight() != component.getHeight()) {
 			recreateBackgroundImage(component);
 		}
 
@@ -90,8 +83,20 @@ public class BackgroundPanelUi extends PanelUI {
 	}
 
 	/**
+	 * Paint the leaves in the foreground
+	 *
+	 * @param graphics
+	 *            Graphics
+	 * @param component
+	 *            Component
+	 */
+	public void paintForeground(Graphics graphics, JComponent component) {
+		graphics.drawImage(cachedForeground, 0, 0, component);
+	}
+
+	/**
 	 * Recreate the cached background image, if needed
-	 * 
+	 *
 	 * @param component
 	 *            The component
 	 */
@@ -99,18 +104,13 @@ public class BackgroundPanelUi extends PanelUI {
 		final int width = component.getWidth();
 		final int height = component.getHeight();
 
-		cachedBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		cachedBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		cachedForeground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D graphics = cachedBackground.createGraphics();
 
 		// scale the background color image
-		graphics.drawImage(backgroundColor, 0, 0, width, height, component);
-
-		for (int x = 0; x < width; x += backgroundTextture.getWidth()) {
-			for (int y = 0; y < height; y += backgroundTextture.getHeight()) {
-				multiplyImage(cachedBackground, backgroundTextture, x, y);
-			}
-		}
+		graphics.drawImage(backgroundTexture, 0, 0, width, height, component);
 
 		BorderDrawer border = new BorderDrawer(graphics, 3, 0, 0, width, height);
 		BufferedImage scaledTexture = DrawHelper.toBufferedImage(borderTexture.getScaledInstance(width, height, BufferedImage.SCALE_FAST));
@@ -122,56 +122,20 @@ public class BackgroundPanelUi extends PanelUI {
 			border.drawVertical(((SplitedBackgroundPanel) component).getSplitPosition(), true);
 		}
 
-		float factor = 0.2f;
-		graphics.drawImage(leaves1, width - 120, -30, (int) (leaves1.getWidth() * factor), (int) (leaves1.getHeight() * factor), component);
+		graphics.dispose();
 
-		factor = 0.4f;
-		graphics.drawImage(leaves2, -35, 45, (int) (leaves2.getWidth() * factor), (int) (leaves2.getHeight() * factor), component);
+		graphics = cachedForeground.createGraphics();
 
-		factor = 0.3f;
-		graphics.drawImage(leaves3, 60, height - 60, (int) (leaves3.getWidth() * factor), (int) (leaves3.getHeight() * factor), component);
+		float factor = height / 2160f * 0.9f;
+		factor = Math.min(factor, 0.535f);
+		int w = (int) (leavesRight.getWidth() * factor);
+		int h = (int) (leavesRight.getHeight() * factor);
+		graphics.drawImage(leavesRight, width - w, 0, w, h, component);
+
+		w = (int) (leavesLeft.getWidth() * factor);
+		h = (int) (leavesLeft.getHeight() * factor);
+		graphics.drawImage(leavesLeft, 0, 0, w, h, component);
 
 		graphics.dispose();
-	}
-
-	/**
-	 * Multiply two images, may can be done more efficient
-	 * 
-	 * @param targetImage
-	 *            Source and target
-	 * @param texture
-	 *            source
-	 * @param targetX
-	 *            target start X coordinate
-	 * @param targetY
-	 *            target start y coordinate
-	 */
-	private void multiplyImage(BufferedImage targetImage, BufferedImage texture, int targetX, int targetY) {
-		for (int x = 0; x < texture.getWidth(); x++) {
-			for (int y = 0; y < texture.getHeight(); y++) {
-				if (x + targetX >= targetImage.getWidth() || y + targetY >= targetImage.getHeight()) {
-					continue;
-				}
-
-				int rgb1 = targetImage.getRGB(x + targetX, y + targetY);
-				Color c1 = new Color(rgb1);
-				float r1 = c1.getRed() / 255f;
-				float g1 = c1.getGreen() / 255f;
-				float b1 = c1.getBlue() / 255f;
-
-				int rgb2 = texture.getRGB(x, y);
-				Color c2 = new Color(rgb2);
-				float addTexture = 0.15f;
-				float r2 = c2.getRed() / 255f + addTexture;
-				float g2 = c2.getGreen() / 255f + addTexture;
-				float b2 = c2.getBlue() / 255f + addTexture;
-
-				int r = (int) (Math.min(1.0f, r1 * r2) * 255f);
-				int g = (int) (Math.min(1.0f, g1 * g2) * 255f);
-				int b = (int) (Math.min(1.0f, b1 * b2) * 255f);
-
-				targetImage.setRGB(x + targetX, y + targetY, r << 16 | g << 8 | b);
-			}
-		}
 	}
 }

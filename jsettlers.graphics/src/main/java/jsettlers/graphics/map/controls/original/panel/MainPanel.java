@@ -365,9 +365,9 @@ public class MainPanel extends UIPanel {
 
 	public void setMapViewport(MapRectangle screenArea, IGraphicsGrid grid) {
 		this.grid = grid;
-		displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
-				+ screenArea.getLineLength() / 2, screenArea
-				.getLineY(screenArea.getLines() / 2));
+		short x = (short) (screenArea.getMinX() + (screenArea.getWidth() / 2));
+		short y = (short) (screenArea.getMinY() + (screenArea.getHeight() / 2));
+		displayCenter = new ShortPoint2D(x, y);
 		sendMapPositionChange();
 	}
 

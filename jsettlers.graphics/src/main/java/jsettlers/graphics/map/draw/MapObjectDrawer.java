@@ -285,14 +285,14 @@ public class MapObjectDrawer {
 		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
 		// prepare freight drawing
 		List<? extends IMovable> passengerList = ship.getPassengers();
-		byte[] dx = EDirection.getXDeltaArray();
-		byte[] dy = EDirection.getYDeltaArray();
+
 		float baseViewX = mapCoordinateConverter.getViewX(x, y, height);
 		float baseViewY = mapCoordinateConverter.getViewY(x, y, height);
-		float xShiftForward = mapCoordinateConverter.getViewX(x + dx[direction.ordinal], y + dy[direction.ordinal], height) - baseViewX;
-		float yShiftForward = mapCoordinateConverter.getViewY(x + dx[direction.ordinal], y + dy[direction.ordinal], height) - baseViewY;
-		int xRight = x + dx[direction.rotateRight(1).ordinal] + dx[direction.rotateRight(2).ordinal];
-		int yRight = y + dy[direction.rotateRight(1).ordinal] + dy[direction.rotateRight(2).ordinal];
+		float xShiftForward = mapCoordinateConverter.getViewX(x + direction.gridDeltaX, y + direction.gridDeltaY, height) - baseViewX;
+		float yShiftForward = mapCoordinateConverter.getViewY(x + direction.gridDeltaX, y + direction.gridDeltaY, height) - baseViewY;
+		int xRight = x + direction.rotateRight(1).gridDeltaX + direction.rotateRight(2).gridDeltaX;
+		int yRight = y + direction.rotateRight(1).gridDeltaY + direction.rotateRight(2).gridDeltaY;
+
 		float xShiftRight = (mapCoordinateConverter.getViewX(xRight, yRight, height) - baseViewX) / 2;
 		float yShiftRight = (mapCoordinateConverter.getViewY(xRight, yRight, height) - baseViewY) / 2;
 		ArrayList<FloatIntObject> freightY = new ArrayList<>();

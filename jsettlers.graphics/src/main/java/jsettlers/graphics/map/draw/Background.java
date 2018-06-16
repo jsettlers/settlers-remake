@@ -1187,7 +1187,7 @@ public class Background implements IGraphicsBackgroundListener {
 		try {
 			GLDrawContext gl = context.getGl();
 			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			mapViewResized = geometryhandle == null || !geometryhandle.isValid() || screenArea.getLineLength() + 1 != bufferWidth || screenArea.getLines() != bufferHeight;
+			mapViewResized = geometryhandle == null || !geometryhandle.isValid() || screenArea.getWidth() + 1 != bufferWidth || screenArea.getHeight() != bufferHeight;
 			if (mapViewResized) {
 				regenerateGeometry(gl, screenArea);
 			}
@@ -1221,8 +1221,8 @@ public class Background implements IGraphicsBackgroundListener {
 		if (geometryhandle != null && geometryhandle.isValid()) {
 			geometryhandle.delete();
 		}
-		bufferWidth = niceRoundUp(screenArea.getLineLength() + 1);
-		bufferHeight = niceRoundUp(screenArea.getLines());
+		bufferWidth = niceRoundUp(screenArea.getWidth() + 1);
+		bufferHeight = niceRoundUp(screenArea.getHeight());
 		int count = bufferHeight * bufferWidth;
 		fogOfWarStatus = new byte[count * 4];
 		geometryInvalid = new BitSet(count);

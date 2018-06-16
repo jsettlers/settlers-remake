@@ -68,7 +68,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 
 	@Override
 	protected short getMaxSearchDistance(boolean isInTower) {
-		return isInTower ? Constants.TOWER_SEARCH_RADIUS : Constants.SOLDIER_SEARCH_RADIUS;
+		return isInTower ? Constants.TOWER_ATTACKABLE_SEARCH_RADIUS : Constants.SOLDIER_SEARCH_RADIUS;
 	}
 
 	@Override
