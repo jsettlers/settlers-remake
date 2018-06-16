@@ -20,8 +20,8 @@ dependencies {
     implementation project(':go.graphics')
     implementation 'com.google.code.gson:gson:2.8.2'
 
-    testCompile 'org.mockito:mockito-core:2.18.3'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testImplemenation 'org.mockito:mockito-core:2.18.3'
+    testImplementation 'org.hamcrest:hamcrest-library:1.3'
 
 
 }
