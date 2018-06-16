@@ -60,10 +60,11 @@ public class NotificationBuilder {
 		Intent gameActivityIntent = GameActivity_.intent(context).action(Actions.ACTION_RESUME_GAME).get();
 		PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(context, 0, gameActivityIntent, 0);
 
-		builder = new NotificationCompat.Builder(context)
+		builder = new NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
 				.setSmallIcon(R.drawable.icon)
 				.setContentTitle(title)
-				.setContentIntent(gameActivityPendingIntent);
+				.setContentIntent(gameActivityPendingIntent)
+				.setPriority(NotificationCompat.PRIORITY_DEFAULT);
 	}
 
 	public NotificationBuilder addQuitButton() {
