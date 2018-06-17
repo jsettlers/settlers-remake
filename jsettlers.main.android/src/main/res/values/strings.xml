@@ -156,4 +156,5 @@
     <string name="good_distribution_title">Distribution</string>
     <string name="confirm_destory_ships">Destroy ships?</string>
     <string name="notification_channel_id">gameplay</string>
+    <string name="game_menu">Menu</string>
 </resources>

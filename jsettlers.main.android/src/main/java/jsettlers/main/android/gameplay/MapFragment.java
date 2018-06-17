@@ -56,6 +56,7 @@ import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.core.ui.dialogs.ConfirmDialog_;
+import jsettlers.main.android.gameplay.gamemenu.GameMenuDialog;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.gamemenu.PausedDialog;
 import jsettlers.main.android.gameplay.controlsmenu.buildings.BuildingsMenuFragment;
@@ -377,50 +378,55 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 	}
 
-	@OptionsItem(R.id.menu_item_pause_game)
-	void pauseGameClicked() {
-		gameMenu.pause();
+	@OptionsItem(R.id.menu_item_show_game_menu)
+	void showGameMenu() {
+		GameMenuDialog.create().show(getChildFragmentManager(), null);
 	}
 
-	@OptionsItem(R.id.menu_item_save)
-	void saveClicked() {
-		gameMenu.save();
-	}
-
-	@OptionsItem(R.id.menu_item_quit)
-	void quitClicked() {
-		ConfirmDialog_.builder()
-				.requestCode(REQUEST_CODE_CONFIRM_QUIT)
-				.titleResId(R.string.game_menu_quit)
-				.confirmButtonTextResId(R.string.game_menu_quit)
-				.build()
-				.show(getChildFragmentManager(), null);
-	}
-
-	@OptionsItem(R.id.menu_item_faster)
-	void fasterClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
-	}
-
-	@OptionsItem(R.id.menu_item_slower)
-	void slowerClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
-	}
-
-	@OptionsItem(R.id.menu_item_fast_speed)
-	void fastSpeedClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_FAST));
-	}
-
-	@OptionsItem(R.id.menu_item_normal_speed)
-	void normalSpeedClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_NORMAL));
-	}
-
-	@OptionsItem(R.id.menu_item_skip_one_minute)
-	void skipOneMinuteClicked() {
-		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
-	}
+//	@OptionsItem(R.id.menu_item_pause_game)
+//	void pauseGameClicked() {
+//		gameMenu.pause();
+//	}
+//
+//	@OptionsItem(R.id.menu_item_save)
+//	void saveClicked() {
+//		gameMenu.save();
+//	}
+//
+//	@OptionsItem(R.id.menu_item_quit)
+//	void quitClicked() {
+//		ConfirmDialog_.builder()
+//				.requestCode(REQUEST_CODE_CONFIRM_QUIT)
+//				.titleResId(R.string.game_menu_quit)
+//				.confirmButtonTextResId(R.string.game_menu_quit)
+//				.build()
+//				.show(getChildFragmentManager(), null);
+//	}
+//
+//	@OptionsItem(R.id.menu_item_faster)
+//	void fasterClicked() {
+//		actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
+//	}
+//
+//	@OptionsItem(R.id.menu_item_slower)
+//	void slowerClicked() {
+//		actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
+//	}
+//
+//	@OptionsItem(R.id.menu_item_fast_speed)
+//	void fastSpeedClicked() {
+//		actionControls.fireAction(new Action(EActionType.SPEED_FAST));
+//	}
+//
+//	@OptionsItem(R.id.menu_item_normal_speed)
+//	void normalSpeedClicked() {
+//		actionControls.fireAction(new Action(EActionType.SPEED_NORMAL));
+//	}
+//
+//	@OptionsItem(R.id.menu_item_skip_one_minute)
+//	void skipOneMinuteClicked() {
+//		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
+//	}
 
 
 	private Observer<Boolean> pauseObserver = paused -> {
