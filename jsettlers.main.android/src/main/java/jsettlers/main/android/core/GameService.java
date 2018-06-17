@@ -125,7 +125,7 @@ public class GameService extends Service {
 	private void createNotificationChannel() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = getString(R.string.app_name);
-			int importance = NotificationManager.IMPORTANCE_DEFAULT;
+			int importance = NotificationManager.IMPORTANCE_LOW;
 			NotificationChannel channel = new NotificationChannel(getString(R.string.notification_channel_id), name, importance);
 			notificationManager.createNotificationChannel(channel);
 		}
