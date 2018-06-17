@@ -84,7 +84,14 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 
 	@Override
 	public void startFailed(EGameError errorType, Exception exception) {
-		JOptionPane.showMessageDialog(settlersFrame, exception.getMessage(), Labels.getErrorName(errorType), JOptionPane.ERROR_MESSAGE);
+		String errorMessage;
+		if (errorType == EGameError.MAPLOADING_ERROR) {
+			errorMessage = Labels.getString("errordlg-map-loading-failed");
+		} else {
+			errorMessage = Labels.getString("errordlg-start-failed") + " " + exception.getMessage();
+		}
+
+		JOptionPane.showMessageDialog(settlersFrame, errorMessage, Labels.getString("errordlg-header"), JOptionPane.ERROR_MESSAGE);
 		settlersFrame.showMainMenu();
 	}
 

@@ -97,7 +97,7 @@ public class JSettlersGame {
 				+ Arrays.toString(playerSettings) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
 
 		if (mapCreator == null) {
-			throw new NullPointerException("mapCreator");
+			throw new IllegalArgumentException("No mapCreator provided (mapCreator==null).");
 		}
 
 		this.mapCreator = mapCreator;

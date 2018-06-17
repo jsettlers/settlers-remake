@@ -125,13 +125,13 @@ public final class MapCoordinateConverter {
 	 *            The x coordinate in map space.
 	 * @param y
 	 *            The y coordinate in map space.
-	 * @param height
-	 *            The height of the tile.
+	 * @param width
+	 *            The width of the tile.
 	 * @return The view x coordinate
 	 */
-	public float getViewX(float x, float y, float height) {
+	public float getViewX(float x, float y, float width) {
 		return x * this.heightmatrix[M_00] + y * this.heightmatrix[M_01]
-				+ height * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
+				+ width * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
 	}
 
 	/**

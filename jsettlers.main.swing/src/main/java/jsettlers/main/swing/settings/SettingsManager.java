@@ -244,8 +244,8 @@ public class SettingsManager implements ISoundSettingsProvider {
 		return getAsOptional(SETTING_REPLAY_FILE);
 	}
 
-	public Optional<Integer> getTargetTime() {
-		return getAsOptional(SETTING_TARGET_TIME).map(Integer::valueOf).map(targetTime -> targetTime * 60 * 1000);
+	public Optional<Integer> getTargetTimeMinutes() {
+		return getAsOptional(SETTING_TARGET_TIME).map(Integer::valueOf);
 	}
 
 	public String getAdditionalMapsDirectory() {

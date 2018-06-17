@@ -16,6 +16,7 @@
 package jsettlers.main.android.core;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.arch.lifecycle.Observer;
@@ -23,10 +24,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.IBinder;
 
 import org.androidannotations.annotations.EService;
 
+import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.controls.NotificationBuilder;
 import jsettlers.main.android.core.controls.NotificationBuilder_;
@@ -62,6 +65,8 @@ public class GameService extends Service {
 		intentFilter.addAction(ACTION_QUIT);
 		intentFilter.addAction(ACTION_QUIT_CONFIRM);
 		registerReceiver(broadcastReceiver, intentFilter);
+
+		createNotificationChannel();
 
 		startForeground(NOTIFICATION_ID, createNotification());
 
@@ -115,6 +120,15 @@ public class GameService extends Service {
 		}
 
 		return notificationBuilder.build();
+	}
+
+	private void createNotificationChannel() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = getString(R.string.app_name);
+			int importance = NotificationManager.IMPORTANCE_DEFAULT;
+			NotificationChannel channel = new NotificationChannel(getString(R.string.notification_channel_id), name, importance);
+			notificationManager.createNotificationChannel(channel);
+		}
 	}
 
 	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
