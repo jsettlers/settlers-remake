@@ -102,8 +102,8 @@
 	<requestStack dx="0" dy="2" material="NO_MATERIAL" />
 	<requestStack dx="2" dy="2" material="NO_MATERIAL" />
 
-	<bricklayer dx="2" dy="-1" direction="NORTH_EAST" />
-	<bricklayer dx="-2" dy="3" direction="NORTH_EAST" />
+	<bricklayer dx="-1" dy="-5" direction="SOUTH_WEST" />
+	<bricklayer dx="1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="5" dy="3" direction="NORTH_WEST" />
 	<bricklayer dx="-3" dy="-2" direction="NORTH_WEST" />
 
