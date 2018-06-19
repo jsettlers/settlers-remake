@@ -175,6 +175,7 @@ public class MapObjectDrawer {
 	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
 
 	private static final float FLAG_ROOF_Z = 0.89f;
+	private static final float SMOKE_Z = 0.9f;
 
 	private static final int   SHIP_IMAGE_FILE          = 36;
 	private static final int   FERRY_BASE_SEQUENCE      = 4;
@@ -870,7 +871,10 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
 			image = imageProvider.getImage(link);
+			float z = context.getDrawBuffer().getZ();
+			context.getDrawBuffer().setZ(SMOKE_Z);
 			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			context.getDrawBuffer().setZ(z);
 		}
 
 		if (movable.getAction() == EMovableAction.WALKING) {
