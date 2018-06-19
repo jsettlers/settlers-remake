@@ -159,7 +159,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	private final MapInterfaceConnector connector;
 
-	private final FramerateComputer framerate = new FramerateComputer();
+	private final FramerateComputer framerate;
 
 	private final Messenger messenger;
 	private final SoundManager soundmanager;
@@ -208,7 +208,15 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param soundPlayer
 	 */
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
-		this(game, soundPlayer, textDrawPosition, null);
+		this(game, soundPlayer, 60, textDrawPosition,null);
+	}
+
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition) {
+		this(game, soundPlayer, fpsLimit, textDrawPosition,null);
+	}
+
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
+		this(game, soundPlayer, 60, textDrawPosition,controls);
 	}
 
 	/**
@@ -221,7 +229,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 *            The player
 	 * @param controls
 	 */
-	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
+		this.framerate = new FramerateComputer(fpsLimit);
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;

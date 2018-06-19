@@ -34,11 +34,11 @@ import java.util.Map.Entry;
 import javax.swing.JFrame;
 
 /**
- * A jogl test class.
+ * A lwjgl test class.
  * 
  * @author michael
  */
-public class JoglTest {
+public class LwjglTest {
 
 	private Area area;
 
@@ -143,7 +143,7 @@ public class JoglTest {
 	/**
 	 * creates a test window.
 	 */
-	protected JoglTest() {
+	protected LwjglTest() {
 		JFrame window = new JFrame("Test");
 		area = generateArea();
 
@@ -162,6 +162,6 @@ public class JoglTest {
 	 *            The arguments
 	 */
 	public static void main(String[] args) {
-		new JoglTest();
+		new LwjglTest();
 	}
 }
