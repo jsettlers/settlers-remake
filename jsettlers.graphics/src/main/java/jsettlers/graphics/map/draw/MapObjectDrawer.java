@@ -236,29 +236,35 @@ public class MapObjectDrawer {
 		}
 	}
 
-	public void drawStockBack(int x, int y) {
+	public void drawStockBack(int x, int y, IBuilding stock) {
 		forceSetup();
 		byte fogStatus = context.getVisibleStatus(x, y);
 		if (fogStatus == 0) {
 			return;
 		}
 		float color = getColor(fogStatus);
-		ImageLink[] images = EBuildingType.STOCK.getImages();
-		draw(imageProvider.getImage(images[0]), x, y, color);
-		draw(imageProvider.getImage(images[1]), x, y, color);
-		draw(imageProvider.getImage(images[5]), x, y, color);
+		float state = stock.getStateProgress();
+		if (state >= 0.99) {
+			ImageLink[] images = EBuildingType.STOCK.getImages();
+			draw(imageProvider.getImage(images[0]), x, y, color);
+			draw(imageProvider.getImage(images[1]), x, y, color);
+			draw(imageProvider.getImage(images[5]), x, y, color);
+		}
 	}
 
-	public void drawStockFront(int x, int y) {
+	public void drawStockFront(int x, int y, IBuilding stock) {
 		forceSetup();
 		byte fogStatus = context.getVisibleStatus(x, y);
 		if (fogStatus == 0) {
 			return;
 		}
 		float color = getColor(fogStatus);
-		ImageLink[] images = EBuildingType.STOCK.getImages();
-		for (int i = 2; i < 5; i++) {
-			draw(imageProvider.getImage(images[i]), x, y, color);
+		float state = stock.getStateProgress();
+		if (state >= 0.99) {
+			ImageLink[] images = EBuildingType.STOCK.getImages();
+			for (int i = 2; i < 5; i++) {
+				draw(imageProvider.getImage(images[i]), x, y, color);
+			}
 		}
 	}
 
@@ -550,9 +556,11 @@ public class MapObjectDrawer {
 				break;
 
 			case BUILDING:
-				if (((IBuilding)object).getBuildingType() != EBuildingType.STOCK) {
-					drawBuilding(x, y, (IBuilding) object, color);
+				IBuilding building = (IBuilding) object;
+				if (building.getBuildingType() == EBuildingType.STOCK && building.getStateProgress() >= 0.99) {
+					return;
 				}
+				drawBuilding(x, y, building, color);
 				break;
 
 			case PLACEMENT_BUILDING:
