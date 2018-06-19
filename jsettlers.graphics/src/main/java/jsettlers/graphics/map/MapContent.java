@@ -526,13 +526,17 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
-		object = map.getMapObjectsAt(x, y - 3);
-		if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding)object).getBuildingType() == EBuildingType.STOCK) {
-			this.objectDrawer.drawStockFront(x, y - 3, (IBuilding)object);
+		if (y > 3) {
+			object = map.getMapObjectsAt(x, y - 3);
+			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
+			}
 		}
-		object = map.getMapObjectsAt(x, y + 3);
-		if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding)object).getBuildingType() == EBuildingType.STOCK) {
-			this.objectDrawer.drawStockBack(x, y + 3, (IBuilding)object);
+		if (y < map.getHeight() - 3) {
+			object = map.getMapObjectsAt(x, y + 3);
+			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+			}
 		}
 
 		IMovable movable = map.getMovableAt(x, y);
