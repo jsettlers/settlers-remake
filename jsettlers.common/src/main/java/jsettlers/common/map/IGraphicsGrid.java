@@ -127,17 +127,6 @@ public interface IGraphicsGrid {
 	void setBackgroundListener(IGraphicsBackgroundListener backgroundListener);
 
 	/**
-	 * Gets the next x coordinate that might contain a drawable Object.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param maxX
-	 *            the maximum x that needs to be searched.
-	 * @return a value bigger than x, might be outside the map.
-	 */
-	int nextDrawableX(int x, int y, int maxX);
-
-	/**
 	 * Gets the current data and settings of the partition at the given position.
 	 * 
 	 * @param x
