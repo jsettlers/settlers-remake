@@ -89,15 +89,13 @@ public interface GLDrawContext {
 	 */
 	void drawQuadWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
 
-	void drawQuadWithTexture(TextureHandle textureid, GeometryHandle geometryindex) throws IllegalBufferException;
+	void drawQuadWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int quadOffset) throws IllegalBufferException;
 
 	void drawTrianglesWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
 
 	void drawTrianglesWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
 
-	void drawTrianglesWithTextureColored(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
-
-	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
 
 	int makeWidthValid(int width);
 
@@ -123,19 +121,9 @@ public interface GLDrawContext {
 
 	GeometryHandle storeGeometry(float[] geometry);
 
-	GLBuffer startWriteGeometry(GeometryHandle geometryindex) throws IllegalBufferException;
-
-	void endWriteGeometry(GeometryHandle geometryindex);
+	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
 	GeometryHandle generateGeometry(int bytes);
-
-	interface GLBuffer {
-		void putFloat(float f);
-
-		void putByte(byte b);
-
-		void position(int position);
-	}
 
 	void drawTrianglesWithTextureColored(TextureHandle currentTexture,
 			ByteBuffer byteBuffer, int currentTriangles) throws IllegalBufferException;

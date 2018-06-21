@@ -51,6 +51,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.IVisibilityStateProvider;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
@@ -748,7 +749,7 @@ public final class MainGrid implements Serializable {
 
 	}
 
-	final class GraphicsGrid implements IGraphicsGrid {
+	final class GraphicsGrid implements IGraphicsGrid, IVisibilityStateProvider.IVSPProvider {
 		private transient BitSet bordersGrid = new BitSet(width * height);
 
 		@Override
@@ -836,6 +837,10 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final byte getVisibleStatus(int x, int y) {
 			return fogOfWar.getVisibleStatus(x, y);
+		}
+
+		public IVisibilityStateProvider getVSP() {
+			return fogOfWar;
 		}
 
 		@Override

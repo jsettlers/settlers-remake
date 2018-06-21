@@ -15,6 +15,7 @@
 package go.graphics.swing.text;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryStack;
 
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
@@ -30,6 +31,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /**
@@ -42,7 +44,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	private static final String FONTNAME = "Arial";
 
-	private final GeometryHandle[] rects = new GeometryHandle[256];
+	private final GeometryHandle geometry;
 	private final TextureHandle font_tex;
 	private final int line_height;
 	private final int tex_height;
@@ -95,41 +97,30 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		graph.setColor(Color.WHITE);
 		graph.setFont(font);
 
+		float[] geodata = new float[256*5*4];
 		for(int l = 0;l != 16;l++) {
 			int line_offset = 0;
 			for(int c = 0;c != 16;c++) {
 				graph.drawChars(new char[]{(char)(l*16+c)}, 0, 1, line_offset, l*line_height);
 
-				GeometryHandle handle = drawContext.generateGeometry(5*4*Float.BYTES);
-				try {
-					GLDrawContext.GLBuffer bfr = drawContext.startWriteGeometry(handle);
+				float dx = line_offset;
+				float dy = tex_height-(l*line_height+fm.getDescent());
 
-					float dx = line_offset;
-					float dy = tex_height-(l*line_height+fm.getDescent());
+				float dw = char_widths[l*16+c];
+				float dh = line_height;
 
-					float dw = char_widths[l*16+c];
-					float dh = line_height;
+				float[] data = new float[] {
+						0, 	0,  0, dx/tex_width		, dy/tex_height,
+						0, 	dh, 0, dx/tex_width		, (dy+dh)/tex_height,
+						dw, dh, 0, (dx+dw)/tex_width, (dy+dh)/tex_height,
+						dw, 0,  0, (dx+dw)/tex_width, dy/tex_height
+				};
+				System.arraycopy(data, 0, geodata, (l*16+c)*5*4, 5*4);
 
-					float[] data = new float[] {
-							0, 	0,  0, dx/tex_width		, dy/tex_height,
-							0, 	dh, 0, dx/tex_width		, (dy+dh)/tex_height,
-							dw, dh, 0, (dx+dw)/tex_width, (dy+dh)/tex_height,
-							dw, 0,  0, (dx+dw)/tex_width, dy/tex_height
-					};
-
-					for(int i = 0;i != 20;i++) {
-						bfr.putFloat(data[i]);
-					}
-				} catch (IllegalBufferException e) {
-					e.printStackTrace();
-				}
-
-				drawContext.endWriteGeometry(handle);
-
-				rects[l*16+c] = handle;
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
+		geometry = drawContext.storeGeometry(geodata);
 		graph.dispose();
 
 		short[] short_tex_data = new short[tex_width*tex_height];
@@ -173,7 +164,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		drawContext.glPushMatrix();
 		drawContext.glTranslatef(x, y, 0);
 		try {
-			drawContext.drawQuadWithTexture(font_tex, rects[c]);
+			drawContext.drawQuadWithTexture(font_tex, geometry, c);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

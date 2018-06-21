@@ -63,10 +63,8 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	}
 
 	public void draw() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glLoadIdentity();
-
-		context.startFrame();
 	}
 
 	public void requestRedraw() {

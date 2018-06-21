@@ -29,5 +29,6 @@ public interface IGraphicsBackgroundListener {
 	 * @param y
 	 *            y coordinate
 	 */
-	void backgroundChangedAt(int x, int y);
+	void backgroundHeightChangedAt(int x, int y);
+	void backgroundTypeChangedAt(int x, int y);
 }

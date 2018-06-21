@@ -28,13 +28,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.system.MemoryStack;
 
 /**
  * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
@@ -48,9 +48,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	private LWJGLTextDrawer[] textDrawers = new LWJGLTextDrawer[EFontSize
 			.values().length];
 
-	private static final int FLOATS_PER_COLORED_TRI_VERTEX = 9;
 	private final GLCapabilities glcaps;
-	private final boolean canUseVBOs;
 
 	public LWJGLDrawContext(GLCapabilities glcaps) {
 		this.glcaps = glcaps;
@@ -64,12 +62,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-		canUseVBOs = glcaps.GL_ARB_vertex_buffer_object;
-	}
-
-	public void startFrame() {
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
 	@Override
@@ -120,7 +112,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	private ByteBuffer reuseableBuffer = null;
-	private ArrayList<ByteBuffer> geometries = new ArrayList<>();
 
 	/**
 	 * The global context valid flag. As soon as this is set to false, the context is not valid any more.
@@ -141,14 +132,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 		buffer.put(points);
 		buffer.position(0);
 		return reuseableBuffer;
-	}
-
-	private static ByteBuffer genertateBuffer(float[] points) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(points.length * 4);
-		bb.order(ByteOrder.nativeOrder());
-		bb.asFloatBuffer().put(points);
-		bb.position(0);
-		return bb;
 	}
 
 	@Override
@@ -276,13 +259,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle texture, float[] geometry) throws IllegalBufferException {
-		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
-		drawTrianglesWithTextureColored(texture, buffer, geometry.length / 3
-				/ FLOATS_PER_COLORED_TRI_VERTEX);
-	}
-
-	@Override
 	public void drawTrianglesWithTextureColored(TextureHandle texture,
 			ByteBuffer buffer, int triangles) throws IllegalBufferException {
 		bindTexture(texture);
@@ -328,183 +304,108 @@ public class LWJGLDrawContext implements GLDrawContext {
 		return textDrawers[size.ordinal()];
 	}
 
-	@Override
-	public void drawQuadWithTexture(TextureHandle texture, GeometryHandle geometry) throws IllegalBufferException {
+	public void drawQuadWithTexture(TextureHandle texture, GeometryHandle geometry, int quadOffset) throws IllegalBufferException {
 		if (geometry == null) {
 			throw new NullPointerException("Cannot draw a null geometry");
 		}
-		if (canUseVBOs) {
-			bindTexture(texture);
+		bindTexture(texture);
 
-			bindArrayBuffer(geometry);
-			GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
-			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
+		bindArrayBuffer(geometry);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-			GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
+		GL11.glDrawArrays(GL11.GL_QUADS, quadOffset*4, 4);
 
-			bindArrayBuffer(null);
-		} else {
-			drawQuadWithTexture(texture, getGeometryBuffer(geometry), 4);
-		}
+		bindArrayBuffer(null);
 	}
 
 	@Override
 	public void drawTrianglesWithTexture(TextureHandle texture, GeometryHandle geometry,
 			int triangleCount) throws IllegalBufferException {
-		if (canUseVBOs) {
-			bindTexture(texture);
+		bindTexture(texture);
 
-			bindArrayBuffer(geometry);
-			GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
-			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
+		bindArrayBuffer(geometry);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
 
-			bindArrayBuffer(null);
-		} else {
-			ByteBuffer buffer = getGeometryBuffer(geometry);
-			buffer.rewind();
-			drawTrianglesWithTexture(texture, buffer,
-					buffer.remaining() / 5 / 4);
-		}
+		bindArrayBuffer(null);
 	}
 
-	private ByteBuffer getGeometryBuffer(GeometryHandle geometry) {
-		return geometries.get(geometry.getInternalId());
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException {
+		bindTexture(textureid);
+
+		bindArrayBuffer(vertexHandle);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+
+		bindArrayBuffer(paintHandle);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3*4, 0);
+		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3*4, 8);
+
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		for(int i = 0;i != lines;i++) {
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset+stride*i)*3, width*3);
+		}
+		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+		bindArrayBuffer(null);
+		bindTexture(null);
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle texture,
-			GeometryHandle geometry, int triangleCount) throws IllegalBufferException {
-		if (canUseVBOs) {
-			bindTexture(texture);
-
-			bindArrayBuffer(geometry);
-			GL11.glVertexPointer(3, GL11.GL_FLOAT, 6 * 4, 0);
-			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 6 * 4, 3 * 4);
-			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 6 * 4, 5 * 4);
-
-			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
-			GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-
-			bindArrayBuffer(null);
-		} else {
-			ByteBuffer buffer = getGeometryBuffer(geometry);
-			drawTrianglesWithTextureColored(texture, buffer,
-					buffer.remaining() / 4 / 5);
+	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException {
+		bindArrayBuffer(handle);
+		data.rewind();
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			ByteBuffer bfr = stack.malloc(data.limit());
+			for (int i = 0; i != data.limit(); i++) bfr.put(i, data.get(i));
+			bfr.rewind();
+			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, bfr);
 		}
+		bindArrayBuffer(null);
 	}
 
 	@Override
 	public GeometryHandle storeGeometry(float[] geometry) {
-		if (canUseVBOs) {
-			try {
-				GeometryHandle geometryBuffer =
-						generateGeometry(geometry.length * Float.BYTES);
-				if (geometryBuffer == null) {
-					return null;
-				}
-
-				GLBuffer buffer = startWriteGeometry(geometryBuffer);
-				for (int i = 0; i < geometry.length; i++) {
-					buffer.putFloat(geometry[i]);
-				}
-				endWriteGeometry(geometryBuffer);
-
-				return geometryBuffer;
-			} catch (IllegalBufferException e) {
-				// TODO: Use a normal buffer instead.
+		try {
+			GeometryHandle geometryBuffer =
+					generateGeometry(geometry.length * Float.BYTES);
+			if (geometryBuffer == null) {
 				return null;
 			}
-		} else {
-			geometries.add(genertateBuffer(geometry));
-			return new LWJGLGeometryHandle(this, geometries.size() - 1);
+
+			try(MemoryStack stack = MemoryStack.stackPush()) {
+				ByteBuffer bfr = stack.malloc(4*geometry.length);
+				bfr.asFloatBuffer().put(geometry);
+				updateGeometryAt(geometryBuffer, 0, bfr);
+			}
+
+			return geometryBuffer;
+		} catch (IllegalBufferException e) {
+			// TODO: Use a normal buffer instead.
+			return null;
 		}
 	}
 
 	boolean checkGeometryIndex(int geometryindex) {
-		if (canUseVBOs) {
-			// TODO: can we find out more?
-			return geometryindex > 0;
-		} else {
-			return geometryindex >= 0 && geometryindex < geometries.size();
-		}
+		return geometryindex > 0;
 	}
 
 	void deleteGeometry(int geometryindex) {
-		if (canUseVBOs) {
-			GL15.glDeleteBuffers(geometryindex);
-		} else {
-			// TODO: unsupported!
-			geometries.set(geometryindex, null);
-		}
-	}
-
-	@Override
-	public GLBuffer startWriteGeometry(GeometryHandle geometry) throws IllegalBufferException {
-		if (canUseVBOs) {
-			bindArrayBuffer(geometry);
-			ByteBuffer buffer =
-					GL15.glMapBuffer(GL15.GL_ARRAY_BUFFER, GL15.GL_WRITE_ONLY)
-							.order(ByteOrder.nativeOrder());
-			return new GLByteBufferWrapper(buffer);
-
-		} else {
-			return new GLByteBufferWrapper(getGeometryBuffer(geometry));
-		}
-	}
-
-	private static class GLByteBufferWrapper implements GLBuffer {
-		private final ByteBuffer buffer;
-
-		private GLByteBufferWrapper(ByteBuffer buffer) {
-			this.buffer = buffer;
-		}
-
-		@Override
-		public void putFloat(float f) {
-			buffer.putFloat(f);
-		}
-
-		@Override
-		public void putByte(byte b) {
-			buffer.put(b);
-		}
-
-		@Override
-		public void position(int position) {
-			buffer.position(position);
-		}
-	}
-
-	@Override
-	public void endWriteGeometry(GeometryHandle geometry) {
-		if (canUseVBOs) {
-			GL15.glUnmapBuffer(GL15.GL_ARRAY_BUFFER);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		}
+		GL15.glDeleteBuffers(geometryindex);
 	}
 
 	@Override
 	public GeometryHandle generateGeometry(int bytes) {
-		int vertexBufferId;
-		if (canUseVBOs) {
-			vertexBufferId = allocateVBO();
-			if (vertexBufferId == 0) {
-				return null;
-			}
-
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, BufferUtils.createByteBuffer(bytes),
-					GL15.GL_DYNAMIC_DRAW);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		} else {
-			ByteBuffer bb = ByteBuffer.allocateDirect(bytes);
-			bb.order(ByteOrder.nativeOrder());
-			vertexBufferId = geometries.size();
-			geometries.add(bb);
+		int vertexBufferId = allocateVBO();
+		if (vertexBufferId == 0) {
+			return null;
 		}
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, BufferUtils.createByteBuffer(bytes),
+				GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		return new LWJGLGeometryHandle(this, vertexBufferId);
 	}
 

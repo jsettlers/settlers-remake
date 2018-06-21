@@ -20,7 +20,6 @@ import java.nio.ByteOrder;
 import java.util.BitSet;
 
 import go.graphics.GLDrawContext;
-import go.graphics.GLDrawContext.GLBuffer;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
@@ -28,6 +27,7 @@ import go.graphics.TextureHandle;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
+import jsettlers.common.map.IVisibilityStateProvider;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.map.MapDrawContext;
@@ -56,6 +56,8 @@ public class Background implements IGraphicsBackgroundListener {
 	 * Our base texture is divided into multiple squares that all hold a single texture. Continuous textures occupy 5*5 squares
 	 */
 	private static final int TEXTURE_GRID = 32;
+
+	private static final int BYTES_PER_FIELD = 4*3*3*2; // 4 bytes per float * 3 components(x,y,z or t,v,color) * 3 points per triangle * 2 triangles per field
 
 	/**
 	 * Where are the textures on the map?
@@ -836,38 +838,23 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private final BitSet fowDimmed = new BitSet();
 
-	private static final short FLOAT_SIZE = 4;
-	/**
-	 * How many bytes are needed per vertex
-	 */
-	private static final short VERTEX_SIZE = 6 * FLOAT_SIZE;
-
 	private static final byte DIM_MAX = 20;
 
-	private static final byte[] BLACK = new byte[] {
-			0, 0, 0, (byte) 255
-	};
 	private static final Object preloadMutex = new Object();
 
-	/**
-	 * Offset of color definition in bytes, relative to vertex start
-	 */
-	// private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
-
 	private byte[] fogOfWarStatus = new byte[1];
-	private MapRectangle oldBufferPosition = new MapRectangle(0, 0, 0, 0);
 	private int bufferWidth = 1; // in map points.
 	private int bufferHeight = 1; // in map points.
 
 	private static TextureHandle texture = null;
 
-	private GeometryHandle geometryhandle = null;
+	private GeometryHandle heighthandle = null;
+	private GeometryHandle typehandle = null;
 
-	private int geometrytirs;
-
-	private BitSet geometryInvalid = new BitSet();
-
-	private boolean mapViewResized;
+	private boolean updateheight = false;
+	private boolean updatetype = false;
+	private BitSet mapHeightInvalid = new BitSet();
+	private BitSet mapTypeInvalid = new BitSet();
 
 	private static short[] preloadedTexture = null;
 
@@ -920,11 +907,11 @@ public class Background implements IGraphicsBackgroundListener {
 
 		// nothing to do. We assume images are a rectangle and have the right size.
 		@Override
-		public void startImage(int width, int height) throws IOException {
+		public void startImage(int width, int height) {
 		}
 
 		@Override
-		public void writeLine(short[] data, int length) throws IOException {
+		public void writeLine(short[] data, int length) {
 			if (arrayOffset < maxOffset) {
 				for (int i = 0; i < cellSize; i++) {
 					this.data[arrayOffset + i] = data[i % length];
@@ -1176,6 +1163,8 @@ public class Background implements IGraphicsBackgroundListener {
 		return index;
 	}
 
+	private int draw_stride = 0;
+
 	/**
 	 * Draws a given map content.
 	 * 
@@ -1185,26 +1174,29 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
 		try {
-			GLDrawContext gl = context.getGl();
-			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			mapViewResized = geometryhandle == null || !geometryhandle.isValid() || screenArea.getLineLength() + 1 != bufferWidth || screenArea.getLines() != bufferHeight;
-			if (mapViewResized) {
-				regenerateGeometry(gl, screenArea);
+			if(heighthandle == null) {
+				bufferWidth = context.getMap().getWidth()-1;
+				bufferHeight = context.getMap().getHeight()-1;
+
+				generateFogOfWarBuffer(context);
+				generateGeometry(context);
+				mapHeightInvalid = new BitSet(bufferWidth*bufferHeight);
+				mapTypeInvalid = new BitSet(bufferWidth*bufferHeight);
+				draw_stride = (2*bufferWidth)+1;
 			}
 
-			GLBuffer boundBuffer = gl.startWriteGeometry(geometryhandle);
-			reloadGeometry(boundBuffer, screenArea, context);
-			gl.endWriteGeometry(geometryhandle);
+			GLDrawContext gl = context.getGl();
+			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
+			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
+
+			updateGeometry(context, screenArea);
+
 			gl.glPushMatrix();
-			try {
-				gl.glTranslatef(0, 0, -.1f);
-				gl.glScalef(1, 1, 0);
-				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
-				gl.color(1, 1, 1, 1);
-				gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), geometryhandle, geometrytirs);
-			} finally {
-				gl.glPopMatrix();
-			}
+			gl.glTranslatef(0, 0, -.1f);
+			gl.glScalef(1, 1, 0);
+			gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
+			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), heighthandle, typehandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride);
+			gl.glPopMatrix();
 
 			resetFOWDimStatus();
 		} catch (IllegalBufferException e) {
@@ -1217,125 +1209,135 @@ public class Background implements IGraphicsBackgroundListener {
 		fowDimmed.clear();
 	}
 
-	private void regenerateGeometry(GLDrawContext gl, MapRectangle screenArea) {
-		if (geometryhandle != null && geometryhandle.isValid()) {
-			geometryhandle.delete();
-		}
-		bufferWidth = niceRoundUp(screenArea.getLineLength() + 1);
-		bufferHeight = niceRoundUp(screenArea.getLines());
-		int count = bufferHeight * bufferWidth;
-		fogOfWarStatus = new byte[count * 4];
-		geometryInvalid = new BitSet(count);
-		geometrytirs = count * 2;
+	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
+		int fields = bufferWidth*bufferHeight;
+		heighthandle = context.getGl().generateGeometry(BYTES_PER_FIELD*fields);
+		typehandle = context.getGl().generateGeometry(BYTES_PER_FIELD*fields);
 
-		geometryhandle = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
-	}
+		ByteBuffer bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD*bufferWidth).order(ByteOrder.nativeOrder());
 
-	private static int niceRoundUp(int i) {
-		return i;
-	}
-
-	/**
-	 * Gets the geometry of the background as array.
-	 * 
-	 * @param boundBuffer
-	 *            The buffer of opengl.
-	 * @param context
-	 *            The context to use.
-	 * @return The geometry as float array.
-	 */
-	private void reloadGeometry(GLBuffer boundBuffer, MapRectangle area, MapDrawContext context) {
-		boolean hasInvalidFields = hasInvalidFields();
-
-		int width = context.getMap().getWidth();
-		int height = context.getMap().getHeight();
-		int oldBufferTop = oldBufferPosition.getLineY(0);
-		int oldBufferBottom = oldBufferTop + bufferHeight; // excluding
-
-		for (int line = 0; line < bufferHeight; line++) {
-
-			int y = area.getLineY(line);
-			int minx = area.getLineStartX(line);
-			int maxx = minx + bufferWidth;
-			int oldMinX = 0;
-			int oldMaxX = 0; // excluding
-			if (y >= oldBufferTop && y < oldBufferBottom) {
-				oldMinX = oldBufferPosition.getLineStartX(y - oldBufferTop);
-				oldMaxX = oldMinX + bufferWidth;
+		for(int y = 0;y != bufferHeight;y++) {
+			for(int x = 0; x != bufferWidth;x++) {
+				addHeightTrianglesToGeometry(context, bfr, x, y);
 			}
-			boolean lineIsInMap = y >= 0 && y < height;
+			context.getGl().updateGeometryAt(heighthandle, BYTES_PER_FIELD*bufferWidth*y, bfr);
+			bfr.rewind();
+		}
 
-			for (int x = minx; x < maxx; x++) {
-				int bufferPosition = getBufferPosition(y, x);
-				if (mapViewResized || oldMinX > x || oldMaxX <= x) {
-					redrawPoint(boundBuffer, context, x, y, false, bufferPosition);
-				} else if (lineIsInMap && x >= 0 && x < width) {
-					if (hasInvalidFields && getAndResetInvalid(bufferPosition)) {
-						redrawPoint(boundBuffer, context, x, y, true, bufferPosition);
-					} else if (context.getVisibleStatus(x, y) != fogOfWarStatus[bufferPosition * 4]) {
-						redrawPoint(boundBuffer, context, x, y, true, bufferPosition);
-						invalidatePoint(x - 1, y); // only for next pass
-						invalidatePoint(x - 1, y - 1);
-						invalidatePoint(x - 1, y - 1);
-					}
+		for(int y = 0;y != bufferHeight;y++) {
+			for(int x = 0; x != bufferWidth;x++) {
+				addTrianglesToGeometry(context, bfr, x, y, getBufferPosition(x, y)*4);
+			}
+			context.getGl().updateGeometryAt(typehandle, BYTES_PER_FIELD*bufferWidth*y, bfr);
+			bfr.rewind();
+		}
+	}
+
+	private final ByteBuffer update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD).order(ByteOrder.nativeOrder());
+
+	private void updateMapType(MapDrawContext context, int x, int y, byte fow) throws IllegalBufferException {
+		boolean redraw = false;
+		int bfr_pos = y*bufferWidth+x;
+		int bfr_pos4 = bfr_pos*4;
+
+
+		if(fow != fogOfWarStatus[bfr_pos4]) {
+			invalidateTypePoint(x - 1, y);
+			invalidateTypePoint(x - 1, y - 1);
+			invalidateTypePoint(x - 1, y - 1);
+			redraw = true;
+		} else if (updatetype && mapTypeInvalid.get(bfr_pos)) {
+			mapTypeInvalid.set(bfr_pos, false);
+			redraw = true;
+		}
+
+		if(redraw) {
+			update_bfr.rewind();
+			dimFogOfWarBuffer(context, bfr_pos4, x, y);
+			dimFogOfWarBuffer(context, (bfr_pos4) + 1, x + 1, y);
+			dimFogOfWarBuffer(context, (bfr_pos4) + 2, x, y + 1);
+			dimFogOfWarBuffer(context, (bfr_pos4) + 3, x + 1, y + 1);
+			addTrianglesToGeometry(context, update_bfr, x, y, bfr_pos4);
+			context.getGl().updateGeometryAt(typehandle, bfr_pos * BYTES_PER_FIELD, update_bfr);
+		}
+	}
+
+	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
+		IVisibilityStateProvider vsp = context.getFow();
+		byte[][] visibleStatus = vsp != null ? vsp.getVisibleStatusArray() : null;
+
+		try {
+			int height = screen.getHeight();
+			int width = screen.getWidth();
+			int miny = screen.getMinY();
+			int minx = screen.getMinX();
+			for (int relativeY = 0; relativeY < height; relativeY++) {
+				int lineStartX = minx+(relativeY/2);
+				int y = miny+relativeY;
+				if(y < 0) continue;
+				if(y >= bufferHeight) break;
+
+				for (int relativeX = 0; relativeX < width; relativeX++) {
+					int x = lineStartX + relativeX;
+					if(x < 0 || x >= bufferWidth) continue;
+					byte fow = visibleStatus != null ? visibleStatus[x][y] : context.getVisibleStatus(x, y);
+					updateMapType(context, x, y, fow);
 				}
 			}
-		}
+			updatetype = false;
 
-		oldBufferPosition = area;
-	}
+			if (updateheight) {
+				for (int relativeY = 0; relativeY < height; relativeY++) {
+					int lineStartX = minx+(relativeY/2);
+					int y = miny+relativeY;
+					if(y < 0) continue;
+					if(y >= bufferHeight) break;
 
-	private synchronized boolean getAndResetInvalid(int bufferPosition) {
-		boolean invalid = geometryInvalid.get(bufferPosition);
-		geometryInvalid.clear(bufferPosition);
-		return invalid;
-	}
+					for (int relativeX = 0; relativeX < width; relativeX++) {
+						int x = lineStartX + relativeX;
+						if(x < 0 || x >= bufferWidth) continue;
+						int bfr_pos = y*bufferWidth+x;
 
-	private synchronized boolean hasInvalidFields() {
-		return !geometryInvalid.isEmpty();
-	}
-
-	/**
-	 * Redraws a point on the map to the buffer.
-	 * 
-	 * @param boundBuffer
-	 *            The buffer to use
-	 * @param context
-	 *            The context
-	 * @param x
-	 *            The x coordinate of the point
-	 * @param y
-	 *            The y coordinate of the point
-	 * @param wasVisible
-	 *            true if and only if the point was already in the buffer.
-	 */
-	private void redrawPoint(GLBuffer boundBuffer, MapDrawContext context, int x, int y, boolean wasVisible, int pointOffset) {
-		boundBuffer.position(pointOffset * 2 * 3 * VERTEX_SIZE);
-
-		if (x >= 0 && y >= 0 && x < context.getMap().getWidth() - 1 && y < context.getMap().getHeight() - 1) {
-			if (wasVisible) {
-				dimFogOfWarBuffer(context, (pointOffset * 4), x, y);
-				dimFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
-				dimFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
-				dimFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
-			} else {
-				addFogOfWarBuffer(context, (pointOffset * 4), x, y);
-				addFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
-				addFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
-				addFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
+						if (mapHeightInvalid.get(bfr_pos)) {
+							mapHeightInvalid.set(bfr_pos, false);
+							update_bfr.rewind();
+							addHeightTrianglesToGeometry(context, update_bfr, x, y);
+							context.getGl().updateGeometryAt(heighthandle, bfr_pos*BYTES_PER_FIELD, update_bfr);
+						}
+					}
+				}
+				updateheight = false;
 			}
-			addTrianglesToGeometry(context, boundBuffer, x, y, pointOffset * 4);
-		} else {
-			addPseudoTrianglesToGeometry(context, boundBuffer, x, y);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private synchronized void invalidatePoint(int x, int y) {
-		geometryInvalid.set(getBufferPosition(y, x));
+	private synchronized void invalidateHeightPoint(int x, int y) {
+		if(x > bufferWidth || y > bufferHeight || x < 0 || y < 0) return;
+		updateheight = updatetype = true;
+		mapHeightInvalid.set(getBufferPosition(x, y));
+		mapTypeInvalid.set(getBufferPosition(x, y));
 	}
 
-	private void addFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
-		fogOfWarStatus[offset] = context.getVisibleStatus(x, y);
+	private synchronized void invalidateTypePoint(int x, int y) {
+		if(x > bufferWidth || y > bufferHeight || x < 0 || y < 0) return;
+		updatetype = true;
+		mapTypeInvalid.set(getBufferPosition(x, y));
+	}
+
+	private void generateFogOfWarBuffer(MapDrawContext context) {
+		fogOfWarStatus = new byte[bufferWidth*bufferHeight*4];
+
+		for(int y = 0;y != bufferHeight;y++) {
+			for(int x = 0; x != bufferWidth;x++) {
+				int fieldOffset = getBufferPosition(x, y);
+				fogOfWarStatus[fieldOffset*4] = context.getVisibleStatus(x, y);
+				fogOfWarStatus[(fieldOffset*4)+1] = context.getVisibleStatus(x+1, y);
+				fogOfWarStatus[(fieldOffset*4)+2] = context.getVisibleStatus(x+1, y+1);
+				fogOfWarStatus[(fieldOffset*4)+3] = context.getVisibleStatus(x, y+1);
+			}
+		}
 	}
 
 	/**
@@ -1353,8 +1355,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
 		if (!fowDimmed.get(offset)) {
-			byte newFog = context.getVisibleStatus(x, y);
-			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], context.getVisibleStatus(x, y));
 			fowDimmed.set(offset);
 		}
 	}
@@ -1373,17 +1374,8 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	private final int getBufferPosition(int y, int x) {
-		int linePos = y % bufferHeight;
-		int colPos = x % bufferWidth;
-		while (linePos < 0) {
-			linePos += bufferHeight;
-		}
-		while (colPos < 0) {
-			colPos += bufferWidth;
-		}
-
-		return (linePos * bufferWidth + colPos);
+	private int getBufferPosition(int x, int y) {
+		return (y*bufferHeight+x);
 	}
 
 	/**
@@ -1395,18 +1387,9 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param y
 	 * @param fogBase
 	 */
-	private void addTrianglesToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, int fogBase) {
+	private void addTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
 		addTriangle1ToGeometry(context, buffer, x, y, fogBase);
 		addTriangle2ToGeometry(context, buffer, x, y, fogBase);
-	}
-
-	private static void addPseudoTrianglesToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y) { // manually do everything...
-		addBlackPointToGeometry(context, buffer, x, y);
-		addBlackPointToGeometry(context, buffer, x, y + 1);
-		addBlackPointToGeometry(context, buffer, x + 1, y + 1);
-		addBlackPointToGeometry(context, buffer, x, y);
-		addBlackPointToGeometry(context, buffer, x + 1, y + 1);
-		addBlackPointToGeometry(context, buffer, x + 1, y);
 	}
 
 	/**
@@ -1418,7 +1401,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param y
 	 * @param fogBase
 	 */
-	private void addTriangle1ToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, int fogBase) {
+	private void addTriangle1ToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
 		ELandscapeType topLandscape = context.getLandscape(x, y);
 		ELandscapeType leftLandscape = context.getLandscape(x, y + 1);
 		ELandscapeType rightLandscape = context.getLandscape(x + 1, y + 1);
@@ -1475,30 +1458,7 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	private void addPointToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, float u, float v, int fogOffset) {
-		buffer.putFloat(x);
-		buffer.putFloat(y);
-		buffer.putFloat(context.getHeight(x, y));
-
-		buffer.putFloat(u);
-		buffer.putFloat(v);
-
-		addVertexColor(context, buffer, x, y, fogOffset);
-	}
-
-	private static void addBlackPointToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y) {
-		buffer.putFloat(x);
-		buffer.putFloat(y);
-		buffer.putFloat(context.getHeight(x, y));
-		buffer.putFloat(0);
-		buffer.putFloat(0);
-		buffer.putByte(BLACK[0]);
-		buffer.putByte(BLACK[1]);
-		buffer.putByte(BLACK[2]);
-		buffer.putByte(BLACK[3]);
-	}
-
-	private void addTriangle2ToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, int fogBase) {
+	private void addTriangle2ToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
 		ELandscapeType leftLandscape = context.getLandscape(x, y);
 		ELandscapeType bottomLandscape = context.getLandscape(x + 1, y + 1);
 		ELandscapeType rightLandscape = context.getLandscape(x + 1, y);
@@ -1556,6 +1516,30 @@ public class Background implements IGraphicsBackgroundListener {
 
 	}
 
+
+	private void addPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, float u, float v, int fogOffset) {
+		buffer.putFloat(u);
+		buffer.putFloat(v);
+
+		addVertexColor(context, buffer, x, y, fogOffset);
+	}
+
+
+	private static void addHeightTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
+		addHeightPointToGeometry(context, buffer, x, y);
+		addHeightPointToGeometry(context, buffer, x, y + 1);
+		addHeightPointToGeometry(context, buffer, x + 1, y + 1);
+		addHeightPointToGeometry(context, buffer, x, y);
+		addHeightPointToGeometry(context, buffer, x + 1, y + 1);
+		addHeightPointToGeometry(context, buffer, x + 1, y);
+	}
+
+	private static void addHeightPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
+		buffer.putFloat(x);
+		buffer.putFloat(y);
+		buffer.putFloat(context.getHeight(x, y));
+	}
+
 	private static int realModulo(int number, int modulo) {
 		if (number >= 0) {
 			return number % modulo;
@@ -1564,7 +1548,7 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	private void addVertexColor(MapDrawContext context, GLBuffer buffer, int x, int y, int fogOffset) {
+	private void addVertexColor(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
 		byte color;
 
 		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
@@ -1583,28 +1567,26 @@ public class Background implements IGraphicsBackgroundListener {
 			color = (byte) (int) fColor;
 		}
 
-		buffer.putByte(color);
-		buffer.putByte(color);
-		buffer.putByte(color);
-		buffer.putByte((byte) 255);
+		buffer.put(color);
+		buffer.put(color);
+		buffer.put(color);
+		buffer.put((byte) 255);
 	}
 
 	@Override
-	public void backgroundChangedAt(int x, int y) {
-		if (oldBufferPosition != null) {
-			if (oldBufferPosition.contains(x, y)) {
-				invalidatePoint(x, y);
-			}
-			if (oldBufferPosition.contains(x - 1, y)) {
-				invalidatePoint(x - 1, y);
-			}
-			if (oldBufferPosition.contains(x - 1, y - 1)) {
-				invalidatePoint(x - 1, y - 1);
-			}
-			if (oldBufferPosition.contains(x, y - 1)) {
-				invalidatePoint(x, y - 1);
-			}
-		}
+	public void backgroundHeightChangedAt(int x, int y) {
+		invalidateHeightPoint(x, y);
+		invalidateHeightPoint(x - 1, y);
+		invalidateHeightPoint(x - 1, y - 1);
+		invalidateHeightPoint(x, y - 1);
+	}
+
+	@Override
+	public void backgroundTypeChangedAt(int x, int y) {
+		invalidateTypePoint(x, y);
+		invalidateTypePoint(x - 1, y);
+		invalidateTypePoint(x - 1, y - 1);
+		invalidateTypePoint(x, y - 1);
 	}
 
 	/**
