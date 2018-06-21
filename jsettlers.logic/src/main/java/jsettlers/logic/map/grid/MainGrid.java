@@ -844,11 +844,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public int nextDrawableX(int x, int y, int maxX) {
-			return x + 1;
-		}
-
-		@Override
 		public IPartitionData getPartitionData(int x, int y) {
 			return partitionsGrid.getPartitionDataForManagerAt(x, y);
 		}
