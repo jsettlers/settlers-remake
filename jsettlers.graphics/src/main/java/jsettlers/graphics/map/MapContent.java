@@ -15,6 +15,7 @@
 package jsettlers.graphics.map;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
@@ -536,21 +537,25 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
+	// @formatter:off
+	public static final float[] shape = new float[] {
+			0,  4, .5f,  0,  0,
+			-3,  2, .5f,  0,  0,
+			-3, -2, .5f,  0,  0,
+			0, -4, .5f,  0,  0,
+			0, -4, .5f,  0,  0,
+			3, -2, .5f,  0,  0,
+			3,  2, .5f,  0,  0,
+			0,  4, .5f,  0,  0
+	};
+	// @formatter:on
+
+	private GeometryHandle shapeHandle = null;
+
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		// @formatter:off
-		float[] shape = new float[] {
-									  0,  4, .5f,  0,  0,
-									 -3,  2, .5f,  0,  0,
-									 -3, -2, .5f,  0,  0,
-									  0, -4, .5f,  0,  0,
-									  0, -4, .5f,  0,  0,
-									  3, -2, .5f,  0,  0,
-									  3,  2, .5f,  0,  0,
-									  0,  4, .5f,  0,  0
-									};
-		// @formatter:on
+		if(shapeHandle == null) shapeHandle = gl.storeGeometry(shape);
 
 		context.getScreenArea().stream().filterBounds(map.getWidth(), map.getHeight()).forEach((x, y) -> {
 			try {
@@ -561,7 +566,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 							((argb >> 8) & 0xff) / 255f,
 							((argb >> 0) & 0xff) / 255f,
 							((argb >> 24) & 0xff) / 255f);
-					gl.drawQuadWithTexture(null, shape);
+					gl.drawQuadWithTexture(null, shapeHandle, 0);
 					context.endTileContext();
 				}
 			} catch (IllegalBufferException e) {

@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
@@ -31,6 +32,7 @@ public class ImageIndexImage extends Image {
 	private final short width;
 	private final short height;
 	private final float[] geometry;
+	private GeometryHandle geometryHandle = null;
 	private final ImageIndexTexture texture;
 	private final int offsetX;
 	private final int offsetY;
@@ -96,25 +98,27 @@ public class ImageIndexImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
+		if(geometryHandle == null) geometryHandle = gl.storeGeometry(geometry);
+
 		if (color == null || !isTorso) {
 			gl.color(multiply, multiply, multiply, 1);
 		} else {
 			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply, color.getAlpha());
 		}
 
-		draw(gl, geometry);
+		draw(gl, geometryHandle);
 		if (torso != null) {
 			torso.draw(gl, color, multiply);
 		}
 	}
 
-	private void draw(GLDrawContext gl, float[] geometryBuffer) {
+	private void draw(GLDrawContext gl, GeometryHandle handle) {
 		try {
-			gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), geometryBuffer);
+			gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), handle, 2);
 		} catch (IllegalBufferException e) {
 			try {
 				texture.recreateTexture();
-				gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), geometryBuffer);
+				gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), handle, 2);
 			} catch (IllegalBufferException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -208,7 +212,9 @@ public class ImageIndexImage extends Image {
 		tempBuffer[25] = maxX + IMAGE_DRAW_OFFSET;
 		tempBuffer[26] = minY + IMAGE_DRAW_OFFSET;
 
-		draw(gl, tempBuffer);
+		GeometryHandle temp = gl.storeGeometry(tempBuffer);
+		draw(gl, temp);
+		temp.delete();
 		if (torso != null) {
 			torso.drawImageAtRect(gl, minX, minY, maxX, maxY);
 		}

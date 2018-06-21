@@ -78,20 +78,7 @@ public interface GLDrawContext {
 	 */
 	TextureHandle generateTexture(int width, int height, ShortBuffer data);
 
-	/**
-	 * Draws with a texture.
-	 * 
-	 * @param textureid
-	 *            The id of the texture
-	 * @param geometry
-	 *            A float array of the form: x,y,z,u,v
-	 * @throws IllegalBufferException
-	 */
-	void drawQuadWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
-
 	void drawQuadWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int quadOffset) throws IllegalBufferException;
-
-	void drawTrianglesWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
 
 	void drawTrianglesWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
 

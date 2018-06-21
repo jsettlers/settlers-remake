@@ -228,37 +228,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawQuadWithTexture(TextureHandle texture, float[] geometry) throws IllegalBufferException {
-		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
-
-		drawQuadWithTexture(texture, buffer, geometry.length / 5);
-	}
-
-	private void drawQuadWithTexture(TextureHandle texture, ByteBuffer buffer, int len) throws IllegalBufferException {
-		bindTexture(texture);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, buffer);
-		buffer.position(3 * 4);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, buffer);
-		GL11.glDrawArrays(GL11.GL_QUADS, 0, len);
-	}
-
-	@Override
-	public void drawTrianglesWithTexture(TextureHandle texture, float[] geometry) throws IllegalBufferException {
-		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
-		drawTrianglesWithTexture(texture, buffer, geometry.length / 5 / 3);
-	}
-
-	private void drawTrianglesWithTexture(TextureHandle texture, ByteBuffer buffer,
-			int triangles) throws IllegalBufferException {
-		bindTexture(texture);
-
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, buffer);
-		buffer.position(3 * 4);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, buffer);
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangles * 3);
-	}
-
-	@Override
 	public void drawTrianglesWithTextureColored(TextureHandle texture,
 			ByteBuffer buffer, int triangles) throws IllegalBufferException {
 		bindTexture(texture);

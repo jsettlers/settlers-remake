@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import jsettlers.common.Color;
@@ -29,8 +30,10 @@ import jsettlers.graphics.image.reader.ImageMetadata;
 public class MultiImageImage extends Image {
 	private final MultiImageMap map;
 
-	private final float[] settlerGeometry;
-	private final float[] torsoGeometry;
+	private GeometryHandle settlerGeometry;
+	private GeometryHandle torsoGeometry;
+	private float[] settlerFloats = null;
+	private float[] torsoFloats = null;
 
 	/**
 	 * This is the data that is required to store the position of a {@link MultiImageImage}.
@@ -66,12 +69,10 @@ public class MultiImageImage extends Image {
 		this.map = map;
 
 		settler = new Data();
-		settlerGeometry =
-				createGeometry(map, settlerMeta, settlerx, settlery, settler);
+		settlerFloats = createGeometry(map, settlerMeta, settlerx, settlery, settler);
 		if (torsoMeta != null) {
 			torso = new Data();
-			torsoGeometry =
-					createGeometry(map, torsoMeta, torsox, torsoy, torso);
+			torsoFloats = createGeometry(map, torsoMeta, torsox, torsoy, torso);
 		} else {
 			torso = null;
 			torsoGeometry = null;
@@ -143,17 +144,21 @@ public class MultiImageImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
+		if(settlerGeometry == null) {
+			settlerGeometry = gl.storeGeometry(settlerFloats);
+			torsoGeometry = gl.storeGeometry(torsoFloats);
+		}
 		try {
 			gl.color(multiply, multiply, multiply, 1);
 			TextureHandle texture = map.getTexture(gl);
-			gl.drawQuadWithTexture(texture, settlerGeometry);
+			gl.drawQuadWithTexture(texture, settlerGeometry, 0);
 			if (torsoGeometry != null) {
 				if (color != null) {
 					gl.color(color.getRed() * multiply,
 							color.getGreen() * multiply,
 							color.getBlue() * multiply, color.getAlpha());
 				}
-				gl.drawQuadWithTexture(texture, torsoGeometry);
+				gl.drawQuadWithTexture(texture, torsoGeometry, 0);
 			}
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
@@ -168,7 +173,7 @@ public class MultiImageImage extends Image {
 		try {
 			gl.color(1, 1, 1, 1);
 
-			System.arraycopy(settlerGeometry, 0, TEMP_BUFFER, 0, 4 * 5);
+			System.arraycopy(settlerFloats, 0, TEMP_BUFFER, 0, 4 * 5);
 			TEMP_BUFFER[0] = left + IMAGE_DRAW_OFFSET;
 			TEMP_BUFFER[1] = top + IMAGE_DRAW_OFFSET;
 			TEMP_BUFFER[5] = left + IMAGE_DRAW_OFFSET;
@@ -177,8 +182,10 @@ public class MultiImageImage extends Image {
 			TEMP_BUFFER[11] = bottom + IMAGE_DRAW_OFFSET;
 			TEMP_BUFFER[15] = right + IMAGE_DRAW_OFFSET;
 			TEMP_BUFFER[16] = top + IMAGE_DRAW_OFFSET;
+			GeometryHandle temp_handle = gl.storeGeometry(TEMP_BUFFER);
 
-			gl.drawQuadWithTexture(map.getTexture(gl), TEMP_BUFFER);
+			gl.drawQuadWithTexture(map.getTexture(gl), temp_handle, 0);
+			temp_handle.delete();
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

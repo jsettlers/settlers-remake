@@ -15,6 +15,7 @@
 package jsettlers.graphics.map.minimap;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
@@ -74,14 +75,36 @@ public final class Minimap implements IMinimapData {
 		synchronized (updateMutex) {
 			this.width = width;
 			this.height = height;
+			updateGeometry = true;
 			imageIsValid = false;
 			updateMutex.notifyAll();
 		}
 	}
 
+	private boolean updateGeometry = false;
+	private GeometryHandle geometry = null;
+
+	private ByteBuffer bfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+
+	private void replaceGeometryValue(GLDrawContext context, int pos, float value) throws IllegalBufferException {
+		bfr.rewind();
+		bfr.putFloat(value);
+		context.updateGeometryAt(geometry, pos*4, bfr);
+	}
+
 	public void draw(GLDrawContext context) {
 		boolean imageWasCreatedJustNow = false;
 		try {
+			if(geometry == null) geometry = context.storeGeometry( new float[] {0, 0, 0, 0, 0, width, 0, 0, 1, 0,(stride + 1) * width, height, 0, 1, 1, stride * width, height, 0, 0, 1,});
+			if(updateGeometry) {
+				replaceGeometryValue(context, 5, width);
+				replaceGeometryValue(context, 10, (stride + 1) * width);
+				replaceGeometryValue(context, 11, height);
+				replaceGeometryValue(context, 15, stride * width);
+				replaceGeometryValue(context, 16, height);
+				updateGeometry = false;
+			}
+
 			synchronized (updateMutex) {
 				if (!imageIsValid) {
 					imageWasCreatedJustNow = true;
@@ -117,28 +140,7 @@ public final class Minimap implements IMinimapData {
 			}
 
 			context.color(1, 1, 1, 1);
-			context.drawQuadWithTexture(texture, new float[] {
-					0,
-					0,
-					0,
-					0,
-					0,
-					width,
-					0,
-					0,
-					1,
-					0,
-					(stride + 1) * width,
-					height,
-					0,
-					1,
-					1,
-					stride * width,
-					height,
-					0,
-					0,
-					1,
-			});
+			context.drawQuadWithTexture(texture, geometry, 0);
 
 			drawViewmark(context);
 		} catch (IllegalBufferException e) {

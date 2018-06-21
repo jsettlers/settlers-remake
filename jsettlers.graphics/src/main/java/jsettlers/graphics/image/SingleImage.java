@@ -181,7 +181,11 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			tempBuffer[16] = top;
 			tempBuffer[18] = (float) width / textureWidth;
 
-			gl.drawQuadWithTexture(textureHandle, tempBuffer);
+			GeometryHandle tempHandle = gl.storeGeometry(tempBuffer);
+
+			gl.drawQuadWithTexture(textureHandle, tempHandle, 0);
+
+			tempHandle.delete();
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

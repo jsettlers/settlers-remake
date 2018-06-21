@@ -42,7 +42,7 @@ public class AndroidDrawContext implements GLDrawContext {
 
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
-		quadDatas = new float[3 * 6];
+		float[] quadDatas = new float[3 * 6];
 		quadDatas[0] = x1;
 		quadDatas[1] = y1;
 		quadDatas[2] = 0;
@@ -149,25 +149,6 @@ public class AndroidDrawContext implements GLDrawContext {
 		}
 	}
 
-	@Override
-	public void drawQuadWithTexture(TextureHandle textureid, float[] geometry) {
-		if (quadEleementBuffer == null) {
-			generateQuadElementBuffer();
-		}
-		quadEleementBuffer.position(0);
-		glBindTexture(textureid);
-
-		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
-
-		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, buffer);
-		FloatBuffer texbuffer = reuseableBufferDuplicate;
-		texbuffer.position(3);
-		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, texbuffer);
-
-		GLES10.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
-				quadEleementBuffer);
-	}
-
 	private void generateQuadElementBuffer() {
 		quadEleementBuffer = ByteBuffer.allocateDirect(6);
 		quadEleementBuffer.put((byte) 0);
@@ -176,19 +157,6 @@ public class AndroidDrawContext implements GLDrawContext {
 		quadEleementBuffer.put((byte) 3);
 		quadEleementBuffer.put((byte) 1);
 		quadEleementBuffer.put((byte) 2);
-	}
-
-	@Override
-	public void drawTrianglesWithTexture(TextureHandle textureid, float[] geometry) {
-		glBindTexture(textureid);
-
-		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
-
-		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, buffer);
-		FloatBuffer texbuffer = reuseableBufferDuplicate;
-		texbuffer.position(3);
-		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, texbuffer);
-		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, geometry.length / 5);
 	}
 
 	@Override
@@ -332,7 +300,7 @@ public class AndroidDrawContext implements GLDrawContext {
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex.getInternalId());
 		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, ptr_offset);
-		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4+ptr_offset);
+		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4 + ptr_offset);
 
 		GLES11.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
 				quadEleementBuffer);
@@ -423,7 +391,7 @@ public class AndroidDrawContext implements GLDrawContext {
 		int bytes = 4 * geometry.length;
 
 		GeometryHandle vertexBufferId = generateGeometry(bytes);
-		ByteBuffer bfr = ByteBuffer.allocateDirect(4*geometry.length);
+		ByteBuffer bfr = ByteBuffer.allocateDirect(4*geometry.length).order(ByteOrder.nativeOrder());
 		bfr.asFloatBuffer().put(geometry);
 		try {
 			updateGeometryAt(vertexBufferId, 0, bfr);
@@ -441,8 +409,6 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, pos, data.limit(), data);
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
-
-	private float[] quadDatas;
 
 	public Context getAndroidContext() {
 		return context;

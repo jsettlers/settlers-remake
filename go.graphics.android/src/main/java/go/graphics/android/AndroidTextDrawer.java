@@ -14,9 +14,13 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -25,6 +29,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.opengl.GLES11;
+import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -68,8 +75,9 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private TextView renderer;
 	private float pixelScale;
+	private GeometryHandle texturepos;
 
-	private float[] texturepos = {
+	private static final float[] textureposarray = {
 			// top left
 			0,
 			0,
@@ -103,6 +111,16 @@ public class AndroidTextDrawer implements TextDrawer {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
+
+		texturepos = context.storeGeometry(textureposarray);
+	}
+
+	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
+
+	private void updateTexturePos(int pos, float value) throws IllegalBufferException {
+		updateBfr.rewind();
+		updateBfr.putFloat(value);
+		context.updateGeometryAt(texturepos, pos*4, updateBfr);
 	}
 
 	private void checkInvariants() {
@@ -144,14 +162,18 @@ public class AndroidTextDrawer implements TextDrawer {
 			// texture mirrored
 			float bottom = (float) ((line + 1) * lineheight) / TEXTURE_HEIGHT;
 			float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
-			texturepos[4] = top;
-			texturepos[9] = bottom;
-			texturepos[14] = bottom;
-			texturepos[19] = top;
+			try {
+				updateTexturePos(4, top);
+				updateTexturePos(9, bottom);
+				updateTexturePos(14, bottom);
+				updateTexturePos(19, top);
+			} catch (IllegalBufferException e) {
+				e.printStackTrace();
+			}
 
 			context.glPushMatrix();
 			context.glTranslatef(x, y, 0);
-			context.drawQuadWithTexture(texture, texturepos);
+			context.drawQuadWithTexture(texture, texturepos, 0);
 			context.glPopMatrix();
 		}
 	}
@@ -253,8 +275,12 @@ public class AndroidTextDrawer implements TextDrawer {
 			nextTile = new int[lines];
 			Arrays.fill(nextTile, -1);
 
-			texturepos[1] = lineheight;
-			texturepos[16] = lineheight;
+			try {
+				updateTexturePos(1, lineheight);
+				updateTexturePos(16, lineheight);
+			} catch (IllegalBufferException e) {
+				e.printStackTrace();
+			}
 
 		}
 	}
