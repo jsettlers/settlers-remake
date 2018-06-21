@@ -8,6 +8,7 @@ import java.awt.LayoutManager;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
@@ -46,9 +47,24 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		GL11.glViewport(0, 0, width, height);
 	}
 
+	private boolean errormessage_shown = false;
 
 	public void init() {
 		context = new LWJGLDrawContext(GL.createCapabilities());
+		String version = GL11.glGetString(GL11.GL_VERSION);
+		if(version != null && version.length() > 5) {
+			if(version.charAt(0) > 1 || version.charAt(3) >= 5) {
+				return;
+			}
+		}
+
+		if(!errormessage_shown) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(this, "JSettlers needs at least OpenGL 1.5\nPress ok to exit");
+				System.exit(1);
+			});
+			errormessage_shown = true;
+		}
 	}
 
 	/**
