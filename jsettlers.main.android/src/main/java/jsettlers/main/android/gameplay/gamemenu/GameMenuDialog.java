@@ -22,8 +22,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
+import jsettlers.main.android.mainmenu.MainActivity_;
 
 public class GameMenuDialog extends DialogFragment {
 
@@ -38,6 +40,8 @@ public class GameMenuDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(getActivity().getApplication());
         viewModel = gameMenuViewModelFactory.get(this);
+
+        viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
     }
 
     @NonNull
@@ -48,8 +52,12 @@ public class GameMenuDialog extends DialogFragment {
         binding.setLifecycleOwner(this);
         binding.setViewmodel(viewModel);
 
-        return new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(binding.getRoot())
                 .create();
+
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        return dialog;
     }
 }

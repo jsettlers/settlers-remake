@@ -84,7 +84,7 @@ public class GameService extends Service {
 		super.onDestroy();
 		unregisterReceiver(broadcastReceiver);
 		gameMenu.isPausedState().removeObserver(pauseObserver);
-		gameMenu.getGameState().observeForever(gameStateObserver);
+		gameMenu.getGameState().removeObserver(gameStateObserver);
 	}
 
 	@Override

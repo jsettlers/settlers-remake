@@ -11,4 +11,5 @@
     <color name="grayLight">#EEEEEE</color>
     <color name="gray">#E0E0E0</color>
     <color name="grayDark">#9E9E9E</color>
+    <color name="paused_mask">#cc000000</color>
 </resources>

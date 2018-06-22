@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.GameMenu;
+import jsettlers.main.android.core.events.SingleLiveEvent;
 
 public class GameMenuViewModel extends ViewModel {
     @NonNull
@@ -32,6 +33,7 @@ public class GameMenuViewModel extends ViewModel {
 
     private final LiveData<String> quitTextLiveData;
     private final LiveData<String> pauseTextLiveData;
+    private final SingleLiveEvent<Void> gameQuittedLiveData = new SingleLiveEvent<>();
 
     public GameMenuViewModel(
             @NonNull Application application,
@@ -51,16 +53,29 @@ public class GameMenuViewModel extends ViewModel {
         return pauseTextLiveData;
     }
 
-    public void quitClicked() {
+    public SingleLiveEvent<Void> getGameQuitted() {
+        return gameQuittedLiveData;
+    }
 
+    public void quitClicked() {
+        if (gameMenu.getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
+            gameMenu.quitConfirm();
+            gameQuittedLiveData.call();
+        } else {
+            gameMenu.quit();
+        }
     }
 
     public void saveClicked() {
-
+        gameMenu.save();
     }
 
     public void pauseClicked() {
-
+        if (gameMenu.isPausedState().getValue() == Boolean.TRUE) {
+            gameMenu.unPause();
+        } else {
+            gameMenu.pause();
+        }
     }
 
     private String mapQuitText(GameMenu.GameState gameState) {
