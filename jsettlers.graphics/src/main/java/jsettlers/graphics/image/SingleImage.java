@@ -143,8 +143,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	public TextureHandle getTextureIndex(GLDrawContext gl) {
 		if (texture == null || !texture.isValid()) {
 			if (textureWidth == 0) {
-				textureWidth = gl.makeWidthValid(width);
-				textureHeight = gl.makeHeightValid(height);
+				textureWidth = gl.makeSideLengthValid(width);
+				textureHeight = gl.makeSideLengthValid(height);
 				if (textureWidth != width || textureHeight != height) {
 					adaptDataToTextureSize();
 				}

@@ -84,9 +84,7 @@ public interface GLDrawContext {
 
 	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
 
-	int makeWidthValid(int width);
-
-	int makeHeightValid(int height);
+	int makeSideLengthValid(int width);
 
 	void glMultMatrixf(float[] matrix);
 
@@ -111,7 +109,4 @@ public interface GLDrawContext {
 	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
 	GeometryHandle generateGeometry(int bytes);
-
-	void drawTrianglesWithTextureColored(TextureHandle currentTexture,
-			ByteBuffer byteBuffer, int currentTriangles) throws IllegalBufferException;
 }

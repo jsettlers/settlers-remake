@@ -14,12 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
-import go.graphics.IllegalBufferException;
-import go.graphics.TextureHandle;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 import jsettlers.graphics.map.IGLProvider;
 
 /**
@@ -46,8 +46,8 @@ public class DrawBuffer {
 		/**
 		 * Bytes we need for one vertex.
 		 */
-		private static final int VERTEX_LENGTH = 5 * 4 + 4;
-		private static final int TRIAMGLE_LENGTH = 3 * VERTEX_LENGTH;
+		private static final int VERTEX_LENGTH = 6 * 4;
+		private static final int TRIANGLE_LENGTH = 3 * VERTEX_LENGTH;
 		private static final int BUFFER_TRIANGLES = 1000;
 
 		/**
@@ -57,12 +57,9 @@ public class DrawBuffer {
 
 		private int currentTriangles = 0;
 
-		protected final ByteBuffer byteBuffer;
+		protected GeometryHandle buffer = null;
 
 		protected Buffer() {
-			byteBuffer =
-					ByteBuffer.allocateDirect(BUFFER_TRIANGLES * TRIAMGLE_LENGTH);
-			byteBuffer.order(ByteOrder.nativeOrder());
 		}
 
 		protected void setForTexture(TextureHandle texture) throws IllegalBufferException {
@@ -78,49 +75,64 @@ public class DrawBuffer {
 			}
 		}
 
+		private void initBuffer() {
+			if(buffer == null) buffer = context.getGl().generateGeometry(BUFFER_TRIANGLES*TRIANGLE_LENGTH);
+		}
+
 		protected void draw() {
+			initBuffer();
 			try {
-				byteBuffer.rewind();
-				context.getGl().drawTrianglesWithTextureColored(currentTexture, byteBuffer, currentTriangles);
+				context.getGl().drawTrianglesWithTextureColored(currentTexture, buffer, null, 0, 1, currentTriangles, 0);
 			} catch (IllegalBufferException e) {
 				// TODO: Crash report. Should not happen since we check texture in advance.
 				e.printStackTrace();
 			}
-			byteBuffer.rewind();
+
 			currentTriangles = 0;
 		}
 
-		protected void addImage(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) {
+		private final ByteBuffer bfr_2tri = ByteBuffer.allocateDirect(TRIANGLE_LENGTH*2).order(ByteOrder.nativeOrder());
+		private final ByteBuffer bfr_tri = ByteBuffer.allocateDirect(TRIANGLE_LENGTH).order(ByteOrder.nativeOrder());
+
+		protected void addImage(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) throws IllegalBufferException {
 			if (currentTriangles >= BUFFER_TRIANGLES - 2) {
 				draw();
 			}
-			addPointPrimitive(x1, y1, u1, v1, activeColor);
-			addPointPrimitive(x1, y2, u1, v2, activeColor);
-			addPointPrimitive(x2, y1, u2, v1, activeColor);
-			addPointPrimitive(x2, y1, u2, v1, activeColor);
-			addPointPrimitive(x1, y2, u1, v2, activeColor);
-			addPointPrimitive(x2, y2, u2, v2, activeColor);
+			initBuffer();
+
+			addPointPrimitive(bfr_2tri, x1, y1, u1, v1, activeColor);
+			addPointPrimitive(bfr_2tri, x1, y2, u1, v2, activeColor);
+			addPointPrimitive(bfr_2tri, x2, y1, u2, v1, activeColor);
+			addPointPrimitive(bfr_2tri, x2, y1, u2, v1, activeColor);
+			addPointPrimitive(bfr_2tri, x1, y2, u1, v2, activeColor);
+			addPointPrimitive(bfr_2tri, x2, y2, u2, v2, activeColor);
+			context.getGl().updateGeometryAt(buffer, currentTriangles*TRIANGLE_LENGTH, bfr_2tri);
+			bfr_2tri.rewind();
 			currentTriangles += 2;
 		}
 
 		public void addTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
-				float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+								float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) throws IllegalBufferException {
 			if (currentTriangles >= BUFFER_TRIANGLES - 1) {
 				draw();
 			}
-			addPointPrimitive(x1, y1, u1, v1, activeColor);
-			addPointPrimitive(x2, y2, u2, v2, activeColor);
-			addPointPrimitive(x3, y3, u3, v3, activeColor);
+			initBuffer();
+
+			addPointPrimitive(bfr_tri, x1, y1, u1, v1, activeColor);
+			addPointPrimitive(bfr_tri, x2, y2, u2, v2, activeColor);
+			addPointPrimitive(bfr_tri, x3, y3, u3, v3, activeColor);
+			context.getGl().updateGeometryAt(buffer, currentTriangles*TRIANGLE_LENGTH, bfr_tri);
+			bfr_tri.rewind();
 			currentTriangles += 1;
 		}
 
-		private void addPointPrimitive(float x1, float y1, float u, float v, int activeColor) {
-			byteBuffer.putFloat(x1);
-			byteBuffer.putFloat(y1);
-			byteBuffer.putFloat(getZ());
-			byteBuffer.putFloat(u);
-			byteBuffer.putFloat(v);
-			byteBuffer.putInt(activeColor);
+		private void addPointPrimitive(ByteBuffer bfr, float x1, float y1, float u, float v, int activeColor) {
+			bfr.putFloat(x1);
+			bfr.putFloat(y1);
+			bfr.putFloat(getZ());
+			bfr.putFloat(u);
+			bfr.putFloat(v);
+			bfr.putInt(activeColor);
 		}
 	}
 

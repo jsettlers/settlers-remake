@@ -228,28 +228,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle texture,
-			ByteBuffer buffer, int triangles) throws IllegalBufferException {
-		bindTexture(texture);
-
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 6 * 4, buffer);
-		buffer.position(3 * 4);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 6 * 4, buffer);
-		buffer.position(5 * 4);
-		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 6 * 4, buffer);
-
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangles * 3);
-		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-	}
-
-	@Override
-	public int makeWidthValid(int width) {
-		return TextureCalculator.supportedTextureSize(glcaps, width);
-	}
-
-	@Override
-	public int makeHeightValid(int height) {
+	public int makeSideLengthValid(int height) {
 		return TextureCalculator.supportedTextureSize(glcaps, height);
 	}
 
@@ -305,12 +284,16 @@ public class LWJGLDrawContext implements GLDrawContext {
 	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException {
 		bindTexture(textureid);
 
-		bindArrayBuffer(vertexHandle);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+		int vtx_stride = paintHandle == null ? 6*4 : 0;
+		int paint_stride = paintHandle == null ? 6*4 : 3*4;
+		int paint_offset = paintHandle == null ? 3*4 : 0;
 
-		bindArrayBuffer(paintHandle);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3*4, 0);
-		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3*4, 8);
+		bindArrayBuffer(vertexHandle);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, vtx_stride, 0);
+
+		if(paintHandle != null) bindArrayBuffer(paintHandle);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, paint_stride, paint_offset);
+		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, paint_stride, 8+paint_offset);
 
 		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		for(int i = 0;i != lines;i++) {

@@ -159,29 +159,6 @@ public class AndroidDrawContext implements GLDrawContext {
 		quadEleementBuffer.put((byte) 2);
 	}
 
-	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle textureid,
-			ByteBuffer byteBuffer, int currentTriangles) {
-		glBindTexture(textureid);
-
-		GLES10.glEnableClientState(GLES10.GL_COLOR_ARRAY);
-
-		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 6 * 4, byteBuffer);
-		ByteBuffer texbuffer = byteBuffer.duplicate();
-		texbuffer.position(3 * 4);
-		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 6 * 4, texbuffer);
-		ByteBuffer colorbuffer = byteBuffer.duplicate(); // we need it selden
-															// enogh
-															// to allocate a new
-															// one.
-		colorbuffer.position(5 * 4);
-		GLES10.glColorPointer(4, GLES10.GL_UNSIGNED_BYTE, 6 * 4, colorbuffer);
-
-		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, currentTriangles * 3);
-		GLES10.glDisableClientState(GLES10.GL_COLOR_ARRAY);
-
-	}
-
 	private static int getPowerOfTwo(int value) {
 		int guess = 1;
 		while (guess < value) {
@@ -191,13 +168,8 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public int makeWidthValid(int width) {
+	public int makeSideLengthValid(int width) {
 		return getPowerOfTwo(width);
-	}
-
-	@Override
-	public int makeHeightValid(int height) {
-		return getPowerOfTwo(height);
 	}
 
 	@Override
@@ -368,14 +340,18 @@ public class AndroidDrawContext implements GLDrawContext {
 	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) {
 		glBindTexture(textureid);
 
+		int vtx_stride = paintHandle == null ? 6*4 : 0;
+		int paint_stride = paintHandle == null ? 6*4 : 3*4;
+		int paint_offset = paintHandle == null ? 3*4 : 0;
+
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, vertexHandle.getInternalId());
 
-		GLES11.glVertexPointer(3, GLES11.GL_FLOAT, 0, 0);
+		GLES11.glVertexPointer(3, GLES11.GL_FLOAT, vtx_stride, 0);
 
-		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, paintHandle.getInternalId());
+		if(paintHandle != null) GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, paintHandle.getInternalId());
 
-		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 3*4, 0);
-		GLES11.glColorPointer(4, GLES11.GL_UNSIGNED_BYTE, 3*4, 8);
+		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, paint_stride, paint_offset);
+		GLES11.glColorPointer(4, GLES11.GL_UNSIGNED_BYTE, paint_stride, 8+paint_offset);
 
 		GLES11.glEnableClientState(GLES11.GL_COLOR_ARRAY);
 		for(int i = 0;i != lines;i++) {
