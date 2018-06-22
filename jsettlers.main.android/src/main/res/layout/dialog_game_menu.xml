@@ -14,7 +14,55 @@
         android:layout_height="match_parent"
         android:padding="12dp">
 
+        <Button
+            android:id="@+id/button_skip_minute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/game_menu_skip_minute"
+            android:onClick="@{() -> viewmodel.skipMinuteClicked()}" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
+
         <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:text="@string/game_menu_speed_slow" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:text="@string/game_menu_speed_title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:text="@string/game_menu_speed_fast" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.AppCompatSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="8" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="16dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

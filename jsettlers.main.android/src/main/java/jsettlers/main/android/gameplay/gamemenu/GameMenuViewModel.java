@@ -78,6 +78,10 @@ public class GameMenuViewModel extends ViewModel {
         }
     }
 
+    public void skipMinuteClicked() {
+        gameMenu.skipMinute();
+    }
+
     private String mapQuitText(GameMenu.GameState gameState) {
         return gameState == GameMenu.GameState.CONFIRM_QUIT ?
                 application.getString(R.string.game_menu_quit_confirm) :

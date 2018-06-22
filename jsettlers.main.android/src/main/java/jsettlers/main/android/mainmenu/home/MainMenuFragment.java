@@ -181,7 +181,6 @@ public class MainMenuFragment extends Fragment {
 			ViewGroup.LayoutParams layoutParams = viewHolder.itemView.getLayoutParams();
 			layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
 			viewHolder.itemView.setLayoutParams(layoutParams);
-			notifyItemChanged(viewHolder.getAdapterPosition(), new Object());
 			viewHolder.onExpand();
 		}
 

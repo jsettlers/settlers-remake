@@ -110,7 +110,7 @@
     <string name="settings">Settings</string>
 
     <string name="resource_directory_title">Graphics and sound folders</string>
-    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from the installation folder of an original copy of The Settlers 3. Find those folders and copy them to your Android device before locating them for use in JSettlers.</string>
+    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from an original copy of Settlers 3. Install Settlers 3 on your computer and find those folders, then copy them to your Android device.</string>
     <string name="resource_directory_button">Locate folders</string>
 
     <string name="menu_single_player_title">Single-Player</string>
@@ -134,6 +134,11 @@
     <string name="game_menu_unpause">Unpause</string>
     <string name="game_menu_paused">Paused</string>
     <string name="game_menu_saved">Game saved</string>
+    <string name="game_menu_skip_minute">Skip 1 minute</string>
+    <string name="game_menu_speed_title">Game speed</string>
+    <string name="game_menu_speed_slow">Slow</string>
+    <string name="game_menu_speed_fast">Fast</string>
+
     <string name="no_saved_games">No saved games available</string>
     <string name="resource_selection_dialog_title">Locate GFX and SND folders</string>
     <string name="empty_directory">This directory is empty</string>
@@ -156,5 +161,4 @@
     <string name="good_distribution_title">Distribution</string>
     <string name="confirm_destory_ships">Destroy ships?</string>
     <string name="notification_channel_id">gameplay</string>
-    <string name="game_menu">Menu</string>
 </resources>

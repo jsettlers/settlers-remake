@@ -116,6 +116,10 @@ public class GameMenu implements IGameExitListener {
 		soundPlayer.setPaused(false);
 	}
 
+	public void skipMinute() {
+		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
+	}
+
 	/**
 	 * IGameExitedListener implementation
 	 */
