@@ -55,6 +55,8 @@ public class SwingManagedJSettlers {
 	}
 
 	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption {
+  		// removes screen flickering
+		System.setProperty("sun.awt.noerasebackground", "true");
 		setupResources(true, args);
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();

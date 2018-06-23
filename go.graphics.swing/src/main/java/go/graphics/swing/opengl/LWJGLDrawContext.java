@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015-2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,9 +18,9 @@ import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.JOGLBufferHandle.JOGLGeometryHandle;
-import go.graphics.swing.opengl.JOGLBufferHandle.JOGLTextureHandle;
-import go.graphics.swing.text.JOGLTextDrawer;
+import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLGeometryHandle;
+import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLTextureHandle;
+import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -30,47 +30,51 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
-import com.jogamp.common.nio.Buffers;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GLCapabilities;
 
 /**
- * This is the draw context implementation for JOGL. OpenGL draw calles are mapped to the corresponding JOGL calls.
- * 
+ * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
+ *
  * @author Michael Zangl
+ * @author paul
  *
  */
-public class JOGLDrawContext implements GLDrawContext {
+public class LWJGLDrawContext implements GLDrawContext {
 
-	private JOGLTextDrawer[] textDrawers = new JOGLTextDrawer[EFontSize
+	private LWJGLTextDrawer[] textDrawers = new LWJGLTextDrawer[EFontSize
 			.values().length];
 
 	private static final int FLOATS_PER_COLORED_TRI_VERTEX = 9;
-	private final GL2 gl2;
+	private final GLCapabilities glcaps;
 	private final boolean canUseVBOs;
 
-	public JOGLDrawContext(GL2 gl2) {
-		this.gl2 = gl2;
-		gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+	public LWJGLDrawContext(GLCapabilities glcaps) {
+		this.glcaps = glcaps;
 
-		gl2.glAlphaFunc(GL2.GL_GREATER, 0.1f);
-		gl2.glEnable(GL2.GL_ALPHA_TEST);
-		gl2.glDepthFunc(GL2.GL_LEQUAL);
-		gl2.glEnable(GL2.GL_DEPTH_TEST);
+		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
-		gl2.glEnable(GL2.GL_TEXTURE_2D);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glDepthFunc(GL11.GL_LEQUAL);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
-		canUseVBOs = gl2.isExtensionAvailable("GL_ARB_vertex_buffer_object");
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		canUseVBOs = glcaps.GL_ARB_vertex_buffer_object;
 	}
 
 	public void startFrame() {
-		gl2.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
 	@Override
 	public void color(float r, float g, float b, float a) {
-		gl2.glColor4f(r, g, b, a);
+		GL11.glColor4f(r, g, b, a);
 	}
 
 	@Override
@@ -92,11 +96,11 @@ public class JOGLDrawContext implements GLDrawContext {
 
 		floatBuff.position(0);
 
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
-		gl2.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-		gl2.glVertexPointer(2, GL2.GL_FLOAT, 0, floatBuff);
-		gl2.glDrawArrays(GL2.GL_QUADS, 0, 4);
-		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, floatBuff);
+		GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
+		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	@Override
@@ -107,12 +111,12 @@ public class JOGLDrawContext implements GLDrawContext {
 		}
 		ByteBuffer floatBuff = generateTemporaryFloatBuffer(points);
 
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
-		gl2.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-		gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, floatBuff);
-		gl2.glDrawArrays(loop ? GL2.GL_LINE_LOOP : GL2.GL_LINE_STRIP, 0,
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, floatBuff);
+		GL11.glDrawArrays(loop ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP, 0,
 				points.length / 3);
-		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	private ByteBuffer reuseableBuffer = null;
@@ -149,69 +153,69 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void glPushMatrix() {
-		gl2.glPushMatrix();
+		GL11.glPushMatrix();
 	}
 
 	@Override
 	public void glTranslatef(float x, float y, float z) {
-		gl2.glTranslatef(x, y, z);
+		GL11.glTranslatef(x, y, z);
 	}
 
 	@Override
 	public void glPopMatrix() {
-		gl2.glPopMatrix();
-	}
-
-	@Deprecated
-	public GL2 getGl2() {
-		return gl2;
+		GL11.glPopMatrix();
 	}
 
 	@Override
 	public void glScalef(float x, float y, float z) {
-		gl2.glScalef(x, y, z);
+		GL11.glScalef(x, y, z);
 	}
 
 	@Override
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data) {
 		// 1 byte aligned.
-		gl2.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 
-		int[] textureIndexes = new int[1];
-		gl2.glGenTextures(1, textureIndexes, 0);
-		int texture = textureIndexes[0];
+		int texture = GL11.glGenTextures();
 		if (texture == 0) {
 			return null;
 		}
 
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, texture);
-		gl2.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB5_A1, width, height, 0,
-				GL.GL_RGBA, GL.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		//fix strange alpha test problem (minimap and landscape are unaffected)
+		ShortBuffer bfr = BufferUtils.createShortBuffer(data.capacity());
+		int cap = data.capacity();
+		for(int i = 0;i != cap;i++)	bfr.put(i, data.get(i));
+
+
+
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
+				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, bfr);
 		setTextureParameters();
 
-		return new JOGLTextureHandle(this, texture);
+		return new LWJGLTextureHandle(this, texture);
 	}
 
 	/**
 	 * Sets the texture parameters, assuming that the texture was just created and is bound.
 	 */
 	private void setTextureParameters() {
-		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S,
-				GL2.GL_CLAMP);
-		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T,
-				GL2.GL_CLAMP);
-		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
-				GL.GL_NEAREST);
-		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-				GL.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S,
+				GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T,
+				GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
+				GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
+				GL11.GL_NEAREST);
 	}
 
 	@Override
 	public void updateTexture(TextureHandle texture, int left, int bottom,
 			int width, int height, ShortBuffer data) throws IllegalBufferException {
 		bindTexture(texture);
-		gl2.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, left, bottom, width, height,
-				GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, left, bottom, width, height,
+				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
 	private void bindTexture(TextureHandle texture) throws IllegalBufferException {
@@ -224,13 +228,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			}
 			id = texture.getInternalId();
 		}
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, id);
-	}
-
-	void deleteTexture(int textureIndex) {
-		gl2.glDeleteTextures(1, new int[] {
-				textureIndex
-		}, 0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
 	}
 
 	private void bindArrayBuffer(GeometryHandle geometry) throws IllegalBufferException {
@@ -243,7 +241,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			}
 			id = geometry.getInternalId();
 		}
-		gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, id);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
 	}
 
 	@Override
@@ -255,10 +253,10 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	private void drawQuadWithTexture(TextureHandle texture, ByteBuffer buffer, int len) throws IllegalBufferException {
 		bindTexture(texture);
-		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3 * 4);
-		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
-		gl2.glDrawArrays(GL2.GL_QUADS, 0, len);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, buffer);
+		GL11.glDrawArrays(GL11.GL_QUADS, 0, len);
 	}
 
 	@Override
@@ -271,10 +269,10 @@ public class JOGLDrawContext implements GLDrawContext {
 			int triangles) throws IllegalBufferException {
 		bindTexture(texture);
 
-		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3 * 4);
-		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
-		gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangles * 3);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, buffer);
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangles * 3);
 	}
 
 	@Override
@@ -289,30 +287,30 @@ public class JOGLDrawContext implements GLDrawContext {
 			ByteBuffer buffer, int triangles) throws IllegalBufferException {
 		bindTexture(texture);
 
-		gl2.glVertexPointer(3, GL2.GL_FLOAT, 6 * 4, buffer);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 6 * 4, buffer);
 		buffer.position(3 * 4);
-		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 6 * 4, buffer);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 6 * 4, buffer);
 		buffer.position(5 * 4);
-		gl2.glColorPointer(4, GL2.GL_UNSIGNED_BYTE, 6 * 4, buffer);
+		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 6 * 4, buffer);
 
-		gl2.glEnableClientState(GL2.GL_COLOR_ARRAY);
-		gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangles * 3);
-		gl2.glDisableClientState(GL2.GL_COLOR_ARRAY);
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangles * 3);
+		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
 	}
 
 	@Override
 	public int makeWidthValid(int width) {
-		return TextureCalculator.supportedTextureSize(gl2, width);
+		return TextureCalculator.supportedTextureSize(glcaps, width);
 	}
 
 	@Override
 	public int makeHeightValid(int height) {
-		return TextureCalculator.supportedTextureSize(gl2, height);
+		return TextureCalculator.supportedTextureSize(glcaps, height);
 	}
 
 	@Override
-	public void glMultMatrixf(float[] matrix, int offset) {
-		gl2.glMultMatrixf(matrix, offset);
+	public void glMultMatrixf(float[] matrix) {
+		GL11.glMultMatrixf(matrix);
 	}
 
 	/**
@@ -325,7 +323,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	@Override
 	public TextDrawer getTextDrawer(EFontSize size) {
 		if (textDrawers[size.ordinal()] == null) {
-			textDrawers[size.ordinal()] = new JOGLTextDrawer(size, this);
+			textDrawers[size.ordinal()] = new LWJGLTextDrawer(size, this);
 		}
 		return textDrawers[size.ordinal()];
 	}
@@ -339,10 +337,10 @@ public class JOGLDrawContext implements GLDrawContext {
 			bindTexture(texture);
 
 			bindArrayBuffer(geometry);
-			gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, 0);
-			gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, 3 * 4);
+			GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-			gl2.glDrawArrays(GL2.GL_QUADS, 0, 4);
+			GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
 
 			bindArrayBuffer(null);
 		} else {
@@ -357,10 +355,10 @@ public class JOGLDrawContext implements GLDrawContext {
 			bindTexture(texture);
 
 			bindArrayBuffer(geometry);
-			gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, 0);
-			gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, 3 * 4);
+			GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-			gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangleCount * 3);
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
 
 			bindArrayBuffer(null);
 		} else {
@@ -382,13 +380,13 @@ public class JOGLDrawContext implements GLDrawContext {
 			bindTexture(texture);
 
 			bindArrayBuffer(geometry);
-			gl2.glVertexPointer(3, GL2.GL_FLOAT, 6 * 4, 0);
-			gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 6 * 4, 3 * 4);
-			gl2.glColorPointer(4, GL2.GL_UNSIGNED_BYTE, 6 * 4, 5 * 4);
+			GL11.glVertexPointer(3, GL11.GL_FLOAT, 6 * 4, 0);
+			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 6 * 4, 3 * 4);
+			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 6 * 4, 5 * 4);
 
-			gl2.glEnableClientState(GL2.GL_COLOR_ARRAY);
-			gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangleCount * 3);
-			gl2.glDisableClientState(GL2.GL_COLOR_ARRAY);
+			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
+			GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
 
 			bindArrayBuffer(null);
 		} else {
@@ -403,7 +401,7 @@ public class JOGLDrawContext implements GLDrawContext {
 		if (canUseVBOs) {
 			try {
 				GeometryHandle geometryBuffer =
-						generateGeometry(geometry.length * Buffers.SIZEOF_FLOAT);
+						generateGeometry(geometry.length * Float.BYTES);
 				if (geometryBuffer == null) {
 					return null;
 				}
@@ -421,7 +419,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			}
 		} else {
 			geometries.add(genertateBuffer(geometry));
-			return new JOGLGeometryHandle(this, geometries.size() - 1);
+			return new LWJGLGeometryHandle(this, geometries.size() - 1);
 		}
 	}
 
@@ -436,9 +434,7 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	void deleteGeometry(int geometryindex) {
 		if (canUseVBOs) {
-			gl2.glDeleteBuffers(1, new int[] {
-					geometryindex
-			}, 0);
+			GL15.glDeleteBuffers(geometryindex);
 		} else {
 			// TODO: unsupported!
 			geometries.set(geometryindex, null);
@@ -450,7 +446,7 @@ public class JOGLDrawContext implements GLDrawContext {
 		if (canUseVBOs) {
 			bindArrayBuffer(geometry);
 			ByteBuffer buffer =
-					gl2.glMapBuffer(GL2.GL_ARRAY_BUFFER, GL2.GL_WRITE_ONLY)
+					GL15.glMapBuffer(GL15.GL_ARRAY_BUFFER, GL15.GL_WRITE_ONLY)
 							.order(ByteOrder.nativeOrder());
 			return new GLByteBufferWrapper(buffer);
 
@@ -485,8 +481,8 @@ public class JOGLDrawContext implements GLDrawContext {
 	@Override
 	public void endWriteGeometry(GeometryHandle geometry) {
 		if (canUseVBOs) {
-			gl2.glUnmapBuffer(GL2.GL_ARRAY_BUFFER);
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+			GL15.glUnmapBuffer(GL15.GL_ARRAY_BUFFER);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		}
 	}
 
@@ -499,26 +495,21 @@ public class JOGLDrawContext implements GLDrawContext {
 				return null;
 			}
 
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
-			gl2.glBufferData(GL.GL_ARRAY_BUFFER, bytes, null,
-					GL.GL_DYNAMIC_DRAW);
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId);
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, BufferUtils.createByteBuffer(bytes),
+					GL15.GL_DYNAMIC_DRAW);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		} else {
 			ByteBuffer bb = ByteBuffer.allocateDirect(bytes);
 			bb.order(ByteOrder.nativeOrder());
 			vertexBufferId = geometries.size();
 			geometries.add(bb);
 		}
-		return new JOGLGeometryHandle(this, vertexBufferId);
+		return new LWJGLGeometryHandle(this, vertexBufferId);
 	}
 
 	private int allocateVBO() {
-		int[] vertexBuffIds = new int[] {
-				0
-		};
-		gl2.glGenBuffers(1, vertexBuffIds, 0);
-
-		return vertexBuffIds[0];
+		return GL15.glGenBuffers();
 	}
 
 	public void prepareFontDrawing() {

@@ -12,9 +12,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.debug.datviewer;
+package jsettlers.graphics.debug;
 
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -42,10 +45,13 @@ import javax.swing.event.ListSelectionListener;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOZoomEvent;
+import go.graphics.swing.GLContainer;
+import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
@@ -319,16 +325,38 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	// endregion
 
-	private class Surface extends GLSurface implements GOModalEventHandler {
-		private Color[] colors  = new Color[]{Color.WHITE};
-		private float   zoom    = 1.0f;
-		private int     offsetY = 0;
-		private int     offsetX = 0;
+	private class Surface extends GLContainer implements GOModalEventHandler, GOEventHandlerProvider {
+		private Color[] colors = new Color[] { Color.WHITE };
+		private float zoom = 1.0f;
+		private int offsetY = 0;
+		private int offsetX = 0;
 		ImageSet currentSet;
 
 		Surface() {
+			super(EBackendType.DEFAULT, new GridBagLayout());
 			currentSet = ImageSet.SETTLERS;
 			resetOffset();
+		}
+
+		@Override
+		public void invalidate() {
+			super.invalidate();
+			cc.repaint();
+		}
+
+		@Override
+		public void draw() {
+			super.draw();
+			redraw(context, getWidth(), getHeight());
+		}
+
+		@Override
+		public void addCanvas(Component canvas) {
+
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.weightx = gbc.weighty = 1.0;
+			gbc.fill = GridBagConstraints.BOTH;
+			add(canvas, gbc);
 		}
 
 		void resetOffset() {
@@ -342,7 +370,6 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 		// region Drawing Code
 
-		@Override
 		protected void redraw(GLDrawContext gl2, int width, int height) {
 			if (reader == null) { return; }
 
