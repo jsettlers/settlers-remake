@@ -16,7 +16,6 @@
 package jsettlers.main.android.gameplay.navigation;
 
 import jsettlers.main.android.core.navigation.BackPressedListener;
-import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.TradingFeature;
 
 /**
  * Created by tompr on 11/01/2017.

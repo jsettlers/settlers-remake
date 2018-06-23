@@ -15,52 +15,54 @@
 
 package jsettlers.main.android.core.controls;
 
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import go.graphics.android.AndroidSoundPlayer;
-
-import jsettlers.common.action.EActionType;
 import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.menu.IGameExitListener;
+import jsettlers.common.menu.IStartedGame;
 import jsettlers.main.android.R;
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 /**
  * GameMenu is a singleton within the scope of a started game
  */
-public class GameMenu {
-
-	public static final int NOTIFICATION_ID = 100;
+public class GameMenu implements IGameExitListener {
+	public enum GameState {
+		PLAYING,
+		CONFIRM_QUIT,
+		QUITTED
+	}
 
 	private final Context context;
 	private final ActionControls actionControls;
 	private final AndroidSoundPlayer soundPlayer;
 
-	private final LocalBroadcastManager localBroadcastManager;
-	private final NotificationManager notificationManager;
-
 	private Timer quitConfirmTimer;
 
-	private boolean paused = false;
+	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
+	public LiveData<GameState> getGameState() {
+		return  gameState;
+	}
+
+	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
+	public LiveData<Boolean> isPausedState() {
+		return  pausedState;
+	}
 
 	public GameMenu(Context context, AndroidSoundPlayer soundPlayer, ActionControls actionFireable) {
 		this.context = context;
 		this.soundPlayer = soundPlayer;
 		this.actionControls = actionFireable;
 
-		localBroadcastManager = LocalBroadcastManager.getInstance(context);
-		notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		pausedState.postValue(false);
+		gameState.postValue(GameState.PLAYING);
 	}
 
 	public void save() {
@@ -72,25 +74,15 @@ public class GameMenu {
 	public void pause() {
 		actionControls.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
 		mute();
-		paused = true;
 
-		// Send a local broadcast so that any UI can update if necessary
-		localBroadcastManager.sendBroadcast(new Intent(ACTION_PAUSE));
-		notificationManager.notify(NOTIFICATION_ID, createNotification());
+		pausedState.postValue(true);
 	}
 
-	// don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visible.
+	// don't unmute here, MapFragment will unmute if its visible.
 	public void unPause() {
 		actionControls.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
-		paused = false;
 
-		// Send a local broadcast so that any UI can update if necessary
-		localBroadcastManager.sendBroadcast(new Intent(ACTION_UNPAUSE));
-		notificationManager.notify(NOTIFICATION_ID, createNotification());
-	}
-
-	public boolean isPaused() {
-		return paused;
+		pausedState.postValue(false);
 	}
 
 	public void quit() {
@@ -101,25 +93,19 @@ public class GameMenu {
 			public void run() {
 				if (quitConfirmTimer != null) {
 					quitConfirmTimer = null;
-					notificationManager.notify(NOTIFICATION_ID, createNotification());
-					localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT_CANCELLED));
+
+					gameState.postValue(GameState.PLAYING);
 				}
 			}
 		}, 3000);
 
-		// Send a local broadcast so that any UI can update if necessary
-		localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT));
-		notificationManager.notify(NOTIFICATION_ID, createNotification());
+		gameState.postValue(GameState.CONFIRM_QUIT);
 	}
 
 	public void quitConfirm() {
 		// Trigger quit from here and callback in MainApplication broadcasts after quit is complete
 		quitConfirmTimer = null;
 		actionControls.fireAction(new Action(EActionType.EXIT));
-	}
-
-	public boolean canQuitConfirm() {
-		return quitConfirmTimer != null;
 	}
 
 	public void mute() {
@@ -130,23 +116,11 @@ public class GameMenu {
 		soundPlayer.setPaused(false);
 	}
 
-	public Notification createNotification() {
-		NotificationBuilder notificationBuilder = NotificationBuilder_.getInstance_(context);
-
-		if (quitConfirmTimer == null) {
-			notificationBuilder.addQuitButton();
-		} else {
-			notificationBuilder.addQuitConfirmButton();
-		}
-
-		notificationBuilder.addSaveButton();
-
-		if (isPaused()) {
-			notificationBuilder.addUnPauseButton();
-		} else {
-			notificationBuilder.addPauseButton();
-		}
-
-		return notificationBuilder.build();
+	/**
+	 * IGameExitedListener implementation
+	 */
+	@Override
+	public void gameExited(IStartedGame game) {
+		gameState.postValue(GameState.QUITTED);
 	}
 }

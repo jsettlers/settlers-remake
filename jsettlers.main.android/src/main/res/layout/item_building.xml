@@ -6,6 +6,7 @@
     android:padding="8dp"
     android:focusable="true"
     android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     app:columnCount="2">
 
     <ImageView

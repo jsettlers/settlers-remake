@@ -15,6 +15,7 @@
 
 package jsettlers.main.android.core.controls;
 
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.core.GameManager;
 
@@ -57,4 +58,8 @@ public class ControlsResolver {
     public PositionControls getPositionControls() {
         return controlsAdapter;
     }
+
+    public IInGamePlayer getPlayer() {
+		return controlsAdapter.getInGamePlayer();
+	}
 }

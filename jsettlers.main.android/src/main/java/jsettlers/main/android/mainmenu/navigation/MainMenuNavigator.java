@@ -15,8 +15,6 @@
 
 package jsettlers.main.android.mainmenu.navigation;
 
-import jsettlers.common.menu.IMapDefinition;
-
 /**
  * Created by tingl on 27/05/2016.
  */
@@ -25,15 +23,15 @@ public interface MainMenuNavigator {
 
 	void showLoadSinglePlayerPicker();
 
-	void showNewSinglePlayerSetup(IMapDefinition mapDefinition);
+	void showNewSinglePlayerSetup(String mapId);
 
 	void showNewMultiPlayerPicker();
 
 	void showJoinMultiPlayerPicker();
 
-	void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
+	void showNewMultiPlayerSetup(String mapId);
 
-	void showJoinMultiPlayerSetup(IMapDefinition mapDefinition);
+	void showJoinMultiPlayerSetup(String mapId);
 
 	void showGame();
 
