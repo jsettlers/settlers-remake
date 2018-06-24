@@ -52,7 +52,7 @@ public final class NewConstructionMarksAlgorithm {
 		final short[] xJumps = buildingArea.xJumps;
 		final short[] yJumps = buildingArea.yJumps;
 
-		final int lineLength = mapArea.getLineLength() + mapArea.getHeight() / 2;
+		final int lineLength = mapArea.getWidth() + mapArea.getHeight() / 2;
 		final BitSet doneSet = new BitSet(lineLength * mapArea.getHeight());
 
 		final int xOffsetForBuilding = buildingArea.minX;

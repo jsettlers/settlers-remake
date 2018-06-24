@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/imageView_building"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <Space
+        android:layout_width="24dp"
+        android:layout_height="1dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>

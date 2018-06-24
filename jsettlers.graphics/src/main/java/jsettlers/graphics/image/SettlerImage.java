@@ -127,11 +127,11 @@ public class SettlerImage extends SingleImage {
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, Color color, float multiply) {
 		super.drawAt(gl, buffer, viewX, viewY, dimColor(Color.WHITE, multiply));
-		if (this.torso != null) {
-			this.torso.drawAt(gl, buffer, viewX, viewY, dimColor(color, multiply));
-		}
 		if (this.shadow != null) {
 			this.shadow.drawAt(gl, buffer, viewX, viewY, -1);
+		}
+		if (this.torso != null) {
+			this.torso.drawAt(gl, buffer, viewX, viewY, dimColor(color, multiply));
 		}
 	}
 }

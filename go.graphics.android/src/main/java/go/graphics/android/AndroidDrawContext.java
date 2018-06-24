@@ -332,8 +332,8 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void glMultMatrixf(float[] matrix, int offset) {
-		GLES10.glMultMatrixf(matrix, offset);
+	public void glMultMatrixf(float[] matrix) {
+		GLES10.glMultMatrixf(matrix, 0);
 	}
 
 	@Override

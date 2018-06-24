@@ -15,10 +15,16 @@
 
 package jsettlers.main.android.core.resources.scanner;
 
+import java.io.File;
+
+import org.androidannotations.annotations.EBean;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+
+import io.reactivex.Completable;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
@@ -28,9 +34,6 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.resources.AndroidMapListFactory;
 import jsettlers.main.android.core.resources.AndroidResourceProvider;
-import org.androidannotations.annotations.EBean;
-
-import java.io.File;
 
 @EBean
 public class AndroidResourcesLoader {
@@ -67,6 +70,18 @@ public class AndroidResourcesLoader {
 		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), outputDirectory));
 		ResourceManager.setProvider(new AndroidResourceProvider(context, outputDirectory));
 		return true;
+	}
+
+	public Completable setupSingle() {
+		return Completable.create(emitter -> {
+			boolean success = setup();
+
+			if (success) {
+				emitter.onComplete();
+			} else {
+				emitter.onError(new Exception("Not a valid settlers folder"));
+			}
+		});
 	}
 
 	public void setResourcesDirectory(String path) {

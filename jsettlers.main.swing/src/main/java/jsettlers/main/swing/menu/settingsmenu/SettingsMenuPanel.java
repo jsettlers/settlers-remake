@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import go.graphics.swing.contextcreator.BackendSelector;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
@@ -44,11 +45,9 @@ public class SettingsMenuPanel extends JPanel {
 	 * Name of the player
 	 */
 	private final JTextField playerNameField = new JTextField();
-
-	/**
-	 * Volume slider
-	 */
-	private final VolumeSlider volumeSlider = new VolumeSlider();
+	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100);
+	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 1,240);
+	private final BackendSelector backendSelector = new BackendSelector();
 
 	/**
 	 * Panel with the settings entries (2 column grid)
@@ -68,11 +67,17 @@ public class SettingsMenuPanel extends JPanel {
 		add(settinsgPanel, BorderLayout.NORTH);
 
 		playerNameField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
+		backendSelector.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		
 		SwingUtilities.updateComponentTreeUI(playerNameField);
 		addSetting("settings-name", playerNameField);
 
 		addSetting("settings-volume", volumeSlider);
-
+		
+		addSetting("settings-fps-limit", fpsLimitSlider);
+		
+		addSetting("settings-backend", backendSelector);
+		
 		initButton();
 	}
 
@@ -104,7 +109,9 @@ public class SettingsMenuPanel extends JPanel {
 		saveButton.addActionListener(e -> {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			settingsManager.setUserName(playerNameField.getText());
-			settingsManager.setVolume((volumeSlider.getValue() / 100f));
+			settingsManager.setVolume(volumeSlider.getValue() / 100f);
+			settingsManager.setFpsLimit(fpsLimitSlider.getValue());
+			settingsManager.setBackend(backendSelector.getSelectedItem().toString());
 			mainMenuPanel.reset();
 		});
 
@@ -119,5 +126,7 @@ public class SettingsMenuPanel extends JPanel {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		playerNameField.setText(settingsManager.getPlayer().getName());
 		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
+		fpsLimitSlider.setValue(settingsManager.getFpsLimit());
+		backendSelector.setSelectedItem(settingsManager.getBackend());
 	}
 }
