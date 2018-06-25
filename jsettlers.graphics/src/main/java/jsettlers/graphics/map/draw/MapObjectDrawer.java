@@ -46,6 +46,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.MapDrawContext;
@@ -174,11 +175,13 @@ public class MapObjectDrawer {
 	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
 
 	private static final float FLAG_ROOF_Z = 0.89f;
+	private static final float SMOKE_Z = 0.9f;
 
 	private static final int   SHIP_IMAGE_FILE          = 36;
 	private static final int   FERRY_BASE_SEQUENCE      = 4;
 	private static final int   CARGO_SHIP_BASE_SEQUENCE = 0;
 	private static final float WAVES_Z                  = -0.1f;
+	private static final float BORDER_STONE_Z           = -0.1f;
 	private static final float DOCK_Z                   = 0.f;
 
 	private static final int SMOKE_HEIGHT = 30;
@@ -236,6 +239,38 @@ public class MapObjectDrawer {
 		}
 	}
 
+	public void drawStockBack(int x, int y, IBuilding stock) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		float state = stock.getStateProgress();
+		if (state >= 0.99) {
+			ImageLink[] images = EBuildingType.STOCK.getImages();
+			draw(imageProvider.getImage(images[0]), x, y, color);
+			draw(imageProvider.getImage(images[1]), x, y, color);
+			draw(imageProvider.getImage(images[5]), x, y, color);
+		}
+	}
+
+	public void drawStockFront(int x, int y, IBuilding stock) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		float state = stock.getStateProgress();
+		if (state >= 0.99) {
+			ImageLink[] images = EBuildingType.STOCK.getImages();
+			for (int i = 2; i < 5; i++) {
+				draw(imageProvider.getImage(images[i]), x, y, color);
+			}
+		}
+	}
+
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
 		byte fogOfWarVisibleStatus = context.getVisibleStatus(x, y);
 		EDirection direction = ship.getDirection();
@@ -284,14 +319,14 @@ public class MapObjectDrawer {
 		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
 		// prepare freight drawing
 		List<? extends IMovable> passengerList = ship.getPassengers();
-		byte[] dx = EDirection.getXDeltaArray();
-		byte[] dy = EDirection.getYDeltaArray();
+
 		float baseViewX = mapCoordinateConverter.getViewX(x, y, height);
 		float baseViewY = mapCoordinateConverter.getViewY(x, y, height);
-		float xShiftForward = mapCoordinateConverter.getViewX(x + dx[direction.ordinal], y + dy[direction.ordinal], height) - baseViewX;
-		float yShiftForward = mapCoordinateConverter.getViewY(x + dx[direction.ordinal], y + dy[direction.ordinal], height) - baseViewY;
-		int xRight = x + dx[direction.rotateRight(1).ordinal] + dx[direction.rotateRight(2).ordinal];
-		int yRight = y + dy[direction.rotateRight(1).ordinal] + dy[direction.rotateRight(2).ordinal];
+		float xShiftForward = mapCoordinateConverter.getViewX(x + direction.gridDeltaX, y + direction.gridDeltaY, height) - baseViewX;
+		float yShiftForward = mapCoordinateConverter.getViewY(x + direction.gridDeltaX, y + direction.gridDeltaY, height) - baseViewY;
+		int xRight = x + direction.rotateRight(1).gridDeltaX + direction.rotateRight(2).gridDeltaX;
+		int yRight = y + direction.rotateRight(1).gridDeltaY + direction.rotateRight(2).gridDeltaY;
+
 		float xShiftRight = (mapCoordinateConverter.getViewX(xRight, yRight, height) - baseViewX) / 2;
 		float yShiftRight = (mapCoordinateConverter.getViewY(xRight, yRight, height) - baseViewY) / 2;
 		ArrayList<FloatIntObject> freightY = new ArrayList<>();
@@ -523,7 +558,11 @@ public class MapObjectDrawer {
 				break;
 
 			case BUILDING:
-				drawBuilding(x, y, (IBuilding) object, color);
+				IBuilding building = (IBuilding) object;
+				if (building.getBuildingType() == EBuildingType.STOCK && building.getStateProgress() >= 0.99) {
+					return;
+				}
+				drawBuilding(x, y, building, color);
 				break;
 
 			case PLACEMENT_BUILDING:
@@ -595,7 +634,12 @@ public class MapObjectDrawer {
 	private void drawPlacementBuilding(int x, int y, IMapObject object, float color) {
 		context.getGl().glPushMatrix();
 		context.getGl().glTranslatef(0, 0, PLACEMENT_BUILDING_Z);
-		drawBuilding(x, y, (IBuilding) object, color);
+		ImageLink[] images = ((IBuilding) object).getBuildingType().getImages();
+		Image image;
+		for (ImageLink image1 : images) {
+			image = imageProvider.getImage(image1);
+			drawOnlyImage(image, x, y, color);
+		}
 		context.getGl().glPopMatrix();
 	}
 
@@ -863,7 +907,10 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
 			image = imageProvider.getImage(link);
+			context.getGl().glPushMatrix();
+			context.getGl().glTranslatef(0, 0, SMOKE_Z);
 			image.drawAt(context.getGl(), viewX, viewY, color, shade);
+			context.getGl().glPopMatrix();
 		}
 
 		if (movable.getAction() == EMovableAction.WALKING) {
@@ -1098,8 +1145,10 @@ public class MapObjectDrawer {
 		}
 		float base = getColor(fogStatus);
 		Color color = context.getPlayerColor(player);
-
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0, BORDER_STONE_Z);
 		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0), x, y, color, base);
+		context.getGl().glPopMatrix();
 	}
 
 	private static int getTreeType(int x, int y) {
@@ -1196,7 +1245,12 @@ public class MapObjectDrawer {
 				if (seq.length() > 0) {
 					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
-					draw(seq.getImageSafe(step), x, y, color);
+					drawOnlyImage(seq.getImageSafe(step), x, y, color);
+					ImageLink[] images = type.getImages();
+					if (images.length > 0) {
+						Image image = imageProvider.getImage(images[0]);
+						drawOnlyShadow(image, x, y, color);
+					}
 				}
 				playSound(building, SOUND_MILL, x, y);
 
@@ -1279,6 +1333,7 @@ public class MapObjectDrawer {
 					case INFANTRY:
 						OriginalImageLink imageLink = place.looksRight() ? INSIDE_BUILDING_RIGHT : INSIDE_BUILDING_LEFT;
 						image = imageProvider.getImage(imageLink);
+						((SettlerImage)image).setShadow(null);
 						break;
 					case BOWMAN:
 					default:
@@ -1396,6 +1451,16 @@ public class MapObjectDrawer {
 		draw(image, x, y, iColor);
 	}
 
+	private void drawOnlyImage(Image image, int x, int y, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawOnlyImage(image, x, y, iColor);
+	}
+
+	private void drawOnlyShadow(Image image, int x, int y, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawOnlyShadow(image, x, y, iColor);
+	}
+
 	private void drawWithHeight(Image image, int x, int y, int height, float color) {
 		int iColor = Color.getABGR(color, color, color, 1);
 		drawWithHeight(image, x, y, height, iColor);
@@ -1405,8 +1470,21 @@ public class MapObjectDrawer {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-
 		image.drawAt(context.getGl(), viewX, viewY, color);
+	}
+
+	private void drawOnlyImage(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		image.drawOnlyImageAt(context.getGl(), viewX, viewY, color);
+	}
+
+	private void drawOnlyShadow(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, color);
 	}
 
 	private void drawWithHeight(Image image, int x, int y, int height, int color) {

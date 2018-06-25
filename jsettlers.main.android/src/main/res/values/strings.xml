@@ -152,5 +152,8 @@
     <string name="destination">Dest.</string>
     <string name="goods_stock_title">Global storage</string>
     <string name="global_stock_message">Global storage settings must be set in one of your own settlements.</string>
+    <string name="goods_inventory_title">Inventory</string>
+    <string name="good_distribution_title">Distribution</string>
     <string name="confirm_destory_ships">Destroy ships?</string>
+    <string name="notification_channel_id">gameplay</string>
 </resources>

@@ -22,7 +22,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import java8.util.Optional;
-import java8.util.stream.Collectors;
+import java8.util.function.BiFunction;
+import java8.util.function.Predicate;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
@@ -709,13 +710,18 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		currentSelection = selection;
 	}
 
+	private void refreshSelection() {
+		updateSelection(SelectionSet::createFromFilteredSelectionSetKeepingType);
+	}
+
 	@Override
-	public void refreshSelection() {
+	public void renewSelection() {
+		updateSelection(SelectionSet::createFromFilteredSelectionSetUpdatingType);
+	}
+
+	private void updateSelection(BiFunction<SelectionSet, Predicate<ISelectable>, SelectionSet> updateFunction) {
 		if (!currentSelection.isEmpty()) {
-			SelectionSet newSelection = new SelectionSet(currentSelection.stream()
-																		 .filter(ISelectable::isSelected)
-																		 .filter(selected -> canSelectPlayer(selected.getPlayer().getPlayerId()))
-																		 .collect(Collectors.toList()));
+			SelectionSet newSelection = updateFunction.apply(currentSelection, selectable -> selectable.isSelected() && canSelectPlayer(selectable.getPlayer()));
 
 			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
 				setSelection(newSelection);

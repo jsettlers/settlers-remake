@@ -14,6 +14,17 @@
  *******************************************************************************/
 package go.graphics.swing.opengl;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GLCapabilities;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -23,19 +34,7 @@ import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLTextureHandle;
 import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
-
 /**
  * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
  *
@@ -56,7 +55,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -173,7 +173,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
-				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, bfr);
+				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, bfr);
 		setTextureParameters();
 
 		return new LWJGLTextureHandle(this, texture);
@@ -191,6 +191,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
 				GL11.GL_NEAREST);
+
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f) ; // prevent writing of transparent pixels to z buffer
 	}
 
 	@Override
@@ -198,7 +200,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			int width, int height, ShortBuffer data) throws IllegalBufferException {
 		bindTexture(texture);
 		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, left, bottom, width, height,
-				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_5_5_5_1, data);
+				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
 	private void bindTexture(TextureHandle texture) throws IllegalBufferException {

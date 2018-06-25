@@ -194,9 +194,9 @@ public final class ObjectsGrid implements Serializable {
 	public void informObjectsAboutAttackable(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
 		CoordinateStream area;
 		if (informFullArea) {
-			area = HexGridArea.stream(position.x, position.y, 1, Constants.TOWER_SEARCH_RADIUS);
+			area = HexGridArea.stream(position.x, position.y, 1, Constants.TOWER_ATTACKABLE_SEARCH_RADIUS);
 		} else {
-			area = HexGridArea.streamBorder(position.x, position.y, Constants.TOWER_SEARCH_RADIUS - 1);
+			area = HexGridArea.streamBorder(position.x, position.y, Constants.TOWER_ATTACKABLE_SEARCH_RADIUS - 1);
 		}
 
 		byte movableTeam = attackable.getPlayer().getTeamId();

@@ -207,4 +207,10 @@ public class MultiImageImage extends Image {
 	public int getHeight() {
 		return settler.height;
 	}
+
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
 }

@@ -1186,8 +1186,7 @@ public class Background implements IGraphicsBackgroundListener {
 			}
 
 			GLDrawContext gl = context.getGl();
-			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
+			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
 
 			updateGeometry(context, screenArea);
 

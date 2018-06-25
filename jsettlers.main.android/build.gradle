@@ -46,6 +46,10 @@ android {
     packagingOptions {
         pickFirst '**'
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -56,6 +60,7 @@ dependencies {
     implementation project(':jsettlers.common')
     implementation project(':jsettlers.network')
 
+    implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation 'com.android.support:appcompat-v7:' + rootProject.ext.androidSupportLibraryVersion
     implementation 'com.android.support:support-v4:' + rootProject.ext.androidSupportLibraryVersion
     implementation 'com.android.support:cardview-v7:' + rootProject.ext.androidSupportLibraryVersion

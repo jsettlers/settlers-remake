@@ -329,6 +329,16 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		drawAt(gl, viewX, viewY, Color.getABGR(iColor));
 	}
 
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, float viewX, float viewY, int iColor) {
+		drawAt(gl, viewX, viewY, iColor);
+	}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {
+		drawAt(gl, viewX, viewY, iColor);
+	}
+
 	protected float convertU(float relativeU) {
 		return relativeU * getTextureScaleX();
 	}

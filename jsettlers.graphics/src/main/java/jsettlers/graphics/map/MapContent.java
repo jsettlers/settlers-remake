@@ -35,6 +35,7 @@ import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -479,7 +480,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
 
 		boolean linePartiallyVisible = true;
-		for (int line = 0; line < area.getLines() + 50 && linePartiallyVisible; line++) {
+		for (int line = 0; line < area.getHeight() + 50 && linePartiallyVisible; line++) {
 			int y = area.getLineY(line);
 			if (y < 0) {
 				continue;
@@ -522,6 +523,19 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer.drawMapObject(x, y, object);
+		}
+
+		if (y > 3) {
+			object = map.getMapObjectsAt(x, y - 3);
+			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
+			}
+		}
+		if (y < map.getHeight() - 3) {
+			object = map.getMapObjectsAt(x, y + 3);
+			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+			}
 		}
 
 		IMovable movable = map.getMovableAt(x, y);

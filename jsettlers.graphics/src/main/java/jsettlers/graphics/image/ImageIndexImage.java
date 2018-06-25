@@ -146,6 +146,12 @@ public class ImageIndexImage extends Image {
 		gl.glPopMatrix();
 	}
 
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
+
 	private float[] createGeometry() {
 		return new float[] {
 				// top left
