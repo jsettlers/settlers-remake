@@ -104,7 +104,12 @@ public abstract class Image {
 	 *            The color the image should have (argb)
 	 */
 	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
-			float viewX, float viewY, int color);
+								float viewX, float viewY, int color);
+
+	public abstract void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer,
+										 float viewX, float viewY, int color);
+	public abstract void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer,
+										 float viewX, float viewY, int color);
 
 	/**
 	 * Draws the image at a given {@link DrawBuffer}.

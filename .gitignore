@@ -26,7 +26,7 @@ bin
 gen
 
 # JSettlers folders and files
-release
+/release
 save
 logs
 /replayForSavegame.log
