@@ -304,7 +304,7 @@ public class AiStatistics {
 	private void updatePlayerLand(short x, short y, Player player) {
 		byte playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
-		if (mainGrid.getFlagsGrid().isProtected(x, y)) {
+		if (mainGrid.getFlagsGrid().isBlockedOrProtected(x, y)) {
 			AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
 			if (o != null) {
 				if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
@@ -539,7 +539,7 @@ public class AiStatistics {
 		return mainGrid.isInBounds(x, y)
 				&& partitionsGrid.getPlayerIdAt(x, y) == playerId
 				&& !objectsGrid.isBuildingAt(x, y)
-				&& !flagsGrid.isProtected(x, y)
+				&& !flagsGrid.isBlockedOrProtected(x, y)
 				&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 

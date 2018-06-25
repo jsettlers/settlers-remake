@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2017
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,85 +11,61 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
+ */
 package jsettlers.common;
 
 import java.util.Locale;
 
 /**
  * This class represents a color with an alpha value.
- * 
+ *
  * @author Michael Zangl
  */
 public final class Color {
-	/**
-	 * Constant to quickly access black.
-	 */
-	public static final Color BLACK = new Color(0, 0, 0, 1);
-	/**
-	 * Constant to quickly access white.
-	 */
-	public static final Color WHITE = new Color(1, 1, 1, 1);
-	/**
-	 * Constant to quickly access red.
-	 */
-	public static final Color RED = new Color(1, 0, 0, 1);
-	/**
-	 * Constant to quickly access blue.
-	 */
-	public static final Color BLUE = new Color(0, 0, 1, 1);
-	/**
-	 * Constant to quickly access green.
-	 */
-	public static final Color GREEN = new Color(0, 1, 0, 1);
-	/**
-	 * Constant to quickly access a light green.
-	 */
+	public static final Color BLACK       = new Color(0, 0, 0, 1);
+	public static final Color WHITE       = new Color(1, 1, 1, 1);
+	public static final Color RED         = new Color(1, 0, 0, 1);
+	public static final Color BLUE        = new Color(0, 0, 1, 1);
+	public static final Color DARK_BLUE   = new Color(0, 0, 0.5f, 1);
+	public static final Color GREEN       = new Color(0, 1, 0, 1);
 	public static final Color LIGHT_GREEN = new Color(0, 0.7f, 0, 1);
-	/**
-	 * Constant to quickly access orange.
-	 */
-	public static final Color ORANGE = new Color(1, 0.6f, 0, 1);
-	/**
-	 * Constant to quickly access cyan.
-	 */
-	public static final Color CYAN = new Color(0, 1, 1, 1);
-	/**
-	 * Constant to quickly access transparent.
-	 */
+	public static final Color ORANGE      = new Color(1, 0.6f, 0, 1);
+	public static final Color CYAN        = new Color(0, 1, 1, 1);
 	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
-	private static final int SHIFT_ARGB_A = 24;
-	private static final int SHIFT_ARGB_R = 16;
-	private static final int SHIFT_ARGB_G = 8;
-	private static final int SHIFT_ARGB_B = 0;
-	private static final int ARGB_FIELD_MAX = 0xff;
+
+	private static final int   SHIFT_ARGB_A                       = 24;
+	private static final int   SHIFT_ARGB_R                       = 16;
+	private static final int   SHIFT_ARGB_G                       = 8;
+	private static final int   SHIFT_ARGB_B                       = 0;
+	private static final int   ARGB_FIELD_MAX                     = 0xff;
 	private static final float VALUE_CONSIDERED_TRANSPARENT_BELOW = .1f;
-	private static final int SHORT_SHIFT_RED = 12;
-	private static final int SHORT_SHIFT_GREEN = 8;
-	private static final int SHORT_SHIFT_BLUE = 4;
-	private static final int SHORT_FIELD_MAX = 0xf;
-	private static final int SHORT_MASK_ALPHA = 0xf;
+	private static final int   SHORT_SHIFT_RED                    = 12;
+	private static final int   SHORT_SHIFT_GREEN                  = 8;
+	private static final int   SHORT_SHIFT_BLUE                   = 4;
+	private static final int   SHORT_FIELD_MAX                    = 0xf;
+	private static final int   SHORT_MASK_ALPHA                   = 0xf;
 
 	private final float blue;
 	private final float red;
 	private final float green;
 	private final float alpha;
 
-	private final int argb;
+	private final int   argb;
 	private final short shortColor;
 
 	/**
 	 * Creates a new color using the argb notation.
-	 * 
+	 *
 	 * @param argb
 	 *            An integer in the hexadecimal form: AARRGGBB
 	 */
 	public Color(int argb) {
 		this(argb, argbFieldToFloat(argb >> SHIFT_ARGB_R),
-				argbFieldToFloat(argb >> SHIFT_ARGB_G),
-				argbFieldToFloat(argb >> SHIFT_ARGB_B),
-				argbFieldToFloat(argb >> SHIFT_ARGB_A));
+			argbFieldToFloat(argb >> SHIFT_ARGB_G),
+			argbFieldToFloat(argb >> SHIFT_ARGB_B),
+			argbFieldToFloat(argb >> SHIFT_ARGB_A)
+		);
 	}
 
 	private Color(float red, float green, float blue, float alpha) {
@@ -108,7 +84,7 @@ public final class Color {
 
 	/**
 	 * Converts this color to a greyscale color.
-	 * 
+	 *
 	 * @return The color in grey scale.
 	 */
 	public Color toGreyScale() {
@@ -118,7 +94,7 @@ public final class Color {
 
 	/**
 	 * Multiplies all color components with those of the other color.
-	 * 
+	 *
 	 * @param color
 	 *            The color.
 	 * @return A new color.
@@ -129,7 +105,7 @@ public final class Color {
 
 	/**
 	 * Gets the (float) alpha value.
-	 * 
+	 *
 	 * @return The alpha value. Range is 0..1
 	 */
 	public float getAlpha() {
@@ -138,7 +114,7 @@ public final class Color {
 
 	/**
 	 * Gets the (float) blue value.
-	 * 
+	 *
 	 * @return The blue value. Range is 0..1
 	 */
 	public float getBlue() {
@@ -147,7 +123,7 @@ public final class Color {
 
 	/**
 	 * Gets the (float) green value.
-	 * 
+	 *
 	 * @return The green value. Range is 0..1
 	 */
 	public float getGreen() {
@@ -156,7 +132,7 @@ public final class Color {
 
 	/**
 	 * Gets the (float) red value.
-	 * 
+	 *
 	 * @return The red value. Range is 0..1
 	 */
 	public float getRed() {
@@ -165,7 +141,7 @@ public final class Color {
 
 	/**
 	 * Gets this color in ARGB notation.
-	 * 
+	 *
 	 * @return The color as integer in ARGB format.
 	 */
 	public int getARGB() {
@@ -174,7 +150,7 @@ public final class Color {
 
 	/**
 	 * Converts a color given in float values to ARGB.
-	 * 
+	 *
 	 * @param red
 	 *            The red component. Range 0..1
 	 * @param green
@@ -186,16 +162,16 @@ public final class Color {
 	 * @return The color in argb notation.
 	 */
 	public static int getARGB(float red, float green, float blue,
-			float alpha) {
+							  float alpha) {
 		return floatToARGBField(alpha) << SHIFT_ARGB_A
-				| floatToARGBField(red) << SHIFT_ARGB_R
-				| floatToARGBField(green) << SHIFT_ARGB_G
-				| floatToARGBField(blue) << SHIFT_ARGB_B;
+			| floatToARGBField(red) << SHIFT_ARGB_R
+			| floatToARGBField(green) << SHIFT_ARGB_G
+			| floatToARGBField(blue) << SHIFT_ARGB_B;
 	}
 
 	/**
 	 * Gets this color in ABGR notation.
-	 * 
+	 *
 	 * @return The color as integer in ABGR format.
 	 */
 	public int getABGR() {
@@ -204,7 +180,7 @@ public final class Color {
 
 	/**
 	 * Converts a color given in float values to ARGB.
-	 * 
+	 *
 	 * @param red
 	 *            The red component. Range 0..1
 	 * @param green
@@ -233,7 +209,7 @@ public final class Color {
 
 	/**
 	 * Convert a 16 bit color to a 32 bit color
-	 * 
+	 *
 	 * @param color16bit
 	 *            The 16 bit color in
 	 * @return The 32 bit color;
@@ -257,7 +233,7 @@ public final class Color {
 
 	/**
 	 * Converts this color to a short color value required by OpenGL.
-	 * 
+	 *
 	 * @param multiply
 	 *            The factor to multiply this color with.
 	 * @return The short color.
@@ -277,9 +253,9 @@ public final class Color {
 			return 0;
 		} else {
 			return (short) (convertToShortField(red, multiply) << SHORT_SHIFT_RED
-					| convertToShortField(green, multiply) << SHORT_SHIFT_GREEN
-					| convertToShortField(blue, multiply) << SHORT_SHIFT_BLUE
-					| (short)(alpha * SHORT_MASK_ALPHA));
+				| convertToShortField(green, multiply) << SHORT_SHIFT_GREEN
+				| convertToShortField(blue, multiply) << SHORT_SHIFT_BLUE
+				| (short) (alpha * SHORT_MASK_ALPHA));
 		}
 	}
 
@@ -289,7 +265,7 @@ public final class Color {
 
 	/**
 	 * Converts a short value to a color object.
-	 * 
+	 *
 	 * @param s
 	 *            The short
 	 * @return The color object
@@ -297,8 +273,9 @@ public final class Color {
 	 */
 	public static Color fromShort(short s) {
 		return new Color((float) (s >> SHORT_SHIFT_RED & SHORT_FIELD_MAX) / SHORT_FIELD_MAX,
-				(float) (s >> SHORT_SHIFT_GREEN & SHORT_FIELD_MAX) / SHORT_FIELD_MAX,
-				(float) (s >> SHORT_SHIFT_BLUE & SHORT_FIELD_MAX) / SHORT_FIELD_MAX, s & SHORT_MASK_ALPHA);
+			(float) (s >> SHORT_SHIFT_GREEN & SHORT_FIELD_MAX) / SHORT_FIELD_MAX,
+			(float) (s >> SHORT_SHIFT_BLUE & SHORT_FIELD_MAX) / SHORT_FIELD_MAX, s & SHORT_MASK_ALPHA
+		);
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public class AiDifficultiesIT {
 		}
 
 		MapLoader mapCreator = MapUtils.getSpezialSumpf();
-		JSettlersGame game = new JSettlersGame(mapCreator, 1L, new OfflineNetworkConnector(), playerId, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapCreator, 3L, new OfflineNetworkConnector(), playerId, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 

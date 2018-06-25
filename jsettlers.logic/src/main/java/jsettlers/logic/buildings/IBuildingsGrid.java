@@ -25,6 +25,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -177,4 +178,8 @@ public interface IBuildingsGrid {
 	boolean isCoastReachable(ShortPoint2D position);
 
 	DockPosition findValidDockPosition(ShortPoint2D requestedDockPosition, ShortPoint2D buildingPosition, int maxRadius);
+
+	boolean isWater(int x, int y);
+
+	void setProtected(CoordinateStream positions, boolean protectedValue);
 }

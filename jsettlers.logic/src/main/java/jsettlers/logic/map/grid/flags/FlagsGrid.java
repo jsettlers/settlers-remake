@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2017
+/*
+ * Copyright (c) 2015 - 2018
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,13 +11,15 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
+ */
 package jsettlers.logic.map.grid.flags;
 
 import java.io.Serializable;
 import java.util.BitSet;
 
 import jsettlers.algorithms.partitions.IBlockingProvider;
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 
 /**
  * Grid that's storing the blocked information for fast access.
@@ -56,12 +58,12 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IProtec
 	 *            x coordinate
 	 * @param y
 	 *            y coordinate
-	 * @param blockedAndProtected
-	 *            the position will be set to blocked and protected if blocked == true<br>
-	 *            otherwise it will be set to unblocked and unprotected.
+	 * @param blocked
+	 *            the position will be set to blocked<br>
+	 *            otherwise it will be set to unblocked.
 	 */
-	public void setBlockedAndProtected(int x, int y, boolean blockedAndProtected) {
-		setBlockedAndProtected(x, y, blockedAndProtected, blockedAndProtected);
+	public void setBlocked(int x, int y, boolean blocked) {
+		this.blockedGrid.set(x + y * width, blocked);
 	}
 
 	/**
@@ -88,11 +90,16 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IProtec
 		}
 	}
 
+	public boolean isBlockedOrProtected(int x, int y) {
+		final int idx = x + y * width;
+		return this.blockedGrid.get(idx) || this.protectedGrid.get(idx);
+	}
+
 	public boolean isMarked(int x, int y) {
 		return this.markedGrid.get(x + y * width);
 	}
 
-	public void setMarked(short x, short y, boolean marked) {
+	public void setMarked(int x, int y, boolean marked) {
 		this.markedGrid.set(x + y * width, marked);
 	}
 
@@ -117,5 +124,16 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IProtec
 	@Override
 	public void setProtectedChangedListener(IProtectedChangedListener protectedChangedListener) {
 		this.protectedChangedListener = protectedChangedListener;
+	}
+
+	public void setProtected(CoordinateStream positions, boolean protectedValue) {
+		positions.forEach((x, y) -> setProtected(x, y, protectedValue));
+	}
+
+	public boolean hasBlockedOrProtectedNeighbor(int x, int y) {
+		for (EDirection currDir : EDirection.VALUES) {
+			if (isBlockedOrProtected(currDir.getNextTileX(x), currDir.getNextTileY(y))) { return true; }
+		}
+		return false;
 	}
 }

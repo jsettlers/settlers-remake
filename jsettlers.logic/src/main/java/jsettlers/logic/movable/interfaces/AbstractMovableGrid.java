@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2017
+/*
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,7 +11,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
+ */
 package jsettlers.logic.movable.interfaces;
 
 import jsettlers.algorithms.path.IPathCalculatable;
@@ -61,15 +61,15 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 
 	public abstract Path calculatePathTo(IPathCalculatable pathCalculatable, ShortPoint2D targetPos);
 
-	public abstract Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchDijkstra(IPathCalculatable pathCalculatable, short centerX, short centerY, short radius, ESearchType searchType);
 
-	public abstract Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchInArea(IPathCalculatable pathCalculatable, short centerX, short centerY, short radius, ESearchType searchType);
 
 	public abstract boolean isBlocked(int x, int y);
 
 	public abstract boolean isProtected(int x, int y);
 
-	public abstract boolean isBlockedOrProtected(int x, int y);
+	public abstract boolean isFreeNonBlockedNonProtectedPosition(IPathCalculatable pathCalculatable, int x, int y);
 
 	/**
 	 * Adds a map object to the grid that deletes itself after the given duration.

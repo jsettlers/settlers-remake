@@ -396,19 +396,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private int doingNothingAction() {
-		if (this.isShip()) {
-			return flockDelay;
-		}
-		if (grid.isBlockedOrProtected(position.x, position.y)) {
-			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
-			if (newPath == null) {
-				kill();
-				return -1;
-			} else {
-				followPath(newPath);
-				return animationDuration;
-			}
-		} else {
+		if (grid.isFreeNonBlockedNonProtectedPosition(this, position.x, position.y)) {
 			if (flockToDecentralize()) {
 				return animationDuration;
 			} else {
@@ -417,8 +405,17 @@ public final class Movable implements ILogicMovable {
 					lookInDirection(direction.getNeighbor(turnDirection));
 				}
 			}
-
 			return flockDelay;
+
+		} else {
+			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.UNPROTECTED_VALID_FREE_POSITION);
+			if (newPath == null) {
+				kill();
+				return -1;
+			} else {
+				followPath(newPath);
+				return animationDuration;
+			}
 		}
 	}
 
