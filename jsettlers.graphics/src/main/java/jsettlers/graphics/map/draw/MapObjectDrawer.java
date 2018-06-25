@@ -264,7 +264,6 @@ public class MapObjectDrawer {
 		int baseSequence = (shipType == EMovableType.FERRY) ? FERRY_BASE_SEQUENCE : CARGO_SHIP_BASE_SEQUENCE;
 
 		GLDrawContext glDrawContext = context.getGl();
-		DrawBuffer drawBuffer = context.getDrawBuffer();
 		MapCoordinateConverter mapCoordinateConverter = context.getConverter();
 		int sailSequence = (shipType == EMovableType.FERRY) ? 29 : 28;
 
@@ -282,7 +281,7 @@ public class MapObjectDrawer {
 			viewY = mapCoordinateConverter.getViewY(x, y, height);
 		}
 		// draw ship body
-		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
+		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
 		// prepare freight drawing
 		List<? extends IMovable> passengerList = ship.getPassengers();
 		byte[] dx = EDirection.getXDeltaArray();
@@ -335,7 +334,7 @@ public class MapObjectDrawer {
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
 						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
 					);
-					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
+					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
 			}
 		} else {
@@ -350,13 +349,13 @@ public class MapObjectDrawer {
 					if (material != null && count > 0) {
 						Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, material.getStackIndex());
 						Image image = seq.getImageSafe(count - 1);
-						image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, color, shade);
+						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, color, shade);
 					}
 				}
 			}
 		}
 		// draw sail
-		drawShipLink(SHIP_IMAGE_FILE, sailSequence, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
+		drawShipLink(SHIP_IMAGE_FILE, sailSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
 		if (shipType == EMovableType.FERRY) {
 			// draw passengers in front of the sail
 			for (int i = 0; i < numberOfFreight; i++) {
@@ -368,7 +367,7 @@ public class MapObjectDrawer {
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
 						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
 					);
-					image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
+					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, color, shade);
 				}
 			}
 		} else {
@@ -383,13 +382,13 @@ public class MapObjectDrawer {
 					if (material != null && count > 0) {
 						Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, material.getStackIndex());
 						Image image = seq.getImageSafe(count - 1);
-						image.drawAt(glDrawContext, drawBuffer, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, color, shade);
+						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, color, shade);
 					}
 				}
 			}
 		}
 		// draw ship front
-		drawShipLink(SHIP_IMAGE_FILE, baseSequence + 2, shipImageDirection, glDrawContext, drawBuffer, viewX, viewY, color, shade);
+		drawShipLink(SHIP_IMAGE_FILE, baseSequence + 2, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
 		if (ship.isSelected()) {
 			drawSelectionMark(viewX, viewY, ship.getHealth() / shipType.getHealth());
 		}
@@ -402,10 +401,10 @@ public class MapObjectDrawer {
 		return shipDirection.getNeighbor(((x + seatIndex + slowerAnimationStep) / 8 + (y + seatIndex + slowerAnimationStep) / 11 + seatIndex) % 3 - 1);
 	}
 
-	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, DrawBuffer db, float viewX, float viewY, Color color, float shade) {
+	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, float viewX, float viewY, Color color, float shade) {
 		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
 		Image image = imageProvider.getImage(shipLink);
-		image.drawAt(gl, db, viewX, viewY, color, shade);
+		image.drawAt(gl, viewX, viewY, color, shade);
 	}
 
 	private void drawObject(int x, int y, IMapObject object, float color) {
@@ -556,10 +555,10 @@ public class MapObjectDrawer {
 				break;
 
 			case DOCK:
-				float z = context.getDrawBuffer().getZ();
-				context.getDrawBuffer().setZ(DOCK_Z);
+				context.getGl().glPushMatrix();
+				context.getGl().glTranslatef(0, 0, DOCK_Z);
 				drawDock(x, y, object, color);
-				context.getDrawBuffer().setZ(z);
+				context.getGl().glPopMatrix();
 				break;
 
 			case FISH_DECORATION:
@@ -580,24 +579,24 @@ public class MapObjectDrawer {
 	}
 
 	private void drawConstructionMark(int x, int y, IMapObject object, float color) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(CONSTRUCTION_MARK_Z);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0, CONSTRUCTION_MARK_Z);
 		drawByProgress(x, y, 4, 6, object.getStateProgress(), color);
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawRoofFlag(int x, int y, IMapObject object, float color) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(FLAG_ROOF_Z);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0, FLAG_ROOF_Z);
 		drawPlayerableWaving(x, y, 13, 64, object, color);
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawPlacementBuilding(int x, int y, IMapObject object, float color) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0, PLACEMENT_BUILDING_Z);
 		drawBuilding(x, y, (IBuilding) object, color);
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawPlantDecoration(int x, int y, float color) {
@@ -842,7 +841,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 43, (int) (moveProgress * 40));
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			image.drawAt(context.getGl(), viewX, viewY, color, shade);
 		}
 
 		// melter action
@@ -856,7 +855,7 @@ public class MapObjectDrawer {
 			int metal = (movable.getGarrisonedBuildingType() == EBuildingType.IRONMELT) ? 37 : 36;
 			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, metal, number > 24 ? 24 : number);
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			image.drawAt(context.getGl(), viewX, viewY, color, shade);
 			// draw smoke
 			int smokeX = x - 9;
 			int smokeY = y - 14;
@@ -864,7 +863,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			image.drawAt(context.getGl(), viewX, viewY, color, shade);
 		}
 
 		if (movable.getAction() == EMovableAction.WALKING) {
@@ -877,7 +876,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
 		image = this.imageMap.getImageForSettler(movable, moveProgress);
-		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+		image.drawAt(context.getGl(), viewX, viewY, color, shade);
 
 		if (movable.isSelected()) {
 			drawSelectionMark(viewX, viewY, movable.getHealth() / movableType.getHealth());
@@ -896,18 +895,18 @@ public class MapObjectDrawer {
 	}
 
 	private void drawSelectionMark(float viewX, float viewY, float healthPercentage) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(MOVABLE_SELECTION_MARKER_Z);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0, MOVABLE_SELECTION_MARKER_Z);
 
 		Image image = ImageProvider.getInstance().getSettlerSequence(4, 7).getImageSafe(0);
-		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY + 20, -1);
+		image.drawAt(context.getGl(), viewX, viewY + 20, -1);
 
 		Sequence<? extends Image> sequence = ImageProvider.getInstance().getSettlerSequence(4, 6);
 		int healthId = Math.min((int) ((1 - healthPercentage) * sequence.length()), sequence.length() - 1);
 		Image healthImage = sequence.getImageSafe(healthId);
-		healthImage.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY + 38, -1);
+		healthImage.drawAt(context.getGl(), viewX, viewY + 38, -1);
 
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 
 	private void playSound(IMapObject object, int soundId, int x, int y) {
@@ -961,14 +960,14 @@ public class MapObjectDrawer {
 		boolean onGround = progress >= 1;
 		float z = 0;
 		if (onGround) {
-			z = context.getDrawBuffer().getZ();
-			context.getDrawBuffer().setZ(-.1f);
+			context.getGl().glPushMatrix();
+			context.getGl().glTranslatef(0, 0,-.1f);
 			iColor &= 0x7fffffff;
 		}
 		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index);
-		image.drawAt(context.getGl(), context.getDrawBuffer(), x, betweenTilesY + 20 * progress * (1 - progress) + 20, iColor);
+		image.drawAt(context.getGl(), betweenTilesY + 20 * progress * (1 - progress) + 20, iColor);
 		if (onGround) {
-			context.getDrawBuffer().setZ(z);
+			context.getGl().glPopMatrix();
 		}
 	}
 
@@ -979,15 +978,15 @@ public class MapObjectDrawer {
 	}
 
 	private void drawWaves(int x, int y, float color) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(WAVES_Z); // waves must not be drawn on top of other things than water
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0 ,0 , WAVES_Z); // waves must not be drawn on top of other things than water
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WAVES);
 		int len = seq.length();
 		int step = (animationStep / 2 + x / 2 + y / 2) % len;
 		if (step < len) {
 			draw(seq.getImageSafe(step), x, y, color);
 		}
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawGrowingCorn(int x, int y, IMapObject object, float color) {
@@ -1288,7 +1287,7 @@ public class MapObjectDrawer {
 				}
 				float viewX = towerX + place.getOffsetX();
 				float viewY = towerY + place.getOffsetY();
-				image.drawAt(gl, context.getDrawBuffer(), viewX, viewY, color, baseColor);
+				image.drawAt(gl, viewX, viewY, color, baseColor);
 
 				if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
 					playMovableSound(movable);
@@ -1303,13 +1302,13 @@ public class MapObjectDrawer {
 	}
 
 	private void drawBuildingSelectMarker(int x, int y) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(BUILDING_SELECTION_MARKER_Z);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0, BUILDING_SELECTION_MARKER_Z);
 
 		Image image = imageProvider.getSettlerSequence(SELECT_MARK_FILE, SELECT_MARK_SEQUENCE).getImageSafe(0);
 		draw(image, x, y, -1);
 
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawWithConstructionMask(int x, int y, float maskState, Image unsafeImage, float color) {
@@ -1328,11 +1327,11 @@ public class MapObjectDrawer {
 		float topLineBottom = 1 - maskState;
 		float topLineTop = Math.max(0, topLineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX, viewY, 0, 1, 1, 1, 0, topLineBottom, iColor);
-		image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX, viewY, 1, 1, 1, topLineBottom, 0, topLineBottom, iColor);
+		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0, topLineBottom, iColor);
+		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0, topLineBottom, iColor);
 
 		for (int i = 0; i < tiles; i++) {
-			image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX, viewY, 1.0f / tiles * i,
+			image.drawTriangle(context.getGl(), viewX, viewY, 1.0f / tiles * i,
 				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f), topLineTop, iColor
 			);
 		}
@@ -1377,18 +1376,18 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 
-		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, baseColor);
+		image.drawAt(context.getGl(), viewX, viewY, color, baseColor);
 	}
 
 	private void draw(Image image, int x, int y, float color, boolean background) {
 		float z = 0;
 		if (background) {
-			z = context.getDrawBuffer().getZ();
-			context.getDrawBuffer().setZ(z - .1f);
+			context.getGl().glPushMatrix();
+			context.getGl().glTranslatef(0, 0, -0.1f);
 		}
 		draw(image, x, y, color);
 		if (background) {
-			context.getDrawBuffer().setZ(z);
+			context.getGl().glPopMatrix();
 		}
 	}
 
@@ -1407,7 +1406,7 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 
-		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+		image.drawAt(context.getGl(), viewX, viewY, color);
 	}
 
 	private void drawWithHeight(Image image, int x, int y, int height, int color) {
@@ -1415,7 +1414,7 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, baseHeight + height);
 		float viewY = context.getConverter().getViewY(x, y, baseHeight + height);
 
-		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+		image.drawAt(context.getGl(), viewX, viewY, color);
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
@@ -1424,9 +1423,9 @@ public class MapObjectDrawer {
 	}
 
 	public void drawGotoMarker(ShortPoint2D gotoMarker, Image image) {
-		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(FLAG_ROOF_Z);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(0, 0 ,FLAG_ROOF_Z);
 		draw(image, gotoMarker.x, gotoMarker.y, 1f);
-		context.getDrawBuffer().setZ(z);
+		context.getGl().glPopMatrix();
 	}
 }

@@ -18,7 +18,6 @@ import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
-import jsettlers.graphics.map.draw.DrawBuffer;
 
 /**
  * This is an image that is stored in the image index file.
@@ -78,7 +77,7 @@ public class ImageIndexImage extends Image {
 		this.vmax = vmax;
 		this.isTorso = isTorso;
 
-		geometry = createGeometry(offsetX, offsetY, width, height, umin, vmin, umax, vmax);
+		geometry = createGeometry();
 	}
 
 	@Override
@@ -140,19 +139,14 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
-		try {
-			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin, umax, vmax, isTorso ? iColor : 0xffffffff);
-			if (torso != null) {
-				torso.drawAt(gl, buffer, viewX, viewY, iColor);
-			}
-
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+	public void drawAt(GLDrawContext gl, float viewX, float viewY, int color) {
+		gl.glPushMatrix();
+		gl.glTranslatef(viewX, viewY, 0);
+		draw(gl, Color.getABGR(color));
+		gl.glPopMatrix();
 	}
 
-	private static float[] createGeometry(int offsetX, int offsetY, int width, int height, float umin, float vmin, float umax, float vmax) {
+	private float[] createGeometry() {
 		return new float[] {
 				// top left
 				-offsetX + IMAGE_DRAW_OFFSET,

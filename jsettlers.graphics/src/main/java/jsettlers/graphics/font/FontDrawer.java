@@ -19,7 +19,6 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.ImageProvider;
 
 /**
@@ -31,7 +30,6 @@ import jsettlers.graphics.map.draw.ImageProvider;
  */
 public class FontDrawer implements TextDrawer {
 	private final EFontSize size;
-	private final DrawBuffer drawBuffer;
 
 	private static final DirectImageLink TEXTURE = new DirectImageLink("font.0");
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.?,„“()+-%_ÄÖÜ ";
@@ -44,14 +42,11 @@ public class FontDrawer implements TextDrawer {
 	 * 
 	 * @param gl
 	 *            The gl context to work with.
-	 * @param drawBuffer
-	 *            The draw buffer to work on.
 	 * @param size
 	 *            The font size to use.
 	 */
-	public FontDrawer(GLDrawContext gl, DrawBuffer drawBuffer, EFontSize size) {
+	public FontDrawer(GLDrawContext gl, EFontSize size) {
 		this.gl = gl;
-		this.drawBuffer = drawBuffer;
 		this.size = size;
 	}
 
@@ -82,12 +77,11 @@ public class FontDrawer implements TextDrawer {
 			// TODO: Chars, color
 			Image image = ImageProvider.getInstance().getImage(TEXTURE);
 
-			image.drawAt(gl, drawBuffer, cursorX, top, 0xffffffff);
-			image.drawAt(gl, drawBuffer, 0, 0, 0xffffffff);
+			image.drawAt(gl, cursorX, top, 0xffffffff);
+			image.drawAt(gl, 0, 0, 0xffffffff);
 			cursorX += image.getWidth();
 		}
 
-		drawBuffer.flush();
 		System.out.println("Drawed " + string + " chars");
 	}
 

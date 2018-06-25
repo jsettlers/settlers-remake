@@ -27,7 +27,6 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
@@ -105,11 +104,6 @@ public final class MapDrawContext implements IGLProvider {
 	public boolean ENABLE_ORIGINAL = true;
 
 	/**
-	 * The basic draw buffer we use.
-	 */
-	private final DrawBuffer buffer;
-
-	/**
 	 * Creates a new map context for a given map.
 	 *
 	 * @param map
@@ -126,8 +120,6 @@ public final class MapDrawContext implements IGLProvider {
 			DrawConstants.DISTANCE_Y, map.getWidth(),
 			map.getHeight()
 		);
-
-		buffer = new DrawBuffer(this);
 	}
 
 	/**
@@ -178,16 +170,6 @@ public final class MapDrawContext implements IGLProvider {
 	@Override
 	public GLDrawContext getGl() {
 		return this.gl;
-	}
-
-	/**
-	 * Gets the current draw buffer used for this context. You can add draws to this buffer instead of directly calling OpenGL since this object
-	 * buffers the calls.
-	 *
-	 * @return The buffer.
-	 */
-	public DrawBuffer getDrawBuffer() {
-		return buffer;
 	}
 
 	/**

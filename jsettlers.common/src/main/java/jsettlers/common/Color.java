@@ -219,6 +219,13 @@ public final class Color {
 		return getARGB(blue, green, red, alpha);
 	}
 
+	public static Color getABGR(int color) {
+		return new Color(color, argbFieldToFloat(color >> SHIFT_ARGB_B),
+				argbFieldToFloat(color >> SHIFT_ARGB_G),
+				argbFieldToFloat(color >> SHIFT_ARGB_R),
+				argbFieldToFloat(color >> SHIFT_ARGB_A));
+	}
+
 	private static int floatToARGBField(float f) {
 		return floatToAnyField(f, ARGB_FIELD_MAX);
 	}

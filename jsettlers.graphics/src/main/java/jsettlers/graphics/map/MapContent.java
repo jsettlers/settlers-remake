@@ -516,8 +516,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
 		}
-
-		context.getDrawBuffer().flush();
 	}
 
 	private void drawTile(int x, int y) {

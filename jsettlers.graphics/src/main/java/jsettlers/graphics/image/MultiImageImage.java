@@ -19,7 +19,6 @@ import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import jsettlers.common.Color;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
@@ -138,6 +137,14 @@ public class MultiImageImage extends Image {
 	}
 
 	@Override
+	public void drawAt(GLDrawContext gl, float viewX, float viewY, int color) {
+		gl.glPushMatrix();
+		gl.glTranslatef(viewX, viewY, 0);
+		draw(gl, Color.getABGR(color));
+		gl.glPopMatrix();
+	}
+
+	@Override
 	public void draw(GLDrawContext gl, Color color) {
 		draw(gl, color, 1);
 	}
@@ -199,42 +206,5 @@ public class MultiImageImage extends Image {
 	@Override
 	public int getHeight() {
 		return settler.height;
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, int iColor) {
-		drawAt(gl, buffer, viewX, viewY, iColor, iColor);
-	}
-
-	private void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, int sColor, int tColor) {
-		try {
-			TextureHandle texture = map.getTexture(gl);
-			buffer.addImage(texture, viewX + settler.offsetX
-					+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY - settler.height
-					+ IMAGE_DRAW_OFFSET, viewX + settler.offsetX + settler.width
-					+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY
-					+ IMAGE_DRAW_OFFSET, settler.umin, settler.vmin, settler.umax,
-					settler.vmax, sColor);
-			if (torso != null) {
-				buffer.addImage(texture, viewX + torso.offsetX
-						+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY - torso.height
-						+ IMAGE_DRAW_OFFSET, viewX + torso.offsetX + torso.width
-						+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY
-						+ IMAGE_DRAW_OFFSET, torso.umin, torso.vmin, torso.umax,
-						torso.vmax, tColor);
-			}
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, Color color, float multiply) {
-		drawAt(gl, buffer, viewX, viewY,
-				Color.getABGR(multiply, multiply, multiply, 1),
-				dimColor(color, multiply));
 	}
 }

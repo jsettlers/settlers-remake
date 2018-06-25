@@ -1240,6 +1240,8 @@ public class Background implements IGraphicsBackgroundListener {
 		int bfr_pos = y*bufferWidth+x;
 		int bfr_pos4 = bfr_pos*4;
 
+		// 100 is the highest allowed value
+		if(fow > 100) fow = 100;
 
 		if(fow != fogOfWarStatus[bfr_pos4]) {
 			invalidateTypePoint(x - 1, y);
@@ -1521,7 +1523,28 @@ public class Background implements IGraphicsBackgroundListener {
 		buffer.putFloat(u);
 		buffer.putFloat(v);
 
-		addVertexColor(context, buffer, x, y, fogOffset);
+		byte color;
+
+		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
+			color = 0;
+		} else {
+			int height1 = context.getHeight(x, y - 1);
+			int height2 = context.getHeight(x, y);
+			float fColor = 0.85f + (height1 - height2) * .15f;
+			if (fColor > 1.0f) {
+				fColor = 1.0f;
+			} else if (fColor < 0.4f) {
+				fColor = 0.4f;
+			}
+			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
+			fColor *= 255f;
+			color = (byte) (int) fColor;
+		}
+
+		buffer.put(color);
+		buffer.put(color);
+		buffer.put(color);
+		buffer.put((byte) 255);
 	}
 
 
@@ -1546,31 +1569,6 @@ public class Background implements IGraphicsBackgroundListener {
 		} else {
 			return number % modulo + modulo;
 		}
-	}
-
-	private void addVertexColor(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
-		byte color;
-
-		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
-			color = 0;
-		} else {
-			int height1 = context.getHeight(x, y - 1);
-			int height2 = context.getHeight(x, y);
-			float fColor = 0.85f + (height1 - height2) * .15f;
-			if (fColor > 1.0f) {
-				fColor = 1.0f;
-			} else if (fColor < 0.4f) {
-				fColor = 0.4f;
-			}
-			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
-			fColor *= 255f;
-			color = (byte) (int) fColor;
-		}
-
-		buffer.put(color);
-		buffer.put(color);
-		buffer.put(color);
-		buffer.put((byte) 255);
 	}
 
 	@Override

@@ -17,7 +17,6 @@ package jsettlers.graphics.image;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
-import jsettlers.graphics.map.draw.DrawBuffer;
 
 /**
  * This is an image that can be displayed on the GUI.
@@ -90,12 +89,10 @@ public abstract class Image {
 	public abstract void drawAt(GLDrawContext gl, float x, float y, Color color);
 
 	/**
-	 * Draws the image at a given {@link DrawBuffer}.
+	 * Draws the image
 	 * 
 	 * @param gl
 	 *            The gl context to use.
-	 * @param buffer
-	 *            The draw buffer to draw the image to.
 	 * @param viewX
 	 *            The x position the center of the image should be.
 	 * @param viewY
@@ -103,16 +100,14 @@ public abstract class Image {
 	 * @param color
 	 *            The color the image should have (argb)
 	 */
-	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
+	public abstract void drawAt(GLDrawContext gl,
 			float viewX, float viewY, int color);
 
 	/**
-	 * Draws the image at a given {@link DrawBuffer}.
+	 * Draws the image
 	 * 
 	 * @param gl
 	 *            The gl context to use.
-	 * @param buffer
-	 *            The draw buffer to draw the image to.
 	 * @param viewX
 	 *            The x position the center of the image should be.
 	 * @param viewY
@@ -122,10 +117,10 @@ public abstract class Image {
 	 * @param multiply
 	 *            A value to multiply the color with.
 	 */
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	public final void drawAt(GLDrawContext gl, float viewX,
 			float viewY, Color color, float multiply) {
 		int iColor = dimColor(color, multiply);
-		drawAt(gl, buffer, viewX, viewY, iColor);
+		drawAt(gl, viewX, viewY, iColor);
 	}
 
 	/**

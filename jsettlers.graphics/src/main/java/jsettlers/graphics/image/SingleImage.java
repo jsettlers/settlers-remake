@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
@@ -22,10 +24,8 @@ import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
 import java.awt.image.BufferedImage;
-import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
@@ -324,18 +324,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	public void drawAt(GLDrawContext gl, float viewX,
 			float viewY, int iColor) {
-		try {
-			TextureHandle textureIndex = getTextureIndex(gl);
-			buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
-							- getOffsetY(), viewX + getOffsetX() + width, viewY
-							- getOffsetY() - height,
-					0, 0, getTextureScaleX(),
-					getTextureScaleY(), iColor);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+		drawAt(gl, viewX, viewY, Color.getABGR(iColor));
 	}
 
 	protected float convertU(float relativeU) {
@@ -346,13 +337,14 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return relativeV * getTextureScaleY();
 	}
 
+	private GeometryHandle buildHandle = null;
+	private ByteBuffer buildBfr = ByteBuffer.allocateDirect(5*4*3).order(ByteOrder.nativeOrder());
+
 	/**
 	 * Draws a triangle part of this image on the image buffer.
 	 *
 	 * @param gl
 	 * 		The context to use
-	 * @param buffer
-	 * 		The buffer to draw on.
 	 * @param viewX
 	 * 		Image center x coordinate
 	 * @param viewY
@@ -365,10 +357,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * @param v3
 	 * @param activeColor
 	 */
-	public void drawTriangle(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	public void drawTriangle(GLDrawContext gl, float viewX,
 			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
 		try {
-			DrawBuffer.Buffer buffer2 = buffer.getBuffer(getTextureIndex(gl));
 			float left = getOffsetX() + viewX;
 			float top = -getOffsetY() + viewY;
 			// In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
@@ -383,20 +374,36 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			v2 = (float) Math.round(v2 * height) / height;
 			v3 = (float) Math.round(v3 * height) / height;
 
-			buffer2.addTriangle(
-					(left + u1 * width),
-					(top - v1 * height),
-					(left + u2 * width),
-					(top - v2 * height),
-					(left + u3 * width),
-					(top - v3 * height),
+			if(buildHandle == null) buildHandle = gl.generateGeometry(5*4*3);
+			buildBfr.asFloatBuffer().put(new float[] {
+					u1 * width,
+					-v1 * height,
+					0,
 					convertU(u1),
 					convertV(v1),
+
+					u2 * width,
+					-v2 * height,
+					0,
 					convertU(u2),
 					convertV(v2),
+
+					u3 * width,
+					-v3 * height,
+					0,
 					convertU(u3),
 					convertV(v3),
-					activeColor);
+
+			});
+			gl.updateGeometryAt(buildHandle, 0, buildBfr);
+
+			Color dc = Color.getABGR(activeColor);
+			gl.color(dc.getRed(), dc.getGreen(), dc.getBlue(), dc.getAlpha());
+
+			gl.glPushMatrix();
+			gl.glTranslatef(left, top ,0);
+			gl.drawTrianglesWithTexture(getTextureIndex(gl), buildHandle, 1);
+			gl.glPopMatrix();
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
