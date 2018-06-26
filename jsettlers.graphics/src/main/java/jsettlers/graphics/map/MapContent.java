@@ -534,8 +534,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 		if (y < map.getHeight() - 3) {
 			object = map.getMapObjectsAt(x, y + 3);
-			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
-				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+			if (object != null) {
+				EMapObjectType type = object.getObjectType();
+				if (type == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+					this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+				} else if (type == EMapObjectType.DOCK) {
+					this.objectDrawer.drawDock(x, y + 3, object);
+				}
 			}
 		}
 

@@ -168,21 +168,18 @@ public class MapObjectDrawer {
 	private static final int MOVE_TO_MARKER_SEQUENCE = 0;
 	private static final int MARKER_FILE             = 3;
 
-	private static final float CONSTRUCTION_MARK_Z  = 0.92f;
-	private static final float PLACEMENT_BUILDING_Z = 0.91f;
-
+	private static final float CONSTRUCTION_MARK_Z         = 0.92f;
+	private static final float PLACEMENT_BUILDING_Z        = 0.91f;
 	private static final float MOVABLE_SELECTION_MARKER_Z  = 0.9f;
 	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
+	private static final float FLAG_ROOF_Z                 = 0.89f;
+	private static final float SMOKE_Z                     = 0.9f;
+	private static final float WAVES_Z                     = -0.1f;
+	private static final float BORDER_STONE_Z              = -0.1f;
 
-	private static final float FLAG_ROOF_Z = 0.89f;
-	private static final float SMOKE_Z = 0.9f;
-
-	private static final int   SHIP_IMAGE_FILE          = 36;
-	private static final int   FERRY_BASE_SEQUENCE      = 4;
-	private static final int   CARGO_SHIP_BASE_SEQUENCE = 0;
-	private static final float WAVES_Z                  = -0.1f;
-	private static final float BORDER_STONE_Z           = -0.1f;
-	private static final float DOCK_Z                   = 0.f;
+	private static final int SHIP_IMAGE_FILE          = 36;
+	private static final int FERRY_BASE_SEQUENCE      = 4;
+	private static final int CARGO_SHIP_BASE_SEQUENCE = 0;
 
 	private static final int SMOKE_HEIGHT = 30;
 
@@ -237,6 +234,17 @@ public class MapObjectDrawer {
 		if (object.getNextObject() != null) {
 			drawMapObject(x, y, object.getNextObject());
 		}
+	}
+
+	public void drawDock(int x, int y, IMapObject object) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 1, 112, 0));
+		draw(image, x, y, getColor(object), color);
 	}
 
 	public void drawStockBack(int x, int y, IBuilding stock) {
@@ -594,13 +602,6 @@ public class MapObjectDrawer {
 				drawDonkey(x, y, object, color);
 				break;
 
-			case DOCK:
-				float z = context.getDrawBuffer().getZ();
-				context.getDrawBuffer().setZ(DOCK_Z);
-				drawDock(x, y, object, color);
-				context.getDrawBuffer().setZ(z);
-				break;
-
 			case FISH_DECORATION:
 				drawDecorativeFish(x, y, color);
 				break;
@@ -669,11 +670,6 @@ public class MapObjectDrawer {
 	private void drawDonkey(int x, int y, IMapObject object, float color) {
 		int i = (getAnimationStep(x, y) / 20) % 6;
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
-		draw(image, x, y, getColor(object), color);
-	}
-
-	private void drawDock(int x, int y, IMapObject object, float color) {
-		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 1, 112, 0));
 		draw(image, x, y, getColor(object), color);
 	}
 
