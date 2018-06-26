@@ -1928,6 +1928,14 @@ public final class MainGrid implements Serializable {
 			return landscapeGrid.getLandscapeTypeAt(x, y).isWater;
 		}
 
+		public boolean isNavigable(int x, int y) {
+			Optional<ShortPoint2D> blockingOptional = HexGridArea.stream(x, y, 0, 2)
+					.filterBounds(width, height)
+					.filter((x1, y1) -> !landscapeGrid.getLandscapeTypeAt(x1, y1).isWater || objectsGrid.getMapObjectAt(x1, y1, EMapObjectType.DOCK) != null)
+					.getFirst();
+			return !blockingOptional.isPresent();
+		}
+
 		@Override
 		public final void resetDebugColors() {
 			landscapeGrid.resetDebugColors();

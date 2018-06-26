@@ -137,4 +137,6 @@ public interface IGuiInputGrid {
 	FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
 
 	boolean isWater(int x, int y);
+
+	boolean isNavigable(int x, int y);
 }
