@@ -197,47 +197,39 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return this.data;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext, go.graphics.Color)
-	 */
 	@Override
-	public void draw(GLDrawContext gl, Color color) {
-		try {
-			if (color == null) {
-				gl.color(1, 1, 1, 1);
-			} else {
-				gl.color(color.getRed(), color.getGreen(), color.getBlue(),
-						color.getAlpha());
-			}
-
-			draw(gl);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+	public void drawAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+		drawOnlyImageAt(gl, x, y, fow);
 	}
 
 	@Override
-	public void draw(GLDrawContext gl, Color color, float multiply) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float fow) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
 		try {
-			if (color == null) {
-				gl.color(multiply, multiply, multiply, 1);
-			} else {
-				gl.color(color.getRed() * multiply, color.getGreen() * multiply,
-						color.getBlue() * multiply, color.getAlpha());
-			}
-
-			draw(gl);
+			TextureHandle textureIndex = getTextureIndex(gl);
+			GeometryHandle geometryIndex2 = getGeometry(gl);
+			gl.color(fow, fow, fow, 1);
+			gl.drawQuadWithTexture(textureIndex, geometryIndex2, geometryIndex.index);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
+		gl.glPopMatrix();
 	}
 
-	protected void draw(GLDrawContext gl) throws IllegalBufferException {
-		TextureHandle textureIndex = getTextureIndex(gl);
-		GeometryHandle geometryIndex2 = getGeometry(gl);
-		gl.drawQuadWithTexture(textureIndex, geometryIndex2, geometryIndex.index);
+	@Override
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
+		try {
+			TextureHandle textureIndex = getTextureIndex(gl);
+			GeometryHandle geometryIndex2 = getGeometry(gl);
+			gl.color(torsoColor.getRed()*fow, torsoColor.getGreen()*fow, torsoColor.getBlue()*fow, torsoColor.getAlpha());
+			gl.drawQuadWithTexture(textureIndex, geometryIndex2, geometryIndex.index);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
+		gl.glPopMatrix();
 	}
 
 	protected float[] getGeometry() {
@@ -261,22 +253,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	public float getTextureScaleY() {
 		return (float) height / textureHeight;
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float viewX,
-			float viewY, int iColor) {
-		drawAt(gl, viewX, viewY, Color.getABGR(iColor));
-	}
-
-	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float viewX, float viewY, int iColor) {
-		drawAt(gl, viewX, viewY, iColor);
-	}
-
-	@Override
-	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {
-		drawAt(gl, viewX, viewY, iColor);
 	}
 
 	protected float convertU(float relativeU) {
@@ -306,10 +282,10 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * @param v2
 	 * @param u3
 	 * @param v3
-	 * @param activeColor
+	 * @param color
 	 */
 	public void drawTriangle(GLDrawContext gl, float viewX,
-			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, float color) {
 		try {
 			float left = getOffsetX() + viewX;
 			float top = -getOffsetY() + viewY;
@@ -349,8 +325,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				});
 				gl.updateGeometryAt(buildHandle, 0, buildBfr);
 
-				Color dc = Color.getABGR(activeColor);
-				gl.color(dc.getRed(), dc.getGreen(), dc.getBlue(), dc.getAlpha());
+				gl.color(color, color, color, 1);
 
 				gl.glPushMatrix();
 				gl.glTranslatef(left, top ,0);

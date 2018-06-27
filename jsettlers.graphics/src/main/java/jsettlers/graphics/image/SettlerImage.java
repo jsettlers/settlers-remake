@@ -45,21 +45,20 @@ public class SettlerImage extends SingleImage {
 	}
 
 	@Override
-	public void draw(GLDrawContext gl, Color color) {
-		if (this.torso != null) {
-			super.draw(gl, null);
-			this.torso.draw(gl, color);
-		} else {
-			super.draw(gl, color);
-		}
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, torsoColor, fow);
 	}
 
 	@Override
-	public void draw(GLDrawContext gl, Color color, float multiply) {
-		super.draw(gl, null, multiply);
-		if (this.torso != null) {
-			this.torso.draw(gl, color, multiply);
-		}
+	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float fow) {
+		if(shadow != null) shadow.drawOnlyImageAt(gl, x, y, fow);
+	}
+
+	@Override
+	public void drawAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+		drawOnlyImageAt(gl, x , y, fow);
+		drawOnlyTorsoAt(gl, x, y, torsoColor != null ? torsoColor : Color.WHITE, fow);
+		drawOnlyShadowAt(gl, x, y, fow);
 	}
 
 	/**
@@ -95,31 +94,5 @@ public class SettlerImage extends SingleImage {
 			torso.setGeometry(geometryIndex);
 		}
 		return index;
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float viewX,
-					   float viewY, int iColor) {
-		super.drawAt(gl, viewX, viewY, iColor);
-		if (this.torso != null) {
-			this.torso.drawAt(gl, viewX, viewY, iColor);
-		}
-		if (this.shadow != null) {
-			this.shadow.drawAt(gl, viewX, viewY, -1);
-		}
-	}
-
-	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float viewX,
-					   float viewY, int iColor) {
-		super.drawAt(gl, viewX, viewY, iColor);
-	}
-
-	@Override
-	public void drawOnlyShadowAt(GLDrawContext gl, float viewX,
-					   float viewY, int iColor) {
-		if (this.shadow != null) {
-			this.shadow.drawAt(gl, viewX, viewY, -1);
-		}
 	}
 }

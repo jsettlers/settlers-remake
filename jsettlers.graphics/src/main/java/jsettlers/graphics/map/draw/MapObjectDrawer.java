@@ -30,7 +30,6 @@ import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
@@ -672,12 +671,12 @@ public class MapObjectDrawer {
 	private void drawDonkey(int x, int y, IMapObject object, float color) {
 		int i = (getAnimationStep(x, y) / 20) % 6;
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
-		draw(image, x, y, getColor(object), color);
+		draw(image, x, y, getColor(object));
 	}
 
 	private void drawDock(int x, int y, IMapObject object, float color) {
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 1, 112, 0));
-		draw(image, x, y, getColor(object), color);
+		draw(image, x, y, getColor(object));
 	}
 
 	private void drawDecorativeFish(int x, int y, float color) {
@@ -950,12 +949,12 @@ public class MapObjectDrawer {
 		context.getGl().glTranslatef(0, 0, MOVABLE_SELECTION_MARKER_Z);
 
 		Image image = ImageProvider.getInstance().getSettlerSequence(4, 7).getImageSafe(0);
-		image.drawAt(context.getGl(), viewX, viewY + 20, -1);
+		image.drawAt(context.getGl(), viewX, viewY + 20, Color.BLACK, 1);
 
 		Sequence<? extends Image> sequence = ImageProvider.getInstance().getSettlerSequence(4, 6);
 		int healthId = Math.min((int) ((1 - healthPercentage) * sequence.length()), sequence.length() - 1);
 		Image healthImage = sequence.getImageSafe(healthId);
-		healthImage.drawAt(context.getGl(), viewX, viewY + 38, -1);
+		healthImage.drawAt(context.getGl(), viewX, viewY + 38, Color.BLACK, 1);
 
 		context.getGl().glPopMatrix();
 	}
@@ -1009,14 +1008,13 @@ public class MapObjectDrawer {
 		int iColor = Color.getABGR(color, color, color, 1);
 
 		boolean onGround = progress >= 1;
-		float z = 0;
 		if (onGround) {
 			context.getGl().glPushMatrix();
 			context.getGl().glTranslatef(0, 0,-.1f);
 			iColor &= 0x7fffffff;
 		}
 		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index);
-		image.drawAt(context.getGl(), betweenTilesY + 20 * progress * (1 - progress) + 20, iColor);
+		image.drawAt(context.getGl(), betweenTilesY + 20 * progress * (1 - progress) + 20, iColor, null, 1);
 		if (onGround) {
 			context.getGl().glPopMatrix();
 		}
@@ -1148,11 +1146,10 @@ public class MapObjectDrawer {
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
-		float base = getColor(fogStatus);
 		Color color = context.getPlayerColor(player);
 		context.getGl().glPushMatrix();
 		context.getGl().glTranslatef(0, 0, BORDER_STONE_Z);
-		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0), x, y, color, base);
+		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0), x, y, color);
 		context.getGl().glPopMatrix();
 	}
 
@@ -1263,7 +1260,7 @@ public class MapObjectDrawer {
 				ImageLink[] images = type.getImages();
 				if (images.length > 0) {
 					Image image = imageProvider.getImage(images[0]);
-					draw(image, x, y, color, building.getBuildingType() == EBuildingType.MARKET_PLACE);
+					draw(image, x, y, null, color, building.getBuildingType() == EBuildingType.MARKET_PLACE);
 				}
 
 				byte fow = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
@@ -1368,7 +1365,7 @@ public class MapObjectDrawer {
 		context.getGl().glTranslatef(0, 0, BUILDING_SELECTION_MARKER_Z);
 
 		Image image = imageProvider.getSettlerSequence(SELECT_MARK_FILE, SELECT_MARK_SEQUENCE).getImageSafe(0);
-		draw(image, x, y, -1);
+		draw(image, x, y, Color.BLACK);
 
 		context.getGl().glPopMatrix();
 	}
@@ -1380,7 +1377,6 @@ public class MapObjectDrawer {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-		int iColor = Color.getABGR(color, color, color, 1);
 
 		SingleImage image = (SingleImage) unsafeImage;
 		// number of tiles in x direction, can be adjusted for performance
@@ -1389,12 +1385,12 @@ public class MapObjectDrawer {
 		float topLineBottom = 1 - maskState;
 		float topLineTop = Math.max(0, topLineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0, topLineBottom, iColor);
-		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0, topLineBottom, iColor);
+		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0, topLineBottom, color);
+		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0, topLineBottom, color);
 
 		for (int i = 0; i < tiles; i++) {
 			image.drawTriangle(context.getGl(), viewX, viewY, 1.0f / tiles * i,
-				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f), topLineTop, iColor
+				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f), topLineTop, color
 			);
 		}
 	}
@@ -1433,73 +1429,57 @@ public class MapObjectDrawer {
 		drawWithHeight(sequence.getImageSafe(index), x, y, height, color);
 	}
 
-	private void draw(Image image, int x, int y, Color color, float baseColor) {
+	private void draw(Image image, int x, int y, Color color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 
-		image.drawAt(context.getGl(), viewX, viewY, color, baseColor);
+		image.drawAt(context.getGl(), viewX, viewY, color, 1);
 	}
 
-	private void draw(Image image, int x, int y, float color, boolean background) {
-		float z = 0;
+	private void draw(Image image, int x, int y, Color color, float fowDim, boolean background) {
 		if (background) {
 			context.getGl().glPushMatrix();
 			context.getGl().glTranslatef(0, 0, -0.1f);
 		}
-		draw(image, x, y, color);
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+
+		image.drawAt(context.getGl(), viewX, viewY, color, fowDim);
 		if (background) {
 			context.getGl().glPopMatrix();
 		}
 	}
 
-	private void draw(Image image, int x, int y, float color) {
-		int iColor = Color.getABGR(color, color, color, 1);
-		draw(image, x, y, iColor);
+	private void draw(Image image, int x, int y, float fowDim) {
+		draw(image, x, y, null, fowDim, false);
+	}
+
+	private void draw(Image image, int x, int y, Color color, float fowDim) {
+		draw(image, x, y, color, fowDim, false);
 	}
 
 	private void drawOnlyImage(Image image, int x, int y, float color) {
-		int iColor = Color.getABGR(color, color, color, 1);
-		drawOnlyImage(image, x, y, iColor);
-	}
-
-	private void drawOnlyShadow(Image image, int x, int y, float color) {
-		int iColor = Color.getABGR(color, color, color, 1);
-		drawOnlyShadow(image, x, y, iColor);
-	}
-
-	private void drawWithHeight(Image image, int x, int y, int height, float color) {
-		int iColor = Color.getABGR(color, color, color, 1);
-		drawWithHeight(image, x, y, height, iColor);
-	}
-
-	private void draw(Image image, int x, int y, int color) {
-		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
-		image.drawAt(context.getGl(), viewX, viewY, color);
-	}
-
-	private void drawOnlyImage(Image image, int x, int y, int color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 		image.drawOnlyImageAt(context.getGl(), viewX, viewY, color);
 	}
 
-	private void drawOnlyShadow(Image image, int x, int y, int color) {
+	private void drawOnlyShadow(Image image, int x, int y, float color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, color);
 	}
 
-	private void drawWithHeight(Image image, int x, int y, int height, int color) {
+	private void drawWithHeight(Image image, int x, int y, int height, float color) {
 		int baseHeight = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, baseHeight + height);
 		float viewY = context.getConverter().getViewY(x, y, baseHeight + height);
 
-		image.drawAt(context.getGl(), viewX, viewY, color);
+		image.drawAt(context.getGl(), viewX, viewY, null, color);
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
@@ -1510,7 +1490,7 @@ public class MapObjectDrawer {
 	public void drawGotoMarker(ShortPoint2D gotoMarker, Image image) {
 		context.getGl().glPushMatrix();
 		context.getGl().glTranslatef(0, 0 ,FLAG_ROOF_Z);
-		draw(image, gotoMarker.x, gotoMarker.y, 1f);
+		draw(image, gotoMarker.x, gotoMarker.y, null, 1);
 		context.getGl().glPopMatrix();
 	}
 }

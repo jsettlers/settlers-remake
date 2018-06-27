@@ -36,7 +36,7 @@ public class MultiImageImage extends Image {
 
 	private SharedGeometry.SharedGeometryHandle settlerGeometry;
 	private SharedGeometry.SharedGeometryHandle torsoGeometry;
-	private float[] settlerFloats = null;
+	private float[] settlerFloats;
 	private float[] torsoFloats = null;
 
 	/**
@@ -103,40 +103,39 @@ public class MultiImageImage extends Image {
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, float viewX, float viewY, int color) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float fow) {
 		gl.glPushMatrix();
-		gl.glTranslatef(viewX, viewY, 0);
-		draw(gl, Color.getABGR(color));
+		gl.glTranslatef(x, y, 0);
+		try {
+			if(settlerGeometry == null)	settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
+			gl.color(fow, fow, fow, 1);
+			TextureHandle texture = map.getTexture(gl);
+			gl.drawQuadWithTexture(texture, settlerGeometry.geometry, settlerGeometry.index);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
+		}
 		gl.glPopMatrix();
 	}
 
 	@Override
-	public void draw(GLDrawContext gl, Color color) {
-		draw(gl, color, 1);
-	}
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+		if(torsoFloats == null) return;
 
-	@Override
-	public void draw(GLDrawContext gl, Color color, float multiply) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
 		try {
-			if(settlerGeometry == null) {
-				settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
-				torsoGeometry = SharedGeometry.addGeometry(gl, torsoFloats);
+			if(torsoGeometry == null) torsoGeometry = SharedGeometry.addGeometry(gl, torsoFloats);
+			if (torsoColor != null) {
+				gl.color(torsoColor.getRed()*fow,
+						torsoColor.getGreen()*fow,
+						torsoColor.getBlue()*fow, torsoColor.getAlpha());
 			}
-
-			gl.color(multiply, multiply, multiply, 1);
 			TextureHandle texture = map.getTexture(gl);
-			gl.drawQuadWithTexture(texture, settlerGeometry.geometry, settlerGeometry.index);
-			if (torsoGeometry != null) {
-				if (color != null) {
-					gl.color(color.getRed() * multiply,
-							color.getGreen() * multiply,
-							color.getBlue() * multiply, color.getAlpha());
-				}
-				gl.drawQuadWithTexture(texture, torsoGeometry.geometry, torsoGeometry.index);
-			}
+			gl.drawQuadWithTexture(texture, torsoGeometry.geometry, torsoGeometry.index);
 		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
+			e.printStackTrace();
 		}
+		gl.glPopMatrix();
 	}
 
 	private static final ByteBuffer tempBuffer = ByteBuffer.allocateDirect(5*4*4).order(ByteOrder.nativeOrder());
@@ -180,10 +179,4 @@ public class MultiImageImage extends Image {
 	public int getHeight() {
 		return settler.height;
 	}
-
-	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
-
-	@Override
-	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
 }

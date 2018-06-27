@@ -654,7 +654,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			float cy = getPosition().getCenterY();
 
 			for (ImageLink link : links) {
-				ImageProvider.getInstance().getImage(link).drawAt(gl, cx, cy);
+				ImageProvider.getInstance().getImage(link).drawAt(gl, cx, cy, null, 1);
 			}
 		}
 

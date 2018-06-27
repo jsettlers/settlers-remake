@@ -96,32 +96,27 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public void draw(GLDrawContext gl, Color color) {
-		draw(gl, color, 1);
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float fow) {
+		if(isTorso) return;
+		gl.color(fow, fow, fow, 1);
+		draw(gl, x, y, geometryIndex.geometry, geometryIndex.index);
 	}
 
 	@Override
-	public void draw(GLDrawContext gl, Color color, float multiply) {
-		try {
-			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
-		} catch (IllegalBufferException e) {
-			e.printStackTrace();
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+		if(isTorso) {
+			gl.color(torsoColor.getRed()*fow, torsoColor.getGreen()*fow, torsoColor.getBlue()*fow, torsoColor.getAlpha());
+			draw(gl, x, y, geometryIndex.geometry, geometryIndex.index);
 		}
-
-		if (color == null || !isTorso) {
-			gl.color(multiply, multiply, multiply, 1);
-		} else {
-			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply, color.getAlpha());
-		}
-
-		draw(gl, geometryIndex.geometry, geometryIndex.index);
-		if (torso != null) {
-			torso.draw(gl, color, multiply);
-		}
+		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, torsoColor, fow);
 	}
 
-	private void draw(GLDrawContext gl, GeometryHandle handle, int offset) {
+	private void draw(GLDrawContext gl, float x, float y, GeometryHandle handle, int offset) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
 		try {
+			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
+
 			gl.drawQuadWithTexture(texture.getTextureIndex(gl), handle, offset);
 		} catch (IllegalBufferException e) {
 			try {
@@ -132,21 +127,8 @@ public class ImageIndexImage extends Image {
 				e1.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float viewX, float viewY, int color) {
-		gl.glPushMatrix();
-		gl.glTranslatef(viewX, viewY, 0);
-		draw(gl, Color.getABGR(color));
 		gl.glPopMatrix();
 	}
-
-	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
-
-	@Override
-	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
 
 	private float[] createGeometry() {
 		return SharedGeometry.createQuadGeometry(-offsetX + IMAGE_DRAW_OFFSET, -offsetY + IMAGE_DRAW_OFFSET,
@@ -180,7 +162,7 @@ public class ImageIndexImage extends Image {
 
 		try {
 			gl.updateGeometryAt(imageRectHandle, 0, tempBuffer);
-			draw(gl, imageRectHandle, 0);
+			draw(gl, 0, 0, imageRectHandle, 0);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
