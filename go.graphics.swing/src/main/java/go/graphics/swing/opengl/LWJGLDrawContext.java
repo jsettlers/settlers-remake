@@ -286,16 +286,12 @@ public class LWJGLDrawContext implements GLDrawContext {
 	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException {
 		bindTexture(textureid);
 
-		int vtx_stride = paintHandle == null ? 6*4 : 0;
-		int paint_stride = paintHandle == null ? 6*4 : 3*4;
-		int paint_offset = paintHandle == null ? 3*4 : 0;
-
 		bindArrayBuffer(vertexHandle);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, vtx_stride, 0);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
 
 		if(paintHandle != null) bindArrayBuffer(paintHandle);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, paint_stride, paint_offset);
-		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, paint_stride, 8+paint_offset);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3*4, 0);
+		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3*4, 8);
 
 		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		for(int i = 0;i != lines;i++) {

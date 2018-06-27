@@ -268,13 +268,11 @@ public class AndroidDrawContext implements GLDrawContext {
 
 		glBindTexture(textureid);
 
-		int ptr_offset = quadOffset*4*5*4;
-
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex.getInternalId());
-		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, ptr_offset);
-		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4 + ptr_offset);
+		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, 0);
+		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4);
 
-		GLES11.glDrawArrays(GLES10.GL_TRIANGLE_FAN, 0, 4);
+		GLES11.glDrawArrays(GLES10.GL_TRIANGLE_FAN, quadOffset*4, 4);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
@@ -339,18 +337,14 @@ public class AndroidDrawContext implements GLDrawContext {
 	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) {
 		glBindTexture(textureid);
 
-		int vtx_stride = paintHandle == null ? 6*4 : 0;
-		int paint_stride = paintHandle == null ? 6*4 : 3*4;
-		int paint_offset = paintHandle == null ? 3*4 : 0;
-
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, vertexHandle.getInternalId());
 
-		GLES11.glVertexPointer(3, GLES11.GL_FLOAT, vtx_stride, 0);
+		GLES11.glVertexPointer(3, GLES11.GL_FLOAT, 0, 0);
 
 		if(paintHandle != null) GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, paintHandle.getInternalId());
 
-		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, paint_stride, paint_offset);
-		GLES11.glColorPointer(4, GLES11.GL_UNSIGNED_BYTE, paint_stride, 8+paint_offset);
+		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 3*4, 0);
+		GLES11.glColorPointer(4, GLES11.GL_UNSIGNED_BYTE, 3*4, 8);
 
 		GLES11.glEnableClientState(GLES11.GL_COLOR_ARRAY);
 		for(int i = 0;i != lines;i++) {
