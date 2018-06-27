@@ -60,10 +60,7 @@ public final class NullImage extends SingleImage {
 
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
-
+	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
 		gl.fillQuad(-HALFSIZE, -HALFSIZE, HALFSIZE, HALFSIZE);
 
@@ -82,8 +79,6 @@ public final class NullImage extends SingleImage {
 				+HALFSIZE,
 				0,
 		}, true);
-
-		gl.glPopMatrix();
 	}
 
 	private static GuiImage guiinstance;

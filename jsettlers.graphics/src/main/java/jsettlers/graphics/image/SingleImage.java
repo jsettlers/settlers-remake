@@ -199,13 +199,14 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	@Override
 	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		drawOnlyImageAt(gl, x, y, z, fow);
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, z);
+		drawOnlyImageAt(gl, fow);
+		gl.glPopMatrix();
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
+	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
@@ -214,13 +215,10 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
-		gl.glPopMatrix();
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
+	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
@@ -229,7 +227,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
-		gl.glPopMatrix();
 	}
 
 	protected float[] getGeometry() {

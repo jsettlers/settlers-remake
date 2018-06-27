@@ -1427,17 +1427,23 @@ public class MapObjectDrawer {
 	}
 
 	private void drawOnlyImage(Image image, int x, int y, float z, float color) {
+		context.getGl().glPushMatrix();
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-		image.drawOnlyImageAt(context.getGl(), viewX, viewY, z, color);
+		context.getGl().glTranslatef(viewX, viewY, z);
+		image.drawOnlyImageAt(context.getGl(), color);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawOnlyShadow(Image image, int x, int y, float z, float color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, z, color);
+		context.getGl().glPushMatrix();
+		context.getGl().glTranslatef(viewX, viewY, z);
+		image.drawOnlyShadowAt(context.getGl(), color);
+		context.getGl().glPopMatrix();
 	}
 
 	private void drawWithHeight(Image image, int x, int y, float z, int height, float color) {

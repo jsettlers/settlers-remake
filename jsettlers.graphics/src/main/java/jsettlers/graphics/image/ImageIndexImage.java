@@ -96,24 +96,22 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		if(isTorso) return;
 		gl.color(fow, fow, fow, 1);
-		draw(gl, x, y, z, geometryIndex.geometry, geometryIndex.index);
+		draw(gl, geometryIndex.geometry, geometryIndex.index);
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {
 		if(isTorso) {
 			gl.color(torsoColor.getRed()*fow, torsoColor.getGreen()*fow, torsoColor.getBlue()*fow, torsoColor.getAlpha());
-			draw(gl, x, y, z, geometryIndex.geometry, geometryIndex.index);
+			draw(gl, geometryIndex.geometry, geometryIndex.index);
 		}
-		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, z, torsoColor, fow);
+		if(torso != null) torso.drawOnlyTorsoAt(gl, torsoColor, fow);
 	}
 
-	private void draw(GLDrawContext gl, float x, float y, float z, GeometryHandle handle, int offset) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
+	private void draw(GLDrawContext gl, GeometryHandle handle, int offset) {
 		try {
 			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
 
@@ -127,7 +125,6 @@ public class ImageIndexImage extends Image {
 				e1.printStackTrace();
 			}
 		}
-		gl.glPopMatrix();
 	}
 
 	private float[] createGeometry() {
@@ -162,7 +159,7 @@ public class ImageIndexImage extends Image {
 
 		try {
 			gl.updateGeometryAt(imageRectHandle, 0, tempBuffer);
-			draw(gl, 0, 0, 0, imageRectHandle, 0);
+			draw(gl, imageRectHandle, 0);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

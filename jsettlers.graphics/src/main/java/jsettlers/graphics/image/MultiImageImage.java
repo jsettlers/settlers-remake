@@ -103,9 +103,7 @@ public class MultiImageImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
+	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		try {
 			if(settlerGeometry == null)	settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
 			gl.color(fow, fow, fow, 1);
@@ -114,15 +112,12 @@ public class MultiImageImage extends Image {
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
-		gl.glPopMatrix();
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {
 		if(torsoFloats == null) return;
 
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
 		try {
 			if(torsoGeometry == null) torsoGeometry = SharedGeometry.addGeometry(gl, torsoFloats);
 			if (torsoColor != null) {
@@ -135,7 +130,6 @@ public class MultiImageImage extends Image {
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
-		gl.glPopMatrix();
 	}
 
 	private static final ByteBuffer tempBuffer = ByteBuffer.allocateDirect(5*4*4).order(ByteOrder.nativeOrder());
