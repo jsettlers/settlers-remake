@@ -26,8 +26,8 @@ import go.graphics.TextureHandle;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.IGraphicsBackgroundListener;
-import jsettlers.common.map.IVisibilityStateProvider;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.map.MapDrawContext;
@@ -1239,8 +1239,7 @@ public class Background implements IGraphicsBackgroundListener {
 		int bfr_pos = y*bufferWidth+x;
 		int bfr_pos4 = bfr_pos*4;
 
-		// 100 is the highest allowed value
-		if(fow > 100) fow = 100;
+		if(fow > CommonConstants.FOG_OF_WAR_VISIBLE) fow = CommonConstants.FOG_OF_WAR_VISIBLE;
 
 		if(fow != fogOfWarStatus[bfr_pos4]) {
 			invalidateTypePoint(x - 1, y);
@@ -1264,7 +1263,7 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
-		IVisibilityStateProvider vsp = context.getFow();
+		IDirectGridProvider vsp = context.getFow();
 		byte[][] visibleStatus = vsp != null ? vsp.getVisibleStatusArray() : null;
 
 		try {
@@ -1281,7 +1280,7 @@ public class Background implements IGraphicsBackgroundListener {
 				for (int relativeX = 0; relativeX < width; relativeX++) {
 					int x = lineStartX + relativeX;
 					if(x < 0 || x >= bufferWidth) continue;
-					byte fow = visibleStatus != null ? visibleStatus[x][y] : context.getVisibleStatus(x, y);
+					byte fow = visibleStatus != null ? visibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 					updateMapType(context, x, y, fow);
 				}
 			}

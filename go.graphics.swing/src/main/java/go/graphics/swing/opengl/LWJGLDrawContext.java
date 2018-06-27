@@ -264,7 +264,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-		GL11.glDrawArrays(GL11.GL_QUADS, quadOffset*4, 4);
+		GL11.glDrawArrays(GL11.GL_QUADS, 4*quadOffset, 4);
 
 		bindArrayBuffer(null);
 	}
@@ -310,12 +310,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException {
 		bindArrayBuffer(handle);
 		data.rewind();
-		try(MemoryStack stack = MemoryStack.stackPush()) {
-			ByteBuffer bfr = stack.malloc(data.limit());
-			for (int i = 0; i != data.limit(); i++) bfr.put(i, data.get(i));
-			bfr.rewind();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, bfr);
-		}
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, data);
 		bindArrayBuffer(null);
 	}
 

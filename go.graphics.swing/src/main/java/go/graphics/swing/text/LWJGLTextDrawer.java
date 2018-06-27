@@ -14,10 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryStack;
-
-import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
@@ -31,7 +27,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /**

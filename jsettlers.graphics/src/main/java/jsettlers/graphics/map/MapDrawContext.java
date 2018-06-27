@@ -19,8 +19,8 @@ import java.util.Iterator;
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.IVisibilityStateProvider;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
@@ -476,9 +476,9 @@ public final class MapDrawContext implements IGLProvider {
 		return map.getVisibleStatus(x, y);
 	}
 
-	public IVisibilityStateProvider getFow() {
-		if(map instanceof  IVisibilityStateProvider.IVSPProvider) {
-			return ((IVisibilityStateProvider.IVSPProvider)map).getVSP();
+	public IDirectGridProvider getFow() {
+		if(map instanceof IDirectGridProvider) {
+			return ((IDirectGridProvider)map);
 		}
 		return null;
 	}

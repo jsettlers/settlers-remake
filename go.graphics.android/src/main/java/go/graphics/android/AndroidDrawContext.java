@@ -99,7 +99,6 @@ public class AndroidDrawContext implements GLDrawContext {
 
 	private FloatBuffer reuseableBuffer = null;
 	private ByteBuffer quadEleementBuffer;
-	private FloatBuffer reuseableBufferDuplicate;
 
 	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
 		int floatCount = points.length;
@@ -115,7 +114,6 @@ public class AndroidDrawContext implements GLDrawContext {
 			ByteBuffer quadPoints = ByteBuffer.allocateDirect(floatCount * 4);
 			quadPoints.order(ByteOrder.nativeOrder());
 			reuseableBuffer = quadPoints.asFloatBuffer();
-			reuseableBufferDuplicate = reuseableBuffer.duplicate();
 		} else {
 			reuseableBuffer.position(0);
 		}
@@ -276,8 +274,7 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, ptr_offset);
 		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4 + ptr_offset);
 
-		GLES11.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
-				quadEleementBuffer);
+		GLES11.glDrawArrays(GLES10.GL_TRIANGLE_FAN, 0, 4);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.util.BitSet;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -42,6 +44,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -149,6 +152,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public static final int NOTIFY_ATTACKED_SOUND_ID = 80;
 
 	private final IGraphicsGrid map;
+	private final IMapObject[] objectsGrid;
+	private final IMovable[] movableGrid;
+	private final BitSet borderGrid;
+	private final short width, height;
+	private final byte[][] visibleGrid;
 
 	private final Background background = new Background();
 
@@ -234,6 +242,20 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.framerate = new FramerateComputer(fpsLimit);
 		this.map = game.getMap();
+		if(map instanceof IDirectGridProvider) {
+			IDirectGridProvider dgp = (IDirectGridProvider) map;
+			objectsGrid = dgp.getObjectArray();
+			movableGrid = dgp.getMovableArray();
+			borderGrid = dgp.getBorderArray();
+			visibleGrid = dgp.getVisibleStatusArray();
+		} else {
+			objectsGrid = null;
+			movableGrid = null;
+			borderGrid = null;
+			visibleGrid = null;
+		}
+		width = map.getWidth();
+		height = map.getHeight();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
@@ -241,7 +263,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(soundPlayer);
 
-		objectDrawer = new MapObjectDrawer(context, soundmanager);
+		objectDrawer = new MapObjectDrawer(context, soundmanager, visibleGrid);
 		backgroundSound = new BackgroundSound(context, soundmanager);
 		backgroundSound.start();
 
@@ -473,8 +495,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * Draws the main content (buildings, settlers, ...), assuming the context is set up.
 	 */
 	private void drawMain(FloatRectangle screen) {
-		short height = map.getHeight();
-		short width = map.getWidth();
 		MapRectangle area = this.context.getConverter().getMapForScreen(screen);
 
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
@@ -520,30 +540,32 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawTile(int x, int y) {
-		IMapObject object = map.getMapObjectsAt(x, y);
+		int stile = x+y*width;
+
+		IMapObject object = objectsGrid != null ? objectsGrid[stile] : map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
 		if (y > 3) {
-			object = map.getMapObjectsAt(x, y - 3);
+			object = objectsGrid != null ? objectsGrid[stile-3*width] :map.getMapObjectsAt(x, y - 3);
 			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
 				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
 			}
 		}
-		if (y < map.getHeight() - 3) {
-			object = map.getMapObjectsAt(x, y + 3);
+		if (y < height - 3) {
+			object = objectsGrid != null ? objectsGrid[stile+3*width] : map.getMapObjectsAt(x, y + 3);
 			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
 				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
 			}
 		}
 
-		IMovable movable = map.getMovableAt(x, y);
+		IMovable movable = movableGrid != null ? movableGrid[stile] : map.getMovableAt(x, y);
 		if (movable != null) {
 			this.objectDrawer.draw(movable);
 		}
 
-		if (map.isBorder(x, y)) {
+		if (borderGrid != null ? borderGrid.get(stile) : map.isBorder(x, y)) {
 			byte player = map.getPlayerIdAt(x, y);
 			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}
@@ -569,7 +591,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		if(shapeHandle == null) shapeHandle = gl.storeGeometry(shape);
 
-		context.getScreenArea().stream().filterBounds(map.getWidth(), map.getHeight()).forEach((x, y) -> {
+		context.getScreenArea().stream().filterBounds(width, height).forEach((x, y) -> {
 			try {
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {

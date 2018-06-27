@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
+import go.graphics.SharedGeometry;
 import jsettlers.common.Color;
 
 /**
@@ -26,12 +30,12 @@ import jsettlers.common.Color;
  */
 public class ImageIndexImage extends Image {
 	private static final float IMAGE_DRAW_OFFSET = .5f;
-	private static final float[] tempBuffer = new float[5 * 6];
+	private static final ByteBuffer tempBuffer = ByteBuffer.allocateDirect(5*4*4).order(ByteOrder.nativeOrder());
 
 	private final short width;
 	private final short height;
 	private final float[] geometry;
-	private GeometryHandle geometryHandle = null;
+	private SharedGeometry.SharedGeometryHandle geometryIndex = null;
 	private final ImageIndexTexture texture;
 	private final int offsetX;
 	private final int offsetY;
@@ -97,7 +101,11 @@ public class ImageIndexImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-		if(geometryHandle == null) geometryHandle = gl.storeGeometry(geometry);
+		try {
+			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
+		}
 
 		if (color == null || !isTorso) {
 			gl.color(multiply, multiply, multiply, 1);
@@ -105,37 +113,24 @@ public class ImageIndexImage extends Image {
 			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply, color.getAlpha());
 		}
 
-		draw(gl, geometryHandle);
+		draw(gl, geometryIndex.geometry, geometryIndex.index);
 		if (torso != null) {
 			torso.draw(gl, color, multiply);
 		}
 	}
 
-	private void draw(GLDrawContext gl, GeometryHandle handle) {
+	private void draw(GLDrawContext gl, GeometryHandle handle, int offset) {
 		try {
-			gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), handle, 2);
+			gl.drawQuadWithTexture(texture.getTextureIndex(gl), handle, offset);
 		} catch (IllegalBufferException e) {
 			try {
 				texture.recreateTexture();
-				gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), handle, 2);
+				gl.drawQuadWithTexture(texture.getTextureIndex(gl), handle, offset);
 			} catch (IllegalBufferException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float x, float y) {
-		drawAt(gl, x, y, null);
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
-		draw(gl, color);
-		gl.glPopMatrix();
 	}
 
 	@Override
@@ -153,68 +148,25 @@ public class ImageIndexImage extends Image {
 	public void drawOnlyShadowAt(GLDrawContext gl, float viewX, float viewY, int iColor) {}
 
 	private float[] createGeometry() {
-		return new float[] {
-				// top left
-				-offsetX + IMAGE_DRAW_OFFSET,
-				-offsetY + height + IMAGE_DRAW_OFFSET,
-				0,
-				umin,
-				vmin,
-
-				// bottom left
-				-offsetX + IMAGE_DRAW_OFFSET,
-				-offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				umin,
-				vmax,
-
-				// bottom right
-				-offsetX + width + IMAGE_DRAW_OFFSET,
-				-offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				umax,
-				vmax,
-
-				// top right
-				-offsetX + width + IMAGE_DRAW_OFFSET,
-				-offsetY + height + IMAGE_DRAW_OFFSET,
-				0,
-				umax,
-				vmin,
-				// top left
-				-offsetX + IMAGE_DRAW_OFFSET,
-				-offsetY + height + IMAGE_DRAW_OFFSET,
-				0,
-				umin,
-				vmin,
-				// bottom right
-				-offsetX + width + IMAGE_DRAW_OFFSET,
-				-offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				umax,
-				vmax,
-		};
+		return SharedGeometry.createQuadGeometry(-offsetX + IMAGE_DRAW_OFFSET, -offsetY + IMAGE_DRAW_OFFSET,
+				-offsetX + width + IMAGE_DRAW_OFFSET,-offsetY + height + IMAGE_DRAW_OFFSET,
+				umin, vmax, umax, vmin);
 	}
+
+	private static GeometryHandle imageRectHandle = null;
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY, float maxX, float maxY) {
 		System.arraycopy(geometry, 0, tempBuffer, 0, 4 * 5);
-		tempBuffer[0] = minX + IMAGE_DRAW_OFFSET;
-		tempBuffer[1] = maxY + IMAGE_DRAW_OFFSET;
-		tempBuffer[5] = minX + IMAGE_DRAW_OFFSET;
-		tempBuffer[6] = minY + IMAGE_DRAW_OFFSET;
-		tempBuffer[10] = maxX + IMAGE_DRAW_OFFSET;
-		tempBuffer[11] = minY + IMAGE_DRAW_OFFSET;
-		tempBuffer[15] = maxX + IMAGE_DRAW_OFFSET;
-		tempBuffer[16] = maxY + IMAGE_DRAW_OFFSET;
-		tempBuffer[20] = minX + IMAGE_DRAW_OFFSET;
-		tempBuffer[21] = maxY + IMAGE_DRAW_OFFSET;
-		tempBuffer[25] = maxX + IMAGE_DRAW_OFFSET;
-		tempBuffer[26] = minY + IMAGE_DRAW_OFFSET;
+		tempBuffer.asFloatBuffer().get(geometry, 0, 4*5);
 
-		GeometryHandle temp = gl.storeGeometry(tempBuffer);
-		draw(gl, temp);
-		temp.delete();
+		try {
+			if(imageRectHandle == null) imageRectHandle = gl.generateGeometry(4*4*5);
+			gl.updateGeometryAt(imageRectHandle, 0, tempBuffer);
+			draw(gl, imageRectHandle, 0);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
+		}
 		if (torso != null) {
 			torso.drawImageAtRect(gl, minX, minY, maxX, maxY);
 		}

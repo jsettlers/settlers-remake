@@ -17,6 +17,7 @@ package jsettlers.graphics.image;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
+import go.graphics.SharedGeometry;
 import go.graphics.TextureHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
@@ -29,8 +30,8 @@ import jsettlers.graphics.image.reader.ImageMetadata;
 public class MultiImageImage extends Image {
 	private final MultiImageMap map;
 
-	private GeometryHandle settlerGeometry;
-	private GeometryHandle torsoGeometry;
+	private SharedGeometry.SharedGeometryHandle settlerGeometry;
+	private SharedGeometry.SharedGeometryHandle torsoGeometry;
 	private float[] settlerFloats = null;
 	private float[] torsoFloats = null;
 
@@ -92,48 +93,9 @@ public class MultiImageImage extends Image {
 
 		data.vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
 		data.vmax = (float) settlery / map.getHeight();
-		return new float[] {
-				// top left
-				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
-				0,
-				data.umin,
-				data.vmin,
-
-				// bottom left
-				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				data.umin,
-				data.vmax,
-
-				// bottom right
-				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				data.umax,
-				data.vmax,
-
-				// top right
-				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
-				0,
-				data.umax,
-				data.vmin,
-		};
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float x, float y) {
-		drawAt(gl, x, y, null);
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
-		draw(gl, color);
-		gl.glPopMatrix();
+		return SharedGeometry.createQuadGeometry(settlerMeta.offsetX + IMAGE_DRAW_OFFSET, -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
+				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET, -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
+				data.umin, data.vmax, data.umax, data.vmin);
 	}
 
 	@Override
@@ -151,21 +113,22 @@ public class MultiImageImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-		if(settlerGeometry == null) {
-			settlerGeometry = gl.storeGeometry(settlerFloats);
-			torsoGeometry = gl.storeGeometry(torsoFloats);
-		}
 		try {
+			if(settlerGeometry == null) {
+				settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
+				torsoGeometry = SharedGeometry.addGeometry(gl, torsoFloats);
+			}
+
 			gl.color(multiply, multiply, multiply, 1);
 			TextureHandle texture = map.getTexture(gl);
-			gl.drawQuadWithTexture(texture, settlerGeometry, 0);
+			gl.drawQuadWithTexture(texture, settlerGeometry.geometry, settlerGeometry.index);
 			if (torsoGeometry != null) {
 				if (color != null) {
 					gl.color(color.getRed() * multiply,
 							color.getGreen() * multiply,
 							color.getBlue() * multiply, color.getAlpha());
 				}
-				gl.drawQuadWithTexture(texture, torsoGeometry, 0);
+				gl.drawQuadWithTexture(texture, torsoGeometry.geometry, torsoGeometry.index);
 			}
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);

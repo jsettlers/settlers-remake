@@ -14,7 +14,6 @@
  *******************************************************************************/
 package go.graphics.android;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -29,9 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.opengl.GLES11;
-import android.opengl.GLES20;
-import android.opengl.GLES30;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -155,6 +151,8 @@ public class AndroidTextDrawer implements TextDrawer {
 	@Override
 	public void drawString(float x, float y, String string) {
 		initialize();
+
+		context.color(color_r, color_g, color_b, color_a);
 
 		int line = findLineFor(string);
 
@@ -310,9 +308,14 @@ public class AndroidTextDrawer implements TextDrawer {
 		return size.getSize() * pixelScale;
 	}
 
+	private float color_r = 1, color_g = 1, color_b = 1, color_a = 1;
+
 	@Override
 	public void setColor(float red, float green, float blue, float alpha) {
-		context.color(red, green, blue, alpha);
+		color_r = red;
+		color_g = green;
+		color_b = blue;
+		color_a = alpha;
 	}
 
 	public static TextDrawer getInstance(EFontSize size, AndroidDrawContext context) {

@@ -188,6 +188,7 @@ public class MapObjectDrawer {
 
 	private final SoundManager   sound;
 	private final MapDrawContext context;
+	private final byte[][] visibleGrid;
 
 	/**
 	 * An animation counter, used for trees and other waving/animated things.
@@ -208,9 +209,10 @@ public class MapObjectDrawer {
 	 * @param sound
 	 * 		The sound manager to send sounds to play to.
 	 */
-	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
+	public MapObjectDrawer(MapDrawContext context, SoundManager sound, byte[][] visibleGrid) {
 		this.context = context;
 		this.sound = sound;
+		this.visibleGrid = visibleGrid;
 	}
 
 	/**
@@ -226,7 +228,7 @@ public class MapObjectDrawer {
 	public void drawMapObject(int x, int y, IMapObject object) {
 		forceSetup();
 
-		byte fogStatus = context.getVisibleStatus(x, y);
+		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogStatus == 0) {
 			return; // break
 		}
@@ -241,7 +243,7 @@ public class MapObjectDrawer {
 
 	public void drawStockBack(int x, int y, IBuilding stock) {
 		forceSetup();
-		byte fogStatus = context.getVisibleStatus(x, y);
+		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogStatus == 0) {
 			return;
 		}
@@ -257,7 +259,7 @@ public class MapObjectDrawer {
 
 	public void drawStockFront(int x, int y, IBuilding stock) {
 		forceSetup();
-		byte fogStatus = context.getVisibleStatus(x, y);
+		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogStatus == 0) {
 			return;
 		}
@@ -272,7 +274,7 @@ public class MapObjectDrawer {
 	}
 
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
-		byte fogOfWarVisibleStatus = context.getVisibleStatus(x, y);
+		byte fogOfWarVisibleStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		EDirection direction = ship.getDirection();
 		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
 		EMapObjectType shipType = ship.getObjectType();
@@ -287,7 +289,7 @@ public class MapObjectDrawer {
 	private void drawShip(IMovable ship, int x, int y) {
 		forceSetup();
 
-		byte fogOfWarVisibleStatus = context.getVisibleStatus(x, y);
+		byte fogOfWarVisibleStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogOfWarVisibleStatus == 0) {
 			return;
 		}
@@ -859,7 +861,7 @@ public class MapObjectDrawer {
 	}
 
 	private void drawMovableAt(IMovable movable, int x, int y) {
-		byte fogStatus = context.getVisibleStatus(x, y);
+		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
@@ -1139,7 +1141,7 @@ public class MapObjectDrawer {
 	public void drawPlayerBorderObject(int x, int y, byte player) {
 		forceSetup();
 
-		byte fogStatus = context.getVisibleStatus(x, y);
+		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
@@ -1261,7 +1263,9 @@ public class MapObjectDrawer {
 					draw(image, x, y, color, building.getBuildingType() == EBuildingType.MARKET_PLACE);
 				}
 
-				if (building instanceof IOccupied && context.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED) {
+				byte fow = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
+
+				if (building instanceof IOccupied && fow > CommonConstants.FOG_OF_WAR_EXPLORED) {
 					drawOccupiers(x, y, (IOccupied) building, color);
 				}
 

@@ -72,7 +72,9 @@ public abstract class Image {
 	 * @param y
 	 *            The y position of the center
 	 */
-	public abstract void drawAt(GLDrawContext gl, float x, float y);
+	public void drawAt(GLDrawContext gl, float x, float y) {
+		drawAt(gl, x, y, null);
+	}
 
 	/**
 	 * Draws an object for a given player. The player -1 means no player.
@@ -86,7 +88,12 @@ public abstract class Image {
 	 * @param color
 	 *            The player number.
 	 */
-	public abstract void drawAt(GLDrawContext gl, float x, float y, Color color);
+	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
+		draw(gl, color);
+		gl.glPopMatrix();
+	}
 
 	/**
 	 * Draws the image

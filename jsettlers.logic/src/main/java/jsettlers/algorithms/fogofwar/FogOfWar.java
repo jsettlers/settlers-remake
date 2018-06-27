@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.fogofwar.CachedViewCircle.CachedViewCircleIterator;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.map.IVisibilityStateProvider;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
@@ -33,7 +32,7 @@ import jsettlers.logic.constants.MatchConstants;
  * 
  * @author Andreas Eberle
  */
-public final class FogOfWar implements Serializable, IVisibilityStateProvider {
+public final class FogOfWar implements Serializable {
 	private static final long serialVersionUID = 1877994785778678510L;
 	/**
 	 * Longest distance any unit may look
@@ -86,7 +85,6 @@ public final class FogOfWar implements Serializable, IVisibilityStateProvider {
 		}
 	}
 
-	@Override
 	public byte[][] getVisibleStatusArray() {
 		if(enabled) return sight;
 		return null;
