@@ -166,7 +166,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			TextureHandle textureHandle = getTextureIndex(gl);
 
-
+			if(tempHandle == null || !tempHandle.isValid()) tempHandle = gl.generateGeometry(4*4*5);
 			FloatBuffer fltcopy = tempBuffer.asFloatBuffer();
 
 			fltcopy.put(0, left);
@@ -185,7 +185,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			fltcopy.put(16, top);
 			fltcopy.put(18, (float) width / textureWidth);
 
-			if(tempHandle == null) tempHandle = gl.generateGeometry(4*4*5);
 			gl.updateGeometryAt(tempHandle, 0, tempBuffer);
 			gl.drawQuadWithTexture(textureHandle, tempHandle, 0);
 		} catch (IllegalBufferException e) {

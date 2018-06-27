@@ -156,7 +156,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private final IMovable[] movableGrid;
 	private final BitSet borderGrid;
 	private final short width, height;
-	private final byte[][] visibleGrid;
+	private byte[][] visibleGrid = null;
+	private final boolean isVisibleGridAvailable;
 
 	private final Background background = new Background();
 
@@ -247,12 +248,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			objectsGrid = dgp.getObjectArray();
 			movableGrid = dgp.getMovableArray();
 			borderGrid = dgp.getBorderArray();
-			visibleGrid = dgp.getVisibleStatusArray();
+			isVisibleGridAvailable = true;
 		} else {
 			objectsGrid = null;
 			movableGrid = null;
 			borderGrid = null;
-			visibleGrid = null;
+			isVisibleGridAvailable = false;
 		}
 		width = map.getWidth();
 		height = map.getHeight();
@@ -263,7 +264,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(soundPlayer);
 
-		objectDrawer = new MapObjectDrawer(context, soundmanager, visibleGrid);
+		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
 		backgroundSound.start();
 
@@ -300,6 +301,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			if (textDrawer.getTextDrawer(gl, EFontSize.NORMAL).getWidth("a") == 0) {
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
 			}
+
+			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(visibleGrid = ((IDirectGridProvider)map).getVisibleStatusArray());
 
 			if (newWidth != windowWidth || newHeight != windowHeight) {
 				resizeTo(newWidth, newHeight);

@@ -16,6 +16,7 @@ package go.graphics.swing.text;
 
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
+import go.graphics.SharedGeometry;
 import go.graphics.TextureHandle;
 import go.graphics.swing.opengl.LWJGLDrawContext;
 import go.graphics.text.EFontSize;
@@ -104,12 +105,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 				float dw = char_widths[l*16+c];
 				float dh = line_height;
 
-				float[] data = new float[] {
-						0, 	0,  0, dx/tex_width		, dy/tex_height,
-						0, 	dh, 0, dx/tex_width		, (dy+dh)/tex_height,
-						dw, dh, 0, (dx+dw)/tex_width, (dy+dh)/tex_height,
-						dw, 0,  0, (dx+dw)/tex_width, dy/tex_height
-				};
+				float[] data = SharedGeometry.createQuadGeometry(0, 0,dw, dh, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
 				System.arraycopy(data, 0, geodata, (l*16+c)*5*4, 5*4);
 
 				line_offset += char_widths[l*16+c]+char_spacing;

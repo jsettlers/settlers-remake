@@ -16,6 +16,7 @@ package jsettlers.graphics.image;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
@@ -157,11 +158,27 @@ public class ImageIndexImage extends Image {
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY, float maxX, float maxY) {
-		System.arraycopy(geometry, 0, tempBuffer, 0, 4 * 5);
-		tempBuffer.asFloatBuffer().get(geometry, 0, 4*5);
+		if(imageRectHandle == null) {
+			imageRectHandle = gl.generateGeometry(4*4*5);
+			tempBuffer.asFloatBuffer().get(geometry, 0, 4*5);
+		}
+
+		FloatBuffer fltcopy = tempBuffer.asFloatBuffer();
+
+		fltcopy.put(0, minX + IMAGE_DRAW_OFFSET);
+		fltcopy.put(1, maxY + IMAGE_DRAW_OFFSET);
+		fltcopy.put(5, minX + IMAGE_DRAW_OFFSET);
+		fltcopy.put(6, minY + IMAGE_DRAW_OFFSET);
+		fltcopy.put(10, maxX + IMAGE_DRAW_OFFSET);
+		fltcopy.put(11, minY + IMAGE_DRAW_OFFSET);
+		fltcopy.put(15, maxX + IMAGE_DRAW_OFFSET);
+		fltcopy.put(16, maxY + IMAGE_DRAW_OFFSET);
+		fltcopy.put(20, minX + IMAGE_DRAW_OFFSET);
+		fltcopy.put(21, maxY + IMAGE_DRAW_OFFSET);
+		fltcopy.put(25, maxX + IMAGE_DRAW_OFFSET);
+		fltcopy.put(26, minY + IMAGE_DRAW_OFFSET);
 
 		try {
-			if(imageRectHandle == null) imageRectHandle = gl.generateGeometry(4*4*5);
 			gl.updateGeometryAt(imageRectHandle, 0, tempBuffer);
 			draw(gl, imageRectHandle, 0);
 		} catch (IllegalBufferException e) {

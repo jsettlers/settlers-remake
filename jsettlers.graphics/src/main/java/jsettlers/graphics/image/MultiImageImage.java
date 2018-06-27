@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -135,27 +139,33 @@ public class MultiImageImage extends Image {
 		}
 	}
 
-	private static final float[] TEMP_BUFFER = new float[5 * 4];
+	private static final ByteBuffer tempBuffer = ByteBuffer.allocateDirect(5*4*4).order(ByteOrder.nativeOrder());
+	private static GeometryHandle tempGeometry  = null;
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 			float right, float top) {
 		try {
 			gl.color(1, 1, 1, 1);
+			if(tempGeometry == null) {
+				tempGeometry = gl.generateGeometry(20*4);
+				tempBuffer.asFloatBuffer().get(settlerFloats, 0, 20);
+			}
 
-			System.arraycopy(settlerFloats, 0, TEMP_BUFFER, 0, 4 * 5);
-			TEMP_BUFFER[0] = left + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[1] = top + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[5] = left + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[6] = bottom + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[10] = right + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[11] = bottom + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[15] = right + IMAGE_DRAW_OFFSET;
-			TEMP_BUFFER[16] = top + IMAGE_DRAW_OFFSET;
-			GeometryHandle temp_handle = gl.storeGeometry(TEMP_BUFFER);
+			FloatBuffer fltcopy = tempBuffer.asFloatBuffer();
 
-			gl.drawQuadWithTexture(map.getTexture(gl), temp_handle, 0);
-			temp_handle.delete();
+			fltcopy.put(0, left + IMAGE_DRAW_OFFSET);
+			fltcopy.put(1, top + IMAGE_DRAW_OFFSET);
+			fltcopy.put(5, left + IMAGE_DRAW_OFFSET);
+			fltcopy.put(6, bottom + IMAGE_DRAW_OFFSET);
+			fltcopy.put(10, right + IMAGE_DRAW_OFFSET);
+			fltcopy.put(11, bottom + IMAGE_DRAW_OFFSET);
+			fltcopy.put(15, right + IMAGE_DRAW_OFFSET);
+			fltcopy.put(16, top + IMAGE_DRAW_OFFSET);
+
+			gl.updateGeometryAt(tempGeometry, 0, tempBuffer);
+
+			gl.drawQuadWithTexture(map.getTexture(gl), tempGeometry, 0);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

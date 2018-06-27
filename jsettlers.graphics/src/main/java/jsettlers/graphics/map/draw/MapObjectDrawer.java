@@ -30,6 +30,7 @@ import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
@@ -188,7 +189,7 @@ public class MapObjectDrawer {
 
 	private final SoundManager   sound;
 	private final MapDrawContext context;
-	private final byte[][] visibleGrid;
+	private byte[][] visibleGrid = null;
 
 	/**
 	 * An animation counter, used for trees and other waving/animated things.
@@ -203,15 +204,16 @@ public class MapObjectDrawer {
 
 	/**
 	 * Creates a new {@link MapObjectDrawer}.
-	 *
-	 * @param context
+	 *  @param context
 	 * 		The context to use for computing the positions.
 	 * @param sound
-	 * 		The sound manager to send sounds to play to.
 	 */
-	public MapObjectDrawer(MapDrawContext context, SoundManager sound, byte[][] visibleGrid) {
+	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
 		this.context = context;
 		this.sound = sound;
+	}
+
+	public void setVisibleGrid(byte[][] visibleGrid) {
 		this.visibleGrid = visibleGrid;
 	}
 
@@ -1139,6 +1141,7 @@ public class MapObjectDrawer {
 	 * 		The player.
 	 */
 	public void drawPlayerBorderObject(int x, int y, byte player) {
+		// TODO: use instanced rendering for better android performance
 		forceSetup();
 
 		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
