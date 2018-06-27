@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import go.graphics.GLDrawContext;
@@ -654,7 +653,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			float cy = getPosition().getCenterY();
 
 			for (ImageLink link : links) {
-				ImageProvider.getInstance().getImage(link).drawAt(gl, cx, cy, null, 1);
+				ImageProvider.getInstance().getImage(link).drawAt(gl, cx, cy, 0, null, 1);
 			}
 		}
 

@@ -58,7 +58,7 @@ public class SelectionRow extends UIPanel {
 				.getMinY() + getPosition().getHeight() / 4;
 		float left = getPosition().getMinX();
 		float imagex = left + width / 20;
-		image.drawAt(gl, imagex, bottomy, color, 1);
+		image.drawAt(gl, imagex, bottomy, 0, color, 1);
 
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
 

@@ -17,7 +17,6 @@ package jsettlers.graphics.image;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
-import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
@@ -61,9 +60,9 @@ public final class NullImage extends SingleImage {
 
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
 		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
+		gl.glTranslatef(x, y, z);
 
 		gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
 		gl.fillQuad(-HALFSIZE, -HALFSIZE, HALFSIZE, HALFSIZE);

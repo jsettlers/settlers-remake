@@ -77,8 +77,8 @@ public class FontDrawer implements TextDrawer {
 			// TODO: Chars, color
 			Image image = ImageProvider.getInstance().getImage(TEXTURE);
 
-			image.drawAt(gl, cursorX, top, null, 1);
-			image.drawAt(gl, 0, 0, null, 1);
+			image.drawAt(gl, cursorX, top, 0, null, 1);
+			image.drawAt(gl, 0, 0, 0, null, 1);
 			cursorX += image.getWidth();
 		}
 

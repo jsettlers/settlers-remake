@@ -198,12 +198,12 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
-		drawOnlyImageAt(gl, x, y, fow);
+	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
+		drawOnlyImageAt(gl, x, y, z, fow);
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
 		gl.glPushMatrix();
 		gl.glTranslatef(x, y, 0);
 		try {
@@ -218,9 +218,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
+		gl.glTranslatef(x, y, z);
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);

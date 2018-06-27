@@ -103,9 +103,9 @@ public class MultiImageImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
 		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
+		gl.glTranslatef(x, y, z);
 		try {
 			if(settlerGeometry == null)	settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
 			gl.color(fow, fow, fow, 1);
@@ -118,11 +118,11 @@ public class MultiImageImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		if(torsoFloats == null) return;
 
 		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
+		gl.glTranslatef(x, y, z);
 		try {
 			if(torsoGeometry == null) torsoGeometry = SharedGeometry.addGeometry(gl, torsoFloats);
 			if (torsoColor != null) {

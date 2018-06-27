@@ -45,20 +45,20 @@ public class SettlerImage extends SingleImage {
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
-		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, torsoColor, fow);
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
+		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, z, torsoColor, fow);
 	}
 
 	@Override
-	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float fow) {
-		if(shadow != null) shadow.drawOnlyImageAt(gl, x, y, fow);
+	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z, float fow) {
+		if(shadow != null) shadow.drawOnlyImageAt(gl, x, y, z, fow);
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, float x, float y, Color torsoColor, float fow) {
-		drawOnlyImageAt(gl, x , y, fow);
-		drawOnlyTorsoAt(gl, x, y, torsoColor != null ? torsoColor : Color.WHITE, fow);
-		drawOnlyShadowAt(gl, x, y, fow);
+	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
+		drawOnlyImageAt(gl, x , y, z, fow);
+		drawOnlyTorsoAt(gl, x, y, z, torsoColor != null ? torsoColor : Color.WHITE, fow);
+		drawOnlyShadowAt(gl, x, y, z, fow);
 	}
 
 	/**
