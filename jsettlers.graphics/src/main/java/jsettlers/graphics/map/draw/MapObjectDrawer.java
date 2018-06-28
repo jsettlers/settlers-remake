@@ -307,16 +307,16 @@ public class MapObjectDrawer {
 
 		// get drawing position
 		Color color = context.getPlayerColor(ship.getPlayer().getPlayerId());
-		float viewX;
-		float viewY;
+		float viewX = context.getOffsetX();
+		float viewY = context.getOffsetY();
 		if (ship.getAction() == EMovableAction.WALKING) {
 			int originX = x - direction.getGridDeltaX();
 			int originY = y - direction.getGridDeltaY();
-			viewX = betweenTilesX(originX, originY, x, y, ship.getMoveProgress());
-			viewY = betweenTilesY;
+			viewX += betweenTilesX(originX, originY, x, y, ship.getMoveProgress());
+			viewY += betweenTilesY;
 		} else {
-			viewX = mapCoordinateConverter.getViewX(x, y, height);
-			viewY = mapCoordinateConverter.getViewY(x, y, height);
+			viewX += mapCoordinateConverter.getViewX(x, y, height);
+			viewY += mapCoordinateConverter.getViewY(x, y, height);
 		}
 		// draw ship body
 		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
@@ -597,10 +597,7 @@ public class MapObjectDrawer {
 				break;
 
 			case DOCK:
-				context.getGl().glPushMatrix();
-				context.getGl().glTranslatef(0, 0, DOCK_Z);
-				drawDock(x, y, object, color);
-				context.getGl().glPopMatrix();
+				drawDock(x, y, DOCK_Z, object, color);
 				break;
 
 			case FISH_DECORATION:
@@ -665,9 +662,9 @@ public class MapObjectDrawer {
 		draw(image, x, y, 0, getColor(object));
 	}
 
-	private void drawDock(int x, int y, IMapObject object, float color) {
+	private void drawDock(int x, int y, float z, IMapObject object, float color) {
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 1, 112, 0));
-		draw(image, x, y, 0, getColor(object));
+		draw(image, x, y, z, getColor(object));
 	}
 
 	private void drawDecorativeFish(int x, int y, float color) {
@@ -861,6 +858,8 @@ public class MapObjectDrawer {
 		Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogStatus);
 		Image image;
+		int offX = context.getOffsetX();
+		int offY = context.getOffsetY();
 		float viewX;
 		float viewY;
 		int height = context.getHeight(x, y);
@@ -879,7 +878,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 43, (int) (moveProgress * 40));
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), viewX, viewY, 0, color, shade);
+			image.drawAt(context.getGl(), viewX+offX, viewY+offY, 0, color, shade);
 		}
 
 		// melter action
@@ -893,7 +892,7 @@ public class MapObjectDrawer {
 			int metal = (movable.getGarrisonedBuildingType() == EBuildingType.IRONMELT) ? 37 : 36;
 			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, metal, number > 24 ? 24 : number);
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), viewX, viewY, 0, color, shade);
+			image.drawAt(context.getGl(), viewX+offX, viewY+offY, 0, color, shade);
 			// draw smoke
 			int smokeX = x - 9;
 			int smokeY = y - 14;
@@ -901,7 +900,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), viewX, viewY, SMOKE_Z, color, shade);
+			image.drawAt(context.getGl(), viewX+offX, viewY+offY, SMOKE_Z, color, shade);
 		}
 
 		if (movable.getAction() == EMovableAction.WALKING) {
@@ -914,10 +913,10 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
 		image = this.imageMap.getImageForSettler(movable, moveProgress);
-		image.drawAt(context.getGl(), viewX, viewY, 0, color, shade);
+		image.drawAt(context.getGl(), viewX+offX, viewY+offY, 0, color, shade);
 
 		if (movable.isSelected()) {
-			drawSelectionMark(viewX, viewY, movable.getHealth() / movableType.getHealth());
+			drawSelectionMark(viewX+offX, viewY+offY, movable.getHealth() / movableType.getHealth());
 		}
 	}
 
@@ -1316,8 +1315,8 @@ public class MapObjectDrawer {
 						image = this.imageMap.getImageForSettler(movable, movable.getMoveProgress());
 						break;
 				}
-				float viewX = towerX + place.getOffsetX();
-				float viewY = towerY + place.getOffsetY();
+				float viewX = towerX + place.getOffsetX() + context.getOffsetX();
+				float viewY = towerY + place.getOffsetY() + context.getOffsetY();
 				image.drawAt(gl, viewX, viewY, 0, color, baseColor);
 
 				if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
@@ -1342,8 +1341,8 @@ public class MapObjectDrawer {
 			return; // should not happen
 		}
 		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
+		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
+		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 
 		SingleImage image = (SingleImage) unsafeImage;
 		// number of tiles in x direction, can be adjusted for performance
@@ -1398,8 +1397,8 @@ public class MapObjectDrawer {
 
 	private void draw(Image image, int x, int y, float z, Color color) {
 		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
+		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
+		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 
 		image.drawAt(context.getGl(), viewX, viewY, z, color, 1);
 	}
@@ -1409,8 +1408,8 @@ public class MapObjectDrawer {
 			z -= 0.1f;
 		}
 		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
+		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
+		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 
 		image.drawAt(context.getGl(), viewX, viewY, z, color, fowDim);
 		if (background) {
@@ -1429,8 +1428,8 @@ public class MapObjectDrawer {
 	private void drawOnlyImage(Image image, int x, int y, float z, float color) {
 		context.getGl().glPushMatrix();
 		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
+		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
+		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 		context.getGl().glTranslatef(viewX, viewY, z);
 		image.drawOnlyImageAt(context.getGl(), color);
 		context.getGl().glPopMatrix();
@@ -1438,8 +1437,8 @@ public class MapObjectDrawer {
 
 	private void drawOnlyShadow(Image image, int x, int y, float z, float color) {
 		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
+		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
+		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 		context.getGl().glPushMatrix();
 		context.getGl().glTranslatef(viewX, viewY, z);
 		image.drawOnlyShadowAt(context.getGl(), color);
@@ -1448,8 +1447,8 @@ public class MapObjectDrawer {
 
 	private void drawWithHeight(Image image, int x, int y, float z, int height, float color) {
 		int baseHeight = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, baseHeight + height);
-		float viewY = context.getConverter().getViewY(x, y, baseHeight + height);
+		float viewX = context.getConverter().getViewX(x, y, baseHeight + height)+context.getOffsetX();
+		float viewY = context.getConverter().getViewY(x, y, baseHeight + height)+context.getOffsetY();
 
 		image.drawAt(context.getGl(), viewX, viewY, z, null, color);
 	}

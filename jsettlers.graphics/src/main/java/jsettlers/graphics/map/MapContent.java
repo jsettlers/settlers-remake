@@ -543,32 +543,32 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawTile(int x, int y) {
-		int stile = x+y*width;
+		int tileIndex = x+y*width;
 
-		IMapObject object = objectsGrid != null ? objectsGrid[stile] : map.getMapObjectsAt(x, y);
+		IMapObject object = objectsGrid != null ? objectsGrid[tileIndex] : map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
 		if (y > 3) {
-			object = objectsGrid != null ? objectsGrid[stile-3*width] :map.getMapObjectsAt(x, y - 3);
+			object = objectsGrid != null ? objectsGrid[tileIndex-3*width] :map.getMapObjectsAt(x, y - 3);
 			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
 				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
 			}
 		}
 		if (y < height - 3) {
-			object = objectsGrid != null ? objectsGrid[stile+3*width] : map.getMapObjectsAt(x, y + 3);
+			object = objectsGrid != null ? objectsGrid[tileIndex+3*width] : map.getMapObjectsAt(x, y + 3);
 			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
 				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
 			}
 		}
 
-		IMovable movable = movableGrid != null ? movableGrid[stile] : map.getMovableAt(x, y);
+		IMovable movable = movableGrid != null ? movableGrid[tileIndex] : map.getMovableAt(x, y);
 		if (movable != null) {
 			this.objectDrawer.draw(movable);
 		}
 
-		if (borderGrid != null ? borderGrid.get(stile) : map.isBorder(x, y)) {
+		if (borderGrid != null ? borderGrid.get(tileIndex) : map.isBorder(x, y)) {
 			byte player = map.getPlayerIdAt(x, y);
 			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}
@@ -594,17 +594,22 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		if(shapeHandle == null) shapeHandle = gl.storeGeometry(shape);
 
+		int drawX = context.getOffsetX();
+		int drawY = context.getOffsetY();
+
 		context.getScreenArea().stream().filterBounds(width, height).forEach((x, y) -> {
 			try {
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {
-					this.context.beginTileContext(x, y);
+					int height = context.getHeight(x, y);
+					gl.glPushMatrix();
+					gl.glTranslatef(drawX+context.getConverter().getViewX(x, y, height), drawY+context.getConverter().getViewY(x, y, height), 0);
 					gl.color(((argb >> 16) & 0xff) / 255f,
 							((argb >> 8) & 0xff) / 255f,
 							((argb >> 0) & 0xff) / 255f,
 							((argb >> 24) & 0xff) / 255f);
 					gl.drawQuadWithTexture(null, shapeHandle, 0);
-					context.endTileContext();
+					gl.glPopMatrix();
 				}
 			} catch (IllegalBufferException e) {
 				// TODO: Create a crash report

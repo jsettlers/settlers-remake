@@ -149,9 +149,19 @@ public final class MapDrawContext implements IGLProvider {
 		gl2.glPushMatrix();
 		float zoom = screen.getZoom();
 		gl2.glScalef(zoom, zoom, 1);
-		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
-			(int) -this.screen.getBottom() + .5f, 0
-		);
+
+		offsetX = (int) (-screen.getLeft()+.5f);
+		offsetY = (int) (-screen.getBottom()+.5f);
+	}
+
+	private int offsetX, offsetY;
+
+	public int getOffsetX() {
+		return offsetX;
+	}
+
+	public int getOffsetY() {
+		return offsetY;
 	}
 
 	/**
@@ -255,30 +265,6 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public MapCoordinateConverter getConverter() {
 		return this.converter;
-	}
-
-	/**
-	 * sets up the gl drawing context to draw a given tile.
-	 *
-	 * @param x
-	 *            The tile to draw.
-	 * @param y
-	 *            The tile to draw.
-	 */
-	public void beginTileContext(int x, int y) {
-		this.gl.glPushMatrix();
-		int height = getHeight(x, y);
-		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
-			this.converter.getViewY(x, y, height), 0
-		);
-	}
-
-	/**
-	 * Assumes that the user begun drawing a tile recently, and ends drawing the tile. This also resets the view matrix to the one before starting to
-	 * draw.
-	 */
-	public void endTileContext() {
-		this.gl.glPopMatrix();
 	}
 
 	/**

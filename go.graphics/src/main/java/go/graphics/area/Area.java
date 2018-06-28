@@ -53,13 +53,9 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	private int width;
 	private int height;
 
-	private final ArrayList<Region> regions = new ArrayList<>();
+	private Region region;
 
 	private final LinkedList<RedrawListener> redrawListeners = new LinkedList<>();
-
-	private ArrayList<PositionedRegion> regionPositions;
-
-	private Region activeRegion = null;
 
 	private DrawmodeListener drawmodeListener;
 
@@ -77,31 +73,15 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	 *            The width in pixels.
 	 */
 	public void setWidth(int width) {
-		this.regionPositions = null;
 		this.width = width;
 	}
 
-	/**
-	 * gets the width of the area.
-	 *
-	 * @return The width
-	 */
-	public int getWidth() {
-		return width;
-	}
-
 	public void setHeight(int height) {
-		this.regionPositions = null;
 		this.height = height;
 	}
 
-	public int getHeight() {
-		return height;
-	}
-
-	public void add(Region region) {
-		regions.add(region);
-		regionPositions = null;
+	public void set(Region region) {
+		this.region = region;
 		region.addRedrawListener(this);
 	}
 
@@ -117,104 +97,11 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	 * @param gl2
 	 */
 	public void drawArea(GLDrawContext gl2) {
-		if (regionPositions == null) {
-			recalculateRegions();
-		}
-
-		for (int i = 0; i < regionPositions.size(); i++) {
-			PositionedRegion position = regionPositions.get(i);
-
-			drawRegionAt(gl2, position);
-			// Rectangle border = position.getBorder();
-			// if (border != null) {
-			// drawBorder(gl2, border);
-			// }
-		}
-	}
-
-	private static void drawRegionAt(GLDrawContext gl2, PositionedRegion position) {
-		gl2.glPushMatrix();
-		gl2.glTranslatef(position.getLeft(), position.getBottom(), 0);
-
-		position.getRegion().drawRegion(gl2, position.getRight() - position.getLeft(),
-				position.getTop() - position.getBottom());
-
-		gl2.glPopMatrix();
-	}
-
-	private void recalculateRegions() {
-		int regionCount = regions.size();
-		regionPositions = new ArrayList<>();
-
-		int top = height;
-		int bottom = 0;
-		int left = 0;
-		int right = width;
-
-		for (int i = 0; i < regionCount; i++) {
-			Region r = regions.get(i);
-
-			PositionedRegion position = null;
-
-			if (r.isCollapsed() || bottom > top || left > right) {
-				position = null;
-				continue;
-			} else {
-
-				int size = r.getSize() + BORDER_SIZE;
-				switch (r.getPosition()) {
-				case Region.POSITION_TOP:
-					if (top - bottom < size) {
-						size = top - bottom;
-					}
-
-					position = new PositionedRegion(r, top, top - size, left,
-							right);
-
-					top -= size;
-					break;
-
-				case Region.POSITION_BOTTOM:
-					if (top - bottom < size) {
-						size = top - bottom;
-					}
-
-					position = new PositionedRegion(r, size, 0, left, right);
-
-					bottom += size;
-					break;
-
-				case Region.POSITION_LEFT:
-					if (right - left < size) {
-						size = right - left;
-					}
-
-					position = new PositionedRegion(r, top, bottom, 0, size);
-
-					left += size;
-					break;
-
-				case Region.POSITION_RIGHT:
-					if (right - left < size) {
-						size = right - left;
-					}
-
-					position = new PositionedRegion(r, top, bottom, right
-							- size, right);
-
-					left += size;
-					break;
-
-				case Region.POSITION_CENTER:
-				default:
-					position = new PositionedRegion(r, top, bottom, left,
-							right);
-					top = bottom; // break;
-					break;
-				}
-			}
-			regionPositions.add(position);
-		}
+		region.drawRegion(gl2, width, height);
+		// Rectangle border = position.getBorder();
+		// if (border != null) {
+		// drawBorder(gl2, border);
+		// }
 	}
 
 	// /**
@@ -239,92 +126,14 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	 *            The event.
 	 */
 	private void handleMouseEvent(GODrawEvent event) {
-		if (regionPositions == null) {
-			recalculateRegions();
-		}
-
-		for (int i = 0; i < regionPositions.size(); i++) {
-			PositionedRegion pos = regionPositions.get(i);
-			if (pos.contentContains(event.getDrawPosition())) {
-				setActiveRegion(regionPositions.get(i).getRegion());
-				GODrawEventProxy displacedEvent = new GODrawEventProxy(event, new UIPoint(pos.getLeft(),
-						pos.getBottom()));
-				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
-				break;
-			}
-		}
+		GODrawEventProxy displacedEvent = new GODrawEventProxy(event, new UIPoint(0, 0));
+		region.handleEvent(displacedEvent);
 	}
 
 	private void handleHoverEvent(GOHoverEvent e) {
-		e.setHandler(new SplitHoverHandler());
+		region.handleEvent(e);
 	}
 
-	private class SplitHoverHandler implements GOModalEventHandler {
-		private PositionedRegion currentRegion;
-		private RegionContent currentContent;
-		private SimpleHoverEvent sendEvent;
-
-		@Override
-		public void phaseChanged(GOEvent event) {
-			if (event.getPhase() == GOEvent.PHASE_STARTED) {
-				eventDataChanged(event);
-			}
-		}
-
-		@Override
-		public void finished(GOEvent event) {
-			if (sendEvent != null) {
-				sendEvent.finish();
-			}
-		}
-
-		@Override
-		public void aborted(GOEvent event) {
-			if (event != null) {
-				sendEvent.finish();
-			}
-		}
-
-		@Override
-		public void eventDataChanged(GOEvent event) {
-			if (event instanceof GOHoverEvent) {
-				UIPoint point = ((GOHoverEvent) event).getHoverPosition();
-				PositionedRegion nextRegion = getUnder(point);
-				RegionContent nextContent = nextRegion == null ? null : nextRegion.getRegion().getContent();
-				if (nextContent != currentContent) {
-					if (currentRegion != null) {
-						endWithRegion(point);
-					}
-					currentRegion = nextRegion;
-					currentContent = nextContent;
-					if (nextRegion != null) {
-						startWithRegion(point);
-					}
-				} else if (sendEvent != null) {
-					changePoint(point);
-				}
-			}
-		}
-
-		private void startWithRegion(UIPoint areaPoint) {
-			sendEvent = new SimpleHoverEvent();
-			changePoint(areaPoint);
-			currentRegion.getRegion().handleEvent(sendEvent);
-			sendEvent.initialized();
-		}
-
-		private void endWithRegion(UIPoint point) {
-			changePoint(point);
-			sendEvent.finish();
-			sendEvent = null;
-		}
-
-		private void changePoint(UIPoint point) {
-			double x = point.getX() - currentRegion.getLeft();
-			double y = point.getY() - currentRegion.getBottom();
-			sendEvent.setMousePosition(new UIPoint(x, y));
-		}
-	}
 
 	private class SimpleHoverEvent extends AbstractMouseEvent implements
 			GOHoverEvent {
@@ -343,34 +152,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 		}
 	}
 
-	private PositionedRegion getUnder(UIPoint p) {
-		if (regionPositions == null) {
-			recalculateRegions();
-		}
-
-		for (PositionedRegion region : regionPositions) {
-			if (region.contentContains(p)) {
-				return region;
-			}
-		}
-		return null;
-	}
-
 	public void handleCommandEvent(GOCommandEvent event) {
-		for (int i = 0; i < regionPositions.size(); i++) {
-			PositionedRegion pos = regionPositions.get(i);
-			if (pos.contentContains(event.getCommandPosition())) {
-				GOCommandEventProxy displacedEvent = new GOCommandEventProxy(event,
-						new UIPoint(pos.getLeft(), pos.getBottom()));
-				setActiveRegion(regionPositions.get(i).getRegion());
-				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
-				break;
-			}
-		}
-	}
-
-	private void setActiveRegion(Region region) {
-		activeRegion = region;
+		region.handleEvent(event);
 	}
 
 	/**
@@ -397,54 +180,14 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 		} else if (event instanceof GOHoverEvent) {
 			handleHoverEvent((GOHoverEvent) event);
 		} else if (event instanceof GOKeyEvent) {
-			if (activeRegion != null) {
-				activeRegion.handleEvent(event);
-			}
+			region.handleEvent(event);
 		} else if (event instanceof GOZoomEvent) {
-			if (activeRegion == null && regionPositions != null && !regionPositions.isEmpty()) {
-				// if there is no active region, set the first active,
-				// so the zoom is working in the Editor, even if you
-				// didn't press a mouse button
-				setActiveRegion(regionPositions.get(0).getRegion());
-			}
-			if (activeRegion != null) {
-				activeRegion.handleEvent(event);
-			}
+			region.handleEvent(event);
 		}
 	}
 
 	private void handlePanEvent(GOPanEvent event) {
-		if (event.getPanCenter() == null) {
-			if (!regionPositions.isEmpty()) {
-				PositionedRegion centerPosition = regionPositions
-						.get(regionPositions.size() - 1);
-				centerPosition.getRegion().handleEvent(event);
-			}
-		} else {
-			PositionedRegion foundPosition = getRegionAt(event.getPanCenter());
-
-			if (foundPosition != null) {
-				UIPoint topLeft = new UIPoint(foundPosition.getLeft(),
-						foundPosition.getTop());
-
-				GOPanEventProxy displacedEvent = new GOPanEventProxy(event,
-						topLeft);
-				foundPosition.getRegion().handleEvent(displacedEvent);
-			}
-		}
-	}
-
-	private PositionedRegion getRegionAt(UIPoint eventPosition) {
-		Iterator<PositionedRegion> it = regionPositions.iterator();
-		PositionedRegion foundPosition = null;
-		while (it.hasNext() && foundPosition == null) {
-			PositionedRegion currentPos = it.next();
-			if (currentPos != null
-					&& currentPos.contentContains(eventPosition)) {
-				foundPosition = currentPos;
-			}
-		}
-		return foundPosition;
+		region.handleEvent(event);
 	}
 
 	@Override

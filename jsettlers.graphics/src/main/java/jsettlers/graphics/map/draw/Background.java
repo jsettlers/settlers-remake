@@ -1186,12 +1186,13 @@ public class Background implements IGraphicsBackgroundListener {
 			}
 
 			GLDrawContext gl = context.getGl();
-			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
+			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
+			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
 
 			updateGeometry(context, screenArea);
 
 			gl.glPushMatrix();
-			gl.glTranslatef(0, 0, -.1f);
+			gl.glTranslatef(context.getOffsetX(), context.getOffsetY(), -.1f);
 			gl.glScalef(1, 1, 0);
 			gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
 			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), heighthandle, typehandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride);

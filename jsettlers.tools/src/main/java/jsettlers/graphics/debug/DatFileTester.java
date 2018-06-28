@@ -83,7 +83,7 @@ public class DatFileTester {
 		DatFileTester datFileTester = new DatFileTester();
 
 		Area area = new Area();
-		area.add(datFileTester.region);
+		area.set(datFileTester.region);
 		AreaContainer glCanvas = new AreaContainer(area);
 
 		JFrame frame = new JFrame("Opengl image test: " + DAT_FILE_INDEX);
@@ -153,7 +153,6 @@ public class DatFileTester {
 		}
 
 		private <T extends Image> void drawSequences(GLDrawContext gl2, int width, int height, SequenceList<T> sequences) {
-			gl2.glTranslatef(offsetX, offsetY, 0);
 
 			int y = 0;
 			int seqIndex = 0;
@@ -165,7 +164,7 @@ public class DatFileTester {
 				maxheight = drawSequence(gl2, width, height, y, seq);
 
 				gl2.color(0, 0, 0, 1);
-				drawer.drawString(20, y + 20, seqIndex + ":");
+				drawer.drawString(offsetX+20, offsetY+y+20, seqIndex + ":");
 
 				seqIndex++;
 				y -= maxheight + 40;
@@ -180,7 +179,7 @@ public class DatFileTester {
 				maxheight = Math.max(maxheight, image.getHeight());
 
 				if (x > -offsetX - 100 && x < -offsetX + width + 100 && y > -offsetY - 100 && y < -offsetY + height + 100) {
-					drawImage(gl2, y, index, x, (SingleImage) image);
+					drawImage(gl2, y+offsetY, index, x+offsetX, (SingleImage) image);
 				}
 				x += 100;
 			}
@@ -188,19 +187,12 @@ public class DatFileTester {
 		}
 
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
-			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), colors[index % colors.length]);
+			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
 			gl2.color(1, 0, 0, 1);
 			float[] line = new float[] { x, y, 0, x, y + image.getHeight() + image.getOffsetY(), 0, x - image.getOffsetX(),
 					y + image.getHeight() + image.getOffsetY(), 0 };
 			gl2.drawLine(line, false);
-			drawPoint(gl2, x, y);
-			drawPoint(gl2, x + image.getWidth(), y);
-			drawPoint(gl2, x + image.getWidth(), y + image.getHeight());
-			drawPoint(gl2, x, y + image.getHeight());
-		}
-
-		private void drawPoint(GLDrawContext gl2, int x, int y) {
 		}
 
 		private void printHelp() {

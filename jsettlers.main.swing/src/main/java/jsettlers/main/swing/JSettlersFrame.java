@@ -158,7 +158,7 @@ public class JSettlersFrame extends JFrame {
 		Region region = new Region(500, 500);
 		region.setContent(content);
 		Area area = new Area();
-		area.add(region);
+		area.set(region);
 
 		redrawTimer = new Timer("opengl-redraw");
 		redrawTimer.schedule(new TimerTask() {

@@ -43,18 +43,13 @@ public class LwjglTest {
 	private Area area;
 
 	public static Area generateArea() {
-		Region region1 = new Region(Region.POSITION_TOP);
-		Region region2 = new Region(Region.POSITION_LEFT);
-		Region region3 = new Region(Region.POSITION_CENTER);
+		Region region = new Region(Region.POSITION_CENTER);
 
 		Area area = new Area();
-		area.add(region1);
-		area.add(region2);
-		region2.setSize(200);
-		area.add(region3);
-		RegionContent content = new TestContent(region3);
-		region3.setContent(content);
-		region3.addEventHandler(content);
+		area.set(region);
+		RegionContent content = new TestContent(region);
+		region.setContent(content);
+		region.addEventHandler(content);
 		return area;
 	}
 
@@ -133,7 +128,6 @@ public class LwjglTest {
 					points[i * 3 + 1] = (float) point.getY();
 					points[i * 3 + 2] = 0;
 				}
-
 				gl2.drawLine(points, false);
 			}
 		}
