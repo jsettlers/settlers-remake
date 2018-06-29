@@ -81,14 +81,16 @@ public final class Minimap implements IMinimapData {
 		synchronized (updateMutex) {
 			this.width = width;
 			this.height = height;
-			updateGeometry = true;
 			miniMapShapeCalculator.setWidth(width);
 			miniMapShapeCalculator.setHeight(height);
+			updateGeometry = true;
 		}
 	}
 
-	private boolean updateGeometry = false;
+	private boolean updateGeometry = true;
 	private GeometryHandle geometry = null;
+	private GeometryHandle lineGeometry = null;
+	private static final ByteBuffer lineBfr = ByteBuffer.allocateDirect(12*4).order(ByteOrder.nativeOrder());
 
 	private ByteBuffer bfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
 
@@ -101,8 +103,15 @@ public final class Minimap implements IMinimapData {
 	public void draw(GLDrawContext context) {
 		boolean imageWasCreatedJustNow = false;
 		try {
-			if(geometry == null) geometry = context.storeGeometry( new float[] {0, 0, 0, 0, 0, width, 0, 0, 1, 0,(stride + 1) * width, height, 0, 1, 1, stride * width, height, 0, 0, 1,});
+			if(geometry == null) {
+				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, 0, width, 0, 0, 1, 0,(stride + 1) * width, height, 0, 1, 1, stride * width, height, 0, 0, 1,});
+				lineGeometry = context.generateGeometry(12*4);
+			}
+
 			if(updateGeometry) {
+				lineBfr.asFloatBuffer().put(miniMapShapeCalculator.getMiniMapShapeNodes(), 0, 12);
+				context.updateGeometryAt(lineGeometry, 0, lineBfr);
+
 				replaceGeometryValue(context, 5, width);
 				replaceGeometryValue(context, 10, (stride + 1) * width);
 				replaceGeometryValue(context, 11, height);
@@ -165,11 +174,11 @@ public final class Minimap implements IMinimapData {
 	}
 
 	private void drawViewMark(GLDrawContext context) {
-		float[] miniMapShapeNodes = miniMapShapeCalculator.getMiniMapShapeNodes();
-		if (miniMapShapeNodes.length != 18) {
-			return;
+		try {
+			context.drawLine(lineGeometry, 6, true);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
 		}
-		context.drawLine(miniMapShapeNodes, true);
 	}
 
 	public int getWidth() {
@@ -209,6 +218,7 @@ public final class Minimap implements IMinimapData {
 
 	public void setMapViewport(MapRectangle rect) {
 		miniMapShapeCalculator.setMapViewport(rect);
+		updateGeometry = true;
 	}
 
 	/**

@@ -21,8 +21,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
@@ -70,69 +68,33 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void fillQuad(float x1, float y1, float x2, float y2) {
-		ByteBuffer quadPoints = ByteBuffer.allocateDirect(4 * 2 * 4);
-		quadPoints.order(ByteOrder.nativeOrder());
-		FloatBuffer floatBuff = quadPoints.asFloatBuffer();
-		floatBuff.put(x1);
-		floatBuff.put(y1);
-
-		floatBuff.put(x1);
-		floatBuff.put(y2);
-
-		floatBuff.put(x2);
-		floatBuff.put(y2);
-
-		floatBuff.put(x2);
-		floatBuff.put(y1);
-
-		floatBuff.position(0);
-
+	public void fillQuad(GeometryHandle geometry) throws IllegalBufferException {
+		bindArrayBuffer(geometry);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
+
 		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, floatBuff);
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+		bindArrayBuffer(null);
 	}
 
 	@Override
-	public void drawLine(float[] points, boolean loop) {
-		if (points.length % 3 != 0) {
-			throw new IllegalArgumentException(
-					"Point array length needs to be multiple of 3.");
-		}
-		ByteBuffer floatBuff = generateTemporaryFloatBuffer(points);
-
+	public void drawLine(GeometryHandle geometryHandle, int count, boolean loop) throws IllegalBufferException {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		bindArrayBuffer(geometryHandle);
 		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, floatBuff);
-		GL11.glDrawArrays(loop ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP, 0,
-				points.length / 3);
+		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
+		GL11.glDrawArrays(loop ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP, 0, count);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		bindArrayBuffer(null);
 	}
-
-	private ByteBuffer reuseableBuffer = null;
 
 	/**
 	 * The global context valid flag. As soon as this is set to false, the context is not valid any more.
 	 */
 	private boolean contextValid = true;
-
-	private ByteBuffer generateTemporaryFloatBuffer(float[] points) {
-		FloatBuffer buffer;
-		if (reuseableBuffer == null
-				|| reuseableBuffer.capacity() < points.length * 4) {
-			reuseableBuffer = ByteBuffer.allocateDirect(points.length * 4);
-			reuseableBuffer.order(ByteOrder.nativeOrder());
-		} else {
-			reuseableBuffer.position(0);
-		}
-
-		buffer = reuseableBuffer.asFloatBuffer();
-		buffer.put(points);
-		buffer.position(0);
-		return reuseableBuffer;
-	}
 
 	@Override
 	public void glPushMatrix() {
@@ -230,8 +192,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public int makeSideLengthValid(int height) {
-		return TextureCalculator.supportedTextureSize(glcaps, height);
+	public int makeSideLengthValid(int width) {
+		return TextureCalculator.supportedTextureSize(glcaps, width);
 	}
 
 	@Override
@@ -314,7 +276,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	public GeometryHandle storeGeometry(float[] geometry) {
 		try {
 			GeometryHandle geometryBuffer =
-					generateGeometry(geometry.length * Float.BYTES);
+					generateGeometry(geometry.length * 4);
 			if (geometryBuffer == null) {
 				return null;
 			}

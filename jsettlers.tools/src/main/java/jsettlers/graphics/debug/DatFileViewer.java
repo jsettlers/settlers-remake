@@ -21,6 +21,8 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
@@ -43,6 +45,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
@@ -431,22 +435,26 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			return maxHeight;
 		}
 
+		private GeometryHandle lineGeometry = null;
+		private ByteBuffer lineBfr = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder());
+
 		private void drawImage(GLDrawContext gl2, int x, int y, int index, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			gl2.color(1, 0, 0, 1);
-			float[] line = new float[]{
-				x,
-				y,
-				0,
-				x,
-				y + image.getHeight() + image.getOffsetY(),
-				0,
-				x - image.getOffsetX(),
-				y + image.getHeight() + image.getOffsetY(),
-				0
-			};
-			gl2.drawLine(line, false);
+			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(2*3*4);
+
+			gl2.glPushMatrix();
+			try {
+				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), -image.getOffsetX(), image.getHeight() + image.getOffsetY()}, 0, 3);
+				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
+
+				gl2.color(1, 0, 0, 1);
+				gl2.glTranslatef(x, y, 0);
+				gl2.drawLine(lineGeometry, 3, false);
+			} catch (IllegalBufferException e) {
+				e.printStackTrace();
+			}
+			gl2.glPopMatrix();
 		}
 
 		// endregion

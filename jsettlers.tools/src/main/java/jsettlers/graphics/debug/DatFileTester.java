@@ -15,6 +15,8 @@
 package jsettlers.graphics.debug;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOKeyEvent;
@@ -49,6 +51,8 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Locale;
 
 public class DatFileTester {
@@ -186,13 +190,28 @@ public class DatFileTester {
 			return maxheight;
 		}
 
+		private GeometryHandle lineGeometry = null;
+		private ByteBuffer lineBfr = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder());
+
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			gl2.color(1, 0, 0, 1);
-			float[] line = new float[] { x, y, 0, x, y + image.getHeight() + image.getOffsetY(), 0, x - image.getOffsetX(),
-					y + image.getHeight() + image.getOffsetY(), 0 };
-			gl2.drawLine(line, false);
+			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(2*3*4);
+
+
+			gl2.glPushMatrix();
+
+			try {
+				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), - image.getOffsetX(), image.getHeight() + image.getOffsetY() }, 0, 3);
+				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
+
+				gl2.color(1, 0, 0, 1);
+				gl2.glTranslatef(x, y, 0);
+				gl2.drawLine(lineGeometry, 3, false);
+			} catch (IllegalBufferException e) {
+				e.printStackTrace();
+			}
+			gl2.glPopMatrix();
 		}
 
 		private void printHelp() {

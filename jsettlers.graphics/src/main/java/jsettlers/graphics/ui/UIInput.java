@@ -15,6 +15,8 @@
 package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOKeyEvent;
@@ -34,18 +36,6 @@ public class UIInput extends UIPanel implements GOEventHandler {
 
 	private StringBuffer inputString = new StringBuffer();
 	private int carret = 0;
-
-	public boolean handleEvent(GOKeyEvent event) {
-		String code = event.getKeyCode();
-		if (code.length() == 1 || code.equals("BACK_SPACE")
-				|| code.equals("LEFT") || code.equals("RIGHT")) {
-			event.setHandler(this);
-			return true;
-		} else {
-			System.out.println("Input cannot handle: " + code);
-			return false;
-		}
-	}
 
 	@Override
 	public void phaseChanged(GOEvent event) {
@@ -69,8 +59,9 @@ public class UIInput extends UIPanel implements GOEventHandler {
 	}
 
 	@Override
-	public void aborted(GOEvent event) {
-	}
+	public void aborted(GOEvent event) {}
+
+	private static GeometryHandle geometry = null;
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
@@ -82,17 +73,19 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		float x = getPosition().getMinX() + 2;
 		drawer.drawString(x, y, inputString.toString());
 
+		if(geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1});
+
 		float carretX = x + drawer.getWidth(inputString.substring(0, carret) + "X") - drawer.getWidth("X");
-		gl.drawLine(new float[] { carretX, y, 0, carretX, y + textHeight, 0 }, false);
-	}
 
-	public String getInputString() {
-		return inputString.toString();
-	}
-
-	public void setInputString(String inputString) {
-		this.inputString = new StringBuffer(inputString);
-		carret = inputString.length();
+		gl.glPushMatrix();
+		try {
+			gl.glScalef(0, textHeight, 0);
+			gl.glTranslatef(carretX, y, 0);
+			gl.drawLine(geometry, 2, false);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
+		}
+		gl.glPopMatrix();
 	}
 
 	@Override

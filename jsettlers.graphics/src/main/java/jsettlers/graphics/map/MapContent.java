@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.BitSet;
 
 import go.graphics.GLDrawContext;
@@ -428,15 +430,52 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		oldScreen = newScreen;
 	}
 
+	private GeometryHandle selectionArea = null;
+	private boolean updateSelectionArea = true;
+	private ByteBuffer selectionAreaBuffer = ByteBuffer.allocateDirect(4*2*4).order(ByteOrder.nativeOrder());
+
+	private void updateSelectionArea() {
+		float x1 = (float) this.currentSelectionAreaStart.getX();
+		float y1 = (float) this.currentSelectionAreaStart.getY();
+		float x2 = (float) this.currentSelectionAreaEnd.getX();
+		float y2 = (float) this.currentSelectionAreaEnd.getY();
+
+		selectionAreaBuffer.putFloat(x1);
+		selectionAreaBuffer.putFloat(y1);
+
+		selectionAreaBuffer.putFloat(x2);
+		selectionAreaBuffer.putFloat(y1);
+
+		selectionAreaBuffer.putFloat(x2);
+		selectionAreaBuffer.putFloat(y2);
+
+		selectionAreaBuffer.putFloat(x1);
+		selectionAreaBuffer.putFloat(y2);
+	}
+
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
-			float x1 = (float) this.currentSelectionAreaStart.getX();
-			float y1 = (float) this.currentSelectionAreaStart.getY();
-			float x2 = (float) this.currentSelectionAreaEnd.getX();
-			float y2 = (float) this.currentSelectionAreaEnd.getY();
+
+			if(selectionArea == null) {
+				selectionArea = gl.generateGeometry(4*2*4);
+			}
+
+			if(updateSelectionArea) {
+				updateSelectionArea();
+				try {
+					gl.updateGeometryAt(selectionArea, 0, selectionAreaBuffer);
+				} catch (IllegalBufferException e) {
+					e.printStackTrace();
+				}
+				updateSelectionArea = false;
+			}
 
 			gl.color(1, 1, 1, 1);
-			gl.drawLine(new float[] { x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0 }, true);
+			try {
+				gl.drawLine(selectionArea, 4, true);
+			} catch (IllegalBufferException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -811,6 +850,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private void handleDrawOnMap(GODrawEvent drawEvent) {
 		this.currentSelectionAreaStart = drawEvent.getDrawPosition();
+		updateSelectionArea = true;
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
@@ -893,6 +933,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.currentSelectionAreaEnd = null;
 		} else {
 			this.currentSelectionAreaEnd = mousePosition;
+			updateSelectionArea = true;
 		}
 	}
 

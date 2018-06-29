@@ -20,7 +20,6 @@ import android.opengl.GLES11;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
@@ -42,34 +41,16 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void fillQuad(float x1, float y1, float x2, float y2) {
-		float[] quadDatas = new float[3 * 6];
-		quadDatas[0] = x1;
-		quadDatas[1] = y1;
-		quadDatas[2] = 0;
-		quadDatas[3] = x2;
-		quadDatas[4] = y1;
-		quadDatas[5] = 0;
-		quadDatas[6] = x1;
-		quadDatas[7] = y2;
-		quadDatas[8] = 0;
-		quadDatas[9] = x1;
-		quadDatas[10] = y2;
-		quadDatas[11] = 0;
-		quadDatas[12] = x2;
-		quadDatas[13] = y1;
-		quadDatas[14] = 0;
-		quadDatas[15] = x2;
-		quadDatas[16] = y2;
-		quadDatas[17] = 0;
-
+	public void fillQuad(GeometryHandle geometry) {
 		glBindTexture(null);
-		FloatBuffer floatBuff = generateTemporaryFloatBuffer(quadDatas);
+
+		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometry.getInternalId());
 
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 3 * 4, floatBuff);
-		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, quadDatas.length / 3);
+		GLES11.glVertexPointer(2, GLES10.GL_FLOAT, 3 * 4, 0);
+		GLES10.glDrawArrays(GLES10.GL_TRIANGLE_FAN, 0, 4);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
+		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
 
 	@Override
@@ -97,42 +78,18 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES10.glColor4f(red, green, blue, alpha);
 	}
 
-	private FloatBuffer reuseableBuffer = null;
 	private ByteBuffer quadEleementBuffer;
 
-	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
-		int floatCount = points.length;
-		FloatBuffer b = createReusedBuffer(floatCount);
-		b.put(points);
-		b.position(0);
-		return b;
-	}
-
-	private FloatBuffer createReusedBuffer(int floatCount) {
-		if (reuseableBuffer == null
-				|| reuseableBuffer.position(0).capacity() < floatCount) {
-			ByteBuffer quadPoints = ByteBuffer.allocateDirect(floatCount * 4);
-			quadPoints.order(ByteOrder.nativeOrder());
-			reuseableBuffer = quadPoints.asFloatBuffer();
-		} else {
-			reuseableBuffer.position(0);
-		}
-		return reuseableBuffer;
-	}
-
 	@Override
-	public void drawLine(float[] points, boolean loop) {
-		if (points.length % 3 != 0) {
-			throw new IllegalArgumentException(
-					"Point array length needs to be multiple of 3.");
-		}
+	public void drawLine(GeometryHandle geometryHandle, int count, boolean loop) {
+		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryHandle.getInternalId());
 		glBindTexture(null);
-		FloatBuffer floatBuff = generateTemporaryFloatBuffer(points);
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 0, floatBuff);
+		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 0, 0);
 		GLES10.glDrawArrays(loop ? GLES10.GL_LINE_LOOP : GLES10.GL_LINE_STRIP,
-				0, points.length / 3);
+				0, count);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
+		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
 
 	private void glBindTexture(TextureHandle texture) {

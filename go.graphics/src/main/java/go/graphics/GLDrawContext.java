@@ -29,23 +29,19 @@ public interface GLDrawContext {
 
 	/**
 	 * Fills a quad.
-	 * 
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
+	 *
+	 * @param geometry
 	 */
-	void fillQuad(float x1, float y1, float x2, float y2);
+	void fillQuad(GeometryHandle geometry) throws IllegalBufferException;
 
 	/**
 	 * Draws a line between an array of points
-	 * 
-	 * @param points
-	 *            The array of points. It's length has to be a multiple of 3.
+	 *
+	 * @param geometryHandle
+	 * @param count
 	 * @param loop
-	 *            If the line should be closed.
 	 */
-	void drawLine(float[] points, boolean loop);
+	void drawLine(GeometryHandle geometryHandle, int count, boolean loop) throws IllegalBufferException;
 
 	void glPushMatrix();
 

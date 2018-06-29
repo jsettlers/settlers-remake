@@ -17,6 +17,8 @@ package jsettlers.graphics.image;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
@@ -59,26 +61,32 @@ public final class NullImage extends SingleImage {
 	}
 
 
+	private static GeometryHandle nullGeometry = null;
+
+	private static final float[] nullData = new float[] {
+			-HALFSIZE,
+			-HALFSIZE,
+			+HALFSIZE,
+			-HALFSIZE,
+			+HALFSIZE,
+			+HALFSIZE,
+			-HALFSIZE,
+			+HALFSIZE,
+	};
+
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
-		gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
-		gl.fillQuad(-HALFSIZE, -HALFSIZE, HALFSIZE, HALFSIZE);
+		try {
+			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData);
 
-		gl.color(1, 0, 0, 1);
-		gl.drawLine(new float[] {
-				-HALFSIZE,
-				-HALFSIZE,
-				0,
-				+HALFSIZE,
-				-HALFSIZE,
-				0,
-				+HALFSIZE,
-				+HALFSIZE,
-				0,
-				-HALFSIZE,
-				+HALFSIZE,
-				0,
-		}, true);
+			gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
+			gl.fillQuad(nullGeometry);
+
+			gl.color(1, 0, 0, 1);
+			gl.drawLine(nullGeometry, 4, true);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static GuiImage guiinstance;
