@@ -58,17 +58,17 @@ public abstract class Image {
 	 * 
 	 * @param gl
 	 *            The gl context to draw on.
-	 * @param minX
+	 * @param x
 	 *            The x coordinate to draw the left bound to.
-	 * @param minY
+	 * @param y
 	 *            The y coordinate to draw the top bound to.
-	 * @param maxX
-	 *            The x coordinate to draw the right bound to.
-	 * @param maxY
-	 *            The y coordinate to draw the bottom bound to.
+	 * @param width
+	 *            The width of the image.
+	 * @param height
+	 *            The height of the image.
 	 */
-	public abstract void drawImageAtRect(GLDrawContext gl, float minX,
-			float minY, float maxX, float maxY);
+	public abstract void drawImageAtRect(GLDrawContext gl, float x,
+			float y, float width, float height);
 
 	/**
 	 * Multiplies the color with an float.

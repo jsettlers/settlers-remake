@@ -37,11 +37,12 @@ public class MultiImageImage extends Image {
 	private SharedGeometry.SharedGeometryHandle settlerGeometry;
 	private SharedGeometry.SharedGeometryHandle torsoGeometry;
 	private float[] settlerFloats;
+	private float[] settlerRectFloats;
 	private float[] torsoFloats = null;
 
 	/**
 	 * This is the data that is required to store the position of a {@link MultiImageImage}.
-	 * 
+	 *
 	 * @author Michael Zangl.
 	 *
 	 */
@@ -74,6 +75,7 @@ public class MultiImageImage extends Image {
 
 		settler = new Data();
 		settlerFloats = createGeometry(map, settlerMeta, settlerx, settlery, settler);
+		settlerRectFloats = SharedGeometry.createQuadGeometry(0, 1, 1, 0, settler.umin, settler.vmin, settler.umax, settler.vmax);
 		if (torsoMeta != null) {
 			torso = new Data();
 			torsoFloats = createGeometry(map, torsoMeta, torsox, torsoy, torso);
@@ -132,36 +134,25 @@ public class MultiImageImage extends Image {
 		}
 	}
 
-	private static final ByteBuffer tempBuffer = ByteBuffer.allocateDirect(5*4*4).order(ByteOrder.nativeOrder());
-	private static GeometryHandle tempGeometry  = null;
+	private static SharedGeometry.SharedGeometryHandle rectHandle;
 
 	@Override
-	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
-			float right, float top) {
+	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
+		gl.glScalef(width, height, 0);
 		try {
 			gl.color(1, 1, 1, 1);
-			if(tempGeometry == null) {
-				tempGeometry = gl.generateGeometry(20*4);
-				tempBuffer.asFloatBuffer().get(settlerFloats, 0, 20);
+			if(rectHandle == null) {
+				rectHandle = SharedGeometry.addGeometry(gl, settlerRectFloats);
+				settlerRectFloats = null;
 			}
 
-			FloatBuffer fltcopy = tempBuffer.asFloatBuffer();
-
-			fltcopy.put(0, left + IMAGE_DRAW_OFFSET);
-			fltcopy.put(1, top + IMAGE_DRAW_OFFSET);
-			fltcopy.put(5, left + IMAGE_DRAW_OFFSET);
-			fltcopy.put(6, bottom + IMAGE_DRAW_OFFSET);
-			fltcopy.put(10, right + IMAGE_DRAW_OFFSET);
-			fltcopy.put(11, bottom + IMAGE_DRAW_OFFSET);
-			fltcopy.put(15, right + IMAGE_DRAW_OFFSET);
-			fltcopy.put(16, top + IMAGE_DRAW_OFFSET);
-
-			gl.updateGeometryAt(tempGeometry, 0, tempBuffer);
-
-			gl.drawQuadWithTexture(map.getTexture(gl), tempGeometry, 0);
+			gl.drawQuadWithTexture(map.getTexture(gl), rectHandle.geometry, rectHandle.index);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
+		gl.glPopMatrix();
 	}
 
 	@Override

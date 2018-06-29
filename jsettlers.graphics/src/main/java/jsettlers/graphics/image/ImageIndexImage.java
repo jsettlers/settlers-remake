@@ -133,38 +133,24 @@ public class ImageIndexImage extends Image {
 				umin, vmax, umax, vmin);
 	}
 
-	private static GeometryHandle imageRectHandle = null;
+	private static SharedGeometry.SharedGeometryHandle imageRectHandle = null;
 
 	@Override
-	public void drawImageAtRect(GLDrawContext gl, float minX, float minY, float maxX, float maxY) {
-		if(imageRectHandle == null) {
-			imageRectHandle = gl.generateGeometry(4*4*5);
-			tempBuffer.asFloatBuffer().get(geometry, 0, 4*5);
-		}
+	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 
-		FloatBuffer fltcopy = tempBuffer.asFloatBuffer();
-
-		fltcopy.put(0, minX + IMAGE_DRAW_OFFSET);
-		fltcopy.put(1, maxY + IMAGE_DRAW_OFFSET);
-		fltcopy.put(5, minX + IMAGE_DRAW_OFFSET);
-		fltcopy.put(6, minY + IMAGE_DRAW_OFFSET);
-		fltcopy.put(10, maxX + IMAGE_DRAW_OFFSET);
-		fltcopy.put(11, minY + IMAGE_DRAW_OFFSET);
-		fltcopy.put(15, maxX + IMAGE_DRAW_OFFSET);
-		fltcopy.put(16, maxY + IMAGE_DRAW_OFFSET);
-		fltcopy.put(20, minX + IMAGE_DRAW_OFFSET);
-		fltcopy.put(21, maxY + IMAGE_DRAW_OFFSET);
-		fltcopy.put(25, maxX + IMAGE_DRAW_OFFSET);
-		fltcopy.put(26, minY + IMAGE_DRAW_OFFSET);
-
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
+		gl.glScalef(width, height, 0);
 		try {
-			gl.updateGeometryAt(imageRectHandle, 0, tempBuffer);
-			draw(gl, imageRectHandle, 0);
+			if(imageRectHandle == null) imageRectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0,1, 1, 0, umin, vmin, umax, vmax));
+			draw(gl, imageRectHandle.geometry, imageRectHandle.index);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
+		gl.glPopMatrix();
+
 		if (torso != null) {
-			torso.drawImageAtRect(gl, minX, minY, maxX, maxY);
+			torso.drawImageAtRect(gl, x, y, width, height);
 		}
 	}
 

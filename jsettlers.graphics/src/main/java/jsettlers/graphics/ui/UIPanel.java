@@ -135,7 +135,7 @@ public class UIPanel implements UIElement {
 		float minY = position.getMinY();
 		float maxX = position.getMaxX();
 		float maxY = position.getMaxY();
-		image.drawImageAtRect(gl, minX, minY, maxX, maxY);
+		image.drawImageAtRect(gl, minX, minY, maxX-minX, maxY-minY);
 	}
 
 	protected ImageLink getBackgroundImage() {

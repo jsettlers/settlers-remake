@@ -157,36 +157,20 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return this.texture;
 	}
 
-	private static ByteBuffer tempBuffer = ByteBuffer.allocateDirect(20*4).order(ByteOrder.nativeOrder());
-	private static GeometryHandle tempHandle = null;
+	private static SharedGeometry.SharedGeometryHandle rectHandle = null;
 
 	@Override
-	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
-			float right, float top) {
+	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 		try {
 			TextureHandle textureHandle = getTextureIndex(gl);
 
-			if(tempHandle == null || !tempHandle.isValid()) tempHandle = gl.generateGeometry(4*4*5);
-			FloatBuffer fltcopy = tempBuffer.asFloatBuffer();
+			if(rectHandle == null || SharedGeometry.isValid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, width/textureWidth, height/textureHeight));
 
-			fltcopy.put(0, left);
-			fltcopy.put(1, top);
-
-			fltcopy.put(5, left);
-			fltcopy.put(6, bottom);
-			fltcopy.put(9, height / textureHeight);
-
-			fltcopy.put(10, right);
-			fltcopy.put(11, bottom);
-			fltcopy.put(13, (float) width / textureWidth);
-			fltcopy.put(14, (float) height / textureHeight);
-
-			fltcopy.put(15, right);
-			fltcopy.put(16, top);
-			fltcopy.put(18, (float) width / textureWidth);
-
-			gl.updateGeometryAt(tempHandle, 0, tempBuffer);
-			gl.drawQuadWithTexture(textureHandle, tempHandle, 0);
+			gl.glPushMatrix();
+			gl.glTranslatef(x, y, 0);
+			gl.glScalef(width, height, 0);
+			gl.drawQuadWithTexture(textureHandle, rectHandle.geometry, rectHandle.index);
+			gl.glPopMatrix();
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

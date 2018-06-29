@@ -52,9 +52,9 @@ public class BuildingButton extends Button implements UiContentUpdater.IUiConten
 	private float lastImageHeight;
 	private float lastImageWidth;
 	private float iconLeft;
-	private float iconRight;
 	private float iconTop;
-	private float iconBottom;
+	private float iconWidth;
+	private float iconHeight;
 	private final Label constructedLabel = new Label("", EFontSize.SMALL, EHorizontalAlignment.RIGHT, EVerticalAlignment.TOP);
 
 	public BuildingButton(EBuildingType buildingType) {
@@ -71,7 +71,7 @@ public class BuildingButton extends Button implements UiContentUpdater.IUiConten
 			gl.color(1, 1, 1, 1);
 			FloatRectangle position = getPosition();
 			ImageProvider.getInstance().getImage(activeMark, lastButtonWidth, lastButtonHeight)
-					.drawImageAtRect(gl, position.getMinX(), position.getMinY(), position.getMaxX(), position.getMaxY());
+					.drawImageAtRect(gl, position.getMinX(), position.getMinY(), position.getMaxX()-position.getMinX(), position.getMaxY()-position.getMinY());
 		}
 		drawChildren(gl);
 	}
@@ -93,18 +93,16 @@ public class BuildingButton extends Button implements UiContentUpdater.IUiConten
 		}
 
 		gl.color(1, 1, 1, 1);
-		buildingImage.drawImageAtRect(gl, iconLeft, iconTop, iconRight, iconBottom);
+		buildingImage.drawImageAtRect(gl, iconLeft, iconTop, iconWidth, iconHeight);
 	}
 
 	private void calculateIconCoords(float buttonHeight, float buttonWidth, float btnXMid, float btnYMid,
 			float imageHeight, float imageWidth) {
 		float scaling = Math.min(buttonHeight * ICON_BUTTON_RATIO / imageHeight, buttonWidth * ICON_BUTTON_RATIO / imageWidth);
-		float imgScaledWidth = imageWidth * scaling;
-		float imgScaledHeight = imageHeight * scaling;
-		iconLeft = btnXMid - imgScaledWidth / 2;
-		iconRight = btnXMid + imgScaledWidth / 2;
-		iconTop = btnYMid - imgScaledHeight / 2;
-		iconBottom = btnYMid + imgScaledHeight / 2;
+		iconWidth = imageWidth * scaling;
+		iconHeight = imageHeight * scaling;
+		iconLeft = btnXMid - iconWidth / 2;
+		iconTop = btnYMid - iconHeight / 2;
 		lastButtonHeight = buttonHeight;
 		lastButtonWidth = buttonWidth;
 		lastImageHeight = imageHeight;
