@@ -615,14 +615,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	// @formatter:off
 	public static final float[] shape = new float[] {
-			0,  4, .5f,  0,  0,
-			-3,  2, .5f,  0,  0,
-			-3, -2, .5f,  0,  0,
-			0, -4, .5f,  0,  0,
-			0, -4, .5f,  0,  0,
-			3, -2, .5f,  0,  0,
-			3,  2, .5f,  0,  0,
-			0,  4, .5f,  0,  0
+			0,  4,
+			-3,  2,
+			-3, -2,
+			0, -4,
+			0, -4,
+			3, -2,
+			3,  2,
+			0,  4,
 	};
 	// @formatter:on
 
@@ -642,12 +642,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				if (argb != 0) {
 					int height = context.getHeight(x, y);
 					gl.glPushMatrix();
-					gl.glTranslatef(drawX+context.getConverter().getViewX(x, y, height), drawY+context.getConverter().getViewY(x, y, height), 0);
+					gl.glTranslatef(drawX+context.getConverter().getViewX(x, y, height), drawY+context.getConverter().getViewY(x, y, height), .5f);
 					gl.color(((argb >> 16) & 0xff) / 255f,
 							((argb >> 8) & 0xff) / 255f,
 							((argb >> 0) & 0xff) / 255f,
 							((argb >> 24) & 0xff) / 255f);
-					gl.drawQuadWithTexture(null, shapeHandle, 0);
+					gl.fillQuad(shapeHandle);
 					gl.glPopMatrix();
 				}
 			} catch (IllegalBufferException e) {

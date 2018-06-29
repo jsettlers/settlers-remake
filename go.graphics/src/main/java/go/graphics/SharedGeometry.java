@@ -8,7 +8,7 @@ import java.util.Calendar;
 public class SharedGeometry {
 
 	private static final int CAPACITY = 1000;
-	private static final int QUAD_SIZE = 4*5*4;
+	private static final int QUAD_SIZE = 4*4*4;
 
 	private int size = 0;
 	private GeometryHandle geometry;
@@ -83,13 +83,13 @@ public class SharedGeometry {
 	public static float[] createQuadGeometry(float lx, float ly, float hx, float hy, float lu, float lv, float hu, float hv) {
 		return new float[] {
 			// bottom right
-			hx, ly, 0, hu, lv,
+			hx, ly, hu, lv,
 			// top right
-			hx, hy, 0, hu, hv,
+			hx, hy, hu, hv,
 			// top left
-			lx, hy, 0, lu, hv,
+			lx, hy, lu, hv,
 			// bottom left
-			lx, ly, 0, lu, lv,
+			lx, ly, lu, lv,
 		};
 	}
 }

@@ -104,7 +104,7 @@ public final class Minimap implements IMinimapData {
 		boolean imageWasCreatedJustNow = false;
 		try {
 			if(geometry == null) {
-				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, 0, width, 0, 0, 1, 0,(stride + 1) * width, height, 0, 1, 1, stride * width, height, 0, 0, 1,});
+				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,});
 				lineGeometry = context.generateGeometry(12*4);
 			}
 
@@ -112,11 +112,11 @@ public final class Minimap implements IMinimapData {
 				lineBfr.asFloatBuffer().put(miniMapShapeCalculator.getMiniMapShapeNodes(), 0, 12);
 				context.updateGeometryAt(lineGeometry, 0, lineBfr);
 
-				replaceGeometryValue(context, 5, width);
-				replaceGeometryValue(context, 10, (stride + 1) * width);
-				replaceGeometryValue(context, 11, height);
-				replaceGeometryValue(context, 15, stride * width);
-				replaceGeometryValue(context, 16, height);
+				replaceGeometryValue(context, 4, width);
+				replaceGeometryValue(context, 8, (stride + 1) * width);
+				replaceGeometryValue(context, 9, height);
+				replaceGeometryValue(context, 12, stride * width);
+				replaceGeometryValue(context, 13, height);
 				updateGeometry = false;
 			}
 

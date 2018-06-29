@@ -246,7 +246,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	private static final Object buildLock = new Object(); // should never be triggered, but who knows ?
 	private static GeometryHandle buildHandle = null;
-	private static ByteBuffer buildBfr = ByteBuffer.allocateDirect(5*4*3).order(ByteOrder.nativeOrder());
+	private static ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
 
 	/**
 	 * Draws a triangle part of this image on the image buffer.
@@ -283,23 +283,20 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			v3 = (float) Math.round(v3 * height) / height;
 
 			synchronized (buildLock) {
-				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(5*4*3);
+				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(4*4*3);
 				buildBfr.asFloatBuffer().put(new float[] {
 						u1 * width,
 						-v1 * height,
-						0,
 						convertU(u1),
 						convertV(v1),
 
 						u2 * width,
 						-v2 * height,
-						0,
 						convertU(u2),
 						convertV(v2),
 
 						u3 * width,
 						-v3 * height,
-						0,
 						convertU(u3),
 						convertV(v3),
 

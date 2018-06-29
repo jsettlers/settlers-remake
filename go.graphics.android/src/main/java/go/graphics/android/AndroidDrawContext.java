@@ -47,7 +47,7 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometry.getInternalId());
 
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-		GLES11.glVertexPointer(2, GLES10.GL_FLOAT, 3 * 4, 0);
+		GLES11.glVertexPointer(2, GLES10.GL_FLOAT, 0, 0);
 		GLES10.glDrawArrays(GLES10.GL_TRIANGLE_FAN, 0, 4);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
@@ -85,7 +85,7 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryHandle.getInternalId());
 		glBindTexture(null);
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 0, 0);
+		GLES11.glVertexPointer(2, GLES10.GL_FLOAT, 0, 0);
 		GLES10.glDrawArrays(loop ? GLES10.GL_LINE_LOOP : GLES10.GL_LINE_STRIP,
 				0, count);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
@@ -226,8 +226,8 @@ public class AndroidDrawContext implements GLDrawContext {
 		glBindTexture(textureid);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex.getInternalId());
-		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, 0);
-		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4);
+		GLES11.glVertexPointer(2, GLES10.GL_FLOAT, 4 * 4, 0);
+		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT,  4 * 4, 2 * 4);
 
 		GLES11.glDrawArrays(GLES10.GL_TRIANGLE_FAN, quadOffset*4, 4);
 
@@ -265,8 +265,8 @@ public class AndroidDrawContext implements GLDrawContext {
 		glBindTexture(textureid);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex.getInternalId());
-		GLES11.glVertexPointer(3, GLES11.GL_FLOAT, 5 * 4, 0);
-		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 5 * 4, 3 * 4);
+		GLES11.glVertexPointer(2, GLES11.GL_FLOAT, 4 * 4, 0);
+		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 4 * 4, 2 * 4);
 
 		GLES11.glDrawArrays(GLES11.GL_TRIANGLES, 0, triangleCount * 3);
 

@@ -93,7 +93,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		graph.setColor(Color.WHITE);
 		graph.setFont(font);
 
-		float[] geodata = new float[256*5*4];
+		float[] geodata = new float[256*4*4];
 		for(int l = 0;l != 16;l++) {
 			int line_offset = 0;
 			for(int c = 0;c != 16;c++) {
@@ -106,7 +106,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 				float dh = line_height;
 
 				float[] data = SharedGeometry.createQuadGeometry(0, 0,dw, dh, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
-				System.arraycopy(data, 0, geodata, (l*16+c)*5*4, 5*4);
+				System.arraycopy(data, 0, geodata, (l*16+c)*4*4, 4*4);
 
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}

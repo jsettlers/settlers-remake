@@ -223,8 +223,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 		bindTexture(texture);
 
 		bindArrayBuffer(geometry);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
+		GL11.glVertexPointer(2, GL11.GL_FLOAT, 4 * 4, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 4 * 4, 2 * 4);
 
 		GL11.glDrawArrays(GL11.GL_QUADS, 4*quadOffset, 4);
 
@@ -237,8 +237,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 		bindTexture(texture);
 
 		bindArrayBuffer(geometry);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
+		GL11.glVertexPointer(2, GL11.GL_FLOAT, 4 * 4, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 4 * 4, 2 * 4);
 
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
 

@@ -79,10 +79,8 @@ public class AndroidTextDrawer implements TextDrawer {
 			0,
 			0,
 			0,
-			0,
 
 			// bottom left
-			0,
 			0,
 			0,
 			0,
@@ -91,13 +89,11 @@ public class AndroidTextDrawer implements TextDrawer {
 			// bottom right
 			TEXTURE_WIDTH,
 			0,
-			0,
 			1,
 			0,
 
 			// top right
 			TEXTURE_WIDTH,
-			0,
 			0,
 			1,
 			0,
@@ -161,10 +157,10 @@ public class AndroidTextDrawer implements TextDrawer {
 			float bottom = (float) ((line + 1) * lineheight) / TEXTURE_HEIGHT;
 			float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
 			try {
-				updateTexturePos(4, top);
-				updateTexturePos(9, bottom);
-				updateTexturePos(14, bottom);
-				updateTexturePos(19, top);
+				updateTexturePos(3, top);
+				updateTexturePos(6, bottom);
+				updateTexturePos(10, bottom);
+				updateTexturePos(15, top);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
@@ -275,7 +271,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 			try {
 				updateTexturePos(1, lineheight);
-				updateTexturePos(16, lineheight);
+				updateTexturePos(12, lineheight);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
