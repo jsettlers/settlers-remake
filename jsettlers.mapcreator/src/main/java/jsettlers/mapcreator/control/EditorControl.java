@@ -283,7 +283,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		// map display
 		Area area = new Area();
 		final Region region = new Region(Region.POSITION_CENTER);
-		area.add(region);
+		area.set(region);
 		displayPanel = new AreaContainer(area, SettingsManager.getInstance().getBackend());
 		displayPanel.setMinimumSize(new Dimension(640, 480));
 		displayPanel.setFocusable(true);

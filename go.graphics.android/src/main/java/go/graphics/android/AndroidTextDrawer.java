@@ -158,8 +158,8 @@ public class AndroidTextDrawer implements TextDrawer {
 			float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
 			try {
 				updateTexturePos(3, top);
-				updateTexturePos(6, bottom);
-				updateTexturePos(10, bottom);
+				updateTexturePos(7, bottom);
+				updateTexturePos(11, bottom);
 				updateTexturePos(15, top);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
@@ -271,7 +271,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 			try {
 				updateTexturePos(1, lineheight);
-				updateTexturePos(12, lineheight);
+				updateTexturePos(13, lineheight);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
