@@ -57,7 +57,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 
 		EGL10.eglInitialize(egl_display, egl_major, egl_minor);
 
-		if(egl_major[0] == 1 && egl_minor[0] < 5) throw new Error("EGL version is too low (" +egl_major[0]+"."+egl_minor[0] + ")");
+		if(egl_major[0] == 1 && egl_minor[0] < 4) throw new Error("EGL version is too low (" +egl_major[0]+"."+egl_minor[0] + ")");
 
 		if(!EGL12.eglBindAPI(EGL14.EGL_OPENGL_API)) throw new Error("could not bind OpenGL");
 
@@ -91,7 +91,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 		if(native_drawable != new_native_drawable) {
 			if(egl_display == 0) initStatic();
 
-			if(native_drawable != 0) EGL10.eglDestroyContext(egl_display, egl_surface);
+			if(native_drawable != 0) stop();
 			egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, native_drawable = new_native_drawable, (IntBuffer)null);
 		}
 	}
