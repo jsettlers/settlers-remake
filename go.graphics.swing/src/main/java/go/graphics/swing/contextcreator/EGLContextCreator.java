@@ -17,11 +17,11 @@ import go.graphics.swing.GLContainer;
 public class EGLContextCreator extends JAWTContextCreator {
 
 	private static long egl_config;
-	private static long egl_display;
+	private static long egl_display = 0;
 	private long egl_surface;
 	private static long egl_context;
 
-	private long native_drawable;
+	private long native_drawable = 0;
 
 	public EGLContextCreator(GLContainer container) {
 		super(container);
@@ -46,7 +46,10 @@ public class EGLContextCreator extends JAWTContextCreator {
 		}
 	}
 
-	static {
+	@Override
+	protected void initContext() {}
+
+	private void initStatic() {
 		egl_display = EGL10.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
 		EGL10.eglInitialize(egl_display, new int[1], new int[1]);
 		EGL12.eglBindAPI(EGL14.EGL_OPENGL_API);
@@ -65,22 +68,25 @@ public class EGLContextCreator extends JAWTContextCreator {
 		int[] ctx_attrs = new int[] {EGL10.EGL_NONE};
 
 		egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, ctx_attrs);
-
-	}
-
-	@Override
-	protected void initContext() {
-		egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, native_drawable, (IntBuffer)null);
 	}
 
 	@Override
 	protected void createNewSurfaceInfo() {
+		long new_native_drawable = 0;
+
 		if(Platform.get() == Platform.LINUX) {
 			JAWTX11DrawingSurfaceInfo x11surfaceInfo = JAWTX11DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
-			native_drawable = x11surfaceInfo.drawable();
+			new_native_drawable = x11surfaceInfo.drawable();
 		} else if(Platform.get() == Platform.WINDOWS) {
 			JAWTWin32DrawingSurfaceInfo win32surfaceInfo = JAWTWin32DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
-			native_drawable = win32surfaceInfo.hwnd();
+			new_native_drawable = win32surfaceInfo.hwnd();
+		}
+
+		if(native_drawable != new_native_drawable) {
+			if(egl_display != 0) initStatic();
+
+			if(native_drawable != 0) EGL10.eglDestroyContext(egl_display, egl_surface);
+			egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, native_drawable = new_native_drawable, (IntBuffer)null);
 		}
 	}
 }
