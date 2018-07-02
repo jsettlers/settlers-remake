@@ -21,13 +21,12 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
-import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLGeometryHandle;
 import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLTextureHandle;
 import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
@@ -68,7 +67,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void fillQuad(GeometryHandle geometry) throws IllegalBufferException {
+	public void fillQuad(GeometryHandle geometry) {
 		bindArrayBuffer(geometry);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
@@ -81,14 +80,13 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawLine(GeometryHandle geometryHandle, int count, boolean loop) throws IllegalBufferException {
+	public void drawLine(GeometryHandle geometryHandle, int count, boolean loop) {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		bindArrayBuffer(geometryHandle);
 		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
 		GL11.glDrawArrays(loop ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP, 0, count);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-		bindArrayBuffer(null);
 	}
 
 	/**
@@ -159,33 +157,27 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void updateTexture(TextureHandle texture, int left, int bottom,
-			int width, int height, ShortBuffer data) throws IllegalBufferException {
+			int width, int height, ShortBuffer data) {
 		bindTexture(texture);
 		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, left, bottom, width, height,
 				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
-	private void bindTexture(TextureHandle texture) throws IllegalBufferException {
+	private void bindTexture(TextureHandle texture) {
 		int id;
 		if (texture == null) {
 			id = 0;
 		} else {
-			if (!texture.isValid()) {
-				throw new IllegalBufferException("Texture handle is not valid: " + texture);
-			}
 			id = texture.getInternalId();
 		}
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
 	}
 
-	private void bindArrayBuffer(GeometryHandle geometry) throws IllegalBufferException {
+	private void bindArrayBuffer(GeometryHandle geometry) {
 		int id;
 		if (geometry == null) {
 			id = 0;
 		} else {
-			if (!geometry.isValid()) {
-				throw new IllegalBufferException("Geometry handle is not valid: " + geometry);
-			}
 			id = geometry.getInternalId();
 		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
@@ -216,7 +208,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		return textDrawers[size.ordinal()];
 	}
 
-	public void drawQuadWithTexture(TextureHandle texture, GeometryHandle geometry, int quadOffset) throws IllegalBufferException {
+	public void drawQuadWithTexture(TextureHandle texture, GeometryHandle geometry, int quadOffset) {
 		if (geometry == null) {
 			throw new NullPointerException("Cannot draw a null geometry");
 		}
@@ -227,13 +219,11 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 4 * 4, 2 * 4);
 
 		GL11.glDrawArrays(GL11.GL_QUADS, 4*quadOffset, 4);
-
-		bindArrayBuffer(null);
 	}
 
 	@Override
 	public void drawTrianglesWithTexture(TextureHandle texture, GeometryHandle geometry,
-			int triangleCount) throws IllegalBufferException {
+			int triangleCount) {
 		bindTexture(texture);
 
 		bindArrayBuffer(geometry);
@@ -241,11 +231,31 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 4 * 4, 2 * 4);
 
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, triangleCount * 3);
-
-		bindArrayBuffer(null);
 	}
 
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException {
+
+	private int bufferedOffset = 0, bufferedLines = 0, bufferedWidth = 0, bufferedStride = 0;
+	private ShortBuffer bfr;
+
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) {
+		if(bufferedOffset != offset || bufferedLines != lines || bufferedWidth != width || bufferedStride != stride) {
+			bufferedOffset = offset;
+			bufferedLines = lines;
+			bufferedWidth = width;
+			bufferedStride = stride;
+
+			bfr = ByteBuffer.allocateDirect(width*lines*2*3).order(ByteOrder.nativeOrder()).asShortBuffer();
+			short triangle_offset = (short) (offset*3);
+			for(int i = 0;i != lines;i++) {
+				for(int j = 0;j != width;j++) {
+					bfr.put(new short[] {triangle_offset, (short) (triangle_offset+1), (short) (triangle_offset+2)});
+					triangle_offset += 3;
+				}
+				triangle_offset = (short) ((offset+stride*i)*3);
+			}
+
+			bfr.rewind();
+		}
 		bindTexture(textureid);
 
 		bindArrayBuffer(vertexHandle);
@@ -260,38 +270,30 @@ public class LWJGLDrawContext implements GLDrawContext {
 			GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset+stride*i)*3, width*3);
 		}
 		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-		bindArrayBuffer(null);
-		bindTexture(null);
 	}
 
 	@Override
-	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException {
+	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) {
 		bindArrayBuffer(handle);
 		data.rewind();
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, data);
-		bindArrayBuffer(null);
 	}
 
 	@Override
 	public GeometryHandle storeGeometry(float[] geometry) {
-		try {
-			GeometryHandle geometryBuffer =
-					generateGeometry(geometry.length * 4);
-			if (geometryBuffer == null) {
-				return null;
-			}
-
-			try(MemoryStack stack = MemoryStack.stackPush()) {
-				ByteBuffer bfr = stack.malloc(4*geometry.length);
-				bfr.asFloatBuffer().put(geometry);
-				updateGeometryAt(geometryBuffer, 0, bfr);
-			}
-
-			return geometryBuffer;
-		} catch (IllegalBufferException e) {
-			// TODO: Use a normal buffer instead.
+		GeometryHandle geometryBuffer =
+				generateGeometry(geometry.length * 4);
+		if (geometryBuffer == null) {
 			return null;
 		}
+
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			ByteBuffer bfr = stack.malloc(4*geometry.length);
+			bfr.asFloatBuffer().put(geometry);
+			updateGeometryAt(geometryBuffer, 0, bfr);
+		}
+
+		return geometryBuffer;
 	}
 
 	boolean checkGeometryIndex(int geometryindex) {
@@ -313,7 +315,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, BufferUtils.createByteBuffer(bytes),
 				GL15.GL_DYNAMIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		return new LWJGLGeometryHandle(this, vertexBufferId);
+		return new LWJGLBufferHandle.LWJGLGeometryHandle(this, vertexBufferId);
 	}
 
 	private int allocateVBO() {

@@ -154,11 +154,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		drawContext.color(color.getRed()/255, color.getGreen()/255, color.getBlue()/255, color.getAlpha()/255);
 		drawContext.glPushMatrix();
 		drawContext.glTranslatef(x, y, 0);
-		try {
-			drawContext.drawQuadWithTexture(font_tex, geometry, c);
-		} catch (IllegalBufferException e) {
-			e.printStackTrace();
-		}
+		drawContext.drawQuadWithTexture(font_tex, geometry, c);
 		drawContext.glPopMatrix();
 	}
 
@@ -169,8 +165,6 @@ public final class LWJGLTextDrawer implements TextDrawer {
 	 */
 	@Override
 	public void drawString(float x, float y, String string) {
-		this.drawContext.prepareFontDrawing();
-
 		int x_offset = 0;
 		int y_offset = 0;
 
