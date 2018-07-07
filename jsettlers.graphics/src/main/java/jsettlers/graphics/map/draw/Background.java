@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 
+import go.graphics.EGeometryFormatType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -1210,9 +1211,9 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
-		int fields = bufferWidth*bufferHeight;
-		heighthandle = context.getGl().generateGeometry(BYTES_PER_FIELD*fields);
-		typehandle = context.getGl().generateGeometry(BYTES_PER_FIELD*fields);
+		int vertices = bufferWidth*bufferHeight*3*2;
+		heighthandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Background);
+		typehandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Background);
 
 		ByteBuffer bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD*bufferWidth).order(ByteOrder.nativeOrder());
 

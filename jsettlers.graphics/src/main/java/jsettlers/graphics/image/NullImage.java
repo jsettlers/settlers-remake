@@ -16,6 +16,8 @@ package jsettlers.graphics.image;
 
 import java.nio.ShortBuffer;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -77,13 +79,13 @@ public final class NullImage extends SingleImage {
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		try {
-			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData);
+			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData, EGeometryFormatType.VertexOnly2D);
 
 			gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
-			gl.fillQuad(nullGeometry);
+			gl.draw2D(nullGeometry, null, EGeometryType.Quad, 0, 4);
 
 			gl.color(1, 0, 0, 1);
-			gl.drawLine(nullGeometry, 4, true);
+			gl.draw2D(nullGeometry, null, EGeometryType.LineLoop, 0, 4);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

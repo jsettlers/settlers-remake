@@ -26,22 +26,7 @@ import java.nio.ShortBuffer;
  * @author michael
  */
 public interface GLDrawContext {
-
-	/**
-	 * Fills a quad.
-	 *
-	 * @param geometry
-	 */
-	void fillQuad(GeometryHandle geometry) throws IllegalBufferException;
-
-	/**
-	 * Draws a line between an array of points
-	 *
-	 * @param geometryHandle
-	 * @param count
-	 * @param loop
-	 */
-	void drawLine(GeometryHandle geometryHandle, int count, boolean loop) throws IllegalBufferException;
+	void draw2D(GeometryHandle geometry, TextureHandle texture, int type, int offset, int vertices) throws IllegalBufferException;
 
 	void glPushMatrix();
 
@@ -74,10 +59,6 @@ public interface GLDrawContext {
 	 */
 	TextureHandle generateTexture(int width, int height, ShortBuffer data);
 
-	void drawQuadWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int quadOffset) throws IllegalBufferException;
-
-	void drawTrianglesWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
-
 	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
 
 	int makeSideLengthValid(int width);
@@ -100,9 +81,9 @@ public interface GLDrawContext {
 
 	TextDrawer getTextDrawer(EFontSize size);
 
-	GeometryHandle storeGeometry(float[] geometry);
+	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type);
 
 	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
-	GeometryHandle generateGeometry(int bytes);
+	GeometryHandle generateGeometry(int bytes, EGeometryFormatType type);
 }

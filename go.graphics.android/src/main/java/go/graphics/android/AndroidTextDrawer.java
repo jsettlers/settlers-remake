@@ -18,6 +18,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
@@ -104,7 +106,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
 
-		texturepos = context.storeGeometry(textureposarray);
+		texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D);
 	}
 
 	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
@@ -167,7 +169,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 			context.glPushMatrix();
 			context.glTranslatef(x, y, 0);
-			context.drawQuadWithTexture(texture, texturepos, 0);
+			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4);
 			context.glPopMatrix();
 		}
 	}

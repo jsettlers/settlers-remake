@@ -17,6 +17,8 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -63,7 +65,7 @@ public class BarFill extends UIPanel {
 		float maxX = position.getMinX() * (1 - fillX) + position.getMaxX() * fillX;
 
 		try {
-			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4 * 4 * 2);
+			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D);
 			if (!position.equals(writtenPosition) || writtenMaxX != maxX) {
 				writtenPosition = position;
 				writtenMaxX = maxX;
@@ -72,7 +74,7 @@ public class BarFill extends UIPanel {
 						position.getMinX(), position.getMaxY(), maxX, position.getMaxY()});
 				gl.updateGeometryAt(geometry, 0, geometryBfr);
 			}
-			gl.fillQuad(geometry);
+			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4);
 		} catch(IllegalBufferException ex) {
 			ex.printStackTrace();
 		}

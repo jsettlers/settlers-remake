@@ -66,17 +66,13 @@ public class SharedGeometry {
 
 	private void validate(GLDrawContext dc) {
 		if(!geometry.isValid()) {
-			geometry = dc.generateGeometry(CAPACITY*QUAD_SIZE);
+			geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D);
 			size = 0;
 		}
 	}
 
-	public static GeometryHandle getGeometry(int sgeometryIndex) {
-		return geometries.get(sgeometryIndex).geometry;
-	}
-
 	private SharedGeometry(GLDrawContext dc) {
-		geometry = dc.generateGeometry(CAPACITY*QUAD_SIZE);
+		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D);
 	}
 
 

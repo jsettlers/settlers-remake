@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import go.graphics.EGeometryFormatType;
 import go.graphics.GLBufferHandle;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
@@ -40,8 +41,23 @@ public class AndroidGLHandle implements GLBufferHandle {
 	}
 
 	public static class AndroidGeometryHandle extends AndroidGLHandle implements GeometryHandle {
-		public AndroidGeometryHandle(int internalId) {
+		private EGeometryFormatType format;
+		private int vao;
+
+		public AndroidGeometryHandle(int internalId, EGeometryFormatType format, int vao) {
 			super(internalId);
+			this.format = format;
+			this.vao = vao;
+		}
+
+		@Override
+		public int getInternalFormatId() {
+			return vao;
+		}
+
+		@Override
+		public EGeometryFormatType getFormat() {
+			return format;
 		}
 
 		@Override

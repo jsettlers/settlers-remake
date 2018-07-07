@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.ui;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -73,7 +75,7 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		float x = getPosition().getMinX() + 2;
 		drawer.drawString(x, y, inputString.toString());
 
-		if(geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1});
+		if(geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1}, EGeometryFormatType.VertexOnly2D);
 
 		float carretX = x + drawer.getWidth(inputString.substring(0, carret) + "X") - drawer.getWidth("X");
 
@@ -81,7 +83,7 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		try {
 			gl.glScalef(0, textHeight, 0);
 			gl.glTranslatef(carretX, y, 0);
-			gl.drawLine(geometry, 2, false);
+			gl.draw2D(geometry, null, EGeometryType.LineStrip, 0, 2);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

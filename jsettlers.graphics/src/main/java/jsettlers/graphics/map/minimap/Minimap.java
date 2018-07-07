@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -104,8 +106,8 @@ public final class Minimap implements IMinimapData {
 		boolean imageWasCreatedJustNow = false;
 		try {
 			if(geometry == null) {
-				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,});
-				lineGeometry = context.generateGeometry(12*4);
+				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,}, EGeometryFormatType.Texture2D);
+				lineGeometry = context.generateGeometry(6, EGeometryFormatType.VertexOnly2D);
 			}
 
 			if(updateGeometry) {
@@ -156,7 +158,7 @@ public final class Minimap implements IMinimapData {
 			}
 
 			context.color(1, 1, 1, 1);
-			context.drawQuadWithTexture(texture, geometry, 0);
+			context.draw2D(geometry, texture, EGeometryType.Quad, 0, 4);
 
 			drawViewMark(context);
 		} catch (IllegalBufferException e) {
@@ -175,7 +177,7 @@ public final class Minimap implements IMinimapData {
 
 	private void drawViewMark(GLDrawContext context) {
 		try {
-			context.drawLine(lineGeometry, 6, true);
+			context.draw2D(lineGeometry, null, EGeometryType.LineLoop, 0, 6);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

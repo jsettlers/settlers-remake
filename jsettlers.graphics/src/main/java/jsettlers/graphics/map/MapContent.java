@@ -18,6 +18,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -457,7 +459,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
 
 			if(selectionArea == null) {
-				selectionArea = gl.generateGeometry(4*2*4);
+				selectionArea = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D);
 			}
 
 			if(updateSelectionArea) {
@@ -472,7 +474,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 			gl.color(1, 1, 1, 1);
 			try {
-				gl.drawLine(selectionArea, 4, true);
+				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
@@ -631,7 +633,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		if(shapeHandle == null) shapeHandle = gl.storeGeometry(shape);
+		if(shapeHandle == null) shapeHandle = gl.storeGeometry(shape, EGeometryFormatType.VertexOnly2D);
 
 		int drawX = context.getOffsetX();
 		int drawY = context.getOffsetY();
@@ -647,7 +649,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 							((argb >> 8) & 0xff) / 255f,
 							((argb >> 0) & 0xff) / 255f,
 							((argb >> 24) & 0xff) / 255f);
-					gl.fillQuad(shapeHandle);
+					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4);
 					gl.glPopMatrix();
 				}
 			} catch (IllegalBufferException e) {

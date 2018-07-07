@@ -19,6 +19,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -169,7 +171,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			gl.glPushMatrix();
 			gl.glTranslatef(x, y, 0);
 			gl.glScalef(width, height, 0);
-			gl.drawQuadWithTexture(textureHandle, rectHandle.geometry, rectHandle.index);
+			gl.draw2D(rectHandle.geometry, textureHandle, EGeometryType.Quad, rectHandle.index, 4);
 			gl.glPopMatrix();
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
@@ -195,7 +197,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
 			gl.color(fow, fow, fow, 1);
-			gl.drawQuadWithTexture(textureIndex, geometryIndex2, geometryIndex.index);
+			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -207,7 +209,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
 			gl.color(torsoColor.getRed()*fow, torsoColor.getGreen()*fow, torsoColor.getBlue()*fow, torsoColor.getAlpha());
-			gl.drawQuadWithTexture(textureIndex, geometryIndex2, geometryIndex.index);
+			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -283,7 +285,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			v3 = (float) Math.round(v3 * height) / height;
 
 			synchronized (buildLock) {
-				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(4*4*3);
+				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D);
 				buildBfr.asFloatBuffer().put(new float[] {
 						u1 * width,
 						-v1 * height,
@@ -307,7 +309,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 				gl.glPushMatrix();
 				gl.glTranslatef(left, top ,0);
-				gl.drawTrianglesWithTexture(getTextureIndex(gl), buildHandle, 1);
+				gl.draw2D(buildHandle, getTextureIndex(gl), EGeometryType.Triangle, 0, 3);
 				gl.glPopMatrix();
 			}
 		} catch (IllegalBufferException e) {

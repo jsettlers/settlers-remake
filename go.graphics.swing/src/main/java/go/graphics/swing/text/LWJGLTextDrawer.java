@@ -14,6 +14,8 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedGeometry;
@@ -111,7 +113,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
-		geometry = drawContext.storeGeometry(geodata);
+		geometry = drawContext.storeGeometry(geodata, EGeometryFormatType.Texture2D);
 		graph.dispose();
 
 		short[] short_tex_data = new short[tex_width*tex_height];
@@ -154,7 +156,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		drawContext.color(color.getRed()/255, color.getGreen()/255, color.getBlue()/255, color.getAlpha()/255);
 		drawContext.glPushMatrix();
 		drawContext.glTranslatef(x, y, 0);
-		drawContext.drawQuadWithTexture(font_tex, geometry, c);
+		drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4);
 		drawContext.glPopMatrix();
 	}
 

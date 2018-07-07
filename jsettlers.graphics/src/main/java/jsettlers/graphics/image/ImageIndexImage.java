@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -115,11 +116,11 @@ public class ImageIndexImage extends Image {
 		try {
 			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
 
-			gl.drawQuadWithTexture(texture.getTextureIndex(gl), handle, offset);
+			gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4);
 		} catch (IllegalBufferException e) {
 			try {
 				texture.recreateTexture();
-				gl.drawQuadWithTexture(texture.getTextureIndex(gl), handle, offset);
+				gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4);
 			} catch (IllegalBufferException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.swing.opengl;
 
+import go.graphics.EGeometryFormatType;
 import go.graphics.GLBufferHandle;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
@@ -21,8 +22,21 @@ import go.graphics.TextureHandle;
 public abstract class LWJGLBufferHandle implements GLBufferHandle {
 
 	public static class LWJGLGeometryHandle extends LWJGLBufferHandle implements GeometryHandle {
-		public LWJGLGeometryHandle(LWJGLDrawContext context, int geometryindex) {
+		private EGeometryFormatType format;
+		private int vao;
+
+		public LWJGLGeometryHandle(LWJGLDrawContext context, EGeometryFormatType format, int vao, int geometryindex) {
 			super(context, geometryindex);
+			this.format = format;
+			this.vao = vao;
+		}
+
+		public EGeometryFormatType getFormat() {
+			return this.format;
+		}
+
+		public int getInternalFormatId() {
+			return this.vao;
 		}
 
 		@Override

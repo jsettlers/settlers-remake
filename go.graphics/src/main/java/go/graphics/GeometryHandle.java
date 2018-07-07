@@ -20,5 +20,6 @@ package go.graphics;
  * @author Michael Zangl
  */
 public interface GeometryHandle extends GLBufferHandle {
-
+	EGeometryFormatType getFormat();
+	int getInternalFormatId();
 }

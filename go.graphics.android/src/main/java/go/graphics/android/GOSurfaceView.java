@@ -14,7 +14,9 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.pm.ConfigurationInfo;
 import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
@@ -49,9 +51,18 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 	private IContextDestroyedListener contextDestroyedListener = null;
 
+	private boolean gles3 = false;
+
 	public GOSurfaceView(Context context, Area area) {
 		super(context);
 		this.area = area;
+
+		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		ConfigurationInfo ci = manager.getDeviceConfigurationInfo();
+		if(ci != null && (ci.getGlEsVersion().charAt(0)-'0')>=3) {
+			gles3 = true;
+			setEGLContextClientVersion(3);
+		}
 
 		setEGLContextFactory(new Factory());
 		setRenderer(new Renderer(context));
@@ -217,7 +228,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 	private class Renderer implements GLSurfaceView.Renderer {
 
 		private Renderer(Context aContext) {
-			drawcontext = new AndroidDrawContext(aContext);
+			drawcontext = new AndroidDrawContext(aContext, gles3);
 
 			GLES10.glBlendFunc(GLES10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 			GLES10.glEnable(GLES10.GL_BLEND);

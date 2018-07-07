@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -110,7 +111,7 @@ public class MultiImageImage extends Image {
 			if(settlerGeometry == null)	settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
 			gl.color(fow, fow, fow, 1);
 			TextureHandle texture = map.getTexture(gl);
-			gl.drawQuadWithTexture(texture, settlerGeometry.geometry, settlerGeometry.index);
+			gl.draw2D(settlerGeometry.geometry, texture, EGeometryType.Quad, settlerGeometry.index, 4);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
@@ -128,7 +129,7 @@ public class MultiImageImage extends Image {
 						torsoColor.getBlue()*fow, torsoColor.getAlpha());
 			}
 			TextureHandle texture = map.getTexture(gl);
-			gl.drawQuadWithTexture(texture, torsoGeometry.geometry, torsoGeometry.index);
+			gl.draw2D(torsoGeometry.geometry, texture, EGeometryType.Quad, torsoGeometry.index, 4);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
@@ -148,7 +149,7 @@ public class MultiImageImage extends Image {
 				settlerRectFloats = null;
 			}
 
-			gl.drawQuadWithTexture(map.getTexture(gl), rectHandle.geometry, rectHandle.index);
+			gl.draw2D(rectHandle.geometry, map.getTexture(gl), EGeometryType.Quad, rectHandle.index, 4);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
