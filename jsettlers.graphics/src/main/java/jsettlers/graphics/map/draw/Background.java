@@ -1180,11 +1180,12 @@ public class Background implements IGraphicsBackgroundListener {
 				bufferHeight = context.getMap().getHeight()-1;
 
 				generateFogOfWarBuffer(context);
-				generateGeometry(context);
 				mapHeightInvalid = new BitSet(bufferWidth*bufferHeight);
 				mapTypeInvalid = new BitSet(bufferWidth*bufferHeight);
 				draw_stride = (2*bufferWidth)+1;
 			}
+
+			if(heighthandle == null || !heighthandle.isValid()) generateGeometry(context);
 
 			GLDrawContext gl = context.getGl();
 			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);

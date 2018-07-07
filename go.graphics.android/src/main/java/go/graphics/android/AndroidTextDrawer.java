@@ -105,8 +105,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
-
-		texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D);
+		initGeometry();
 	}
 
 	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
@@ -260,6 +259,10 @@ public class AndroidTextDrawer implements TextDrawer {
 		return firstLine;
 	}
 
+	private void initGeometry() {
+		if(texturepos == null || !texturepos.isValid()) texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D);
+	}
+
 	private void initialize() {
 		if (texture == null || !texture.isValid()) {
 			texture = context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
@@ -279,6 +282,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			}
 
 		}
+		initGeometry();
 	}
 
 	@Override
