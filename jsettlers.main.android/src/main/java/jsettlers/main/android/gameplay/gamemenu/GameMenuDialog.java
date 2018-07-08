@@ -60,6 +60,8 @@ public class GameMenuDialog extends DialogFragment {
 
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
+        applyFullscreenWorkaround(dialog);
+
         return dialog;
     }
 
@@ -79,4 +81,14 @@ public class GameMenuDialog extends DialogFragment {
         public void onStopTrackingTouch(SeekBar seekBar) {
         }
     };
+
+    /**
+     * Stops the system bars from showing when this dialog appears.
+     */
+    private void applyFullscreenWorkaround(AlertDialog dialog) {
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        dialog.setOnShowListener(x -> dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE));
+        int activitySystemUiVisibility = getActivity().getWindow().getDecorView().getSystemUiVisibility();
+        dialog.getWindow().getDecorView().setSystemUiVisibility(activitySystemUiVisibility);
+    }
 }
