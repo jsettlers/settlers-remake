@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:text="@string/game_menu_speed_slow" />
+                android:text="@string/game_menu_speed_normal" />
 
             <TextView
                 android:layout_width="0dp"
@@ -42,7 +42,7 @@
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:text="@string/game_menu_speed_title" />
+                android:text="@{viewmodel.getGameSpeedText()}" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -56,7 +56,8 @@
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="8" />
+            android:max="8"
+            android:progress="@{viewmodel.getGameSpeed()}"/>
 
         <Space
             android:layout_width="0dp"

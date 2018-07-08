@@ -135,8 +135,8 @@
     <string name="game_menu_paused">Paused</string>
     <string name="game_menu_saved">Game saved</string>
     <string name="game_menu_skip_minute">Skip 1 minute</string>
-    <string name="game_menu_speed_title">Game speed</string>
-    <string name="game_menu_speed_slow">Slow</string>
+    <string name="game_menu_speed_title">Game speed x%.1f</string>
+    <string name="game_menu_speed_normal">Normal</string>
     <string name="game_menu_speed_fast">Fast</string>
 
     <string name="no_saved_games">No saved games available</string>

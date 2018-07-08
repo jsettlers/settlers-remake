@@ -33,6 +33,8 @@ public class GameMenuViewModel extends ViewModel {
 
     private final LiveData<String> quitTextLiveData;
     private final LiveData<String> pauseTextLiveData;
+    private final LiveData<String> gameSpeedTextLiveData;
+    private final LiveData<Integer> gameSpeedLiveData;
     private final SingleLiveEvent<Void> gameQuittedLiveData = new SingleLiveEvent<>();
 
     public GameMenuViewModel(
@@ -43,6 +45,8 @@ public class GameMenuViewModel extends ViewModel {
 
         quitTextLiveData = Transformations.map(gameMenu.getGameState(), this::mapQuitText);
         pauseTextLiveData = Transformations.map(gameMenu.isPausedState(), this::mapPausedText);
+        gameSpeedTextLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeedText);
+        gameSpeedLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeed);
     }
 
     public LiveData<String> getQuitText() {
@@ -51,6 +55,14 @@ public class GameMenuViewModel extends ViewModel {
 
     public LiveData<String> getPauseText() {
         return pauseTextLiveData;
+    }
+
+    public LiveData<String> getGameSpeedText() {
+        return gameSpeedTextLiveData;
+    }
+
+    public LiveData<Integer> getGameSpeed() {
+        return gameSpeedLiveData;
     }
 
     public SingleLiveEvent<Void> getGameQuitted() {
@@ -97,5 +109,13 @@ public class GameMenuViewModel extends ViewModel {
         return isPaused ?
                 application.getString(R.string.game_menu_unpause) :
                 application.getString(R.string.game_menu_pause);
+    }
+
+    private String mapGameSpeedText(float gameSpeed) {
+        return application.getString(R.string.game_menu_speed_title, gameSpeed);
+    }
+
+    private int mapGameSpeed(float gameSpeed) {
+        return Math.round((gameSpeed - 1) * 2);
     }
 }

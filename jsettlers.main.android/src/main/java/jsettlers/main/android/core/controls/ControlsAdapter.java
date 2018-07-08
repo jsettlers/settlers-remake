@@ -34,12 +34,11 @@ import jsettlers.common.action.Action;
 import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
+import jsettlers.main.android.gameplay.gamemenu.LiveGameSpeed;
+import jsettlers.network.client.interfaces.IGameClock;
 
 import android.content.Context;
 
-/**
- * Created by tompr on 14/01/2017.
- */
 public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls {
 	private static final int SOUND_THREADS = 6;
 
@@ -61,13 +60,13 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private ISelectionSet selection;
 	private ShortPoint2D displayCenter;
 
-	public ControlsAdapter(Context context, IStartedGame game) {
+	public ControlsAdapter(Context context, IStartedGame game, IGameClock gameClock) {
 		this.player = game.getInGamePlayer();
 
 		AndroidSoundPlayer soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
 		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
-		gameMenu = new GameMenu(context, soundPlayer, this);
+		gameMenu = new GameMenu(context, soundPlayer, this, new LiveGameSpeed(gameClock, this));
 		graphicsGrid = game.getMap();
 	}
 

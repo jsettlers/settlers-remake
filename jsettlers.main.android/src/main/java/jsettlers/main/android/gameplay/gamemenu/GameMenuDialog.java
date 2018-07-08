@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.SeekBar;
@@ -53,7 +52,6 @@ public class GameMenuDialog extends DialogFragment {
         DialogGameMenuBinding binding = DialogGameMenuBinding.inflate(layoutInflater);
         binding.setLifecycleOwner(this);
         binding.setViewmodel(viewModel);
-
         binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
@@ -75,12 +73,10 @@ public class GameMenuDialog extends DialogFragment {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
         }
     };
 }

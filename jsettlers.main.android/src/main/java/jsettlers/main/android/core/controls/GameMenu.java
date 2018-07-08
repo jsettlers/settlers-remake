@@ -30,6 +30,7 @@ import jsettlers.common.action.SetSpeedAction;
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.gamemenu.LiveGameSpeed;
 
 /**
  * GameMenu is a singleton within the scope of a started game
@@ -42,28 +43,38 @@ public class GameMenu implements IGameExitListener {
 	}
 
 	private final Context context;
-	private final ActionControls actionControls;
 	private final AndroidSoundPlayer soundPlayer;
+	private final ActionControls actionControls;
+	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
+	private final LiveGameSpeed liveGameSpeed;
 
 	private Timer quitConfirmTimer;
 
-	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
+	public GameMenu(
+			Context context,
+			AndroidSoundPlayer soundPlayer,
+			ActionControls actionFireable,
+			LiveGameSpeed liveGameSpeed) {
+		this.context = context;
+		this.soundPlayer = soundPlayer;
+		this.actionControls = actionFireable;
+		this.liveGameSpeed = liveGameSpeed;
+
+		pausedState.postValue(false);
+		gameState.postValue(GameState.PLAYING);
+	}
+
 	public LiveData<GameState> getGameState() {
 		return gameState;
 	}
 
-	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
 	public LiveData<Boolean> isPausedState() {
 		return  pausedState;
 	}
 
-	public GameMenu(Context context, AndroidSoundPlayer soundPlayer, ActionControls actionFireable) {
-		this.context = context;
-		this.soundPlayer = soundPlayer;
-		this.actionControls = actionFireable;
-
-		pausedState.postValue(false);
-		gameState.postValue(GameState.PLAYING);
+	public LiveData<Float> getGameSpeed() {
+		return liveGameSpeed;
 	}
 
 	public void save() {
@@ -123,6 +134,7 @@ public class GameMenu implements IGameExitListener {
 
 	public void setGameSpeed(float speed) {
 		actionControls.fireAction(new SetSpeedAction(speed));
+		liveGameSpeed.setValue(speed);
 	}
 
 	/**
