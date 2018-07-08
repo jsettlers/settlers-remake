@@ -26,6 +26,7 @@ import java.util.TimerTask;
 import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
+import jsettlers.common.action.SetSpeedAction;
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.main.android.R;
@@ -118,6 +119,10 @@ public class GameMenu implements IGameExitListener {
 
 	public void skipMinute() {
 		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
+	}
+
+	public void setGameSpeed(float speed) {
+		actionControls.fireAction(new SetSpeedAction(speed));
 	}
 
 	/**

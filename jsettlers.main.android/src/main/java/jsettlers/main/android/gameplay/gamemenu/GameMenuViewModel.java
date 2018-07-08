@@ -82,6 +82,11 @@ public class GameMenuViewModel extends ViewModel {
         gameMenu.skipMinute();
     }
 
+    public void gameSpeedMoved(int progress) {
+        float speed = (progress / 2f) + 1f;
+        gameMenu.setGameSpeed(speed);
+    }
+
     private String mapQuitText(GameMenu.GameState gameState) {
         return gameState == GameMenu.GameState.CONFIRM_QUIT ?
                 application.getString(R.string.game_menu_quit_confirm) :
