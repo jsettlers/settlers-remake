@@ -26,7 +26,7 @@
             android:orientation="vertical"
             android:clickable="true"
             android:focusable="true"
-            android:background="#bb000000"
+            android:background="@color/menu_translucent_background"
             app:layout_behavior="@string/view_pager_bottom_sheet_behavior"
             app:behavior_peekHeight="@dimen/menu_bar_peek_height"
             app:behavior_hideable="true">

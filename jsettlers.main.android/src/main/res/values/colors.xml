@@ -9,4 +9,5 @@
     <color name="grayDark">#9E9E9E</color>
 
     <color name="paused_mask">#aa000000</color>
+    <color name="menu_translucent_background">#bb000000</color>
 </resources>

@@ -290,6 +290,8 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
 	@OptionsItem(R.id.menu_item_show_game_menu)
 	void showGameMenu() {
+		dismissMenu();
+
 		if (getChildFragmentManager().findFragmentByTag(TAG_GAME_MENU_DIALOG) == null) {
 			GameMenuDialog.create().show(getChildFragmentManager(), TAG_GAME_MENU_DIALOG);
 		}

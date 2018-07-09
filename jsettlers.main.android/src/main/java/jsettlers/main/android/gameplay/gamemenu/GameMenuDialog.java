@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 
+import jsettlers.main.android.R;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
 import jsettlers.main.android.mainmenu.MainActivity_;
 
@@ -54,7 +55,7 @@ public class GameMenuDialog extends DialogFragment {
         binding.setViewmodel(viewModel);
         binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.GameMenuDialogTheme)
                 .setView(binding.getRoot())
                 .create();
 

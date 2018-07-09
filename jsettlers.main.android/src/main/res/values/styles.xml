@@ -14,10 +14,15 @@
     </style>
 
     <style name="InGameTheme" parent="SettlersTheme">
+        <item name="alertDialogTheme">@style/GameMenuDialogTheme</item>
     </style>
 
     <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="colorButtonNormal">@color/primaryDark</item>
+    </style>
+
+    <style name="GameMenuDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@color/menu_translucent_background</item>
     </style>
 
     <style name="ReadySwitch">
