@@ -29,6 +29,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
@@ -39,10 +40,13 @@ import java.nio.ShortBuffer;
  * @author paul
  */
 public final class LWJGLTextDrawer implements TextDrawer {
+	private static float scalingFactor = 1;
 
 	private static final String FONTNAME = "Arial";
+	private static final int DEFAULT_DPI = 96;
 
 	private final GeometryHandle[] rects = new GeometryHandle[256];
+
 	private final TextureHandle font_tex;
 	private final int line_height;
 	private final int tex_height;
@@ -55,6 +59,17 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	private final LWJGLDrawContext drawContext;
 
+	// calculate the scaling factor when the class is initialized
+	static {
+		calculateScalingFactor();
+	}
+
+	private static void calculateScalingFactor() {
+		scalingFactor = Toolkit.getDefaultToolkit().getScreenResolution();
+		scalingFactor /= DEFAULT_DPI;
+		scalingFactor = Math.max(scalingFactor, 1);
+	}
+
 	/**
 	 * Creates a new text drawer.
 	 * 
@@ -64,7 +79,10 @@ public final class LWJGLTextDrawer implements TextDrawer {
 	 */
 	public LWJGLTextDrawer(EFontSize size, LWJGLDrawContext drawContext) {
 		this.drawContext = drawContext;
-		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, size.getSize());
+
+		int scaledFontSize = Math.round(size.getSize() * scalingFactor);
+
+		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, scaledFontSize);
 
 		BufferedImage tmp_bi = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics tmp_graph = tmp_bi.getGraphics();
@@ -73,7 +91,6 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		char_widths = fm.getWidths();
 		line_height = fm.getHeight();
 		tmp_graph.dispose();
-
 
 		if(char_widths.length != 256) {
 			throw new IndexOutOfBoundsException("we only support 256 characters (256!="+char_widths.length);
