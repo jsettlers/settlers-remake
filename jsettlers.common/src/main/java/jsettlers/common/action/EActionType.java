@@ -55,6 +55,11 @@ public enum EActionType {
 	SELECT_POINT_TYPE,
 
 	/**
+	 * Select only the wounded of the current selection.
+	 */
+	FILTER_WOUNDED,
+
+	/**
 	 * Skip the next minute of gameplay.
 	 */
 	FAST_FORWARD,

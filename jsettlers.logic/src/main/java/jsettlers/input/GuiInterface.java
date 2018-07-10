@@ -21,9 +21,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import java8.util.Optional;
-import java8.util.function.BiFunction;
-import java8.util.function.Predicate;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
@@ -85,10 +82,15 @@ import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import java8.util.Optional;
+import java8.util.function.BiFunction;
+import java8.util.function.Predicate;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -210,6 +212,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 			case SELECT_POINT:
 				handleSelectPointAction((PointAction) action);
+				break;
+
+			case FILTER_WOUNDED:
+				filterWounded();
 				break;
 
 			case SELECT_AREA:
@@ -608,6 +614,21 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
 	}
 
+	private void filterWounded() {
+		if(currentSelection.getSelectionType() != ESelectionType.SOLDIERS && currentSelection.getSelectionType() != ESelectionType.PEOPLE && currentSelection.getSelectionType() != ESelectionType.SPECIALISTS)
+			return;
+
+		final List<ISelectable> selected = new LinkedList<>();
+
+		for(ISelectable selectable : currentSelection) {
+			Movable movable = (Movable)selectable;
+			if(movable.getHealth() < movable.getMovableType().health)
+				selected.add(movable);
+		}
+
+        setSelection(new SelectionSet(selected));
+	}
+
 	private void deselect() {
 		setSelection(new SelectionSet());
 	}
@@ -625,7 +646,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		} else {
 			setSelection(new SelectionSet());
 		}
-
 	}
 
 	private void scheduleTask(SimpleGuiTask guiTask) {
