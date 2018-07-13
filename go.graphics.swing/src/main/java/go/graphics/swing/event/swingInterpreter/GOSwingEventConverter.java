@@ -65,6 +65,8 @@ public class GOSwingEventConverter extends AbstractEventConverter
 	public GOSwingEventConverter(Component component, GOEventHandlerProvider provider) {
 		super(provider);
 
+		component.setFocusTraversalKeysEnabled(false);
+
 		component.addKeyListener(this);
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
@@ -251,6 +253,9 @@ public class GOSwingEventConverter extends AbstractEventConverter
 				break;
 			case KeyEvent.VK_BACK_SPACE:
 				text = "BACK_SPACE";
+				break;
+			case KeyEvent.VK_TAB:
+				text = "TAB";
 				break;
 			default:
 				text = "" + e.getKeyChar();

@@ -708,7 +708,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.ZOOM_OUT);
 		} else if ("F2".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SAVE);
-		} else if ("v".equalsIgnoreCase(keyCode)) {
+		} else if ("TAB".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FILTER_WOUNDED);
 		} else if ("DELETE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DESTROY);
