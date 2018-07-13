@@ -22,10 +22,11 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 	protected ContextCreator cc;
 	protected LWJGLDrawContext context;
-	private boolean debug = true;
+	private boolean debug;
 
-	public GLContainer(EBackendType backend, LayoutManager layout) {
+	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
 		setLayout(layout);
+		this.debug = debug;
 
 		try {
 			cc = BackendSelector.createBackend(this, backend, debug);

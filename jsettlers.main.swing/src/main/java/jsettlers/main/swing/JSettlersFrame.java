@@ -169,7 +169,7 @@ public class JSettlersFrame extends JFrame {
 		}, 100, 1000/SettingsManager.getInstance().getFpsLimit());
 
 		SwingUtilities.invokeLater(() -> {
-			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend()));
+			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend(), SettingsManager.getInstance().isGraphicsDebug()));
 			revalidate();
 			repaint();
 		});
