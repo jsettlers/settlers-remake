@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -196,7 +198,7 @@ public class DatFileTester {
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(2*3*4);
+			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D);
 
 
 			gl2.glPushMatrix();
@@ -207,7 +209,7 @@ public class DatFileTester {
 
 				gl2.color(1, 0, 0, 1);
 				gl2.glTranslatef(x, y, 0);
-				gl2.drawLine(lineGeometry, 3, false);
+				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}

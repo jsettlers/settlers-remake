@@ -14,6 +14,8 @@
  *******************************************************************************/
 package go.graphics.swing.test;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -127,14 +129,14 @@ public class LwjglTest {
 
 			if(point_index < 2) return;
 
-			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(4*2*2);
+			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D);
 
 			synchronized (pointLock) {
 				try {
 					for (int i = 1; i != point_index; i++) {
 						bfr.asFloatBuffer().put(new float[]{pointx[i - 1], pointy[i - 1], pointx[i], pointy[i]});
 						gl2.updateGeometryAt(pointGeometry, 0, bfr);
-						gl2.drawLine(pointGeometry, 2, false);
+						gl2.draw2D(pointGeometry, null, EGeometryType.LineStrip, 0, 2);
 					}
 				} catch (IllegalBufferException ex) {
 					ex.printStackTrace();

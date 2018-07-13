@@ -44,6 +44,8 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -337,7 +339,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		ImageSet currentSet;
 
 		Surface() {
-			super(EBackendType.DEFAULT, new GridBagLayout());
+			super(EBackendType.DEFAULT, new GridBagLayout(), false);
 			currentSet = ImageSet.SETTLERS;
 			resetOffset();
 		}
@@ -441,7 +443,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		private void drawImage(GLDrawContext gl2, int x, int y, int index, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(2*3*4);
+			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D);
 
 			gl2.glPushMatrix();
 			try {
@@ -450,7 +452,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 				gl2.color(1, 0, 0, 1);
 				gl2.glTranslatef(x, y, 0);
-				gl2.drawLine(lineGeometry, 3, false);
+				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
