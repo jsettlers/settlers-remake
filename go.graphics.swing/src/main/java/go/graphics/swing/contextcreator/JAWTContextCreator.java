@@ -31,8 +31,8 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	protected JAWTDrawingSurface surface;
 	protected JAWTDrawingSurfaceInfo surfaceinfo;
 
-	public JAWTContextCreator(GLContainer container) {
-		super(container);
+	public JAWTContextCreator(GLContainer container, boolean debug) {
+		super(container, debug);
 
 		jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
 		JAWTFunctions.JAWT_GetAWT(jawt);

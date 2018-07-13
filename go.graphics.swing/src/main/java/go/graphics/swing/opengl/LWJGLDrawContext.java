@@ -15,10 +15,13 @@
 package go.graphics.swing.opengl;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.AMDDebugOutput;
+import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.nio.ByteBuffer;
@@ -32,6 +35,10 @@ import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLTextureHandle;
 import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.opengl.KHRDebug;
+import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 /**
  * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
@@ -46,9 +53,21 @@ public class LWJGLDrawContext implements GLDrawContext {
 			.values().length];
 
 	private final GLCapabilities glcaps;
+	private Callback debugcallback;
 
-	public LWJGLDrawContext(GLCapabilities glcaps) {
+	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
+
+		if(debug) {
+			debugcallback = GLUtil.setupDebugMessageCallback(System.err);
+			if(glcaps.OpenGL43) {
+				GL11.glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			} else if(glcaps.GL_KHR_debug) {
+				GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			} else if(glcaps.GL_ARB_debug_output) {
+				GL11.glEnable(ARBDebugOutput.GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+			}
+		}
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);

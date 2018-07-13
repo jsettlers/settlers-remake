@@ -2,6 +2,7 @@ package go.graphics.swing;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLCapabilities;
 
 import java.awt.Component;
 import java.awt.LayoutManager;
@@ -21,12 +22,13 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 	protected ContextCreator cc;
 	protected LWJGLDrawContext context;
+	private boolean debug = true;
 
 	public GLContainer(EBackendType backend, LayoutManager layout) {
 		setLayout(layout);
 
 		try {
-			cc = BackendSelector.createBackend(this, backend);
+			cc = BackendSelector.createBackend(this, backend, debug);
 			cc.init();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -50,15 +52,10 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	private boolean errormessage_shown = false;
 
 	public void init() {
-		context = new LWJGLDrawContext(GL.createCapabilities());
-		String version = GL11.glGetString(GL11.GL_VERSION);
-		if(version != null && version.length() > 5) {
-			if(version.charAt(0) > 1 || version.charAt(3) >= 5) {
-				return;
-			}
-		}
+		GLCapabilities caps = GL.createCapabilities();
+		context = new LWJGLDrawContext(caps, debug);
 
-		if(!errormessage_shown) {
+		if(!caps.OpenGL15 && !errormessage_shown) {
 			SwingUtilities.invokeLater(() -> {
 				JOptionPane.showMessageDialog(this, "JSettlers needs at least OpenGL 1.5\nPress ok to exit");
 				System.exit(1);

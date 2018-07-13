@@ -23,8 +23,8 @@ public class EGLContextCreator extends JAWTContextCreator {
 
 	private long native_drawable;
 
-	public EGLContextCreator(GLContainer container) {
-		super(container);
+	public EGLContextCreator(GLContainer container, boolean debug) {
+		super(container, debug);
 	}
 
 	@Override

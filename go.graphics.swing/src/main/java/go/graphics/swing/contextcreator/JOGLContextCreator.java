@@ -25,8 +25,8 @@ import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public class JOGLContextCreator extends ContextCreator implements GLEventListener{
 
-	public JOGLContextCreator(GLContainer container) {
-		super(container);
+	public JOGLContextCreator(GLContainer container, boolean debug) {
+		super(container, debug);
 	}
 
 	@Override
@@ -36,6 +36,7 @@ public class JOGLContextCreator extends ContextCreator implements GLEventListene
 
 	@Override
 	public void initSpecific() {
+		if(debug) System.setProperty("jogl.debug.GLProfile", "true");
 		GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
 		caps.setStencilBits(1);
 

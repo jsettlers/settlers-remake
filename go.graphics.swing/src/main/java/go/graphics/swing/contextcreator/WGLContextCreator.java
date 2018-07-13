@@ -14,7 +14,10 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.WGL;
+import org.lwjgl.opengl.WGLARBCreateContext;
+import org.lwjgl.opengl.WGLCapabilities;
 import org.lwjgl.system.jawt.JAWTWin32DrawingSurfaceInfo;
 import org.lwjgl.system.windows.GDI32;
 import org.lwjgl.system.windows.PIXELFORMATDESCRIPTOR;
@@ -29,8 +32,8 @@ public class WGLContextCreator extends JAWTContextCreator {
 	private long context;
 	private int pixel_format;
 
-	public WGLContextCreator(GLContainer container) {
-		super(container);
+	public WGLContextCreator(GLContainer container, boolean debug) {
+		super(container, debug);
 		// do we have gdi and wgl support ?
 		GDI32.getLibrary().getName();
 	}
@@ -75,7 +78,16 @@ public class WGLContextCreator extends JAWTContextCreator {
 
 		pfd.free();
 
-		context = WGL.wglCreateContext(hdc);
+		if(debug) {
+			WGLCapabilities caps = GL.createCapabilitiesWGL();
+			if(!caps.WGL_ARB_create_context) throw new Error("WGL could not create a debug context!");
+			context = WGLARBCreateContext.wglCreateContextAttribsARB(hdc, 0, new int[] {
+					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB, 0
+			});
+
+		} else {
+			context = WGL.wglCreateContext(hdc);
+		}
 		if(context == 0) throw new Error("Could not create WGL context!");
 	}
 

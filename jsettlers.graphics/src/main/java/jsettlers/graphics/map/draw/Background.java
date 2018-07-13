@@ -1197,6 +1197,7 @@ public class Background implements IGraphicsBackgroundListener {
 			gl.glTranslatef(context.getOffsetX(), context.getOffsetY(), -.1f);
 			gl.glScalef(1, 1, 0);
 			gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
+			// TODO fix border drawing
 			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), heighthandle, typehandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride);
 			gl.glPopMatrix();
 
@@ -1274,15 +1275,19 @@ public class Background implements IGraphicsBackgroundListener {
 			int width = screen.getWidth();
 			int miny = screen.getMinY();
 			int minx = screen.getMinX();
-			for (int relativeY = 0; relativeY < height; relativeY++) {
-				int lineStartX = minx+(relativeY/2);
-				int y = miny+relativeY;
-				if(y < 0) continue;
-				if(y >= bufferHeight) break;
+			int maxy = miny+height;
 
-				for (int relativeX = 0; relativeX < width; relativeX++) {
-					int x = lineStartX + relativeX;
-					if(x < 0 || x >= bufferWidth) continue;
+			if(maxy > bufferHeight) maxy = bufferHeight;
+			if(miny < 0) miny = 0;
+
+			int linestart = minx-(miny/2);
+			for (int y = miny; y < maxy; y++) {
+				int lineStartX = linestart+(y/2);
+
+				int linewidth = (width+lineStartX) < bufferWidth ? width+lineStartX : bufferWidth;
+				int linex = lineStartX < 0 ? 0 : lineStartX;
+
+				for (int x = linex; x < linewidth; x++) {
 					byte fow = visibleStatus != null ? visibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 					updateMapType(context, x, y, fow);
 				}
@@ -1290,17 +1295,14 @@ public class Background implements IGraphicsBackgroundListener {
 			updatetype = false;
 
 			if (updateheight) {
-				for (int relativeY = 0; relativeY < height; relativeY++) {
-					int lineStartX = minx+(relativeY/2);
-					int y = miny+relativeY;
-					if(y < 0) continue;
-					if(y >= bufferHeight) break;
+				for (int y = miny; y < maxy; y++) {
+					int lineStartX = linestart+(y/2);
 
-					for (int relativeX = 0; relativeX < width; relativeX++) {
-						int x = lineStartX + relativeX;
-						if(x < 0 || x >= bufferWidth) continue;
+					int linewidth = (width+lineStartX) < bufferWidth ? width+lineStartX : bufferWidth;
+					int linex = lineStartX < 0 ? 0 : lineStartX;
+
+					for (int x = linex; x < linewidth; x++) {
 						int bfr_pos = y*bufferWidth+x;
-
 						if (mapHeightInvalid.get(bfr_pos)) {
 							mapHeightInvalid.set(bfr_pos, false);
 							update_bfr.rewind();

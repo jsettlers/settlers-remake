@@ -41,8 +41,8 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	private Thread render_thread;
 
-	public AsyncContextCreator(GLContainer container)  {
-		super(container);
+	public AsyncContextCreator(GLContainer container, boolean debug)  {
+		super(container, debug);
 	}
 
 	@Override
