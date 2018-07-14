@@ -129,7 +129,7 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public TextureHandle generateTexture(int width, int height, ShortBuffer data) {
+	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
 		// 1 byte aligned.
 		GLES10.glPixelStorei(GLES10.GL_UNPACK_ALIGNMENT, 1);
 
@@ -238,7 +238,7 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType format) {
+	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType format, String name) {
 		GeometryHandle geometry = allocateVBO(format);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometry.getInternalId());
@@ -291,7 +291,7 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType format) {
+	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType format, String name) {
 
 		GeometryHandle vertexBufferId = allocateVBO(format);
 		ByteBuffer bfr = ByteBuffer.allocateDirect(4*geometry.length).order(ByteOrder.nativeOrder());

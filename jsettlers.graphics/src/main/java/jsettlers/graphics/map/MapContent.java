@@ -459,7 +459,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
 
 			if(selectionArea == null || !selectionArea.isValid()) {
-				selectionArea = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D);
+				selectionArea = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, "selection-area");
 			}
 
 			if(updateSelectionArea) {
@@ -633,7 +633,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeGeometry(shape, EGeometryFormatType.VertexOnly2D);
+		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeGeometry(shape, EGeometryFormatType.VertexOnly2D, "debugshape");
 
 		int drawX = context.getOffsetX();
 		int drawY = context.getOffsetY();

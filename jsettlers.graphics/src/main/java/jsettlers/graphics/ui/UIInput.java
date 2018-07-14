@@ -75,7 +75,7 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		float x = getPosition().getMinX() + 2;
 		drawer.drawString(x, y, inputString.toString());
 
-		if(geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1}, EGeometryFormatType.VertexOnly2D);
+		if(geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1}, EGeometryFormatType.VertexOnly2D, "uiinput-line");
 
 		float carretX = x + drawer.getWidth(inputString.substring(0, carret) + "X") - drawer.getWidth("X");
 

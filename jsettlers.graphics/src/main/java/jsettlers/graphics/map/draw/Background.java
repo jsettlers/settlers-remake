@@ -893,7 +893,7 @@ public class Background implements IGraphicsBackgroundListener {
 			}
 			ByteBuffer buffer = ByteBuffer.allocateDirect(data.length * 2).order(ByteOrder.nativeOrder());
 			buffer.asShortBuffer().put(data);
-			texture = context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer.asShortBuffer());
+			texture = context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer.asShortBuffer(), "background");
 
 			System.out.println("Background texture generated in " + (System.currentTimeMillis() - startTime) + "ms");
 		}
@@ -1214,8 +1214,8 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
 		int vertices = bufferWidth*bufferHeight*3*2;
-		heighthandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Background);
-		typehandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Background);
+		heighthandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Background, "background-height");
+		typehandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Background, "background-type");
 
 		ByteBuffer bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD*bufferWidth).order(ByteOrder.nativeOrder());
 

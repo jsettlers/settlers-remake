@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
@@ -53,7 +54,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			.values().length];
 
 	private final GLCapabilities glcaps;
-	private Callback debugcallback;
+	private Callback debugcallback = null;
 
 	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
@@ -143,7 +144,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public TextureHandle generateTexture(int width, int height, ShortBuffer data) {
+	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
 		// 1 byte aligned.
 		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 
@@ -163,6 +164,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
 				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, bfr);
 		setTextureParameters();
+
+		setObjectLabel(GL11.GL_TEXTURE, texture, name + "-tex");
 
 		return new LWJGLTextureHandle(this, texture);
 	}
@@ -245,6 +248,10 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, paintHandle.getInternalId());
 				GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3 * 4, 0);
 				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3 * 4, 8);
+
+				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
+				setObjectLabel(GL43.GL_BUFFER, vertexHandle.getInternalId(), "background-shape");
+				setObjectLabel(GL43.GL_BUFFER, paintHandle.getInternalId(), "background-shape");
 			}
 
 			ARBVertexArrayObject.glBindVertexArray(backgroundVAO);
@@ -275,8 +282,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type) {
-		GeometryHandle geometryBuffer = allocateVBO(type);
+	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, String name) {
+		GeometryHandle geometryBuffer = allocateVBO(type, name);
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, geometryBuffer.getInternalId());
 		try(MemoryStack stack = MemoryStack.stackPush()) {
@@ -297,14 +304,14 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType type) {
-		GeometryHandle vertexBufferId = allocateVBO(type);
+	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, String name) {
+		GeometryHandle vertexBufferId = allocateVBO(type, name);
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId.getInternalId());
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*type.getBytesPerVertexSize(), type == EGeometryFormatType.Background ? GL15.GL_STATIC_DRAW : GL15.GL_DYNAMIC_DRAW);
 		return vertexBufferId;
 	}
-	private GeometryHandle allocateVBO(EGeometryFormatType type) {
+	private GeometryHandle allocateVBO(EGeometryFormatType type, String name) {
 		int vao = 0;
 		int vbo = GL15.glGenBuffers();
 		if (glcaps.GL_ARB_vertex_array_object && type != EGeometryFormatType.Background) {
@@ -319,7 +326,22 @@ public class LWJGLDrawContext implements GLDrawContext {
 			specifyFormat(type);
 		}
 
+		if(type != EGeometryFormatType.Background)  {
+			setObjectLabel(GL43.GL_BUFFER, vbo, name + "-vertices");
+			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
+		}
+
 		return new LWJGLBufferHandle.LWJGLGeometryHandle(this, type, vao, vbo);
+	}
+
+	private void setObjectLabel(int type, int id, String name) {
+		//if(debugcallback == null) return;
+
+		if(glcaps.OpenGL43) {
+			GL43.glObjectLabel(type, id, name);
+		} else if(glcaps.GL_KHR_debug) {
+			KHRDebug.glObjectLabel(type, id, name);
+		}
 	}
 
 	public void prepareFontDrawing() {

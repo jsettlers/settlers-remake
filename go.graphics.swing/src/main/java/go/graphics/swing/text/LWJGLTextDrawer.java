@@ -113,7 +113,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
-		geometry = drawContext.storeGeometry(geodata, EGeometryFormatType.Texture2D);
+		geometry = drawContext.storeGeometry(geodata, EGeometryFormatType.Texture2D, font.getName() + size.getSize());
 		graph.dispose();
 
 		short[] short_tex_data = new short[tex_width*tex_height];
@@ -132,7 +132,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 		}
 		ShortBuffer bfr = ShortBuffer.wrap(short_tex_data);
 
-		font_tex = drawContext.generateTexture(max_len, tex_height, bfr);
+		font_tex = drawContext.generateTexture(max_len, tex_height, bfr, font.getName() + size.getSize());
 	}
 
 	/*

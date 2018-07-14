@@ -48,14 +48,16 @@ public class BarFill extends UIPanel {
 	private float barFillPercentage = 0;
 	private float descriptionPercentage = 0;
 
-	public BarFill() {
+	public BarFill(String name) {
 		setBackground(barImageLink);
+		this.name = name;
 	}
 
 	private GeometryHandle geometry = null;
 	private static ByteBuffer geometryBfr = ByteBuffer.allocateDirect(4*4*2).order(ByteOrder.nativeOrder());
 	private FloatRectangle writtenPosition = null;
 	private float writtenMaxX = -1;
+	private String name;
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
@@ -65,7 +67,7 @@ public class BarFill extends UIPanel {
 		float maxX = position.getMinX() * (1 - fillX) + position.getMaxX() * fillX;
 
 		try {
-			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D);
+			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, name);
 			if (!position.equals(writtenPosition) || writtenMaxX != maxX) {
 				writtenPosition = position;
 				writtenMaxX = maxX;

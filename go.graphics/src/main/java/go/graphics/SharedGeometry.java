@@ -9,8 +9,10 @@ public class SharedGeometry {
 
 	private static final int CAPACITY = 1000;
 	private static final int QUAD_SIZE = 4*4*4;
+	private static int maxIndex = 0;
 
 	private int size = 0;
+	private int index;
 	private GeometryHandle geometry;
 	private static final ByteBuffer generate_buffer = ByteBuffer.allocateDirect(QUAD_SIZE).order(ByteOrder.nativeOrder());
 
@@ -21,7 +23,7 @@ public class SharedGeometry {
 
 		while(true) {
 			// create an instance if needed
-			if(geometries.size() == sgeometryIndex) geometries.add(new SharedGeometry(dc));
+			if(geometries.size() == sgeometryIndex) geometries.add(new SharedGeometry(dc, ++maxIndex));
 
 			SharedGeometry geometry = geometries.get(sgeometryIndex);
 			// generate it
@@ -66,13 +68,14 @@ public class SharedGeometry {
 
 	private void validate(GLDrawContext dc) {
 		if(!geometry.isValid()) {
-			geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D);
+			geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, "sharedgeometry-" + index);
 			size = 0;
 		}
 	}
 
-	private SharedGeometry(GLDrawContext dc) {
-		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D);
+	private SharedGeometry(GLDrawContext dc, int index) {
+		this.index = index;
+		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, "sharedgeometry-" + index);
 	}
 
 

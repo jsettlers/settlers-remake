@@ -57,7 +57,7 @@ public interface GLDrawContext {
 	 *            blue and 1 bit alpha.
 	 * @return The id of the generated texture.
 	 */
-	TextureHandle generateTexture(int width, int height, ShortBuffer data);
+	TextureHandle generateTexture(int width, int height, ShortBuffer data, String name);
 
 	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
 
@@ -81,9 +81,9 @@ public interface GLDrawContext {
 
 	TextDrawer getTextDrawer(EFontSize size);
 
-	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type);
+	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, String name);
 
 	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
-	GeometryHandle generateGeometry(int bytes, EGeometryFormatType type);
+	GeometryHandle generateGeometry(int bytes, EGeometryFormatType type, String name);
 }
