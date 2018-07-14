@@ -260,7 +260,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	}
 
 	private void initGeometry() {
-		if(texturepos == null || !texturepos.isValid()) texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D);
+		if(texturepos == null || !texturepos.isValid()) texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D, "android-textdrawer" + size.getSize());
 	}
 
 	private void initialize() {

@@ -250,7 +250,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3 * 4, 8);
 
 				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
-				setObjectLabel(GL43.GL_BUFFER, vertexHandle.getInternalId(), "background-shape");
+				setObjectLabel(GL43.GL_BUFFER, vertexHandle.getInternalId(), "background-vertices");
 				setObjectLabel(GL43.GL_BUFFER, paintHandle.getInternalId(), "background-shape");
 			}
 
