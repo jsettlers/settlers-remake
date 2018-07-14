@@ -63,7 +63,7 @@ public class EmptyDatFile implements DatFileReader {
 	}
 
 	@Override
-	public void generateImageMap(int width, int height, int[] sequences, String id) throws IOException {
+	public void generateImageMap(int width, int height, int[] sequences, String id, String name) throws IOException {
 		throw new UnsupportedOperationException();
 	}
 

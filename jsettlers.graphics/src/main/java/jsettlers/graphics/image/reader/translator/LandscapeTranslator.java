@@ -57,7 +57,7 @@ public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> 
 	}
 
 	@Override
-	public LandscapeImage createImage(ImageMetadata metadata, short[] array) {
-		return new LandscapeImage(metadata, array);
+	public LandscapeImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new LandscapeImage(metadata, array, name);
 	}
 }

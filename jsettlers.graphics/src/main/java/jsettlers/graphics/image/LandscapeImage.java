@@ -64,8 +64,8 @@ public class LandscapeImage extends SingleImage {
 	 * @param data
 	 *            The data for the image.
 	 */
-	public LandscapeImage(ImageMetadata metadata, short[] data) {
-		super(metadata, data);
+	public LandscapeImage(ImageMetadata metadata, short[] data, String name) {
+		super(metadata, data, name);
 	}
 
 	/**

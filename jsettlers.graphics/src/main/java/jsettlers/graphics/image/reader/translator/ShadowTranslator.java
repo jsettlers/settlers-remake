@@ -43,7 +43,7 @@ public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
 	}
 
 	@Override
-	public ShadowImage createImage(ImageMetadata metadata, short[] array) {
-		return new ShadowImage(metadata, array);
+	public ShadowImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new ShadowImage(metadata, array, name);
 	}
 }

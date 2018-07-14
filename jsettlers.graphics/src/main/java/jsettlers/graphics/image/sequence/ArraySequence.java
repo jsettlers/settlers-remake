@@ -58,7 +58,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 * @see Sequence#getImageLink(int)
 	 */
 	@Override
-	public T getImage(int index) {
+	public T getImage(int index, String name) {
 		return this.images[index];
 
 	}
@@ -69,7 +69,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 * @see Sequence#getImageSafe(int)
 	 */
 	@Override
-	public Image getImageSafe(int index) {
+	public Image getImageSafe(int index, String name) {
 		if (index >= 0 && index < this.images.length) {
 			return this.images[index];
 		} else {

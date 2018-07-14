@@ -240,15 +240,17 @@ public class AdvancedDatFileReader implements DatFileReader {
 	};
 
 	private final DatFileType type;
+	private final String file_name;
 
-	public AdvancedDatFileReader(File file, DatFileType type) {
-		this(file, type, new DefaultDatFileMapping());
+	public AdvancedDatFileReader(File file, DatFileType type, String file_name) {
+		this(file, type, new DefaultDatFileMapping(), file_name);
 	}
 
-	public AdvancedDatFileReader(File file, DatFileType type, DatFileMapping mapping) {
+	public AdvancedDatFileReader(File file, DatFileType type, DatFileMapping mapping, String file_name) {
 		this.file = file;
 		this.type = type;
 		this.mapping = mapping;
+		this.file_name = file_name;
 
 		directSettlerList = new DirectSettlerSequenceList();
 		settlerTranslator = new SettlerTranslator(type);
@@ -263,7 +265,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 		return new Hashes(IntStreams.range(0, settlers.size())
 				.mapToObj(settlers::get)
-				.map(sequence -> sequence.getImage(0))
+				.map(sequence -> sequence.getImage(0, null))
 				.filter(image -> image instanceof SingleImage)
 				.map(image -> (SingleImage) image)
 				.map(SingleImage::hash)
@@ -274,7 +276,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		Sequence<GuiImage> sequence = getGuis();
 
 		return new Hashes(IntStreams.range(0, sequence.length())
-				.mapToObj(sequence::getImage)
+				.mapToObj(index -> sequence.getImage(index, null))
 				.map(SingleImage::hash)
 				.collect(Collectors.toList()));
 	}
@@ -494,14 +496,13 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private static final Sequence<Image> NULL_SETTLER_SEQUENCE = new ArraySequence<>(new SettlerImage[0]);
 
 	private class DirectSettlerSequenceList implements SequenceList<Image> {
-
 		@Override
 		public Sequence<Image> get(int index) {
 			initializeIfNeeded();
 			if (settlerSequences[index] == null) {
 				settlerSequences[index] = NULL_SETTLER_SEQUENCE;
 				try {
-					loadSettlers(index);
+					loadSettlers(index, file_name);
 				} catch (Exception e) {
 				}
 			}
@@ -515,7 +516,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 	}
 
-	private synchronized void loadSettlers(int goldIndex) throws IOException {
+	private synchronized void loadSettlers(int goldIndex, String name) throws IOException {
 		int theseGraphicsFilesIndex = mapping.mapSettlersSequence(goldIndex);
 
 		int position = settlerStarts[theseGraphicsFilesIndex];
@@ -524,7 +525,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		SettlerImage[] images = new SettlerImage[framePositions.length];
 		for (int i = 0; i < framePositions.length; i++) {
 			reader.skipTo(framePositions[i]);
-			images[i] = DatBitmapReader.getImage(settlerTranslator, reader);
+			images[i] = DatBitmapReader.getImage(settlerTranslator, reader, name + "-S" + goldIndex + ":" + i);
 		}
 
 		int torsoPosition = torsoStarts[theseGraphicsFilesIndex];
@@ -532,7 +533,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			long[] torsoPositions = readSequenceHeader(torsoPosition);
 			for (int i = 0; i < torsoPositions.length && i < framePositions.length; i++) {
 				reader.skipTo(torsoPositions[i]);
-				TorsoImage torso = DatBitmapReader.getImage(torsoTranslator, reader);
+				TorsoImage torso = DatBitmapReader.getImage(torsoTranslator, reader, name + "-T" + goldIndex + ":" + i);
 				images[i].setTorso(torso);
 			}
 		}
@@ -543,7 +544,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			for (int i = 0; i < shadowPositions.length
 				&& i < framePositions.length; i++) {
 				reader.skipTo(shadowPositions[i]);
-				ShadowImage shadow = DatBitmapReader.getImage(shadowTranslator, reader);
+				ShadowImage shadow = DatBitmapReader.getImage(shadowTranslator, reader, name + "-SH" + goldIndex + ":" + i);
 				images[i].setShadow(shadow);
 			}
 		}
@@ -584,10 +585,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 		 * Forces a get of the image.
 		 */
 		@Override
-		public LandscapeImage getImage(int index) {
+		public LandscapeImage getImage(int index, String custom_name) {
 			initializeIfNeeded();
 			if (landscapeImages[index] == null) {
-				loadLandscapeImage(index);
+				loadLandscapeImage(index, custom_name == null ? file_name+"-L"+index : custom_name+file_name+"-L"+index);
 			}
 			return landscapeImages[index];
 		}
@@ -599,13 +600,13 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		@Override
-		public SingleImage getImageSafe(int index) {
+		public SingleImage getImageSafe(int index, String custom_name) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
 			} else {
 				if (landscapeImages[index] == null) {
-					loadLandscapeImage(index);
+					loadLandscapeImage(index, custom_name == null ? file_name+"-L"+index : custom_name+file_name+"-L"+index);
 				}
 				return landscapeImages[index];
 			}
@@ -619,10 +620,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 		return reader;
 	}
 
-	private void loadLandscapeImage(int index) {
+	private void loadLandscapeImage(int index, String name) {
 		try {
 			reader.skipTo(landscapeStarts[index]);
-			LandscapeImage image = DatBitmapReader.getImage(landscapeTranslator, reader);
+			LandscapeImage image = DatBitmapReader.getImage(landscapeTranslator, reader, name);
 			landscapeImages[index] = image;
 		} catch (IOException e) {
 			landscapeImages[index] = NullImage.getForLandscape();
@@ -639,10 +640,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 		 * Forces a get of the image.
 		 */
 		@Override
-		public GuiImage getImage(int index) {
+		public GuiImage getImage(int index, String custom_name) {
 			initializeIfNeeded();
 			if (guiImages[index] == null) {
-				loadGuiImage(index);
+				loadGuiImage(index, custom_name == null ? file_name+"-G"+index : custom_name+file_name+"-G"+index);
 			}
 			return guiImages[index];
 		}
@@ -654,24 +655,24 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		@Override
-		public SingleImage getImageSafe(int index) {
+		public SingleImage getImageSafe(int index, String custom_name) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
 			} else {
 				if (guiImages[index] == null) {
-					loadGuiImage(index);
+					loadGuiImage(index, custom_name == null ? file_name+"-G"+index : custom_name+file_name+"-G"+index);
 				}
 				return guiImages[index];
 			}
 		}
 	}
 
-	private void loadGuiImage(int goldIndex) {
+	private void loadGuiImage(int goldIndex, String name) {
 		try {
 			int theseGraphicsFilesIndex = mapping.mapGuiImage(goldIndex);
 			reader.skipTo(guiStarts[theseGraphicsFilesIndex]);
-			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader);
+			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader, name);
 			guiImages[goldIndex] = image;
 		} catch (IOException | ArrayIndexOutOfBoundsException e) {
 			guiImages[goldIndex] = NullImage.getForGui();
@@ -709,10 +710,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 	}
 
 	@Override
-	public void generateImageMap(int width, int height, int[] sequences, String id) throws IOException {
+	public void generateImageMap(int width, int height, int[] sequences, String id, String name) throws IOException {
 		initializeIfNeeded();
 
-		MultiImageMap map = new MultiImageMap(width, height, id);
+		MultiImageMap map = new MultiImageMap(width, height, id, name);
 		if (!map.hasCache()) {
 			map.addSequences(this, sequences, settlerSequences);
 			map.writeCache();

@@ -31,7 +31,7 @@ public class TorsoImage extends SingleImage {
 	 * @param data
 	 *            The data to use.
 	 */
-	public TorsoImage(ImageMetadata metadata, short[] data) {
-		super(metadata, data);
+	public TorsoImage(ImageMetadata metadata, short[] data, String name) {
+		super(metadata, data, name);
 	}
 }

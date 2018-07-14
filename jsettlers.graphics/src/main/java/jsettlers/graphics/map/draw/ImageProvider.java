@@ -151,7 +151,7 @@ public final class ImageProvider {
 		} else {
 			OriginalImageLink olink = (OriginalImageLink) link;
 			if (olink.getType() == EImageLinkType.LANDSCAPE) {
-				return getLandscapeImage(olink.getFile(), olink.getSequence());
+				return getLandscapeImage(olink.getFile(), olink.getSequence(), link.getHumanName());
 			} else {
 				return getDetailedImage(olink, width, height);
 			}
@@ -190,9 +190,9 @@ public final class ImageProvider {
 	 */
 	private Image getSequencedImage(OriginalImageLink link, int sequenceNumber) {
 		if (link.getType() == EImageLinkType.SETTLER) {
-			return getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber);
+			return getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber, link.getHumanName());
 		} else {
-			return getGuiImage(link.getFile(), link.getSequence() + sequenceNumber);
+			return getGuiImage(link.getFile(), link.getSequence() + sequenceNumber, link.getHumanName());
 		}
 	}
 
@@ -214,13 +214,13 @@ public final class ImageProvider {
 	 * 		It's sequence number.
 	 * @return The image, or an empty image.
 	 */
-	private SingleImage getLandscapeImage(int file, int seqnumber) {
+	private SingleImage getLandscapeImage(int file, int seqnumber, String name) {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
 			Sequence<LandscapeImage> landscapes = set.getLandscapes();
 			if (seqnumber < landscapes.length()) {
-				return (SingleImage) landscapes.getImageSafe(seqnumber);
+				return (SingleImage) landscapes.getImageSafe(seqnumber, name);
 			}
 		}
 		return NullImage.getInstance();
@@ -235,11 +235,11 @@ public final class ImageProvider {
 	 * 		The image number.
 	 * @return The image.
 	 */
-	public SingleImage getGuiImage(int file, int seqnumber) {
+	public SingleImage getGuiImage(int file, int seqnumber, String name) {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
-			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
+			return (SingleImage) set.getGuis().getImageSafe(seqnumber, name);
 		} else {
 			return NullImage.getInstance();
 		}
@@ -290,7 +290,7 @@ public final class ImageProvider {
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
-				reader = new AdvancedDatFileReader(file, type, gfxFolderMapping.getDatFileMapping(fileIndex));
+				reader = new AdvancedDatFileReader(file, type, gfxFolderMapping.getDatFileMapping(fileIndex), "F" + fileIndex);
 				break;
 			}
 		}

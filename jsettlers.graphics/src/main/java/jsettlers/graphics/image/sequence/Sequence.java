@@ -42,7 +42,7 @@ public interface Sequence<T extends Image> {
 	 * @throws IndexOutOfBoundsException
 	 *             if the index is out of the ounds of the base array.
 	 */
-	T getImage(int index);
+	T getImage(int index, String custom_name);
 
 	/**
 	 * Gets a image at a given position.
@@ -51,6 +51,6 @@ public interface Sequence<T extends Image> {
 	 *            The image index in the sequence.
 	 * @return The image, or a null image if the index is out of bounds
 	 */
-	Image getImageSafe(int index);
+	Image getImageSafe(int index, String custom_name);
 
 }

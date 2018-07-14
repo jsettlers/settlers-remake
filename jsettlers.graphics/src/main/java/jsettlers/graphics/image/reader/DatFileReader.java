@@ -27,6 +27,6 @@ public interface DatFileReader extends DatFileSet {
 
 	ByteReader getReaderForLandscape(int index) throws IOException;
 
-	void generateImageMap(int width, int height, int[] sequences, String id) throws IOException;
+	void generateImageMap(int width, int height, int[] sequences, String id, String name) throws IOException;
 
 }

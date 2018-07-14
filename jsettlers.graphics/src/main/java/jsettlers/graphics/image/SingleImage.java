@@ -48,6 +48,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected int textureHeight = 0;
 	protected final int offsetX;
 	protected final int offsetY;
+	private String name;
 
 	private TextureHandle texture = null;
 	protected SharedGeometry.SharedGeometryHandle geometryIndex = null;
@@ -67,12 +68,13 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * 		The y offset of the image.
 	 */
 	protected SingleImage(ShortBuffer data, int width, int height, int offsetX,
-			int offsetY) {
+			int offsetY, String name) {
 		this.data = data;
 		this.width = width;
 		this.height = height;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
+		this.name = name;
 	}
 
 	/**
@@ -83,12 +85,13 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * @param data
 	 * 		The data to use.
 	 */
-	protected SingleImage(ImageMetadata metadata, short[] data) {
+	protected SingleImage(ImageMetadata metadata, short[] data, String name) {
 		this.data = ShortBuffer.wrap(data);
 		this.width = metadata.width;
 		this.height = metadata.height;
 		this.offsetX = metadata.offsetX;
 		this.offsetY = metadata.offsetY;
+		this.name = name;
 	}
 
 	@Override
@@ -154,7 +157,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				}
 				data.position(0);
 			}
-			texture = gl.generateTexture(textureWidth, textureHeight, this.data);
+			texture = gl.generateTexture(textureWidth, textureHeight, this.data, name);
 		}
 		return this.texture;
 	}
@@ -285,7 +288,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			v3 = (float) Math.round(v3 * height) / height;
 
 			synchronized (buildLock) {
-				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D);
+				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, "building-progress");
 				buildBfr.asFloatBuffer().put(new float[] {
 						u1 * width,
 						-v1 * height,

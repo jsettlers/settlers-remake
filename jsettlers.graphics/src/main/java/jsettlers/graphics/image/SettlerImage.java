@@ -40,8 +40,8 @@ public class SettlerImage extends SingleImage {
 	 * @param data
 	 *            The data to use.
 	 */
-	public SettlerImage(ImageMetadata metadata, short[] data) {
-		super(metadata, data);
+	public SettlerImage(ImageMetadata metadata, short[] data, String name) {
+		super(metadata, data, name);
 	}
 
 	@Override

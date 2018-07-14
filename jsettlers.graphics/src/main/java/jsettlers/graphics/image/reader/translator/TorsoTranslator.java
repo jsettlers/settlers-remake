@@ -46,7 +46,7 @@ public class TorsoTranslator implements DatBitmapTranslator<TorsoImage> {
 	}
 
 	@Override
-	public TorsoImage createImage(ImageMetadata metadata, short[] array) {
-		return new TorsoImage(metadata, array);
+	public TorsoImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new TorsoImage(metadata, array, name);
 	}
 }

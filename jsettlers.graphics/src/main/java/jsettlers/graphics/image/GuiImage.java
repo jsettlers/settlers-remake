@@ -33,8 +33,8 @@ public class GuiImage extends SingleImage {
 	 * @param data
 	 *            The image data.
 	 */
-	public GuiImage(ImageMetadata metadata, short[] data) {
-		super(metadata, data);
+	public GuiImage(ImageMetadata metadata, short[] data, String name) {
+		super(metadata, data, name);
 	}
 
 }

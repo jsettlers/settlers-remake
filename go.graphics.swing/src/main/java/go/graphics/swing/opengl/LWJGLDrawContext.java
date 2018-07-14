@@ -335,7 +335,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	private void setObjectLabel(int type, int id, String name) {
-		//if(debugcallback == null) return;
+		if(debugcallback == null) return;
 
 		if(glcaps.OpenGL43) {
 			GL43.glObjectLabel(type, id, name);

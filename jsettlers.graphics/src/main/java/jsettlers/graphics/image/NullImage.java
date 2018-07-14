@@ -59,7 +59,7 @@ public final class NullImage extends SingleImage {
 	}
 
 	private NullImage() {
-		super(ShortBuffer.allocate(1), 1, 1, 0, 0);
+		super(ShortBuffer.allocate(1), 1, 1, 0, 0, "placeholder/null");
 	}
 
 
@@ -79,7 +79,7 @@ public final class NullImage extends SingleImage {
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		try {
-			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData, EGeometryFormatType.VertexOnly2D);
+			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData, EGeometryFormatType.VertexOnly2D, "placeholder/null");
 
 			gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
 			gl.draw2D(nullGeometry, null, EGeometryType.Quad, 0, 4);
@@ -100,7 +100,7 @@ public final class NullImage extends SingleImage {
 	 */
 	public static LandscapeImage getForLandscape() {
 		if (landscapeinstance == null) {
-			landscapeinstance = new LandscapeImage(NULL_IMAGE_METADATA, NULL_DATA);
+			landscapeinstance = new LandscapeImage(NULL_IMAGE_METADATA, NULL_DATA, "landscape-placeholder/null");
 		}
 		return landscapeinstance;
 	}
@@ -112,7 +112,7 @@ public final class NullImage extends SingleImage {
 	 */
 	public static GuiImage getForGui() {
 		if (guiinstance == null) {
-			guiinstance = new GuiImage(NULL_IMAGE_METADATA, NULL_DATA);
+			guiinstance = new GuiImage(NULL_IMAGE_METADATA, NULL_DATA, "gui-placeholder/null");
 		}
 		return guiinstance;
 	}
