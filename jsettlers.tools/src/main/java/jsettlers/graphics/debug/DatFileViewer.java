@@ -211,7 +211,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			type = DatFileType.RGB565;
 		}
 
-		reader = new AdvancedDatFileReader(file, type);
+		reader = new AdvancedDatFileReader(file, type, null);
 		showFileInfo(type, reader);
 
 		glCanvas.resetOffset();
@@ -246,7 +246,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 						type = DatFileType.RGB555;
 					} else { type = DatFileType.RGB565; }
 
-					AdvancedDatFileReader file = new AdvancedDatFileReader(new File(gfxDirectory, fileName), type);
+					AdvancedDatFileReader file = new AdvancedDatFileReader(new File(gfxDirectory, fileName), type, null);
 					exportFile(exportDir, file);
 				}
 			});
@@ -270,7 +270,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				type = DatFileType.RGB555;
 			} else { type = DatFileType.RGB565; }
 
-			AdvancedDatFileReader file = new AdvancedDatFileReader(datfile, type);
+			AdvancedDatFileReader file = new AdvancedDatFileReader(datfile, type, null);
 			exportFile(exportDir, file);
 		}
 	}
@@ -307,7 +307,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		}
 
 		for (int j = 0; j < seq.length(); j++) {
-			T image = seq.getImage(j);
+			T image = seq.getImage(j, null);
 			exportSingleImage((SingleImage) image, new File(seqdir, j + ".png"));
 			if (image instanceof SettlerImage && ((SettlerImage) image).getTorso() != null) {
 				exportSingleImage((SingleImage) ((SettlerImage) image).getTorso(), new File(seqdir, j + "_torso.png"));
@@ -427,7 +427,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			int x = 0;
 			int maxHeight = 0;
 			for (int index = 0; index < seq.length(); ++index) {
-				T image = seq.getImage(index);
+				T image = seq.getImage(index, null);
 				maxHeight = Math.max(maxHeight, image.getHeight());
 
 				drawImage(gl2, x, y, index, (SingleImage) image);
@@ -443,7 +443,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		private void drawImage(GLDrawContext gl2, int x, int y, int index, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D);
+			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D, null);
 
 			gl2.glPushMatrix();
 			try {

@@ -129,7 +129,7 @@ public class LwjglTest {
 
 			if(point_index < 2) return;
 
-			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D);
+			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D, null);
 
 			synchronized (pointLock) {
 				try {

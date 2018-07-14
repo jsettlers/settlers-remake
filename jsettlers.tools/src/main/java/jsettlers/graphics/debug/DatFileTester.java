@@ -75,7 +75,7 @@ public class DatFileTester {
 		File settlersGfxFolder = getSettlersGfxFolder();
 
 		File file = findFileIgnoringCase(settlersGfxFolder, FILE_NAME);
-		reader = new AdvancedDatFileReader(file, TYPE);
+		reader = new AdvancedDatFileReader(file, TYPE, null);
 
 		region = new Region(Region.POSITION_CENTER);
 		region.setContent(new Content());
@@ -181,7 +181,7 @@ public class DatFileTester {
 			int maxheight = 0;
 			int x = 0;
 			for (int index = 0; index < seq.length(); index++) {
-				T image = seq.getImage(index);
+				T image = seq.getImage(index, null);
 				maxheight = Math.max(maxheight, image.getHeight());
 
 				if (x > -offsetX - 100 && x < -offsetX + width + 100 && y > -offsetY - 100 && y < -offsetY + height + 100) {
@@ -198,7 +198,7 @@ public class DatFileTester {
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D);
+			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D, null);
 
 
 			gl2.glPushMatrix();
@@ -246,7 +246,7 @@ public class DatFileTester {
 				File file = findFileIgnoringCase(settlersGfxFolder, fileName);
 
 				if (file != null && file.exists()) {
-					DatFileReader reader = new AdvancedDatFileReader(file, TYPE);
+					DatFileReader reader = new AdvancedDatFileReader(file, TYPE, null);
 					exportTo(new File(dir, "" + i), reader);
 				}
 			}
@@ -276,7 +276,7 @@ public class DatFileTester {
 		File seqdir = new File(dir, index + "");
 		seqdir.mkdirs();
 		for (int j = 0; j < seq.length(); j++) {
-			T image = seq.getImage(j);
+			T image = seq.getImage(j, null);
 			export((SingleImage) image, new File(seqdir, j + ".png"));
 			if (image instanceof SettlerImage && ((SettlerImage) image).getTorso() != null) {
 				export((SingleImage) ((SettlerImage) image).getTorso(), new File(seqdir, j + "_torso.png"));
