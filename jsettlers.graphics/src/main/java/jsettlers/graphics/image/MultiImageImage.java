@@ -200,6 +200,12 @@ public class MultiImageImage extends Image {
 		drawAt(gl, buffer, viewX, viewY, iColor, iColor);
 	}
 
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {}
+
 	private void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, int sColor, int tColor) {
 		try {

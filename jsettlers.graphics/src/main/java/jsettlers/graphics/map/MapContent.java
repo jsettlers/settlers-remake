@@ -34,6 +34,7 @@ import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -159,7 +160,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	private final MapInterfaceConnector connector;
 
-	private final FramerateComputer framerate = new FramerateComputer();
+	private final FramerateComputer framerate;
 
 	private final Messenger messenger;
 	private final SoundManager soundmanager;
@@ -208,7 +209,15 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param soundPlayer
 	 */
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
-		this(game, soundPlayer, textDrawPosition, null);
+		this(game, soundPlayer, 60, textDrawPosition,null);
+	}
+
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition) {
+		this(game, soundPlayer, fpsLimit, textDrawPosition,null);
+	}
+
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
+		this(game, soundPlayer, 60, textDrawPosition,controls);
 	}
 
 	/**
@@ -221,7 +230,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 *            The player
 	 * @param controls
 	 */
-	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
+		this.framerate = new FramerateComputer(fpsLimit);
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;
@@ -481,7 +491,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
+			for (int x = startX; x <= endX; x++) {
 				drawTile(x, y);
 				if (!linePartiallyVisible) {
 					double drawSpaceY = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
@@ -514,6 +524,19 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer.drawMapObject(x, y, object);
+		}
+
+		if (y > 3) {
+			object = map.getMapObjectsAt(x, y - 3);
+			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
+			}
+		}
+		if (y < map.getHeight() - 3) {
+			object = map.getMapObjectsAt(x, y + 3);
+			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+			}
 		}
 
 		IMovable movable = map.getMovableAt(x, y);

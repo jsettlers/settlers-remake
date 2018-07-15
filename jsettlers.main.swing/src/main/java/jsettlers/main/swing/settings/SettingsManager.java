@@ -14,6 +14,7 @@
  */
 package jsettlers.main.swing.settings;
 
+import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.sound.ISoundSettingsProvider;
 import java8.util.Maps;
 import java8.util.Optional;
@@ -32,13 +33,19 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import go.graphics.swing.contextcreator.BackendSelector;
+
 public class SettingsManager implements ISoundSettingsProvider {
 	private static final String CONFIGURATION_FILE = ".jsettlers";
 
 	private static final String ENV_PREFIX = "SETTLERS_";
 	private static final String PROPERTIES_PREFIX = "settlers.";
 
-	private static final String SETTING_UUID = "gid";
+	public static final String SETTING_UUID = "gid";
+
+	public static final String SETTING_BACKEND = "backend";
+	public static final String SETTING_FPS_LIMIT = "fpsLimit";
+  
 	private static final String SETTING_SETTLERS_FOLDER = "settlers-folder";
 	private static final String SETTING_SETTLERS_VERSION_ID = "settlers-folder-version-id";
 
@@ -98,7 +105,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 			System.out.println("Argument: " + key + " -> " + e.getValue().toString());
 		}
 	}
-
+	
 	private void loadArguments(String[] args) {
 		Pattern parameterPattern = Pattern.compile("--(.*?)=(.*?)");
 		Pattern optionPattern = Pattern.compile("--(.*?)");
@@ -138,6 +145,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	private synchronized void set(String key, String value) {
 		storedSettings.setProperty(key, value);
+		runtimeProperties.put(key, value);
 		try {
 			storedSettings.store(ResourceManager.writeConfigurationFile(CONFIGURATION_FILE), new Date().toString());
 		} catch (IOException e) {
@@ -176,9 +184,26 @@ public class SettingsManager implements ISoundSettingsProvider {
 		return 1;
 	}
 
+	public int getFpsLimit() {
+		String fpsLimitString = get(SETTING_FPS_LIMIT);
+		try {
+			int fps_limit = fpsLimitString != null ? Integer.parseInt(fpsLimitString) : 60;
+			return Math.max(Math.min(fps_limit, 240), 1);
+		} catch (NumberFormatException e) {
+		}
+		return 1;
+	}
+
+	public EBackendType getBackend() {
+		return BackendSelector.getBackendByName(getOrDefault(SETTING_BACKEND, () -> EBackendType.DEFAULT.cc_name));
+  }
 	public void setVolume(float volume) {
 		set(SETTING_VOLUME, Float.toString(volume));
 	}
+
+	public void setFpsLimit(int fpsLimit) {set(SETTING_FPS_LIMIT,Integer.toString(fpsLimit));}
+
+	public void setBackend(String backend) {set(SETTING_BACKEND, backend);}
 
 	public void setFullScreenMode(boolean fullScreenMode) {
 		set(SETTING_FULL_SCREEN_MODE, "" + fullScreenMode);

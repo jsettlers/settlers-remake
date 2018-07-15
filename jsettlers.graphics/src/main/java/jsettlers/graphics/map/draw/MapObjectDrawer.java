@@ -46,6 +46,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.map.MapDrawContext;
@@ -174,11 +175,13 @@ public class MapObjectDrawer {
 	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
 
 	private static final float FLAG_ROOF_Z = 0.89f;
+	private static final float SMOKE_Z = 0.9f;
 
 	private static final int   SHIP_IMAGE_FILE          = 36;
 	private static final int   FERRY_BASE_SEQUENCE      = 4;
 	private static final int   CARGO_SHIP_BASE_SEQUENCE = 0;
 	private static final float WAVES_Z                  = -0.1f;
+	private static final float BORDER_STONE_Z           = -0.1f;
 	private static final float DOCK_Z                   = 0.f;
 
 	private static final int SMOKE_HEIGHT = 30;
@@ -233,6 +236,38 @@ public class MapObjectDrawer {
 
 		if (object.getNextObject() != null) {
 			drawMapObject(x, y, object.getNextObject());
+		}
+	}
+
+	public void drawStockBack(int x, int y, IBuilding stock) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		float state = stock.getStateProgress();
+		if (state >= 0.99) {
+			ImageLink[] images = EBuildingType.STOCK.getImages();
+			draw(imageProvider.getImage(images[0]), x, y, color);
+			draw(imageProvider.getImage(images[1]), x, y, color);
+			draw(imageProvider.getImage(images[5]), x, y, color);
+		}
+	}
+
+	public void drawStockFront(int x, int y, IBuilding stock) {
+		forceSetup();
+		byte fogStatus = context.getVisibleStatus(x, y);
+		if (fogStatus == 0) {
+			return;
+		}
+		float color = getColor(fogStatus);
+		float state = stock.getStateProgress();
+		if (state >= 0.99) {
+			ImageLink[] images = EBuildingType.STOCK.getImages();
+			for (int i = 2; i < 5; i++) {
+				draw(imageProvider.getImage(images[i]), x, y, color);
+			}
 		}
 	}
 
@@ -524,7 +559,11 @@ public class MapObjectDrawer {
 				break;
 
 			case BUILDING:
-				drawBuilding(x, y, (IBuilding) object, color);
+				IBuilding building = (IBuilding) object;
+				if (building.getBuildingType() == EBuildingType.STOCK && building.getStateProgress() >= 0.99) {
+					return;
+				}
+				drawBuilding(x, y, building, color);
 				break;
 
 			case PLACEMENT_BUILDING:
@@ -596,7 +635,12 @@ public class MapObjectDrawer {
 	private void drawPlacementBuilding(int x, int y, IMapObject object, float color) {
 		float z = context.getDrawBuffer().getZ();
 		context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
-		drawBuilding(x, y, (IBuilding) object, color);
+		ImageLink[] images = ((IBuilding) object).getBuildingType().getImages();
+		Image image;
+		for (ImageLink image1 : images) {
+			image = imageProvider.getImage(image1);
+			drawOnlyImage(image, x, y, color);
+		}
 		context.getDrawBuffer().setZ(z);
 	}
 
@@ -864,7 +908,10 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
 			image = imageProvider.getImage(link);
+			float z = context.getDrawBuffer().getZ();
+			context.getDrawBuffer().setZ(SMOKE_Z);
 			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			context.getDrawBuffer().setZ(z);
 		}
 
 		if (movable.getAction() == EMovableAction.WALKING) {
@@ -1099,8 +1146,10 @@ public class MapObjectDrawer {
 		}
 		float base = getColor(fogStatus);
 		Color color = context.getPlayerColor(player);
-
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(BORDER_STONE_Z);
 		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0), x, y, color, base);
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private static int getTreeType(int x, int y) {
@@ -1197,7 +1246,12 @@ public class MapObjectDrawer {
 				if (seq.length() > 0) {
 					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
-					draw(seq.getImageSafe(step), x, y, color);
+					drawOnlyImage(seq.getImageSafe(step), x, y, color);
+					ImageLink[] images = type.getImages();
+					if (images.length > 0) {
+						Image image = imageProvider.getImage(images[0]);
+						drawOnlyShadow(image, x, y, color);
+					}
 				}
 				playSound(building, SOUND_MILL, x, y);
 
@@ -1280,6 +1334,7 @@ public class MapObjectDrawer {
 					case INFANTRY:
 						OriginalImageLink imageLink = place.looksRight() ? INSIDE_BUILDING_RIGHT : INSIDE_BUILDING_LEFT;
 						image = imageProvider.getImage(imageLink);
+						((SettlerImage)image).setShadow(null);
 						break;
 					case BOWMAN:
 					default:
@@ -1397,6 +1452,16 @@ public class MapObjectDrawer {
 		draw(image, x, y, iColor);
 	}
 
+	private void drawOnlyImage(Image image, int x, int y, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawOnlyImage(image, x, y, iColor);
+	}
+
+	private void drawOnlyShadow(Image image, int x, int y, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawOnlyShadow(image, x, y, iColor);
+	}
+
 	private void drawWithHeight(Image image, int x, int y, int height, float color) {
 		int iColor = Color.getABGR(color, color, color, 1);
 		drawWithHeight(image, x, y, height, iColor);
@@ -1406,8 +1471,21 @@ public class MapObjectDrawer {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+	}
+
+	private void drawOnlyImage(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		image.drawOnlyImageAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+	}
+
+	private void drawOnlyShadow(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		image.drawOnlyShadowAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
 	}
 
 	private void drawWithHeight(Image image, int x, int y, int height, int color) {

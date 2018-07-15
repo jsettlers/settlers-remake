@@ -54,11 +54,13 @@ public enum DatFileType {
 	/**
 	 * Converts a color in the current format to a rgba 5551 color.
 	 */
-	public short convertTo5551(int color) {
-		if (this == RGB565) {
-			color = (short) Color.convert565to555(color);
+	public short convertTo4444(int color) {
+		if (this == RGB555) {
+			color = (short) Color.convert555to4444(color);
+		} else if (this == RGB565) {
+			color = (short) Color.convert565to4444(color);
 		}
-		return (short) ((color << 1) | 0x01);
+		return (short) color;
 	}
 
 	public static DatFileType getForPath(File path) {
