@@ -369,6 +369,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 				shadowStarts[17] = shadowStarts[9]; // donkey
 				shadowStarts[16] = shadowStarts[8]; // donkey
 				shadowStarts[15] = shadowStarts[7]; // donkey
+			} else if (shadowDifference == 28) { // change shadows in file 36:
+				shadowStarts[4] = shadowStarts[1]; // roman ferry
+				shadowStarts[6] = -1; // roman ferry front has no extra shadow
+				shadowStarts[2] = -1; // roman cargo ship front has no extra shadow
 			}
 		} else if (shadowDifference == 0) {
 			if (settlerStarts.length == 239) { // change shadows in file 11:

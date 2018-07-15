@@ -110,12 +110,12 @@ public abstract class TradingBuilding extends Building implements IBuilding.ITra
 			Arrays.fill(waypoints, null);
 		}
 
-		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
-		if (closeReachableLocation != null && !isWaypointFulfillingPreconditions(waypointType, closeReachableLocation)) {
+		ShortPoint2D closestReachableLocation = findClosestReachablePosition(waypointType, position);
+		if (closestReachableLocation == null || !isWaypointFulfillingPreconditions(waypointType, closestReachableLocation)) {
 			return;
 		}
 
-		waypoints[waypointType.ordinal()] = closeReachableLocation;
+		waypoints[waypointType.ordinal()] = closestReachableLocation;
 
 		if (isSelected()) {
 			drawWaypointLine(true);
