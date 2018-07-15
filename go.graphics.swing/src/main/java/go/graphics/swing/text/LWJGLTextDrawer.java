@@ -14,8 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
-import org.lwjgl.opengl.GL11;
-
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -40,10 +38,10 @@ import java.nio.ShortBuffer;
  * @author paul
  */
 public final class LWJGLTextDrawer implements TextDrawer {
-	private static float scalingFactor = 1;
 
 	private static final String FONTNAME = "Arial";
-	private static final int DEFAULT_DPI = 96;
+	private static final int    DEFAULT_DPI = 96;
+	private static final float  SCALING_FACTOR = calculateScalingFactor();
 
 	private final GeometryHandle[] rects = new GeometryHandle[256];
 
@@ -59,20 +57,14 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	private final LWJGLDrawContext drawContext;
 
-	// calculate the scaling factor when the class is initialized
-	static {
-		calculateScalingFactor();
-	}
-
-	private static void calculateScalingFactor() {
-		scalingFactor = Toolkit.getDefaultToolkit().getScreenResolution();
-		scalingFactor /= DEFAULT_DPI;
-		scalingFactor = Math.max(scalingFactor, 1);
+	private static float calculateScalingFactor() {
+		int screenDPI = Toolkit.getDefaultToolkit().getScreenResolution();
+		return Math.max((float) (screenDPI / DEFAULT_DPI), 1);
 	}
 
 	/**
 	 * Creates a new text drawer.
-	 * 
+	 *
 	 * @param size
 	 *            The size of the text.
 	 * @param drawContext
@@ -80,7 +72,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 	public LWJGLTextDrawer(EFontSize size, LWJGLDrawContext drawContext) {
 		this.drawContext = drawContext;
 
-		int scaledFontSize = Math.round(size.getSize() * scalingFactor);
+		int scaledFontSize = Math.round(size.getSize() * SCALING_FACTOR);
 
 		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, scaledFontSize);
 
@@ -170,7 +162,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see go.graphics.swing.text.TextDrawer#renderCentered(int, int, java.lang.String)
 	 */
 	@Override
@@ -199,7 +191,7 @@ public final class LWJGLTextDrawer implements TextDrawer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see go.graphics.swing.text.TextDrawer#drawString(int, int, java.lang.String)
 	 */
 	@Override
