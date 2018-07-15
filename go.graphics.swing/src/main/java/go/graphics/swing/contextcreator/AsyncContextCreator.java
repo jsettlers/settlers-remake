@@ -103,7 +103,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 	public void run() {
 		async_init();
 
-		parent.init();
+		parent.wrapNewContext();
 
 		while(continue_run) {
 			if (change_res) {

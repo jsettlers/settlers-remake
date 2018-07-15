@@ -15,8 +15,6 @@
 package go.graphics.swing.text;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL30;
 
 import go.graphics.EGeometryFormatType;
 import go.graphics.EGeometryType;

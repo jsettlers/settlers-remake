@@ -15,6 +15,7 @@ import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
+import go.graphics.swing.contextcreator.JAWTContextCreator;
 import go.graphics.swing.opengl.LWJGLDrawContext;
 
 public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
@@ -52,20 +53,10 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 	private boolean errormessage_shown = false;
 
-	public void init() {
-		GLCapabilities caps = GL.createCapabilities();
-		context = new LWJGLDrawContext(caps, debug);
-
-		if(caps.OpenGL20) return;
-		if(caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) return;
-
-		if(!errormessage_shown) {
-			SwingUtilities.invokeLater(() -> {
-				JOptionPane.showMessageDialog(this, "JSettlers needs at least OpenGL 2.0 or 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
-				System.exit(1);
-			});
-			errormessage_shown = true;
-		}
+	public void wrapNewContext() {
+		if(cc instanceof JAWTContextCreator) ((JAWTContextCreator)cc).makeCurrent(true);
+		if(context != null) context.disposeAll();
+		context = new LWJGLDrawContext(GL.createCapabilities(), debug);
 	}
 
 	/**

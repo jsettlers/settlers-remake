@@ -59,7 +59,7 @@ public class JOGLContextCreator extends ContextCreator implements GLEventListene
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		drawable.getGL().setSwapInterval(0);
-		parent.init();
+		parent.wrapNewContext();
 	}
 
 	@Override

@@ -9,17 +9,10 @@ import org.lwjgl.egl.EGL13;
 import org.lwjgl.egl.EGL14;
 import org.lwjgl.egl.EGLCapabilities;
 import org.lwjgl.egl.EGLDebugMessageKHRCallback;
-import org.lwjgl.egl.EGLDebugMessageKHRCallbackI;
 import org.lwjgl.egl.KHRCreateContext;
 import org.lwjgl.egl.KHRDebug;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.system.Platform;
-import org.lwjgl.system.jawt.JAWTWin32DrawingSurfaceInfo;
-import org.lwjgl.system.jawt.JAWTX11DrawingSurfaceInfo;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import go.graphics.swing.GLContainer;
@@ -31,10 +24,9 @@ public class EGLContextCreator extends JAWTContextCreator {
 	private long egl_surface;
 	private static long egl_context;
 
-	private long native_drawable = 0;
-
 	public EGLContextCreator(GLContainer container, boolean debug) {
 		super(container, debug);
+		initStatic();
 	}
 
 	@Override
@@ -48,16 +40,13 @@ public class EGLContextCreator extends JAWTContextCreator {
 	}
 
 	@Override
-	protected void makeCurrent(boolean draw) {
+	public void makeCurrent(boolean draw) {
 		if(draw) {
 			EGL10.eglMakeCurrent(egl_display, egl_surface, egl_surface, egl_context);
 		} else {
 			EGL10.eglMakeCurrent(egl_display, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
 		}
 	}
-
-	@Override
-	protected void initContext() {}
 
 	private void setEGLDebugFunction(boolean info, boolean warning, boolean error_arg, boolean critical) {
 		try(MemoryStack stack = MemoryStack.stackPush()) {
@@ -89,7 +78,9 @@ public class EGLContextCreator extends JAWTContextCreator {
 		System.out.println("egl error: " + EGL10.eglGetError());
 	}
 
-	private void initStatic() {
+	protected void initStatic() {
+		if(egl_display != 0) return;
+
 		egl_display = EGL10.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
 		EGL10.eglInitialize(egl_display, new int[] {1}, new int[] {1});
 		EGLCapabilities caps = EGL.createDisplayCapabilities(egl_display);
@@ -119,22 +110,12 @@ public class EGLContextCreator extends JAWTContextCreator {
 	}
 
 	@Override
-	protected void createNewSurfaceInfo() {
-		long new_native_drawable = 0;
+	protected void onInit() {
+		parent.wrapNewContext();
+	}
 
-		if(Platform.get() == Platform.LINUX) {
-			JAWTX11DrawingSurfaceInfo x11surfaceInfo = JAWTX11DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
-			new_native_drawable = x11surfaceInfo.drawable();
-		} else if(Platform.get() == Platform.WINDOWS) {
-			JAWTWin32DrawingSurfaceInfo win32surfaceInfo = JAWTWin32DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
-			new_native_drawable = win32surfaceInfo.hwnd();
-		}
-
-		if(native_drawable != new_native_drawable) {
-			if(egl_display == 0) initStatic();
-
-			if(native_drawable != 0) stop();
-			egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, native_drawable = new_native_drawable, (IntBuffer)null);
-		}
+	@Override
+	protected void onNewDrawable() {
+		egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, windowDrawable, (IntBuffer)null);
 	}
 }

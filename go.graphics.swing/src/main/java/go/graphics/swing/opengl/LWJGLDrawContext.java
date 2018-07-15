@@ -20,7 +20,6 @@ import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLCapabilities;
 
@@ -40,6 +39,10 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 /**
  * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
  *
@@ -59,8 +62,20 @@ public class LWJGLDrawContext implements GLDrawContext {
 	private TextureHandle lastTexture = null;
 	private int lastFormat = 0;
 
+	private void checkGLVersion() {
+		if(glcaps.OpenGL20) return;
+		if(glcaps.OpenGL15 && glcaps.GL_ARB_texture_non_power_of_two) return;
+
+		SwingUtilities.invokeLater(() -> {
+			JOptionPane.showMessageDialog(null, "JSettlers needs at least OpenGL 2.0 or 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
+			System.exit(1);
+		});
+	}
+
 	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
+
+		checkGLVersion();
 
 		if(debug) {
 			debugcallback = GLUtil.setupDebugMessageCallback(System.err);
