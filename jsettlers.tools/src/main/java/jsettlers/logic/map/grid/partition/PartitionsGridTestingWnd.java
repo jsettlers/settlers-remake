@@ -156,11 +156,6 @@ public class PartitionsGridTestingWnd {
 			}
 
 			@Override
-			public int nextDrawableX(int x, int y, int maxX) {
-				return x + 1;
-			}
-
-			@Override
 			public boolean isBorder(int x, int y) {
 				byte playerAtPos = getPlayerIdAt(x, y);
 				for (EDirection dir : EDirection.VALUES) {

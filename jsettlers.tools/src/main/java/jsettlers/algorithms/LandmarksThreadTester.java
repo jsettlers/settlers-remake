@@ -203,11 +203,6 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public int nextDrawableX(int x, int y, int maxX) {
-			return x + 1;
-		}
-
-		@Override
 		public byte getVisibleStatus(int x, int y) {
 			return CommonConstants.FOG_OF_WAR_VISIBLE;
 		}

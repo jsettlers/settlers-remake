@@ -491,7 +491,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
+			for (int x = startX; x <= endX; x++) {
 				drawTile(x, y);
 				if (!linePartiallyVisible) {
 					double drawSpaceY = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
