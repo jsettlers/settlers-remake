@@ -1578,7 +1578,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isCoastReachable(ShortPoint2D position) {
-			return !HexGridArea.stream(position.x, position.y, 0, 2)
+			return !HexGridArea.stream(position.x, position.y, 0, 3)
 							   .filterBounds(width, height)
 							   .filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater)
 							   .isEmpty();
