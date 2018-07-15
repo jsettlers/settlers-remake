@@ -20,6 +20,7 @@ import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLCapabilities;
 
@@ -48,10 +49,10 @@ import org.lwjgl.system.MemoryStack;
  */
 public class LWJGLDrawContext implements GLDrawContext {
 
-	private LWJGLTextDrawer[] textDrawers = new LWJGLTextDrawer[EFontSize
-			.values().length];
+	private TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
+	private LWJGLTextDrawer textDrawer = null;
 
-	private final GLCapabilities glcaps;
+	public final GLCapabilities glcaps;
 	private Callback debugcallback = null;
 
 	private GeometryHandle lastGeometry = null;
@@ -237,10 +238,12 @@ public class LWJGLDrawContext implements GLDrawContext {
 	 */
 	@Override
 	public TextDrawer getTextDrawer(EFontSize size) {
-		if (textDrawers[size.ordinal()] == null) {
-			textDrawers[size.ordinal()] = new LWJGLTextDrawer(size, this);
+		if(textDrawer == null) textDrawer = new LWJGLTextDrawer(this);
+
+		if (sizedTextDrawers[size.ordinal()] == null) {
+			sizedTextDrawers[size.ordinal()] = textDrawer.derive(size);
 		}
-		return textDrawers[size.ordinal()];
+		return sizedTextDrawers[size.ordinal()];
 	}
 
 	private int backgroundVAO = 0;

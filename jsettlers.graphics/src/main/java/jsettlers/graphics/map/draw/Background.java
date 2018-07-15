@@ -1197,7 +1197,6 @@ public class Background implements IGraphicsBackgroundListener {
 			gl.glTranslatef(context.getOffsetX(), context.getOffsetY(), -.1f);
 			gl.glScalef(1, 1, 0);
 			gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
-			// TODO fix border drawing
 			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), heighthandle, typehandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride);
 			gl.glPopMatrix();
 
