@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="8dp">
+
+    <ImageView
+        android:id="@+id/imageView_material"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <Space
+        android:layout_width="32dp"
+        android:layout_height="1dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <Space
+        android:layout_width="4dp"
+        android:layout_height="1dp" />
+
+    <TextView
+        android:id="@+id/textView_decrement"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:textColor="?android:textColorPrimary"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_decrement"
+        android:gravity="center"
+        android:text="-"/>
+    <TextView
+        android:id="@+id/textView_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:minWidth="24dp"/>
+    <TextView
+        android:id="@+id/textView_increment"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:textColor="?android:textColorPrimary"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_increment"
+        android:gravity="center"
+        android:text="+"/>
+</LinearLayout>

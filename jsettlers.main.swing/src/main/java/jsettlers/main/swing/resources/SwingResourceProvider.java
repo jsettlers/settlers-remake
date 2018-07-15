@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.main.swing.resources;
 
-import jsettlers.common.resources.IResourceProvider;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Locale;
+
+import jsettlers.common.resources.IResourceProvider;
 
 public class SwingResourceProvider implements IResourceProvider {
 	private final File resourcesDirectory;
@@ -50,7 +52,11 @@ public class SwingResourceProvider implements IResourceProvider {
 	@Override
 	public InputStream getResourcesFileStream(String name) throws IOException {
 		File file = new File(resourcesDirectory, name);
-		return new FileInputStream(file);
+		if (file.exists()) {
+			return new FileInputStream(file);
+		} else {
+			return new ByteArrayInputStream(new byte[0]);
+		}
 	}
 
 	@Override
