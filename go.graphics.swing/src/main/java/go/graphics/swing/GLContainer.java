@@ -56,9 +56,12 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		GLCapabilities caps = GL.createCapabilities();
 		context = new LWJGLDrawContext(caps, debug);
 
-		if(!caps.OpenGL15 && !errormessage_shown) {
+		if(caps.OpenGL20) return;
+		if(caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) return;
+
+		if(!errormessage_shown) {
 			SwingUtilities.invokeLater(() -> {
-				JOptionPane.showMessageDialog(this, "JSettlers needs at least OpenGL 1.5\nPress ok to exit");
+				JOptionPane.showMessageDialog(this, "JSettlers needs at least OpenGL 2.0 or 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
 				System.exit(1);
 			});
 			errormessage_shown = true;

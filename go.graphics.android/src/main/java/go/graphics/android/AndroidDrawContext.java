@@ -21,15 +21,12 @@ import android.opengl.GLES30;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryFormatType;
-import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
-import go.graphics.android.AndroidGLHandle.AndroidGeometryHandle;
 import go.graphics.android.AndroidGLHandle.AndroidTextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -131,19 +128,6 @@ public class AndroidDrawContext implements GLDrawContext {
 			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, id);
 			lastGeometry = geometry;
 		}
-	}
-
-	private static int getPowerOfTwo(int value) {
-		int guess = 1;
-		while (guess < value) {
-			guess *= 2;
-		}
-		return guess;
-	}
-
-	@Override
-	public int makeSideLengthValid(int width) {
-		return getPowerOfTwo(width);
 	}
 
 	@Override

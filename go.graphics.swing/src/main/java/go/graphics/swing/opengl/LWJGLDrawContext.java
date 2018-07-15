@@ -15,7 +15,6 @@
 package go.graphics.swing.opengl;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.AMDDebugOutput;
 import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
@@ -28,7 +27,6 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryFormatType;
-import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
@@ -223,11 +221,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 			ARBVertexArrayObject.glBindVertexArray(format);
 			lastFormat = format;
 		}
-	}
-
-	@Override
-	public int makeSideLengthValid(int width) {
-		return TextureCalculator.supportedTextureSize(glcaps, width);
 	}
 
 	@Override

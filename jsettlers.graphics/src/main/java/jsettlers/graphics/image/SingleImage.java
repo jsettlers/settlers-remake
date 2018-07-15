@@ -43,8 +43,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected ShortBuffer data;
 	protected final int width;
 	protected final int height;
-	protected int textureWidth = 0;
-	protected int textureHeight = 0;
 	protected final int offsetX;
 	protected final int offsetY;
 	private String name;
@@ -114,32 +112,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	/**
-	 * Converts the current data to match the power of two size.
-	 */
-	protected void adaptDataToTextureSize() {
-		if (width == 0 || height == 0) {
-			return;
-		}
-
-		this.data.rewind();
-		short[] newData = new short[textureHeight * textureWidth];
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				newData[y * textureWidth + x] = data.get(y * width + x);
-			}
-			for (int x = width; x < textureWidth; x++) {
-				newData[y * textureWidth + x] = newData[y * textureWidth + width - 1];
-			}
-		}
-		for (int y = height; y < textureHeight; y++) {
-			for (int x = 0; x < textureWidth; x++) {
-				newData[y * textureWidth + x] = newData[(height - 1) * textureWidth + x];
-			}
-		}
-		data = ShortBuffer.wrap(newData);
-	}
-
-	/**
 	 * Generates the texture, if needed, and returns the index of that texutre.
 	 *
 	 * @param gl
@@ -148,15 +120,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 */
 	public TextureHandle getTextureIndex(GLDrawContext gl) {
 		if (texture == null || !texture.isValid()) {
-			if (textureWidth == 0) {
-				textureWidth = gl.makeSideLengthValid(width);
-				textureHeight = gl.makeSideLengthValid(height);
-				if (textureWidth != width || textureHeight != height) {
-					adaptDataToTextureSize();
-				}
-				data.position(0);
-			}
-			texture = gl.generateTexture(textureWidth, textureHeight, this.data, name);
+			texture = gl.generateTexture(width, height, this.data, name);
 		}
 		return this.texture;
 	}
@@ -168,7 +132,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			TextureHandle textureHandle = getTextureIndex(gl);
 
-			if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, width/textureWidth, height/textureHeight));
+			if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, 1, 1));
 
 			gl.glPushMatrix();
 			gl.glTranslatef(x, y, 0);
@@ -220,7 +184,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected float[] getGeometry() {
 		int left = getOffsetX();
 		int top = -getOffsetY();
-		return SharedGeometry.createQuadGeometry(left, top, left+width, top-height, 0, 0, (float)width/textureWidth, (float)height/textureHeight);
+		return SharedGeometry.createQuadGeometry(left, top, left+width, top-height, 0, 0, 1, 1);
 	}
 
 	protected void setGeometry(SharedGeometry.SharedGeometryHandle geometry) {
@@ -230,22 +194,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected GeometryHandle getGeometry(GLDrawContext context) throws IllegalBufferException {
 		if(geometryIndex == null || SharedGeometry.isInvalid(context, geometryIndex)) geometryIndex = SharedGeometry.addGeometry(context, getGeometry());
 		return geometryIndex.geometry;
-	}
-
-	public float getTextureScaleX() {
-		return (float) width / textureWidth;
-	}
-
-	public float getTextureScaleY() {
-		return (float) height / textureHeight;
-	}
-
-	protected float convertU(float relativeU) {
-		return relativeU * getTextureScaleX();
-	}
-
-	protected float convertV(float relativeV) {
-		return relativeV * getTextureScaleY();
 	}
 
 	private static final Object buildLock = new Object(); // should never be triggered, but who knows ?
@@ -291,18 +239,18 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				buildBfr.asFloatBuffer().put(new float[] {
 						u1 * width,
 						-v1 * height,
-						convertU(u1),
-						convertV(v1),
+						u1,
+						v1,
 
 						u2 * width,
 						-v2 * height,
-						convertU(u2),
-						convertV(v2),
+						u2,
+						v2,
 
 						u3 * width,
 						-v3 * height,
-						convertU(u3),
-						convertV(v3),
+						u3,
+						v3,
 
 				});
 				gl.updateGeometryAt(buildHandle, 0, buildBfr);
