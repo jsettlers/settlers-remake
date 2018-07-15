@@ -30,7 +30,7 @@ import jsettlers.common.action.SetSpeedAction;
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.gamemenu.LiveGameSpeed;
+import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 
 /**
  * GameMenu is a singleton within the scope of a started game
@@ -47,7 +47,7 @@ public class GameMenu implements IGameExitListener {
 	private final ActionControls actionControls;
 	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
-	private final LiveGameSpeed liveGameSpeed;
+	private final GameSpeedLiveData gameSpeedLiveData;
 
 	private Timer quitConfirmTimer;
 
@@ -55,11 +55,11 @@ public class GameMenu implements IGameExitListener {
 			Context context,
 			AndroidSoundPlayer soundPlayer,
 			ActionControls actionFireable,
-			LiveGameSpeed liveGameSpeed) {
+			GameSpeedLiveData gameSpeedLiveData) {
 		this.context = context;
 		this.soundPlayer = soundPlayer;
 		this.actionControls = actionFireable;
-		this.liveGameSpeed = liveGameSpeed;
+		this.gameSpeedLiveData = gameSpeedLiveData;
 
 		pausedState.postValue(false);
 		gameState.postValue(GameState.PLAYING);
@@ -74,7 +74,7 @@ public class GameMenu implements IGameExitListener {
 	}
 
 	public LiveData<Float> getGameSpeed() {
-		return liveGameSpeed;
+		return gameSpeedLiveData;
 	}
 
 	public void save() {
@@ -134,7 +134,7 @@ public class GameMenu implements IGameExitListener {
 
 	public void setGameSpeed(float speed) {
 		actionControls.fireAction(new SetSpeedAction(speed));
-		liveGameSpeed.setValue(speed);
+		gameSpeedLiveData.setValue(speed);
 	}
 
 	/**

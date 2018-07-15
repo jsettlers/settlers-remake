@@ -18,7 +18,6 @@
     <string name="app_name">JSettlers</string>
     <string name="please_wait">Vent venligst</string>
 
-    <string name="skip_1_minute">Spring ét minut over</string>
     <string name="save_string">Gem</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Slå ihjel</string>
@@ -119,4 +118,6 @@
     <string name="service_description">JSettlers server, som hoster dette spil</string>
     <string name="global_stock_message">De globale indstillinger for varehuse kan kun ændres i de lokale varehuse.</string>
     <string name="goods_stock_title">Global varehusindstillinger</string>
+
+    <string name="game_menu_skip_minute">Spring ét minut over</string>
 </resources>

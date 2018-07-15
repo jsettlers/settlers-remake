@@ -34,7 +34,7 @@ import jsettlers.common.action.Action;
 import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.main.android.gameplay.gamemenu.LiveGameSpeed;
+import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 import jsettlers.network.client.interfaces.IGameClock;
 
 import android.content.Context;
@@ -66,7 +66,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		AndroidSoundPlayer soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
 		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
-		gameMenu = new GameMenu(context, soundPlayer, this, new LiveGameSpeed(gameClock, this));
+		gameMenu = new GameMenu(context, soundPlayer, this, new GameSpeedLiveData(gameClock, this));
 		graphicsGrid = game.getMap();
 	}
 

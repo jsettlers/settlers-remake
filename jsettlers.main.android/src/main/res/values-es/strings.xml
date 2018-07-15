@@ -18,7 +18,6 @@
   <string name="app_name">JSettlers</string>
   <string name="please_wait">Por favor, espera</string>
 
-  <string name="skip_1_minute">Avanzar un minuto</string>
   <string name="save_string">Guardar</string>
   <string name="stop_string">Parar</string>
   <string name="kill_string">Terminar</string>
@@ -119,4 +118,6 @@
   <string name="service_description">Servicio de ejecución de JSettlers.</string>
   <string name="global_stock_message">La configuración global de almacenamiento solo puede aplicarse al propio asentamiento.</string>
   <string name="goods_stock_title">Configuración Global de Almacenamiento</string>
+
+  <string name="game_menu_skip_minute">Avanzar un minuto</string>
 </resources>
