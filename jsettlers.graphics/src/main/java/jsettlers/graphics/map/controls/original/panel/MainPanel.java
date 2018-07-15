@@ -333,8 +333,8 @@ public class MainPanel extends UIPanel {
 			goBackContent = activeContent;
 			setContent(new MessageContent(
 					Labels.getString("really_destroy_building"),
-					Labels.getName(EActionType.DESTROY), new Action(
-							EActionType.DESTROY),
+					Labels.getString("action_ASK_DESTROY"),
+					new Action(EActionType.DESTROY),
 					Labels.getString("abort"),
 					new Action(EActionType.ABORT)) {
 				@Override
