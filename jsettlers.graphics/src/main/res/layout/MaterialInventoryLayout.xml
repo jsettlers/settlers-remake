@@ -2,7 +2,7 @@
 <!DOCTYPE element SYSTEM "layout.dtd">
 <element x="9" y="219" maxx="127" maxy="435">
 	<element class="Label" x="9" maxx="127" y="219" maxy="234">
-		<localized label="stock_title" />
+		<localized label="controlpanel_title_inventory" />
 		<font-size size="NORMAL" />
 	</element>
 
