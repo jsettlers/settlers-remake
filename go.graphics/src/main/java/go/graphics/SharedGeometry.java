@@ -19,6 +19,7 @@ public class SharedGeometry {
 	private static final ArrayList<SharedGeometry> geometries = new ArrayList<>();
 
 	public static SharedGeometryHandle addGeometry(GLDrawContext dc, float[] data) throws IllegalBufferException {
+		if(staticdc == null) staticdc = dc;
 		int sgeometryIndex = 0;
 
 		while(true) {
@@ -58,7 +59,7 @@ public class SharedGeometry {
 	private static int iteration = 0;
 	private static GLDrawContext staticdc = null;
 
-	public static boolean isValid(GLDrawContext dc, SharedGeometryHandle handle) {
+	public static boolean isInvalid(GLDrawContext dc, SharedGeometryHandle handle) {
 		if(dc != staticdc) {
 			staticdc = dc;
 			iteration++;

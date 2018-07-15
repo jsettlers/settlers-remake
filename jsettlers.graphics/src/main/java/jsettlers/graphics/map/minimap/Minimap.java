@@ -86,6 +86,7 @@ public final class Minimap implements IMinimapData {
 			miniMapShapeCalculator.setWidth(width);
 			miniMapShapeCalculator.setHeight(height);
 			updateGeometry = true;
+			imageIsValid = false;
 		}
 	}
 

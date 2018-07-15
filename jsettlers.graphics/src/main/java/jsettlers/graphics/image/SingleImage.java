@@ -16,7 +16,6 @@ package jsettlers.graphics.image;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryFormatType;
@@ -169,7 +168,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			TextureHandle textureHandle = getTextureIndex(gl);
 
-			if(rectHandle == null || SharedGeometry.isValid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, width/textureWidth, height/textureHeight));
+			if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, width/textureWidth, height/textureHeight));
 
 			gl.glPushMatrix();
 			gl.glTranslatef(x, y, 0);
@@ -229,7 +228,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	protected GeometryHandle getGeometry(GLDrawContext context) throws IllegalBufferException {
-		if(geometryIndex == null || SharedGeometry.isValid(context, geometryIndex)) geometryIndex = SharedGeometry.addGeometry(context, getGeometry());
+		if(geometryIndex == null || SharedGeometry.isInvalid(context, geometryIndex)) geometryIndex = SharedGeometry.addGeometry(context, getGeometry());
 		return geometryIndex.geometry;
 	}
 
