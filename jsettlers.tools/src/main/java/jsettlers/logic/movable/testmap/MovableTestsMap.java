@@ -78,11 +78,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	@Override
-	public int nextDrawableX(int x, int y, int maxX) {
-		return x + 1;
-	}
-
-	@Override
 	public short getWidth() {
 		return width;
 	}
