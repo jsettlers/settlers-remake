@@ -40,7 +40,7 @@ public class GameMenuDialog extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(getActivity().getApplication());
+        GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
         viewModel = gameMenuViewModelFactory.get(this);
 
         viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
@@ -55,7 +55,7 @@ public class GameMenuDialog extends DialogFragment {
         binding.setViewmodel(viewModel);
         binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.GameMenuDialogTheme)
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
                 .setView(binding.getRoot())
                 .create();
 
