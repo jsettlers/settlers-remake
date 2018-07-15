@@ -38,6 +38,8 @@ public class AndroidDrawContext implements GLDrawContext {
 	private final Context context;
 
 	private TextureHandle lastTexture = null;
+	private GeometryHandle lastGeometry = null;
+	private int lastFormat = 0;
 	private boolean gles3;
 
 	public AndroidDrawContext(Context context, boolean gles3) {
@@ -75,10 +77,10 @@ public class AndroidDrawContext implements GLDrawContext {
 		glBindTexture(texture);
 
 		if (gles3) {
-			GLES30.glBindVertexArray(geometry.getInternalFormatId());
+			bindFormat(geometry.getInternalFormatId());
 			GLES11.glDrawArrays(primitive, offset * vertices, vertices);
 		} else {
-			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometry.getInternalId());
+			bindGeometry(geometry);
 			EGeometryFormatType format = geometry.getFormat();
 
 			if(format.getTexCoordPos() == -1) GLES11.glDisableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
@@ -104,14 +106,30 @@ public class AndroidDrawContext implements GLDrawContext {
 
 	private void glBindTexture(TextureHandle texture) {
 		if (texture != lastTexture) {
-			int id;
-			if (texture == null) {
-				id = 0;
-			} else {
+			int id = 0;
+			if (texture != null) {
 				id = texture.getInternalId();
 			}
 			GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, id);
 			lastTexture = texture;
+		}
+	}
+
+	private void bindFormat(int format) {
+		if(format != lastFormat) {
+			GLES30.glBindVertexArray(format);
+			lastFormat = format;
+		}
+	}
+
+	private void bindGeometry(GeometryHandle geometry) {
+		if(geometry != lastGeometry) {
+			int id = 0;
+			if(geometry != null) {
+				id = geometry.getInternalId();
+			}
+			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, id);
+			lastGeometry = geometry;
 		}
 	}
 
@@ -241,7 +259,7 @@ public class AndroidDrawContext implements GLDrawContext {
 	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType format, String name) {
 		GeometryHandle geometry = allocateVBO(format);
 
-		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometry.getInternalId());
+		bindGeometry(geometry);
 		GLES11.glBufferData(GLES11.GL_ARRAY_BUFFER, vertices*format.getBytesPerVertexSize(), null,
 				format == EGeometryFormatType.Background ? GLES11.GL_STATIC_DRAW : GLES11.GL_DYNAMIC_DRAW);
 		return geometry;
@@ -251,12 +269,13 @@ public class AndroidDrawContext implements GLDrawContext {
 
 	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) {
 		glBindTexture(textureid);
+		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
 		// we can simply buffer the draw call here because there is only one instance per game that uses this function
 		if(gles3) {
 			if (backgroundVAO[0] == 0) {
 				GLES30.glGenVertexArrays(1, backgroundVAO, 0);
-				GLES30.glBindVertexArray(backgroundVAO[0]);
+				bindFormat(backgroundVAO[0]);
 				GLES11.glEnableClientState(GLES11.GL_COLOR_ARRAY);
 				GLES11.glEnableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 				GLES11.glEnableClientState(GLES11.GL_VERTEX_ARRAY);
@@ -268,22 +287,20 @@ public class AndroidDrawContext implements GLDrawContext {
 				GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 3*4, 0);
 				GLES11.glColorPointer(4, GLES11.GL_UNSIGNED_BYTE, 3*4, 8);
 			}
-			GLES30.glBindVertexArray(backgroundVAO[0]);
-			for(int i = 0;i != lines;i++) {
+			bindFormat(backgroundVAO[0]);
+			for(int i = starti;i != lines;i++) {
 				GLES11.glDrawArrays(GLES11.GL_TRIANGLES, (offset+stride*i)*3, width*3);
 			}
 		} else {
-			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, vertexHandle.getInternalId());
-
+			bindGeometry(vertexHandle);
 			GLES11.glVertexPointer(3, GLES11.GL_FLOAT, 0, 0);
 
-			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, paintHandle.getInternalId());
-
+			bindGeometry(paintHandle);
 			GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 3 * 4, 0);
 			GLES11.glColorPointer(4, GLES11.GL_UNSIGNED_BYTE, 3 * 4, 8);
 
 			GLES11.glEnableClientState(GLES11.GL_COLOR_ARRAY);
-			for (int i = 0; i != lines; i++) {
+			for (int i = starti; i != lines; i++) {
 				GLES11.glDrawArrays(GLES11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
 			}
 			GLES11.glDisableClientState(GLES11.GL_COLOR_ARRAY);
@@ -306,7 +323,7 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES11.glGenBuffers(1, vbos, 0);
 		if (gles3 && type != EGeometryFormatType.Background) {
 			GLES30.glGenVertexArrays(1, vaos, 0);
-			GLES30.glBindVertexArray(vaos[0]);
+			bindFormat(vaos[0]);
 			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, vbos[0]);
 			GLES11.glEnableClientState(GLES11.GL_VERTEX_ARRAY);
 			if (type.getTexCoordPos() != -1) {
@@ -321,7 +338,7 @@ public class AndroidDrawContext implements GLDrawContext {
 
 	@Override
 	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) {
-		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, handle.getInternalId());
+		bindGeometry(handle);
 		data.rewind();
 		GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, pos, data.limit(), data);
 	}

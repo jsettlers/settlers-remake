@@ -56,6 +56,10 @@ public class LWJGLDrawContext implements GLDrawContext {
 	private final GLCapabilities glcaps;
 	private Callback debugcallback = null;
 
+	private GeometryHandle lastGeometry = null;
+	private TextureHandle lastTexture = null;
+	private int lastFormat = 0;
+
 	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
 
@@ -88,13 +92,12 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices) {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture != null ? texture.getInternalId() : 0);
-
+		bindTexture(texture);
 		if (glcaps.GL_ARB_vertex_array_object) {
-			ARBVertexArrayObject.glBindVertexArray(geometry.getInternalFormatId());
+			bindFormat(geometry.getInternalFormatId());
 			GL11.glDrawArrays(primitive, offset * vertices, vertices);
 		} else {
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, geometry.getInternalId());
+			bindGeometry(geometry);
 			EGeometryFormatType format = geometry.getFormat();
 
 			if(format.getTexCoordPos() == -1) GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -158,16 +161,15 @@ public class LWJGLDrawContext implements GLDrawContext {
 		int cap = data.capacity();
 		for(int i = 0;i != cap;i++)	bfr.put(i, data.get(i));
 
-
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		TextureHandle textureHandle = new LWJGLTextureHandle(this, texture);
+		bindTexture(textureHandle);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
 				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, bfr);
 		setTextureParameters();
 
 		setObjectLabel(GL11.GL_TEXTURE, texture, name + "-tex");
 
-		return new LWJGLTextureHandle(this, texture);
+		return textureHandle;
 	}
 
 	/**
@@ -195,13 +197,32 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	private void bindTexture(TextureHandle texture) {
-		int id;
-		if (texture == null) {
-			id = 0;
-		} else {
-			id = texture.getInternalId();
+		if(lastTexture != texture) {
+			int id = 0;
+			if (texture != null) {
+				id = texture.getInternalId();
+			}
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+			lastTexture = texture;
 		}
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+	}
+
+	private void bindGeometry(GeometryHandle geometry) {
+		if(lastGeometry != geometry) {
+			int id = 0;
+			if (geometry != null) {
+				id = geometry.getInternalId();
+			}
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
+			lastGeometry = geometry;
+		}
+	}
+
+	private void bindFormat(int format) {
+		if(format != lastFormat) {
+			ARBVertexArrayObject.glBindVertexArray(format);
+			lastFormat = format;
+		}
 	}
 
 	@Override
@@ -233,11 +254,12 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
+		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
 		if(glcaps.GL_ARB_vertex_array_object) {
 			if(backgroundVAO == 0) {
 				backgroundVAO = ARBVertexArrayObject.glGenVertexArrays();
-				ARBVertexArrayObject.glBindVertexArray(backgroundVAO);
+				bindFormat(backgroundVAO);
 				GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
@@ -254,20 +276,20 @@ public class LWJGLDrawContext implements GLDrawContext {
 				setObjectLabel(GL43.GL_BUFFER, paintHandle.getInternalId(), "background-shape");
 			}
 
-			ARBVertexArrayObject.glBindVertexArray(backgroundVAO);
-			for (int i = 0; i != lines; i++) {
+			bindFormat(backgroundVAO);
+			for (int i = starti; i != lines; i++) {
 				GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
 			}
 		} else {
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexHandle.getInternalId());
+			bindGeometry(vertexHandle);
 			GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
 
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, paintHandle.getInternalId());
+			bindGeometry(paintHandle);
 			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3 * 4, 0);
 			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3 * 4, 8);
 
 			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-			for (int i = 0; i != lines; i++) {
+			for (int i = starti; i != lines; i++) {
 				GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
 			}
 			GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
@@ -276,7 +298,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) {
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle.getInternalId());
+		bindGeometry(handle);
 		data.rewind();
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, data);
 	}
@@ -285,7 +307,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, String name) {
 		GeometryHandle geometryBuffer = allocateVBO(type, name);
 
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, geometryBuffer.getInternalId());
+		bindGeometry(geometryBuffer);
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			ByteBuffer bfr = stack.malloc(4*geometry.length);
 			bfr.asFloatBuffer().put(geometry);
@@ -307,7 +329,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, String name) {
 		GeometryHandle vertexBufferId = allocateVBO(type, name);
 
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBufferId.getInternalId());
+		bindGeometry(vertexBufferId);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*type.getBytesPerVertexSize(), type == EGeometryFormatType.Background ? GL15.GL_STATIC_DRAW : GL15.GL_DYNAMIC_DRAW);
 		return vertexBufferId;
 	}
@@ -316,7 +338,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		int vbo = GL15.glGenBuffers();
 		if (glcaps.GL_ARB_vertex_array_object && type != EGeometryFormatType.Background) {
 			vao = ARBVertexArrayObject.glGenVertexArrays();
-			ARBVertexArrayObject.glBindVertexArray(vao);
+			bindFormat(vao);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 			GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 			if (type.getTexCoordPos() != -1) {
