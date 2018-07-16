@@ -67,7 +67,7 @@ public class BarFill extends UIPanel {
 		float maxX = position.getMinX() * (1 - fillX) + position.getMaxX() * fillX;
 
 		try {
-			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, name);
+			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, false, name);
 			if (!position.equals(writtenPosition) || writtenMaxX != maxX) {
 				writtenPosition = position;
 				writtenMaxX = maxX;

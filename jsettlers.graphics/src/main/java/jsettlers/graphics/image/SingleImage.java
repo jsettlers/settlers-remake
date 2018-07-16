@@ -235,7 +235,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			v3 = (float) Math.round(v3 * height) / height;
 
 			synchronized (buildLock) {
-				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, "building-progress");
+				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, true, "building-progress");
 				buildBfr.asFloatBuffer().put(new float[] {
 						u1 * width,
 						-v1 * height,

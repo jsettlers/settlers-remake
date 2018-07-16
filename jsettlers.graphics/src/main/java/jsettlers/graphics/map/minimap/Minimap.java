@@ -107,8 +107,8 @@ public final class Minimap implements IMinimapData {
 		boolean imageWasCreatedJustNow = false;
 		try {
 			if(geometry == null || !geometry.isValid()) {
-				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,}, EGeometryFormatType.Texture2D, "minimap");
-				lineGeometry = context.generateGeometry(6, EGeometryFormatType.VertexOnly2D, "minimap-frame");
+				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,}, EGeometryFormatType.Texture2D, false, "minimap");
+				lineGeometry = context.generateGeometry(6, EGeometryFormatType.VertexOnly2D, true, "minimap-frame");
 			}
 
 			if(updateGeometry) {

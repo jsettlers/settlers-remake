@@ -79,11 +79,11 @@ public interface GLDrawContext {
 
 	TextDrawer getTextDrawer(EFontSize size);
 
-	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, String name);
+	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, boolean writable, String name);
 
 	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
-	GeometryHandle generateGeometry(int bytes, EGeometryFormatType type, String name);
+	GeometryHandle generateGeometry(int bytes, EGeometryFormatType type, boolean writable, String name);
 
 	boolean isValid();
 

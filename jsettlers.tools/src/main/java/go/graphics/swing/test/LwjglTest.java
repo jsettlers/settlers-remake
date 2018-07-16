@@ -31,13 +31,8 @@ import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 
-import java.awt.Point;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 
@@ -129,7 +124,7 @@ public class LwjglTest {
 
 			if(point_index < 2) return;
 
-			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D, null);
+			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D, true, null);
 
 			synchronized (pointLock) {
 				try {

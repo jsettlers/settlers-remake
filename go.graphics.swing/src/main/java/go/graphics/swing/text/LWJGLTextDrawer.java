@@ -164,7 +164,7 @@ public final class LWJGLTextDrawer {
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
-		geometry = drawContext.storeGeometry(geodata, EGeometryFormatType.Texture2D, font.getName());
+		geometry = drawContext.storeGeometry(geodata, EGeometryFormatType.Texture2D, false, font.getName());
 	}
 
 	public TextDrawer derive(EFontSize size) {

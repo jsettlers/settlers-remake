@@ -79,7 +79,7 @@ public final class NullImage extends SingleImage {
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
 		try {
-			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData, EGeometryFormatType.VertexOnly2D, "placeholder/null");
+			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData, EGeometryFormatType.VertexOnly2D, false, "placeholder/null");
 
 			gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
 			gl.draw2D(nullGeometry, null, EGeometryType.Quad, 0, 4);

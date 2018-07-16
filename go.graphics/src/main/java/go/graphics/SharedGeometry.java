@@ -69,14 +69,14 @@ public class SharedGeometry {
 
 	private void validate(GLDrawContext dc) {
 		if(!geometry.isValid()) {
-			geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, "sharedgeometry-" + index);
+			geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, true, "sharedgeometry-" + index);
 			size = 0;
 		}
 	}
 
 	private SharedGeometry(GLDrawContext dc, int index) {
 		this.index = index;
-		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, "sharedgeometry-" + index);
+		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, true, "sharedgeometry-" + index);
 	}
 
 

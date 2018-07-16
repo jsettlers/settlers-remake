@@ -1,16 +1,21 @@
 package go.graphics;
 
 public enum EGeometryFormatType {
-	Texture2D(4*4, 2*4),
-	VertexOnly2D(2*4, -1),
-	Background(3*4, -1);
+	Texture3D(5*4, 3*4, false),
+	Texture2D(4*4, 2*4, true),
+	VertexOnly2D(2*4, -1, true),
+	ColorOnly(4, 0, false);
 
 	private int bytesPerVertexSize;
 	private int texCoordPos;
+	private boolean staticData;
+	private boolean singleBuffer;
 
-	private EGeometryFormatType(int bytesPerVertexSize, int texCoordPos) {
+	EGeometryFormatType(int bytesPerVertexSize, int texCoordPos, boolean singleBuffer) {
 		this.bytesPerVertexSize = bytesPerVertexSize;
 		this.texCoordPos = texCoordPos;
+		this.staticData = staticData;
+		this.singleBuffer = singleBuffer;
 	}
 
 	public int getBytesPerVertexSize() {
@@ -19,5 +24,13 @@ public enum EGeometryFormatType {
 
 	public int getTexCoordPos() {
 		return this.texCoordPos;
+	}
+
+	public boolean isSingleBuffer() {
+		return singleBuffer;
+	}
+
+	public boolean isStaticData() {
+		return staticData;
 	}
 }

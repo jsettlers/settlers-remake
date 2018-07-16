@@ -247,7 +247,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 	private int backgroundVAO = 0;
 
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
@@ -259,16 +259,16 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexHandle.getInternalId());
-				GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, shapeHandle.getInternalId());
+				GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+				GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, paintHandle.getInternalId());
-				GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3 * 4, 0);
-				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3 * 4, 8);
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorHandle.getInternalId());
+				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
 
 				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
-				setObjectLabel(KHRDebug.GL_BUFFER, vertexHandle.getInternalId(), "background-vertices");
-				setObjectLabel(KHRDebug.GL_BUFFER, paintHandle.getInternalId(), "background-shape");
+				setObjectLabel(KHRDebug.GL_BUFFER, shapeHandle.getInternalId(), "background-shape");
+				setObjectLabel(KHRDebug.GL_BUFFER, colorHandle.getInternalId(), "background-color");
 			}
 
 			bindFormat(backgroundVAO);
@@ -276,12 +276,12 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
 			}
 		} else {
-			bindGeometry(vertexHandle);
-			GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+			bindGeometry(shapeHandle);
+			GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-			bindGeometry(paintHandle);
-			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 3 * 4, 0);
-			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3 * 4, 8);
+			bindGeometry(colorHandle);
+			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
 
 			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 			for (int i = starti; i != lines; i++) {
@@ -299,31 +299,31 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, String name) {
+	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, boolean writable, String name) {
 		GeometryHandle geometryBuffer = allocateVBO(type, name);
 
 		bindGeometry(geometryBuffer);
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			ByteBuffer bfr = stack.malloc(4*geometry.length);
 			bfr.asFloatBuffer().put(geometry);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, bfr, type == EGeometryFormatType.Texture2D ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, bfr, writable ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
 		}
 
 		return geometryBuffer;
 	}
 
 	@Override
-	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, String name) {
+	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, boolean writable, String name) {
 		GeometryHandle vertexBufferId = allocateVBO(type, name);
 
 		bindGeometry(vertexBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*type.getBytesPerVertexSize(), type == EGeometryFormatType.Background ? GL15.GL_STATIC_DRAW : GL15.GL_DYNAMIC_DRAW);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*type.getBytesPerVertexSize(), writable ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
 		return vertexBufferId;
 	}
 	private GeometryHandle allocateVBO(EGeometryFormatType type, String name) {
 		int vao = 0;
 		int vbo = GL15.glGenBuffers();
-		if (glcaps.GL_ARB_vertex_array_object && type != EGeometryFormatType.Background) {
+		if (glcaps.GL_ARB_vertex_array_object && type.isSingleBuffer()) {
 			vao = ARBVertexArrayObject.glGenVertexArrays();
 			bindFormat(vao);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
@@ -335,7 +335,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			specifyFormat(type);
 		}
 
-		if(type != EGeometryFormatType.Background)  {
+		if(type.isSingleBuffer())  {
 			setObjectLabel(KHRDebug.GL_BUFFER, vbo, name + "-vertices");
 			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
 		}
