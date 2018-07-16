@@ -12,9 +12,6 @@ import java.util.HashMap;
 
 public class LWJGLDebugOutput {
 
-	private boolean khr;
-	private boolean arb;
-
 	LWJGLDebugOutput(LWJGLDrawContext dc) {
 		if(dc.glcaps.GL_KHR_debug) {
 			GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -23,22 +20,20 @@ public class LWJGLDebugOutput {
 			GL11.glEnable(ARBDebugOutput.GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 			ARBDebugOutput.glDebugMessageCallbackARB(debugCallbackARB, 0);
 		}
-		khr = dc.glcaps.GL_KHR_debug;
-		arb = dc.glcaps.GL_ARB_debug_output;
 	}
 
 
-	private int lastId = -1;
-	private int lastType = -1;
-	private int lastSource = -1;
-	private int lastSeverity = -1;
-	private int lastMessageCount = -1;
-	private String lastHeader = null;
+	private static int lastId = -1;
+	private static int lastType = -1;
+	private static int lastSource = -1;
+	private static int lastSeverity = -1;
+	private static int lastMessageCount = -1;
+	private static String lastHeader = null;
 	private static final int MAX_PRINT_MESSAGES = 10;
 	private static final int MAX_REPEAT_MESSEAGES = Integer.MAX_VALUE;
-	private ArrayList<String> lastMessages = new ArrayList<>(MAX_PRINT_MESSAGES);
+	private static ArrayList<String> lastMessages = new ArrayList<>(MAX_PRINT_MESSAGES);
 
-	private void flushMessages() {
+	private static void flushMessages() {
 		if(lastMessageCount <= MAX_PRINT_MESSAGES) {
 			for(int i = 0;i != lastMessageCount;i++) {
 				System.err.print(lastHeader);
@@ -50,7 +45,7 @@ public class LWJGLDebugOutput {
 		}
 	}
 
-	private void debugMessage(int source, int type, int id, int severity, int length, long message) {
+	private static void debugMessage(int source, int type, int id, int severity, int length, long message) {
 		String msg = GLDebugMessageARBCallback.getMessage(length, message);
 		if(lastId == id && lastType == type && lastSource == source && lastSeverity == severity) {
 			if(lastMessageCount < MAX_PRINT_MESSAGES) lastMessages.add(lastMessageCount, msg);
@@ -88,16 +83,11 @@ public class LWJGLDebugOutput {
 		debugEnum.put(KHRDebug.GL_DEBUG_SEVERITY_NOTIFICATION, "NOTIFICATION");
 	}
 
-	private String S(int type) {
+	private static String S(int type) {
 		return debugEnum.getOrDefault(type, String.valueOf(type));
 	}
 
 
-	private final GLDebugMessageCallbackI debugCallback = (int source, int type, int id, int severity, int length, long message, long userParam) -> debugMessage(source, type, id, severity, length, message);
-	private final GLDebugMessageARBCallbackI debugCallbackARB = (int source, int type, int id, int severity, int length, long message, long userParam) -> debugMessage(source, type, id, severity, length, message);
-
-	public void flush() {
-		if(khr) KHRDebug.glDebugMessageInsert(				KHRDebug.GL_DEBUG_SOURCE_APPLICATION, KHRDebug.GL_DEBUG_TYPE_OTHER, 42, KHRDebug.GL_DEBUG_SEVERITY_NOTIFICATION, "printing all remaining messages... and bye");
-		else if(arb) ARBDebugOutput.glDebugMessageInsertARB(KHRDebug.GL_DEBUG_SOURCE_APPLICATION, KHRDebug.GL_DEBUG_TYPE_OTHER, 42, KHRDebug.GL_DEBUG_SEVERITY_NOTIFICATION, "printing all remaining messages... and bye");
-	}
+	private static final GLDebugMessageCallbackI debugCallback = (int source, int type, int id, int severity, int length, long message, long userParam) -> debugMessage(source, type, id, severity, length, message);
+	private static final GLDebugMessageARBCallbackI debugCallbackARB = (int source, int type, int id, int severity, int length, long message, long userParam) -> debugMessage(source, type, id, severity, length, message);
 }

@@ -367,7 +367,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 	 * Called whenever we should dispose all buffers associated with this context.
 	 */
 	public void disposeAll() {
-		if(debugOutput != null) debugOutput.flush();
 		contextValid = false;
 	}
 
