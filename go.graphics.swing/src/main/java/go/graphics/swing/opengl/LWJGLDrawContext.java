@@ -15,12 +15,10 @@
 package go.graphics.swing.opengl;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.nio.ByteBuffer;
@@ -35,9 +33,7 @@ import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.opengl.KHRDebug;
-import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 
 import javax.swing.JOptionPane;
@@ -54,9 +50,9 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 	private TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
 	private LWJGLTextDrawer textDrawer = null;
+	private LWJGLDebugOutput debugOutput = null;
 
 	public final GLCapabilities glcaps;
-	private Callback debugcallback = null;
 
 	private GeometryHandle lastGeometry = null;
 	private TextureHandle lastTexture = null;
@@ -71,22 +67,11 @@ public class LWJGLDrawContext implements GLDrawContext {
 			System.exit(1);
 		});
 	}
-
 	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
 
 		checkGLVersion();
-
-		if(debug) {
-			debugcallback = GLUtil.setupDebugMessageCallback(System.err);
-			if(glcaps.OpenGL43) {
-				GL11.glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
-			} else if(glcaps.GL_KHR_debug) {
-				GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
-			} else if(glcaps.GL_ARB_debug_output) {
-				GL11.glEnable(ARBDebugOutput.GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-			}
-		}
+		if(debug) debugOutput = new LWJGLDebugOutput(this);
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -283,8 +268,8 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 3 * 4, 8);
 
 				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
-				setObjectLabel(GL43.GL_BUFFER, vertexHandle.getInternalId(), "background-vertices");
-				setObjectLabel(GL43.GL_BUFFER, paintHandle.getInternalId(), "background-shape");
+				setObjectLabel(KHRDebug.GL_BUFFER, vertexHandle.getInternalId(), "background-vertices");
+				setObjectLabel(KHRDebug.GL_BUFFER, paintHandle.getInternalId(), "background-shape");
 			}
 
 			bindFormat(backgroundVAO);
@@ -360,7 +345,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		}
 
 		if(type != EGeometryFormatType.Background)  {
-			setObjectLabel(GL43.GL_BUFFER, vbo, name + "-vertices");
+			setObjectLabel(KHRDebug.GL_BUFFER, vbo, name + "-vertices");
 			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
 		}
 
@@ -368,11 +353,9 @@ public class LWJGLDrawContext implements GLDrawContext {
 	}
 
 	private void setObjectLabel(int type, int id, String name) {
-		if(debugcallback == null) return;
+		if(debugOutput == null) return;
 
-		if(glcaps.OpenGL43) {
-			GL43.glObjectLabel(type, id, name);
-		} else if(glcaps.GL_KHR_debug) {
+		if(glcaps.GL_KHR_debug) {
 			KHRDebug.glObjectLabel(type, id, name);
 		}
 	}
@@ -384,6 +367,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 	 * Called whenever we should dispose all buffers associated with this context.
 	 */
 	public void disposeAll() {
+		if(debugOutput != null) debugOutput.flush();
 		contextValid = false;
 	}
 
