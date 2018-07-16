@@ -69,7 +69,10 @@ public class WGLContextCreator extends JAWTContextCreator {
 		pfd.free();
 
 		if(debug) {
+			long tmp_context = WGL.wglCreateContext(windowDrawable);
+			WGL.wglMakeCurrent(windowDrawable, tmp_context);
 			WGLCapabilities caps = GL.createCapabilitiesWGL();
+			WGL.wglDeleteContext(tmp_context);
 			if(!caps.WGL_ARB_create_context) throw new Error("WGL could not create a debug context!");
 			context = WGLARBCreateContext.wglCreateContextAttribsARB(windowDrawable, 0, new int[] {
 					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB, 0
