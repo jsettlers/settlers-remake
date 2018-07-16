@@ -262,7 +262,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	public TextureHandle getTexture(GLDrawContext gl) {
 		if (!textureValid || !texture.isValid()) {
 			if (texture != null) {
-				texture.delete();
+				gl.deleteTexture(texture);
 			}
 			try {
 				loadTexture(gl);

@@ -27,7 +27,6 @@ import go.graphics.EGeometryFormatType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
-import go.graphics.android.AndroidGLHandle.AndroidTextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -148,10 +147,10 @@ public class AndroidDrawContext implements GLDrawContext {
 		return texture;
 	}
 
-	private static AndroidTextureHandle genTextureIndex() {
+	private TextureHandle genTextureIndex() {
 		int[] textureIndexes = new int[1];
 		GLES10.glGenTextures(1, textureIndexes, 0);
-		return new AndroidTextureHandle(textureIndexes[0]);
+		return new TextureHandle(this, textureIndexes[0]);
 	}
 
 	/**
@@ -317,7 +316,7 @@ public class AndroidDrawContext implements GLDrawContext {
 			this.specifyFormat(type);
 		}
 
-		return new AndroidGLHandle.AndroidGeometryHandle(vbos[0], type, vaos[0]);
+		return new GeometryHandle(this, vbos[0], vaos[0], type);
 	}
 
 	@Override
@@ -332,6 +331,18 @@ public class AndroidDrawContext implements GLDrawContext {
 	}
 
 	public void invalidateContext() {
-		// TODO invalidate context
+		valid = false;
+	}
+
+	@Override
+	public void deleteTexture(TextureHandle texture) {
+		GLES10.glDeleteTextures(1, new int[] {texture.getInternalId()}, 0);
+	}
+
+	private boolean valid = true;
+
+	@Override
+	public boolean isValid() {
+		return valid;
 	}
 }

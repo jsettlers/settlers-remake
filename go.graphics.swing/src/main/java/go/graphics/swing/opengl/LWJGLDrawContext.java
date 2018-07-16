@@ -28,7 +28,6 @@ import go.graphics.EGeometryFormatType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.LWJGLBufferHandle.LWJGLTextureHandle;
 import go.graphics.swing.text.LWJGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -160,7 +159,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		int cap = data.capacity();
 		for(int i = 0;i != cap;i++)	bfr.put(i, data.get(i));
 
-		TextureHandle textureHandle = new LWJGLTextureHandle(this, texture);
+		TextureHandle textureHandle = new TextureHandle(this, texture);
 		bindTexture(textureHandle);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
 				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, bfr);
@@ -313,14 +312,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 		return geometryBuffer;
 	}
 
-	boolean checkGeometryIndex(int geometryindex) {
-		return geometryindex > 0;
-	}
-
-	void deleteGeometry(int geometryindex) {
-		GL15.glDeleteBuffers(geometryindex);
-	}
-
 	@Override
 	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, String name) {
 		GeometryHandle vertexBufferId = allocateVBO(type, name);
@@ -349,7 +340,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
 		}
 
-		return new LWJGLBufferHandle.LWJGLGeometryHandle(this, type, vao, vbo);
+		return new GeometryHandle(this, vbo, vao, type);
 	}
 
 	private void setObjectLabel(int type, int id, String name) {
@@ -360,7 +351,9 @@ public class LWJGLDrawContext implements GLDrawContext {
 		}
 	}
 
-	public void prepareFontDrawing() {
+	@Override
+	public void deleteTexture(TextureHandle textureHandle) {
+		GL11.glDeleteTextures(textureHandle.getInternalId());
 	}
 
 	/**

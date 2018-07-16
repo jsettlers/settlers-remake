@@ -126,8 +126,8 @@ public final class Minimap implements IMinimapData {
 			synchronized (updateMutex) {
 				if (!imageIsValid || texture == null || !texture.isValid()) {
 					imageWasCreatedJustNow = true;
-					if (texture != null) {
-						texture.delete();
+					if (texture != null && texture.isValid()) {
+						context.deleteTexture(texture);
 						texture = null;
 					}
 					ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2)
