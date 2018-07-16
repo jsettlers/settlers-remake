@@ -4,7 +4,7 @@ public enum EGeometryFormatType {
 	Texture3D(5*4, 3*4, false),
 	Texture2D(4*4, 2*4, true),
 	VertexOnly2D(2*4, -1, true),
-	ColorOnly(4, 0, false);
+	ColorOnly(3, 0, false);
 
 	private int bytesPerVertexSize;
 	private int texCoordPos;

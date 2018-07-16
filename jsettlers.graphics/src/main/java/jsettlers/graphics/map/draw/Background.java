@@ -59,7 +59,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private static final int TEXTURE_GRID = 32;
 
 	private static final int BYTES_PER_FIELD_SHAPE = 4*5*3*2; // 4 bytes per float * 5 components(x,y,z,t,v) * 3 points per triangle * 2 triangles per field
-	private static final int BYTES_PER_FIELD_COLOR = 4*3*2; // 4 component(r,g,b,a) * 3 points per triangle * 2 triangles per field
+	private static final int BYTES_PER_FIELD_COLOR = 3*3*2; // 3 component(r,g,b actually gray) * 3 points per triangle * 2 triangles per field
 
 	/**
 	 * Where are the textures on the map?
@@ -1215,7 +1215,7 @@ public class Background implements IGraphicsBackgroundListener {
 		colorHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.ColorOnly, true, "background-color");
 
 		ByteBuffer shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
-		ByteBuffer color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
+		ByteBuffer color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
 
 		for(int y = 0;y != bufferHeight;y++) {
 			for(int x = 0; x != bufferWidth;x++) {
@@ -1239,7 +1239,6 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private void updateMapType(MapDrawContext context, int x, int y) throws IllegalBufferException {
 		int bfr_pos = y*bufferWidth+x;
-		int bfr_pos4 = bfr_pos*4;
 
 		if(mapInvalid.get(bfr_pos)) {
 			shape_update_bfr.rewind();
@@ -1373,8 +1372,8 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param y
 	 */
 	private void addTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
-		addTriangle1ToGeometry(context, buffer, x, y);
-		addTriangle2ToGeometry(context, buffer, x, y);
+		addTriangleToGeometry(context, buffer, x, y, true,x*37 + y*17);
+		addTriangleToGeometry(context, buffer, x, y, false, x);
 	}
 
 	private void addColorTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
@@ -1387,92 +1386,34 @@ public class Background implements IGraphicsBackgroundListener {
 		addColorPointToGeometry(context, buffer, x + 1, y, fogBase + 1);
 	}
 
+	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, boolean up, int useSecondParameter) {
+		int x1 = x;
+		int y1 = y + (up?1:0);
+		int x2 = x + (up?0:1);
+		int y2 = y + (up?0:1);
+		int x3 = x + 1;
+		int y3 = y + (up?1:0);
 
-	/**
-	 * Draws the triangle that is facing up
-	 * 
-	 * @param context
-	 * @param buffer
-	 * @param x
-	 * @param y
-	 */
-	private void addTriangle1ToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
-		ELandscapeType topLandscape = context.getLandscape(x, y);
-		ELandscapeType leftLandscape = context.getLandscape(x, y + 1);
-		ELandscapeType rightLandscape = context.getLandscape(x + 1, y + 1);
+		ELandscapeType leftLandscape = context.getLandscape(x1, y1);
+		ELandscapeType aLandscape = context.getLandscape(x2, y2);
+		ELandscapeType rightLandscape = context.getLandscape(x3, y3);
 
-		boolean useSecond = ((x * 37 + y * 17) & 0x1) == 0;
-		ETextureOrientation texturePos;
+		boolean useSecond = (useSecondParameter&1) == 0;
+		float[] texturePos;
 		int textureIndex;
-		if (topLandscape == leftLandscape && topLandscape == rightLandscape) {
-			textureIndex = topLandscape.getImageNumber();
-			texturePos = ETextureOrientation.CONTINUOUS_UP;
+		int orientationIndex = up?0:1;
+		if (aLandscape == leftLandscape && aLandscape == rightLandscape) {
+			textureIndex = aLandscape.getImageNumber();
+			texturePos = ETextureOrientation.CONTINUOS[orientationIndex];
 		} else if (leftLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.BOTTOM;
-			textureIndex = getBorder(leftLandscape, topLandscape, useSecond);
-		} else if (leftLandscape == topLandscape) {
-			texturePos = ETextureOrientation.TOPLEFT;
+			texturePos = ETextureOrientation.ORIENTATION[orientationIndex];
+			textureIndex = getBorder(leftLandscape, aLandscape, useSecond);
+		} else if (leftLandscape == aLandscape) {
+			texturePos = ETextureOrientation.LEFT[orientationIndex];
 			textureIndex = getBorder(leftLandscape, rightLandscape, useSecond);
 		} else {
-			texturePos = ETextureOrientation.TOPRIGHT;
-			textureIndex = getBorder(topLandscape, leftLandscape, useSecond);
-		}
-
-		int[] positions = TEXTURE_POSITIONS[textureIndex];
-		// texture position
-		int adddx = 0;
-		int adddy = 0;
-		if (positions[2] >= 2) {
-			adddx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
-			adddy = y * DrawConstants.DISTANCE_Y;
-			adddx = realModulo(adddx, (positions[2] - 1) * TEXTURE_GRID);
-			adddy = realModulo(adddy, (positions[2] - 1) * TEXTURE_GRID);
-		}
-		adddx += positions[0] * TEXTURE_GRID;
-		adddy += positions[1] * TEXTURE_GRID;
-
-		float[] relativeTexCoordinates = texturePos.getRelativecoords();
-
-		{
-			// top
-			float u = (relativeTexCoordinates[0] + adddx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[1] + adddy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x, y, u, v);
-		}
-		{
-			// left
-			float u = (relativeTexCoordinates[2] + adddx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[3] + adddy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x, y + 1, u, v);
-		}
-		{
-			// right
-			float u = (relativeTexCoordinates[4] + adddx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[5] + adddy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x + 1, y + 1, u, v);
-		}
-	}
-
-	private void addTriangle2ToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
-		ELandscapeType leftLandscape = context.getLandscape(x, y);
-		ELandscapeType bottomLandscape = context.getLandscape(x + 1, y + 1);
-		ELandscapeType rightLandscape = context.getLandscape(x + 1, y);
-
-		boolean useSecond = (x & 0x1) == 0;
-		ETextureOrientation texturePos;
-		int textureIndex;
-		if (bottomLandscape == leftLandscape && bottomLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.CONTINUOUS_DOWN;
-			textureIndex = bottomLandscape.getImageNumber();
-		} else if (leftLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.TOP;
-			textureIndex = getBorder(leftLandscape, bottomLandscape, useSecond);
-		} else if (leftLandscape == bottomLandscape) {
-			texturePos = ETextureOrientation.BOTTOMLEFT;
-			textureIndex = getBorder(leftLandscape, rightLandscape, useSecond);
-		} else {
-			texturePos = ETextureOrientation.BOTTOMRIGHT;
-			textureIndex = getBorder(rightLandscape, leftLandscape, useSecond);
+			texturePos = ETextureOrientation.RIGHT[orientationIndex];
+			textureIndex = getBorder(up?aLandscape:rightLandscape, leftLandscape, useSecond);
 		}
 
 		int[] positions = TEXTURE_POSITIONS[textureIndex];
@@ -1488,25 +1429,23 @@ public class Background implements IGraphicsBackgroundListener {
 		addDx += positions[0] * TEXTURE_GRID;
 		addDy += positions[1] * TEXTURE_GRID;
 
-		float[] relativeTexCoordinates = texturePos.getRelativecoords();
-
 		{
 			// left
-			float u = (relativeTexCoordinates[0] + addDx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[1] + addDy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x, y, u, v);
+			float u = (texturePos[0] + addDx) / TEXTURE_SIZE;
+			float v = (texturePos[1] + addDy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, up?x2:x1, up?y2:y1, u, v);
 		}
 		{
 			// bottom
-			float u = (relativeTexCoordinates[2] + addDx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[3] + addDy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x + 1, y + 1, u, v);
+			float u = (texturePos[2] + addDx) / TEXTURE_SIZE;
+			float v = (texturePos[3] + addDy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, up?x1:x2, up?y1:y2, u, v);
 		}
 		{
 			// right
-			float u = (relativeTexCoordinates[4] + addDx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[5] + addDy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x + 1, y, u, v);
+			float u = (texturePos[4] + addDx) / TEXTURE_SIZE;
+			float v = (texturePos[5] + addDy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, x3, y3, u, v);
 		}
 
 	}
@@ -1542,7 +1481,6 @@ public class Background implements IGraphicsBackgroundListener {
 		buffer.put(color);
 		buffer.put(color);
 		buffer.put(color);
-		buffer.put((byte) 255);
 	}
 
 	private static int realModulo(int number, int modulo) {
