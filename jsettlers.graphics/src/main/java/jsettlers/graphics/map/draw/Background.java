@@ -59,7 +59,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private static final int TEXTURE_GRID = 32;
 
 	private static final int BYTES_PER_FIELD_SHAPE = 4*5*3*2; // 4 bytes per float * 5 components(x,y,z,t,v) * 3 points per triangle * 2 triangles per field
-	private static final int BYTES_PER_FIELD_COLOR = 3*3*2; // 3 component(r,g,b actually gray) * 3 points per triangle * 2 triangles per field
+	private static final int BYTES_PER_FIELD_COLOR = 4*3*2; // 4 component(r,g,b,a actually gray) * 3 points per triangle * 2 triangles per field
 
 	/**
 	 * Where are the textures on the map?
@@ -1481,6 +1481,7 @@ public class Background implements IGraphicsBackgroundListener {
 		buffer.put(color);
 		buffer.put(color);
 		buffer.put(color);
+		buffer.put((byte) 255);
 	}
 
 	private static int realModulo(int number, int modulo) {

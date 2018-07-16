@@ -264,7 +264,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorHandle.getInternalId());
-				GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 0, 0);
+				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
 
 				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
 				setObjectLabel(KHRDebug.GL_BUFFER, shapeHandle.getInternalId(), "background-shape");
@@ -281,7 +281,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
 			bindGeometry(colorHandle);
-			GL11.glColorPointer(3, GL11.GL_UNSIGNED_BYTE, 0, 0);
+			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
 
 			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 			for (int i = starti; i != lines; i++) {
