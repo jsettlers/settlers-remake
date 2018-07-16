@@ -44,4 +44,9 @@ public abstract class GLBufferHandle {
 	public int getInternalId() {
 		return id;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[index=" + id + " ]";
+	}
 }

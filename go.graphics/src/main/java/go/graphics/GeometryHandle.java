@@ -36,4 +36,10 @@ public class GeometryHandle extends GLBufferHandle {
 	public int getInternalFormatId() {
 		return vao;
 	}
+
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [index=" + id + " ,vao=" + vao + " ,format=" + format + " ]";
+	}
 }
