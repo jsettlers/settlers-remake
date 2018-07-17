@@ -184,6 +184,7 @@ public class MapObjectDrawer {
 
 	private static final int SMOKE_HEIGHT = 30;
 
+	private static final int FLAG_FILE = 13;
 	private final SoundManager   sound;
 	private final MapDrawContext context;
 	private byte[][] visibleGrid = null;
@@ -204,6 +205,7 @@ public class MapObjectDrawer {
 	 *  @param context
 	 * 		The context to use for computing the positions.
 	 * @param sound
+	 *      The handle to play sound
 	 */
 	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
 		this.context = context;
@@ -512,7 +514,7 @@ public class MapObjectDrawer {
 				break;
 
 			case GHOST:
-				drawPlayerableByProgress(x, y, 12, 27, object, color, "dead-settler");
+				drawPlayerableByProgress(x, y, object, color);
 				playSound(object, SOUND_SETTLER_KILLED, x, y);
 				break;
 
@@ -558,7 +560,7 @@ public class MapObjectDrawer {
 				break;
 
 			case FLAG_DOOR:
-				drawPlayerableWaving(x, y, 0, 13, 63, object, color, "door");
+				drawPlayerableWaving(x, y, 0, 63, object, color, "door");
 				break;
 
 			case CONSTRUCTION_MARK:
@@ -586,7 +588,7 @@ public class MapObjectDrawer {
 				break;
 
 			case SMOKE:
-				drawByProgressWithHeight(x, y, SMOKE_HEIGHT, 13, 42, progress, color);
+				drawByProgressWithHeight(x, y, SMOKE_HEIGHT, progress, color);
 				break;
 
 			case PLANT_DECORATION:
@@ -626,7 +628,7 @@ public class MapObjectDrawer {
 	}
 
 	private void drawRoofFlag(int x, int y, IMapObject object, float color) {
-		drawPlayerableWaving(x, y, FLAG_ROOF_Z, 13, 64, object, color, "roof");
+		drawPlayerableWaving(x, y, FLAG_ROOF_Z, 64, object, color, "roof");
 	}
 
 	private void drawPlacementBuilding(int x, int y, IMapObject object, float color) {
@@ -663,7 +665,7 @@ public class MapObjectDrawer {
 	private void drawDonkey(int x, int y, IMapObject object, float color) {
 		int i = (getAnimationStep(x, y) / 20) % 6;
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
-		draw(image, x, y, 0, getColor(object));
+		draw(image, x, y, 0, getColor(object), color);
 	}
 
 	private void drawDecorativeFish(int x, int y, float color) {
@@ -984,8 +986,6 @@ public class MapObjectDrawer {
 		float progress = object.getStateProgress();
 		int index = Math.round(progress * 2);
 
-		float x = betweenTilesX(object.getSourceX(), object.getSourceY(), object.getTargetX(), object.getTargetY(), progress);
-
 		int iColor = Color.getABGR(color, color, color, 1);
 
 		boolean onGround = progress >= 1;
@@ -1221,7 +1221,7 @@ public class MapObjectDrawer {
 					ImageLink[] images = type.getImages();
 					if (images.length > 0) {
 						Image image = imageProvider.getImage(images[0]);
-						drawOnlyShadow(image, x, y, 0, color);
+						drawOnlyShadow(image, x, y, color);
 					}
 				}
 				playSound(building, SOUND_MILL, x, y);
@@ -1360,11 +1360,14 @@ public class MapObjectDrawer {
 		}
 	}
 
-	private void drawPlayerableByProgress(int x, int y, int file, int sequenceIndex, IMapObject object, float baseColor, String name) {
-		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(file, sequenceIndex);
+	private static final int DEAD_SETTLER_FILE = 12;
+	private static final int DEAD_SETTLER_INDEX = 27;
+
+	private void drawPlayerableByProgress(int x, int y, IMapObject object, float baseColor) {
+		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(DEAD_SETTLER_FILE, DEAD_SETTLER_INDEX);
 		int index = Math.min((int) (object.getStateProgress() * sequence.length()), sequence.length() - 1);
 		Color color = getColor(object);
-		draw(sequence.getImage(index, name), x, y, 0, color, baseColor);
+		draw(sequence.getImage(index, "dead-settler"), x, y, 0, color, baseColor);
 	}
 
 	private Color getColor(IMapObject object) {
@@ -1375,23 +1378,26 @@ public class MapObjectDrawer {
 		return color;
 	}
 
-	private void drawPlayerableWaving(int x, int y, float z, int file, int sequenceIndex, IMapObject object, float baseColor, String at) {
-		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(file, sequenceIndex);
+	private void drawPlayerableWaving(int x, int y, float z, int sequenceIndex, IMapObject object, float baseColor, String at) {
+		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(FLAG_FILE, sequenceIndex);
 		int index = animationStep % sequence.length();
 		Color color = getColor(object);
-		draw(sequence.getImageSafe(index, "flag-" + at), x, y, 0, color, baseColor);
+		draw(sequence.getImageSafe(index, "flag-" + at), x, y, z, color, baseColor);
 	}
 
 	private void drawByProgress(int x, int y, float z, int file, int sequenceIndex, float progress, float color) {
 		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index = Math.min((int) (progress * sequence.length()), sequence.length() - 1);
-		draw(sequence.getImageSafe(index, null), x, y, 0, color);
+		draw(sequence.getImageSafe(index, null), x, y, z, color);
 	}
 
-	private void drawByProgressWithHeight(int x, int y, int height, int file, int sequenceIndex, float progress, float color) {
-		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(file, sequenceIndex);
+	private static final int SMOKE_FILE = 13;
+	private static final int SMOKE_INDEX = 42;
+
+	private void drawByProgressWithHeight(int x, int y, int height, float progress, float color) {
+		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(SMOKE_FILE, SMOKE_INDEX);
 		int index = Math.min((int) (progress * sequence.length()), sequence.length() - 1);
-		drawWithHeight(sequence.getImageSafe(index, null), x, y, 0, height, color);
+		drawWithHeight(sequence.getImageSafe(index, null), x, y, height, color);
 	}
 
 	private void draw(Image image, int x, int y, float z, Color color) {
@@ -1411,9 +1417,6 @@ public class MapObjectDrawer {
 		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 
 		image.drawAt(context.getGl(), viewX, viewY, z, color, fowDim);
-		if (background) {
-			context.getGl().glPopMatrix();
-		}
 	}
 
 	private void draw(Image image, int x, int y, float z, float fowDim) {
@@ -1434,22 +1437,22 @@ public class MapObjectDrawer {
 		context.getGl().glPopMatrix();
 	}
 
-	private void drawOnlyShadow(Image image, int x, int y, float z, float color) {
+	private void drawOnlyShadow(Image image, int x, int y, float color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
 		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
 		context.getGl().glPushMatrix();
-		context.getGl().glTranslatef(viewX, viewY, z);
+		context.getGl().glTranslatef(viewX, viewY, 0);
 		image.drawOnlyShadowAt(context.getGl(), color);
 		context.getGl().glPopMatrix();
 	}
 
-	private void drawWithHeight(Image image, int x, int y, float z, int height, float color) {
+	private void drawWithHeight(Image image, int x, int y, int height, float color) {
 		int baseHeight = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, baseHeight + height)+context.getOffsetX();
 		float viewY = context.getConverter().getViewY(x, y, baseHeight + height)+context.getOffsetY();
 
-		image.drawAt(context.getGl(), viewX, viewY, z, null, color);
+		image.drawAt(context.getGl(), viewX, viewY, 0, null, color);
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {

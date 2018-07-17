@@ -63,6 +63,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.common.statistics.FramerateComputer;
 import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -153,14 +154,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	/**
 	 * Sound ID when we are attacked.
 	 */
-	public static final int NOTIFY_ATTACKED_SOUND_ID = 80;
+	private static final int NOTIFY_ATTACKED_SOUND_ID = 80;
 
 	private final IGraphicsGrid map;
 	private final IMapObject[] objectsGrid;
 	private final IMovable[] movableGrid;
 	private final BitSet borderGrid;
 	private final short width, height;
-	private byte[][] visibleGrid = null;
 	private final boolean isVisibleGridAvailable;
 
 	private final Background background = new Background();
@@ -174,7 +174,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	private final MapInterfaceConnector connector;
 
-	private final FramerateComputer framerate;
+	private final FramerateComputer framerate = new FramerateComputer();
 
 	private final Messenger messenger;
 	private final SoundManager soundmanager;
@@ -215,17 +215,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private UIPoint currentSelectionAreaStart;
 
-	/**
-	 * Creates a new map content for the given map.
-	 * 
-	 * @param game
-	 *            The map.
-	 * @param soundPlayer
-	 */
-	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
-		this(game, soundPlayer, 60, textDrawPosition,null);
-	}
-
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition) {
 		this(game, soundPlayer, fpsLimit, textDrawPosition,null);
 	}
@@ -243,9 +232,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param soundPlayer
 	 *            The player
 	 * @param controls
+	 * 			  The menus on the side (swing) or on the bottom (android)
 	 */
-	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
-		this.framerate = new FramerateComputer(fpsLimit);
+	private MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.map = game.getMap();
 		if(map instanceof IDirectGridProvider) {
 			IDirectGridProvider dgp = (IDirectGridProvider) map;
@@ -306,7 +295,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
 			}
 
-			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(visibleGrid = ((IDirectGridProvider)map).getVisibleStatusArray());
+			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(((IDirectGridProvider)map).getVisibleStatusArray());
 
 			if (newWidth != windowWidth || newHeight != windowHeight) {
 				resizeTo(newWidth, newHeight);
