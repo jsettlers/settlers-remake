@@ -14,7 +14,8 @@ env:
     # Run single test targets
     - TARGET=":jsettlers.logic:unitTest"
     - TARGET=":jsettlers.common:test"
-    - TARGET=":jsettlers.network:test --info"
+    - TARGET=":jsettlers.graphics:test"
+    - TARGET=":jsettlers.network:test"
     - TARGET=":jsettlers.logic:aiDifficultiesIT"
     - TARGET=":jsettlers.logic:autoReplayIT"
     - TARGET=":jsettlers.logic:replayValidationIT"
