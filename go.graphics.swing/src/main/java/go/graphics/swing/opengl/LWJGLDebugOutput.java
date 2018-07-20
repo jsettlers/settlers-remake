@@ -29,7 +29,7 @@ public class LWJGLDebugOutput {
 	private static long lastMessageCount = -1;
 	private static String lastHeader = null;
 	private static final int MAX_PRINT_MESSAGES = 10;
-	private static final int MAX_REPEAT_MESSEAGES = (int)10e5;
+	private static final int MAX_REPEAT_MESSEAGES = 1000000; //10^6
 
 	private static void flushMessages() {
 		if(lastMessageCount >= MAX_PRINT_MESSAGES) { // not all messages have already been printed
