@@ -158,7 +158,7 @@ public final class LWJGLTextDrawer {
 				float dw = char_widths[l*16+c];
 				float dh = gentex_line_height;
 
-				float[] data = SharedGeometry.createQuadGeometry(0, 0,SCALING_FACTOR*dw/(float)gentex_line_height, SCALING_FACTOR, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
+				float[] data = SharedGeometry.createQuadGeometry(0, 0,dw/(float)gentex_line_height, 1, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
 				System.arraycopy(data, 0, geodata, (l*16+c)*4*4, 4*4);
 
 				line_offset += char_widths[l*16+c]+char_spacing;
@@ -175,7 +175,7 @@ public final class LWJGLTextDrawer {
 	private class SizedLWJGLTextDrawer implements TextDrawer {
 
 		private final float widthFactor;
-		private final int line_height;
+		private final float line_height;
 		private final Font sizedFont;
 
 		private SizedLWJGLTextDrawer(EFontSize size) {
@@ -185,7 +185,7 @@ public final class LWJGLTextDrawer {
 			Graphics tmp_graph = tmp_bi.getGraphics();
 			tmp_graph.setFont(sizedFont);
 			FontMetrics fm = tmp_graph.getFontMetrics();
-			line_height = fm.getHeight();
+			line_height = fm.getHeight()*SCALING_FACTOR;
 			widthFactor = line_height/(float)gentex_line_height;
 		}
 
