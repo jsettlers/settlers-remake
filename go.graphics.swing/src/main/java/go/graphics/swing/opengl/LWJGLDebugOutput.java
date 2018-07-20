@@ -1,5 +1,5 @@
 package go.graphics.swing.opengl;
-;
+
 import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLDebugMessageARBCallback;
@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GLDebugMessageARBCallbackI;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.opengl.KHRDebug;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class LWJGLDebugOutput {
@@ -27,28 +26,26 @@ public class LWJGLDebugOutput {
 	private static int lastType = -1;
 	private static int lastSource = -1;
 	private static int lastSeverity = -1;
-	private static int lastMessageCount = -1;
+	private static long lastMessageCount = -1;
 	private static String lastHeader = null;
 	private static final int MAX_PRINT_MESSAGES = 10;
-	private static final int MAX_REPEAT_MESSEAGES = Integer.MAX_VALUE;
-	private static ArrayList<String> lastMessages = new ArrayList<>(MAX_PRINT_MESSAGES);
+	private static final int MAX_REPEAT_MESSEAGES = (int)10e5;
 
 	private static void flushMessages() {
-		if(lastMessageCount <= MAX_PRINT_MESSAGES) {
-			for(int i = 0;i != lastMessageCount;i++) {
-				System.err.print(lastHeader);
-				System.err.println(lastMessages.get(lastMessageCount-1).split("\n")[0]);
-			}
-		} else {
-			System.err.print("last message repeated " + (lastMessageCount-1) + " times\n\n");
-			lastMessageCount = 1;
+		if(lastMessageCount >= MAX_PRINT_MESSAGES) { // not all messages have already been printed
+			System.err.print("last message repeated " + (lastMessageCount - 1) + " times\n\n");
 		}
+	}
+
+	private static void writeMessage(String msg) {
+		System.err.print(lastHeader);
+		System.err.println(msg);
 	}
 
 	private static void debugMessage(int source, int type, int id, int severity, int length, long message) {
 		String msg = GLDebugMessageARBCallback.getMessage(length, message);
-		if(lastId == id && lastType == type && lastSource == source && lastSeverity == severity) {
-			if(lastMessageCount < MAX_PRINT_MESSAGES) lastMessages.add(lastMessageCount, msg);
+		if(lastId == id && lastType == type && lastSource == source && lastSeverity == severity && lastMessageCount != Long.MAX_VALUE) {
+			if(lastMessageCount < MAX_PRINT_MESSAGES) writeMessage(msg);
 			lastMessageCount++;
 		} else {
 			if(lastId != -1) flushMessages();
@@ -57,15 +54,15 @@ public class LWJGLDebugOutput {
 			lastSource = source;
 			lastSeverity = severity;
 			lastHeader = "T:" + S(type) + " S:" + S(source) + " SE:" + S(severity) + " I:" + id + " MSG: ";
-			lastMessages.add(0, msg);
 			lastMessageCount = 1;
-			flushMessages();
+			writeMessage(msg);
 		}
 
-		if(lastMessageCount == MAX_REPEAT_MESSEAGES) flushMessages();
+		// print a report every MAX_REPEAT_MESSAGES
+		if(lastMessageCount%MAX_REPEAT_MESSEAGES == 0) flushMessages();
 	}
 
-	private static HashMap<Integer, String> debugEnum = new HashMap<>();
+	private static final HashMap<Integer, String> debugEnum = new HashMap<>();
 	static {
 		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_ERROR, "ERROR");
 		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_OTHER, "OTHER");

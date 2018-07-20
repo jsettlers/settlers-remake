@@ -1241,6 +1241,7 @@ public class Background implements IGraphicsBackgroundListener {
 		int bfr_pos = y*bufferWidth+x;
 
 		if(mapInvalid.get(bfr_pos)) {
+			mapInvalid.clear(bfr_pos);
 			shape_update_bfr.rewind();
 			addTrianglesToGeometry(context, shape_update_bfr, x, y);
 			context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_update_bfr);
