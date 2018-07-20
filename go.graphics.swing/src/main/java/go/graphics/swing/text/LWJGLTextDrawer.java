@@ -248,7 +248,7 @@ public final class LWJGLTextDrawer {
 
 		@Override
 		public float getHeight(String string) {
-			int tmp_height = line_height;
+			float tmp_height = line_height;
 			for(int i = 0;i != string.length();i++) {
 				if(string.charAt(i) == '\n') {
 					tmp_height += line_height;
