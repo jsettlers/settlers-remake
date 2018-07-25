@@ -19,6 +19,7 @@ import java.nio.ByteOrder;
 
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
+
 import jsettlers.graphics.map.IGLProvider;
 
 /**
@@ -93,6 +94,7 @@ public class DrawBuffer {
 			if (currentTriangles >= BUFFER_TRIANGLES - 2) {
 				draw();
 			}
+
 			addPointPrimitive(x1, y1, u1, v1, activeColor);
 			addPointPrimitive(x1, y2, u1, v2, activeColor);
 			addPointPrimitive(x2, y1, u2, v1, activeColor);

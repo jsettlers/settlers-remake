@@ -69,6 +69,11 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
+	public boolean isWounded() {
+		return false;
+	}
+
+	@Override
 	public void setSelected(boolean b) {
 
 	}

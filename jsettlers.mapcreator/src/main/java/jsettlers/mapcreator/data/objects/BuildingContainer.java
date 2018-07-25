@@ -83,6 +83,11 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
+	public boolean isWounded() {
+		return false;
+	}
+
+	@Override
 	public void setSelected(boolean selected) {
 	}
 

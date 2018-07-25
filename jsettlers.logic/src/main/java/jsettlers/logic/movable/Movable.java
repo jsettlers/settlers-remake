@@ -846,6 +846,11 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
+	public final boolean isWounded() {
+		return this.getHealth() < this.getMovableType().health;
+	}
+
+	@Override
 	public final void setSelected(boolean selected) {
 		this.selected = selected;
 	}

@@ -82,7 +82,6 @@ import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
@@ -91,6 +90,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
 import java8.util.Optional;
 import java8.util.function.BiFunction;
 import java8.util.function.Predicate;
+import java8.util.stream.Collectors;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -615,16 +615,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void filterWounded() {
-		if(currentSelection.getSelectionType() != ESelectionType.SOLDIERS && currentSelection.getSelectionType() != ESelectionType.PEOPLE && currentSelection.getSelectionType() != ESelectionType.SPECIALISTS)
-			return;
-
-		final List<ISelectable> selected = new LinkedList<>();
-
-		for(ISelectable selectable : currentSelection) {
-			Movable movable = (Movable)selectable;
-			if(movable.getHealth() < movable.getMovableType().health)
-				selected.add(movable);
-		}
+		final List<ISelectable> selected = currentSelection.stream().filter(selectable -> selectable.isWounded()).collect(Collectors.toList());
 
         setSelection(new SelectionSet(selected));
 	}
