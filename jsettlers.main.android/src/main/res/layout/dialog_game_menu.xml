@@ -53,7 +53,7 @@
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="8"
+            android:max="9"
             android:progress="@{viewmodel.getGameSpeed()}"/>
 
         <Space

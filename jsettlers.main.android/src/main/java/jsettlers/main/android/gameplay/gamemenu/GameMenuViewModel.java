@@ -95,7 +95,7 @@ public class GameMenuViewModel extends ViewModel {
     }
 
     public void gameSpeedMoved(int progress) {
-        float speed = (progress / 2f) + 1f;
+        float speed = (progress + 1f) / 2f;
         gameMenu.setGameSpeed(speed);
     }
 
@@ -116,6 +116,6 @@ public class GameMenuViewModel extends ViewModel {
     }
 
     private int mapGameSpeed(float gameSpeed) {
-        return Math.round((gameSpeed - 1) * 2);
+        return Math.round((gameSpeed * 2) - 1);
     }
 }
