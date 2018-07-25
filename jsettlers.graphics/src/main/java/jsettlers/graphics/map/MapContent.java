@@ -492,7 +492,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
+			for (int x = startX; x <= endX; x++) {
 				drawTile(x, y);
 				if (!linePartiallyVisible) {
 					double drawSpaceY = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
@@ -528,15 +528,20 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 
 		if (y > 3) {
-			object = map.getMapObjectsAt(x, y - 3);
+			object = map.getMapObjectsAt(x, y - 3); // objects to draw three lines later
 			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
 				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
 			}
 		}
 		if (y < map.getHeight() - 3) {
-			object = map.getMapObjectsAt(x, y + 3);
-			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
-				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+			object = map.getMapObjectsAt(x, y + 3); // objects to draw three lines earlier
+			if (object != null) {
+				EMapObjectType type = object.getObjectType();
+				if (type == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+					this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+				} else if (type == EMapObjectType.DOCK) {
+					this.objectDrawer.drawDock(x, y + 3, object);
+				}
 			}
 		}
 

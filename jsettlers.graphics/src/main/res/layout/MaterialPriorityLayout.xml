@@ -3,7 +3,7 @@
 
 <element maxx="127" maxy="435" x="9" y="219">
     <element class="Label" maxx="127" maxy="234" x="9" y="219">
-        <localized label="stock_title"/>
+        <localized label="controlpanel_transportation_title"/>
         <font-size size="NORMAL"/>
     </element>
 

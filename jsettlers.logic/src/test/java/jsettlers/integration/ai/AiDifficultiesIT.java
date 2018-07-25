@@ -54,7 +54,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 75 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 80 * MINUTES);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class AiDifficultiesIT {
 
 		MatchConstants.clock().fastForwardTo(90 * MINUTES);
 
-		short expectedMinimalProducedSoldiers = 920;
+		short expectedMinimalProducedSoldiers = 850;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			stopAndFail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " soldiers within 90 minutes.\nOnly " + producedSoldiers
