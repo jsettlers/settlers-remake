@@ -53,30 +53,36 @@ public final class SettlerImageMapItem {
 		return this.duration;
 	}
 
+	public int imageIndex(float progress) {
+		int duration = getDuration();
+		int imageIndex;
+		if (duration >= 0) {
+			imageIndex = getStart() + Math.min((int) (progress * duration), duration - 1);
+		} else {
+			imageIndex = getStart() + Math.max((int) (progress * duration), duration + 1);
+		}
+		return imageIndex;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
+
 		SettlerImageMapItem that = (SettlerImageMapItem) o;
-		return file == that.file &&
-				sequenceIndex == that.sequenceIndex &&
-				start == that.start &&
-				duration == that.duration;
+
+		if (file != that.file) return false;
+		if (sequenceIndex != that.sequenceIndex) return false;
+		if (start != that.start) return false;
+		return duration == that.duration;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(file, sequenceIndex, start, duration);
+		int result = file;
+		result = 31 * result + sequenceIndex;
+		result = 31 * result + start;
+		result = 31 * result + duration;
+		return result;
 	}
-
-    public int imageIndex(float progress) {
-        int duration = getDuration();
-        int imageIndex;
-        if (duration >= 0) {
-            imageIndex = getStart() + Math.min((int) (progress * duration), duration - 1);
-        } else {
-            imageIndex = getStart() + Math.max((int) (progress * duration), duration + 1);
-        }
-        return imageIndex;
-    }
 }

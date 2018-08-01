@@ -34,6 +34,7 @@ public class SelectionRow extends UIPanel {
 
 	private final EMovableType type;
 	private final int count;
+	private final SettlerImageFlavor flavor;
 
 	/**
 	 * Creates a new row in the selection view
@@ -46,15 +47,13 @@ public class SelectionRow extends UIPanel {
 	public SelectionRow(EMovableType type, int count) {
 		this.type = type;
 		this.count = count;
+		flavor = new SettlerImageFlavor(type, EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, EDirection.SOUTH_EAST);
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		float width = getPosition().getWidth();
-		Image image = SettlerImageMap.getInstance().getImageForSettler(
-				new SettlerImageFlavor(type, EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, EDirection.SOUTH_EAST),
-				0.0f
-		);
+		Image image = SettlerImageMap.getInstance().getImageForSettler(flavor,0.0f);
 
 		Color color = getColor();
 		float bottomy = getPosition()

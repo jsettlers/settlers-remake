@@ -57,25 +57,14 @@ public final class SettlerImageMap {
 		this.imageProvider = imageProvider;
 	}
 
-	public void loadFromMoveablesTextFile() {
+	public void loadFromMovablesTextFile() {
 		try {
 			InputStream file = getClass().getResourceAsStream("movables.txt");
-			readFromStream(file);
+			readFromReader(new BufferedReader(new InputStreamReader(file)));
 		} catch (IOException e) {
 			System.err.println("Error reading image file. "
 					+ "Settler images might not work.");
 		}
-	}
-
-	/**
-	 * Reads the map from the given file.
-	 *
-	 * @param file
-	 * 		The file to read from.
-	 */
-	private void readFromStream(InputStream file) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
-		readFromReader(reader);
 	}
 
 	private void readFromReader(BufferedReader reader) throws IOException {
@@ -121,7 +110,7 @@ public final class SettlerImageMap {
 		final int duration = Integer.parseInt(matcher.group(8));
 
 		SettlerImageFlavor flavor = new SettlerImageFlavor(type, action, material, direction);
-		int priority = calculatePriority(flavor);
+		int priority = flavor.calculatePriority();
 		if(!priorities.containsKey(flavor) || priorities.get(flavor) < priority) {
 			map.put(flavor, new SettlerImageMapItem(fileIndex, sequence, start, duration));
 			priorities.put(flavor, priority);
@@ -166,23 +155,6 @@ public final class SettlerImageMap {
 			direction = EDirection.valueOf(directionString);
 		}
 		return direction;
-	}
-
-	private int calculatePriority(SettlerImageFlavor settlerImageFlavor) {
-		int priority = 1;// more than 0.
-		if (settlerImageFlavor.getType() != null) {
-			priority += 10;
-		}
-		if (settlerImageFlavor.getAction() != null) {
-			priority += 100;
-		}
-		if (settlerImageFlavor.getMaterial() != null) {
-			priority += 1000;
-		}
-		if (settlerImageFlavor.getDirection() != null) {
-			priority += 10000;
-		}
-		return priority;
 	}
 
 	/**

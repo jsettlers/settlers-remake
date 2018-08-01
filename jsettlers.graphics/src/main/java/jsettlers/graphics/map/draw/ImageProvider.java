@@ -53,7 +53,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author michael
  */
-// TODO: removed final for testing. introduce it again when some supertype could be extracted
 public class ImageProvider {
 	private static final String FILE_PREFIX = "siedler3_";
 	private static final int LAST_SEQUENCE_NUMBER = 2;

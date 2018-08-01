@@ -26,7 +26,7 @@ public class ImagePreloadTask implements Runnable {
 
 	@Override
 	public void run() {
-		settlerImageMap.loadFromMoveablesTextFile();
+		settlerImageMap.loadFromMovablesTextFile();
 
 		Background.preloadTexture();
 
