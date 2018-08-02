@@ -42,10 +42,7 @@ public class UIPanel implements UIElement {
 	private boolean attached = false;
 
 	/**
-	 * Sets the background. file=-1 means no background
-	 *
-	 * @param file
-	 * @param settlerSeqIndex
+	 * Sets the background. file=-1 means no background.
 	 */
 	public void setBackground(ImageLink imageLink) {
 		this.background = imageLink;

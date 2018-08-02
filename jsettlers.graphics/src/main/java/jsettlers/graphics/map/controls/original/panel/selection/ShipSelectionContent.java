@@ -57,7 +57,7 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 			int count = selection.getMovableCount(type);
 
 			if (count > 0) {
-				SelectionRow row = new SelectionRow(type, count);
+				SelectionRow row = SelectionRow.createFromMovableType(type, count);
 				panel.addChild(row, 0.1f, rowHeight * (rowi - 1), .9f,
 						rowHeight * (rowi));
 				rowi--;
