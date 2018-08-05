@@ -44,4 +44,6 @@ public interface IStartedGame {
 	void setGameExitListener(IGameExitListener exitListener);
 
 	boolean isShutdownFinished();
+
+	boolean isMultiplayerGame();
 }

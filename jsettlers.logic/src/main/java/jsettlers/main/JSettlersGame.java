@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
-import java8.util.Optional;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
@@ -368,6 +367,11 @@ public class JSettlersGame {
 		@Override
 		public boolean isShutdownFinished() {
 			return shutdownFinished;
+		}
+
+		@Override
+		public boolean isMultiplayerGame() {
+			return multiplayer;
 		}
 
 		@Override
