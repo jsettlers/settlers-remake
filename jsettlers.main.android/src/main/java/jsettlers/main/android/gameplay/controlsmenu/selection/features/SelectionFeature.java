@@ -15,12 +15,12 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 
+import android.content.Context;
+import android.view.View;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-
-import android.content.Context;
-import android.view.View;
 
 /**
  * Created by tompr on 10/01/2017.

@@ -27,36 +27,35 @@ import jsettlers.main.android.core.controls.ControlsResolver;
 
 public class GameMenuViewModelFactory {
 
-    private final Application application;
-    private final ControlsResolver controlsResolver;
+	private final Application application;
+	private final ControlsResolver controlsResolver;
 
-    public GameMenuViewModelFactory(Application application) {
-        this.application = application;
-        controlsResolver = new ControlsResolver(application);
-    }
+	public GameMenuViewModelFactory(Application application) {
+		this.application = application;
+		controlsResolver = new ControlsResolver(application);
+	}
 
-    public GameMenuViewModel get(@NonNull Fragment fragment) {
-        Factory factory = new Factory();
-        return ViewModelProviders.of(fragment, factory).get(GameMenuViewModel.class);
-    }
+	public GameMenuViewModel get(@NonNull Fragment fragment) {
+		Factory factory = new Factory();
+		return ViewModelProviders.of(fragment, factory).get(GameMenuViewModel.class);
+	}
 
-    public GameMenuViewModel get(@NonNull FragmentActivity
-                                           fragmentActivity) {
-        Factory factory = new Factory();
-        return ViewModelProviders.of(fragmentActivity, factory).get(GameMenuViewModel.class);
-    }
+	public GameMenuViewModel get(@NonNull FragmentActivity fragmentActivity) {
+		Factory factory = new Factory();
+		return ViewModelProviders.of(fragmentActivity, factory).get(GameMenuViewModel.class);
+	}
 
-    class Factory implements ViewModelProvider.Factory {
-        Factory() {
-        }
+	class Factory implements ViewModelProvider.Factory {
+		Factory() {
+		}
 
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            if (modelClass == GameMenuViewModel.class) {
-                return (T) new GameMenuViewModel(application, controlsResolver.getGameMenu());
-            }
-            throw new RuntimeException("GameMenuViewModelFactory doesn't know how to create: "
-                    + modelClass.toString());
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			if (modelClass == GameMenuViewModel.class) {
+				return (T) new GameMenuViewModel(application, controlsResolver.getGameMenu());
+			}
+			throw new RuntimeException("GameMenuViewModelFactory doesn't know how to create: "
+					+ modelClass.toString());
+		}
+	}
 }

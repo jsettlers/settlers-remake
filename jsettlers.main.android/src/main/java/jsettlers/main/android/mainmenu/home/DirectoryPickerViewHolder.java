@@ -18,95 +18,94 @@ import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.main.android.R;
 
 public class DirectoryPickerViewHolder extends RecyclerView.ViewHolder {
-    private final MainMenuViewModel viewModel;
-    private final ListView listView;
-    private final TextView directoriesExplanationTextView;
-    private final Button chooseDirectoryButton;
-    private final View progressBar;
+	private final MainMenuViewModel viewModel;
+	private final ListView listView;
+	private final TextView directoriesExplanationTextView;
+	private final Button chooseDirectoryButton;
+	private final View progressBar;
 
-    public DirectoryPickerViewHolder(View itemView, Fragment viewModelOwner) {
-        super(itemView);
-        viewModel = ViewModelProviders.of(viewModelOwner).get(MainMenuViewModel.class);
+	public DirectoryPickerViewHolder(View itemView, Fragment viewModelOwner) {
+		super(itemView);
+		viewModel = ViewModelProviders.of(viewModelOwner).get(MainMenuViewModel.class);
 
-        listView = itemView.findViewById(R.id.listView);
-        progressBar = itemView.findViewById(R.id.progressBar);
-        chooseDirectoryButton = itemView.findViewById(R.id.button_resources);
-        directoriesExplanationTextView = itemView.findViewById(R.id.textView_directoriesExplanation);
+		listView = itemView.findViewById(R.id.listView);
+		progressBar = itemView.findViewById(R.id.progressBar);
+		chooseDirectoryButton = itemView.findViewById(R.id.button_resources);
+		directoriesExplanationTextView = itemView.findViewById(R.id.textView_directoriesExplanation);
 
-        listView.setOnTouchListener((v, event) -> {
-            v.getParent().requestDisallowInterceptTouchEvent(true);
-            return false;
-        });
-    }
+		listView.setOnTouchListener((v, event) -> {
+			v.getParent().requestDisallowInterceptTouchEvent(true);
+			return false;
+		});
+	}
 
-    public void onExpand() {
-        DirectoryAdapter directoryAdapter = new DirectoryAdapter(itemView.getContext());
+	public void onExpand() {
+		DirectoryAdapter directoryAdapter = new DirectoryAdapter(itemView.getContext());
 
-        listView.setAdapter(directoryAdapter);
+		listView.setAdapter(directoryAdapter);
 
-        listView.setOnItemClickListener((arg0, arg1, position, arg3) -> {
-            directoryAdapter.positionSelected(position);
-        });
+		listView.setOnItemClickListener((arg0, arg1, position, arg3) -> {
+			directoryAdapter.positionSelected(position);
+		});
 
-        listView.setVisibility(View.VISIBLE);
-        directoriesExplanationTextView.setVisibility(View.GONE);
-        chooseDirectoryButton.setVisibility(View.GONE);
-    }
+		listView.setVisibility(View.VISIBLE);
+		directoriesExplanationTextView.setVisibility(View.GONE);
+		chooseDirectoryButton.setVisibility(View.GONE);
+	}
 
+	class DirectoryAdapter extends ArrayAdapter<String> {
+		private final File baseDirectory;
+		private File currentDirectory;
 
-    class DirectoryAdapter extends ArrayAdapter<String> {
-        private final File baseDirectory;
-        private File currentDirectory;
+		public DirectoryAdapter(Context context) {
+			super(context, android.R.layout.simple_list_item_1);
+			this.baseDirectory = Environment.getExternalStorageDirectory();
+			this.currentDirectory = this.baseDirectory;
 
-        public DirectoryAdapter(Context context) {
-            super(context, android.R.layout.simple_list_item_1);
-            this.baseDirectory = Environment.getExternalStorageDirectory();
-            this.currentDirectory = this.baseDirectory;
+			updateList();
+		}
 
-            updateList();
-        }
+		void positionSelected(int position) {
+			String item = getItem(position);
+			if (item != null) {
+				try {
+					File newDirectory = new File(currentDirectory, item).getCanonicalFile();
+					if (newDirectory.exists()) {
+						currentDirectory = newDirectory;
 
-        void positionSelected(int position) {
-            String item = getItem(position);
-            if (item != null) {
-                try {
-                    File newDirectory = new File(currentDirectory, item).getCanonicalFile();
-                    if (newDirectory.exists()) {
-                        currentDirectory = newDirectory;
+						boolean isSettlersFolder = SettlersFolderChecker.checkSettlersFolder(currentDirectory).isValidSettlersFolder();
 
-                        boolean isSettlersFolder = SettlersFolderChecker.checkSettlersFolder(currentDirectory).isValidSettlersFolder();
+						if (isSettlersFolder) {
+							viewModel.resourceDirectoryChosen(currentDirectory);
+							progressBar.setVisibility(View.VISIBLE);
+							listView.setEnabled(false);
+						}
 
-                        if (isSettlersFolder) {
-                            viewModel.resourceDirectoryChosen(currentDirectory);
-                            progressBar.setVisibility(View.VISIBLE);
-                            listView.setEnabled(false);
-                        }
+						updateList();
+					}
+				} catch (IOException e) {
+					// ignore this exception
+				}
+			}
+		}
 
-                        updateList();
-                    }
-                } catch (IOException e) {
-                    // ignore this exception
-                }
-            }
-        }
+		void updateList() {
+			clear();
+			addFiles(currentDirectory.listFiles(File::isDirectory));
+		}
 
-        void updateList() {
-            clear();
-            addFiles(currentDirectory.listFiles(File::isDirectory));
-        }
+		void addFiles(File[] files) {
+			if (!baseDirectory.equals(currentDirectory)) {
+				add("..");
+			}
 
-        void addFiles(File[] files) {
-            if (!baseDirectory.equals(currentDirectory)) {
-                add("..");
-            }
-
-            if (files != null && files.length > 0) {
-                for (File file : files) {
-                    add(file.getName());
-                }
-            } else {
-                add(getContext().getResources().getString(R.string.empty_directory));
-            }
-        }
-    }
+			if (files != null && files.length > 0) {
+				for (File file : files) {
+					add(file.getName());
+				}
+			} else {
+				add(getContext().getResources().getString(R.string.empty_directory));
+			}
+		}
+	}
 }

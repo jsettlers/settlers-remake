@@ -16,40 +16,40 @@ import jsettlers.main.android.core.events.SingleLiveEvent;
 
 public class NewSinglePlayerPickerViewModel extends MapPickerViewModel {
 
-    private final SingleLiveEvent<String> mapSelectedEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<String> mapSelectedEvent = new SingleLiveEvent<>();
 
-    public NewSinglePlayerPickerViewModel(GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
-        super(gameStarter, changingMaps);
-    }
+	public NewSinglePlayerPickerViewModel(GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
+		super(gameStarter, changingMaps);
+	}
 
-    @Override
-    public void selectMap(MapLoader map) {
-        mapSelectedEvent.setValue(map.getMapId());
-    }
+	@Override
+	public void selectMap(MapLoader map) {
+		mapSelectedEvent.setValue(map.getMapId());
+	}
 
-    public LiveData<String> getMapSelectedEvent() {
-        return mapSelectedEvent;
-    }
+	public LiveData<String> getMapSelectedEvent() {
+		return mapSelectedEvent;
+	}
 
-    /**
-     * ViewModel factory
-     */
-    public static class Factory implements ViewModelProvider.Factory {
+	/**
+	 * ViewModel factory
+	 */
+	public static class Factory implements ViewModelProvider.Factory {
 
-        private final Activity activity;
-        private final GameStarter gameStarter;
+		private final Activity activity;
+		private final GameStarter gameStarter;
 
-        public Factory(Activity activity) {
-            this.activity = activity;
-            gameStarter = (GameStarter) activity.getApplication();
-        }
+		public Factory(Activity activity) {
+			this.activity = activity;
+			gameStarter = (GameStarter) activity.getApplication();
+		}
 
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            if (modelClass == NewSinglePlayerPickerViewModel.class) {
-                return (T) new NewSinglePlayerPickerViewModel(gameStarter, gameStarter.getMapList().getFreshMaps());
-            }
-            throw new RuntimeException("NewSinglePlayerPickerViewModel.Factory doesn't know how to create a: " + modelClass.toString());
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			if (modelClass == NewSinglePlayerPickerViewModel.class) {
+				return (T) new NewSinglePlayerPickerViewModel(gameStarter, gameStarter.getMapList().getFreshMaps());
+			}
+			throw new RuntimeException("NewSinglePlayerPickerViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+		}
+	}
 }

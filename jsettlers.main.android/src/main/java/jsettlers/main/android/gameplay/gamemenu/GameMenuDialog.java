@@ -31,65 +31,65 @@ import jsettlers.main.android.mainmenu.MainActivity_;
 
 public class GameMenuDialog extends DialogFragment {
 
-    private GameMenuViewModel viewModel;
+	private GameMenuViewModel viewModel;
 
-    public static GameMenuDialog create() {
-        return new GameMenuDialog();
-    }
+	public static GameMenuDialog create() {
+		return new GameMenuDialog();
+	}
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
-        viewModel = gameMenuViewModelFactory.get(this);
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
+		viewModel = gameMenuViewModelFactory.get(this);
 
-        viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
-    }
+		viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
+	}
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        DialogGameMenuBinding binding = DialogGameMenuBinding.inflate(layoutInflater);
-        binding.setLifecycleOwner(this);
-        binding.setViewmodel(viewModel);
-        binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
+	@NonNull
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+		DialogGameMenuBinding binding = DialogGameMenuBinding.inflate(layoutInflater);
+		binding.setLifecycleOwner(this);
+		binding.setViewmodel(viewModel);
+		binding.seekBar.setOnSeekBarChangeListener(gameSpeedSeekBarListener);
 
-        AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
-                .setView(binding.getRoot())
-                .create();
+		AlertDialog dialog = new AlertDialog.Builder(requireActivity(), R.style.GameMenuDialogTheme)
+				.setView(binding.getRoot())
+				.create();
 
-        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+		dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-        applyFullscreenWorkaround(dialog);
+		applyFullscreenWorkaround(dialog);
 
-        return dialog;
-    }
+		return dialog;
+	}
 
-    private SeekBar.OnSeekBarChangeListener gameSpeedSeekBarListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser) {
-                viewModel.gameSpeedMoved(progress);
-            }
-        }
+	private SeekBar.OnSeekBarChangeListener gameSpeedSeekBarListener = new SeekBar.OnSeekBarChangeListener() {
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			if (fromUser) {
+				viewModel.gameSpeedMoved(progress);
+			}
+		}
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
 
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-        }
-    };
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+		}
+	};
 
-    /**
-     * Stops the system bars from showing when this dialog appears.
-     */
-    private void applyFullscreenWorkaround(AlertDialog dialog) {
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-        dialog.setOnShowListener(x -> dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE));
-        int activitySystemUiVisibility = getActivity().getWindow().getDecorView().getSystemUiVisibility();
-        dialog.getWindow().getDecorView().setSystemUiVisibility(activitySystemUiVisibility);
-    }
+	/**
+	 * Stops the system bars from showing when this dialog appears.
+	 */
+	private void applyFullscreenWorkaround(AlertDialog dialog) {
+		dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+		dialog.setOnShowListener(x -> dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE));
+		int activitySystemUiVisibility = getActivity().getWindow().getDecorView().getSystemUiVisibility();
+		dialog.getWindow().getDecorView().setSystemUiVisibility(activitySystemUiVisibility);
+	}
 }

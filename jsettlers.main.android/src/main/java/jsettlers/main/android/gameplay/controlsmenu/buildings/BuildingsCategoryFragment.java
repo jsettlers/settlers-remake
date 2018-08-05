@@ -15,6 +15,12 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.buildings;
 
+import java.util.List;
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ViewById;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,12 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
@@ -67,7 +67,6 @@ public class BuildingsCategoryFragment extends Fragment {
 
 		viewModel.getBuildingStates().observe(this, adapter::setBuildingViewStates);
 	}
-
 
 	private void buildingSelected(EBuildingType buildingType) {
 		viewModel.showConstructionMarkers(buildingType);
@@ -156,7 +155,7 @@ public class BuildingsCategoryFragment extends Fragment {
 	/**
 	 * Diff callback
 	 */
-	private class BuildingsDiffCallback extends DiffUtil.Callback  {
+	private class BuildingsDiffCallback extends DiffUtil.Callback {
 
 		private final BuildingViewState[] oldBuildingViewStates;
 		private final BuildingViewState[] newBuildingViewStates;

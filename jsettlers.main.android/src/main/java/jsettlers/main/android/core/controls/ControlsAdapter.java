@@ -19,25 +19,24 @@ import static java8.util.stream.StreamSupport.stream;
 
 import java.util.LinkedList;
 
-import go.graphics.android.AndroidSoundPlayer;
+import android.content.Context;
 
+import go.graphics.android.AndroidSoundPlayer;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.action.Action;
 import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 import jsettlers.network.client.interfaces.IGameClock;
-
-import android.content.Context;
 
 public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls {
 	private static final int SOUND_THREADS = 6;

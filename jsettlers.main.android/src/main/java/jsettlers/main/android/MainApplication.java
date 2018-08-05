@@ -15,10 +15,10 @@
 
 package jsettlers.main.android;
 
+import org.androidannotations.annotations.EApplication;
+
 import android.app.Application;
 import android.arch.lifecycle.Observer;
-
-import org.androidannotations.annotations.EApplication;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -149,10 +149,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public boolean isGameInProgress() {
 		return controlsAdapter != null;
 	}
-
-
-
-
 
 	private Observer<GameMenu.GameState> gameStateObserver = gameState -> {
 		if (gameState == GameMenu.GameState.QUITTED) {

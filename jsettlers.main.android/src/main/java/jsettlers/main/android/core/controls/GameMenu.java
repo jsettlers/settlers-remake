@@ -15,13 +15,13 @@
 
 package jsettlers.main.android.core.controls;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.widget.Toast;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.action.Action;
@@ -70,7 +70,7 @@ public class GameMenu implements IGameExitListener {
 	}
 
 	public LiveData<Boolean> isPausedState() {
-		return  pausedState;
+		return pausedState;
 	}
 
 	public LiveData<Float> getGameSpeed() {

@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.core;
 
+import org.androidannotations.annotations.EService;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -26,8 +28,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
-
-import org.androidannotations.annotations.EService;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.GameMenu;
@@ -135,21 +135,21 @@ public class GameService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
-				case ACTION_PAUSE:
-					gameMenu.pause();
-					break;
-				case ACTION_UNPAUSE:
-					gameMenu.unPause();
-					break;
-				case ACTION_SAVE:
-					gameMenu.save();
-					break;
-				case ACTION_QUIT:
-					gameMenu.quit();
-					break;
-				case ACTION_QUIT_CONFIRM:
-					gameMenu.quitConfirm();
-					break;
+			case ACTION_PAUSE:
+				gameMenu.pause();
+				break;
+			case ACTION_UNPAUSE:
+				gameMenu.unPause();
+				break;
+			case ACTION_SAVE:
+				gameMenu.save();
+				break;
+			case ACTION_QUIT:
+				gameMenu.quit();
+				break;
+			case ACTION_QUIT_CONFIRM:
+				gameMenu.quitConfirm();
+				break;
 			}
 		}
 	};

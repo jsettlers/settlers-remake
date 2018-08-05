@@ -15,11 +15,11 @@
 
 package jsettlers.main.android.core.controls;
 
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.Action;
-import jsettlers.graphics.action.ActionFireable;
-
 import android.view.View;
+
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.graphics.action.ActionFireable;
 
 /**
  * Created by tompr on 13/01/2017.

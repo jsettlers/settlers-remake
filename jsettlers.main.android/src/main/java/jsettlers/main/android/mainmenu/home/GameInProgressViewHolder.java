@@ -8,30 +8,29 @@ import android.widget.TextView;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.databinding.VhGameInProgressBinding;
-import jsettlers.main.android.databinding.VhSinglePlayerBinding;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 public class GameInProgressViewHolder extends RecyclerView.ViewHolder {
 
-    private final MainMenuNavigator mainMenuNavigator;
-    private final TextView quitButton;
-    private final TextView pauseButton;
+	private final MainMenuNavigator mainMenuNavigator;
+	private final TextView quitButton;
+	private final TextView pauseButton;
 
-    public GameInProgressViewHolder(View itemView, Fragment parent, MainMenuNavigator mainMenuNavigator) {
-        super(itemView);
-        this.mainMenuNavigator = mainMenuNavigator;
-        pauseButton = itemView.findViewById(R.id.button_pause);
-        quitButton = itemView.findViewById(R.id.button_quit);
+	public GameInProgressViewHolder(View itemView, Fragment parent, MainMenuNavigator mainMenuNavigator) {
+		super(itemView);
+		this.mainMenuNavigator = mainMenuNavigator;
+		pauseButton = itemView.findViewById(R.id.button_pause);
+		quitButton = itemView.findViewById(R.id.button_quit);
 
-        MainMenuViewModel viewModel = ViewModelProviders.of(parent).get(MainMenuViewModel.class);
-        VhGameInProgressBinding binding = VhGameInProgressBinding.bind(itemView);
-        binding.setLifecycleOwner(parent);
-        binding.setViewmodel(viewModel);
+		MainMenuViewModel viewModel = ViewModelProviders.of(parent).get(MainMenuViewModel.class);
+		VhGameInProgressBinding binding = VhGameInProgressBinding.bind(itemView);
+		binding.setLifecycleOwner(parent);
+		binding.setViewmodel(viewModel);
 
 		viewModel.getResumeState().observe(parent, this::update);
 
-        itemView.setOnClickListener(v -> mainMenuNavigator.showGame());
-    }
+		itemView.setOnClickListener(v -> mainMenuNavigator.showGame());
+	}
 
 	private void update(MainMenuViewModel.ResumeViewState resumeViewState) {
 		if (resumeViewState != null) {

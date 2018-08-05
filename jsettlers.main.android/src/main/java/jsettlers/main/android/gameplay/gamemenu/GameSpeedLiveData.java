@@ -23,31 +23,31 @@ import jsettlers.network.client.interfaces.IGameClock;
 
 public class GameSpeedLiveData extends MutableLiveData<Float> {
 
-    private final IGameClock gameClock;
-    private final DrawControls drawControls;
+	private final IGameClock gameClock;
+	private final DrawControls drawControls;
 
-    public GameSpeedLiveData(IGameClock gameClock, DrawControls drawControls) {
-        this.gameClock = gameClock;
-        this.drawControls = drawControls;
-    }
+	public GameSpeedLiveData(IGameClock gameClock, DrawControls drawControls) {
+		this.gameClock = gameClock;
+		this.drawControls = drawControls;
+	}
 
-    @Override
-    protected void onActive() {
-        super.onActive();
-        drawControls.addInfrequentDrawListener(drawListener);
-        postValue(gameClock.getGameSpeed());
-    }
+	@Override
+	protected void onActive() {
+		super.onActive();
+		drawControls.addInfrequentDrawListener(drawListener);
+		postValue(gameClock.getGameSpeed());
+	}
 
-    @Override
-    protected void onInactive() {
-        super.onInactive();
-        drawControls.removeInfrequentDrawListener(drawListener);
-    }
+	@Override
+	protected void onInactive() {
+		super.onInactive();
+		drawControls.removeInfrequentDrawListener(drawListener);
+	}
 
-    private DrawListener drawListener = new DrawListener() {
-        @Override
-        public void draw() {
-            postValue(gameClock.getGameSpeed());
-        }
-    };
+	private DrawListener drawListener = new DrawListener() {
+		@Override
+		public void draw() {
+			postValue(gameClock.getGameSpeed());
+		}
+	};
 }

@@ -15,16 +15,13 @@
 
 package jsettlers.main.android.core.controls;
 
+import android.app.Activity;
+import android.app.Application;
+
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.core.GameManager;
 
-import android.app.Activity;
-import android.app.Application;
-
-/**
- * Created by tompr on 13/01/2017.
- */
 public class ControlsResolver {
 	private final ControlsAdapter controlsAdapter;
 
@@ -60,11 +57,11 @@ public class ControlsResolver {
 		return controlsAdapter.getGameMenu();
 	}
 
-    public PositionControls getPositionControls() {
-        return controlsAdapter;
-    }
+	public PositionControls getPositionControls() {
+		return controlsAdapter;
+	}
 
-    public IInGamePlayer getPlayer() {
+	public IInGamePlayer getPlayer() {
 		return controlsAdapter.getInGamePlayer();
 	}
 }

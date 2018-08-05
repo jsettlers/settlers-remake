@@ -15,12 +15,12 @@
 
 package jsettlers.main.android.gameplay;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import java.util.List;
 
 import org.androidannotations.annotations.EActivity;
 
-import java.util.List;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;

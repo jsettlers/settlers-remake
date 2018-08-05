@@ -26,96 +26,92 @@ import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.events.SingleLiveEvent;
 
 public class GameMenuViewModel extends ViewModel {
-    @NonNull
-    private final Application application;
-    @NonNull
-    private final GameMenu gameMenu;
+	@NonNull
+	private final Application application;
+	@NonNull
+	private final GameMenu gameMenu;
 
-    private final LiveData<String> quitTextLiveData;
-    private final LiveData<String> pauseTextLiveData;
-    private final LiveData<String> gameSpeedTextLiveData;
-    private final LiveData<Integer> gameSpeedLiveData;
-    private final SingleLiveEvent<Void> gameQuittedLiveData = new SingleLiveEvent<>();
+	private final LiveData<String> quitTextLiveData;
+	private final LiveData<String> pauseTextLiveData;
+	private final LiveData<String> gameSpeedTextLiveData;
+	private final LiveData<Integer> gameSpeedLiveData;
+	private final SingleLiveEvent<Void> gameQuittedLiveData = new SingleLiveEvent<>();
 
-    public GameMenuViewModel(
-            @NonNull Application application,
-            @NonNull GameMenu gameMenu) {
-        this.application = application;
-        this.gameMenu = gameMenu;
+	public GameMenuViewModel(
+			@NonNull Application application,
+			@NonNull GameMenu gameMenu) {
+		this.application = application;
+		this.gameMenu = gameMenu;
 
-        quitTextLiveData = Transformations.map(gameMenu.getGameState(), this::mapQuitText);
-        pauseTextLiveData = Transformations.map(gameMenu.isPausedState(), this::mapPausedText);
-        gameSpeedTextLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeedText);
-        gameSpeedLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeed);
-    }
+		quitTextLiveData = Transformations.map(gameMenu.getGameState(), this::mapQuitText);
+		pauseTextLiveData = Transformations.map(gameMenu.isPausedState(), this::mapPausedText);
+		gameSpeedTextLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeedText);
+		gameSpeedLiveData = Transformations.map(gameMenu.getGameSpeed(), this::mapGameSpeed);
+	}
 
-    public LiveData<String> getQuitText() {
-        return quitTextLiveData;
-    }
+	public LiveData<String> getQuitText() {
+		return quitTextLiveData;
+	}
 
-    public LiveData<String> getPauseText() {
-        return pauseTextLiveData;
-    }
+	public LiveData<String> getPauseText() {
+		return pauseTextLiveData;
+	}
 
-    public LiveData<String> getGameSpeedText() {
-        return gameSpeedTextLiveData;
-    }
+	public LiveData<String> getGameSpeedText() {
+		return gameSpeedTextLiveData;
+	}
 
-    public LiveData<Integer> getGameSpeed() {
-        return gameSpeedLiveData;
-    }
+	public LiveData<Integer> getGameSpeed() {
+		return gameSpeedLiveData;
+	}
 
-    public SingleLiveEvent<Void> getGameQuitted() {
-        return gameQuittedLiveData;
-    }
+	public SingleLiveEvent<Void> getGameQuitted() {
+		return gameQuittedLiveData;
+	}
 
-    public void quitClicked() {
-        if (gameMenu.getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
-            gameMenu.quitConfirm();
-            gameQuittedLiveData.call();
-        } else {
-            gameMenu.quit();
-        }
-    }
+	public void quitClicked() {
+		if (gameMenu.getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
+			gameMenu.quitConfirm();
+			gameQuittedLiveData.call();
+		} else {
+			gameMenu.quit();
+		}
+	}
 
-    public void saveClicked() {
-        gameMenu.save();
-    }
+	public void saveClicked() {
+		gameMenu.save();
+	}
 
-    public void pauseClicked() {
-        if (gameMenu.isPausedState().getValue() == Boolean.TRUE) {
-            gameMenu.unPause();
-        } else {
-            gameMenu.pause();
-        }
-    }
+	public void pauseClicked() {
+		if (gameMenu.isPausedState().getValue() == Boolean.TRUE) {
+			gameMenu.unPause();
+		} else {
+			gameMenu.pause();
+		}
+	}
 
-    public void skipMinuteClicked() {
-        gameMenu.skipMinute();
-    }
+	public void skipMinuteClicked() {
+		gameMenu.skipMinute();
+	}
 
-    public void gameSpeedMoved(int progress) {
-        float speed = (progress + 1f) / 2f;
-        gameMenu.setGameSpeed(speed);
-    }
+	public void gameSpeedMoved(int progress) {
+		float speed = (progress + 1f) / 2f;
+		gameMenu.setGameSpeed(speed);
+	}
 
-    private String mapQuitText(GameMenu.GameState gameState) {
-        return gameState == GameMenu.GameState.CONFIRM_QUIT ?
-                application.getString(R.string.game_menu_quit_confirm) :
-                application.getString(R.string.game_menu_quit);
-    }
+	private String mapQuitText(GameMenu.GameState gameState) {
+		return gameState == GameMenu.GameState.CONFIRM_QUIT ? application.getString(R.string.game_menu_quit_confirm) : application.getString(R.string.game_menu_quit);
+	}
 
-    private String mapPausedText(boolean isPaused) {
-        return isPaused ?
-                application.getString(R.string.game_menu_unpause) :
-                application.getString(R.string.game_menu_pause);
-    }
+	private String mapPausedText(boolean isPaused) {
+		return isPaused ? application.getString(R.string.game_menu_unpause) : application.getString(R.string.game_menu_pause);
+	}
 
-    private String mapGameSpeedText(float gameSpeed) {
-        return application.getString(R.string.game_menu_speed_title, gameSpeed);
-    }
+	private String mapGameSpeedText(float gameSpeed) {
+		return application.getString(R.string.game_menu_speed_title, gameSpeed);
+	}
 
-    private int mapGameSpeed(float gameSpeed) {
-        return Math.round((gameSpeed * 2) - 1);
-    }
+	private int mapGameSpeed(float gameSpeed) {
+		return Math.round((gameSpeed * 2) - 1);
+	}
 }

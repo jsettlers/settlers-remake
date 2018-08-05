@@ -18,23 +18,23 @@ package jsettlers.main.android.mainmenu;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.GameActivity_;
-import jsettlers.main.android.mainmenu.navigation.Actions;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.gamesetup.JoinMultiPlayerSetupFragment;
+import jsettlers.main.android.mainmenu.gamesetup.NewMultiPlayerSetupFragment;
+import jsettlers.main.android.mainmenu.gamesetup.NewSinglePlayerSetupFragment;
 import jsettlers.main.android.mainmenu.home.MainMenuFragment;
 import jsettlers.main.android.mainmenu.mappicker.JoinMultiPlayerPickerFragment;
 import jsettlers.main.android.mainmenu.mappicker.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.mainmenu.mappicker.NewMultiPlayerPickerFragment;
 import jsettlers.main.android.mainmenu.mappicker.NewSinglePlayerPickerFragment;
-import jsettlers.main.android.mainmenu.gamesetup.JoinMultiPlayerSetupFragment;
-import jsettlers.main.android.mainmenu.gamesetup.NewMultiPlayerSetupFragment;
-import jsettlers.main.android.mainmenu.gamesetup.NewSinglePlayerSetupFragment;
-
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import jsettlers.main.android.mainmenu.navigation.Actions;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator {

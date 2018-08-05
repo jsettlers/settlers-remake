@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import android.graphics.Bitmap;
+import android.os.Handler;
+import android.widget.ImageView;
+
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.ImageLink;
@@ -29,10 +33,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.draw.ImageProvider;
-
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.widget.ImageView;
 
 public class OriginalImageProvider {
 	private static final OriginalImageProvider INSTANCE = new OriginalImageProvider();

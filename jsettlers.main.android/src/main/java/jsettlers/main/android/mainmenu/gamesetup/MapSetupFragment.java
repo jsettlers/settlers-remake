@@ -15,6 +15,13 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ItemSelect;
+import org.androidannotations.annotations.ViewById;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,22 +37,15 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ItemSelect;
-import org.androidannotations.annotations.ViewById;
-
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.resources.PreviewImageConverter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.Civilisation;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.StartPosition;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.Team;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -148,9 +148,9 @@ public abstract class MapSetupFragment extends Fragment {
 	@Click(R.id.button_start_game)
 	protected void onStartGameClicked() {
 		viewModel.startGame();
-//		if (!presenter.startGame()) {
-//			Toast.makeText(this.getContext(), R.string.multiplayer_not_all_players_ready, Toast.LENGTH_LONG).show();
-//		}
+		// if (!presenter.startGame()) {
+		// Toast.makeText(this.getContext(), R.string.multiplayer_not_all_players_ready, Toast.LENGTH_LONG).show();
+		// }
 	}
 
 	@ItemSelect(R.id.spinner_number_of_players)
@@ -177,9 +177,6 @@ public abstract class MapSetupFragment extends Fragment {
 	protected int getListItemLayoutId() {
 		return R.layout.item_playerslot;
 	}
-
-
-
 
 	/**
 	 * Recyclerview adapter

@@ -19,15 +19,15 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
-import jsettlers.main.android.R;
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+
 import biz.laenger.android.vpbs.BottomSheetUtils;
+import jsettlers.main.android.R;
 import me.relex.circleindicator.CircleIndicator;
 
 /**

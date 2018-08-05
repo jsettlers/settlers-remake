@@ -18,13 +18,13 @@ package jsettlers.main.android.core.ui.dialogs;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 
-import jsettlers.main.android.R;
-
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+
+import jsettlers.main.android.R;
 
 /**
  * Created by tompr on 23/11/2016.

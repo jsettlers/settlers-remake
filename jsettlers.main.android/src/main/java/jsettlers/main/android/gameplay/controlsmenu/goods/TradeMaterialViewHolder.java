@@ -28,34 +28,34 @@ import jsettlers.main.android.core.resources.OriginalImageProvider;
  */
 
 public class TradeMaterialViewHolder extends RecyclerView.ViewHolder {
-    private final ImageView imageView;
-    private final TextView textView;
+	private final ImageView imageView;
+	private final TextView textView;
 
-    public TradeMaterialViewHolder(View itemView) {
-        super(itemView);
-        imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
-        textView = (TextView) itemView.findViewById(R.id.textView_tradeMaterialCount);
-    }
+	public TradeMaterialViewHolder(View itemView) {
+		super(itemView);
+		imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
+		textView = (TextView) itemView.findViewById(R.id.textView_tradeMaterialCount);
+	}
 
-    public void bind(TradeMaterialState materialState) {
-        OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
-        updateState(materialState);
-    }
+	public void bind(TradeMaterialState materialState) {
+		OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
+		updateState(materialState);
+	}
 
-    public void updateState(TradeMaterialState materialState) {
-        if (materialState.getCount() > 0) {
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(formatCount(materialState.getCount()));
-        } else {
-            textView.setVisibility(View.GONE);
-        }
-    }
+	public void updateState(TradeMaterialState materialState) {
+		if (materialState.getCount() > 0) {
+			textView.setVisibility(View.VISIBLE);
+			textView.setText(formatCount(materialState.getCount()));
+		} else {
+			textView.setVisibility(View.GONE);
+		}
+	}
 
-    private String formatCount(int count) {
-        if (count == 32767) {// Integer.MAX_VALUE) {
-            return "\u221E";
-        } else {
-            return count + "";
-        }
-    }
+	private String formatCount(int count) {
+		if (count == 32767) {// Integer.MAX_VALUE) {
+			return "\u221E";
+		} else {
+			return count + "";
+		}
+	}
 }

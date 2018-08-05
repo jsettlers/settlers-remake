@@ -50,7 +50,7 @@ public class MainMenuFragment extends Fragment {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private MainMenuViewModel viewModel;
-    private MainMenuNavigator mainMenuNavigator;
+	private MainMenuNavigator mainMenuNavigator;
 	private HomeAdapter homeAdapter;
 
 	@ViewById(R.id.toolbar)
@@ -65,7 +65,7 @@ public class MainMenuFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mainMenuNavigator = (MainMenuNavigator)getActivity();
+		mainMenuNavigator = (MainMenuNavigator) getActivity();
 		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity().getApplication())).get(MainMenuViewModel.class);
 	}
 
@@ -147,29 +147,29 @@ public class MainMenuFragment extends Fragment {
 			View view = layoutInflater.inflate(viewType, parent, false);
 
 			switch (viewType) {
-				case R.layout.vh_directory_picker: {
-					DirectoryPickerViewHolder viewHolder = new DirectoryPickerViewHolder(view, viewModelOwner);
+			case R.layout.vh_directory_picker: {
+				DirectoryPickerViewHolder viewHolder = new DirectoryPickerViewHolder(view, viewModelOwner);
 
-					Button chooseDirectoryButton = view.findViewById(R.id.button_resources);
-					chooseDirectoryButton.setOnClickListener(v -> {
-						if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-							requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
-						} else {
-							expandDirectoryPicker(viewHolder);
-							//TODO save expanded state for rotation
-						}
-					});
+				Button chooseDirectoryButton = view.findViewById(R.id.button_resources);
+				chooseDirectoryButton.setOnClickListener(v -> {
+					if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+						requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
+					} else {
+						expandDirectoryPicker(viewHolder);
+						// TODO save expanded state for rotation
+					}
+				});
 
-					return viewHolder;
-				}
-				case R.layout.vh_game_in_progress:
-					return new GameInProgressViewHolder(view, viewModelOwner, mainMenuNavigator);
-				case R.layout.vh_single_player:
-					return new SinglePlayerViewHolder(view, viewModelOwner, mainMenuNavigator);
-				case R.layout.vh_multi_player:
-					return new MultiPlayerViewHolder(view, viewModelOwner, mainMenuNavigator);
-				default:
-					throw new RuntimeException("Layout not support");
+				return viewHolder;
+			}
+			case R.layout.vh_game_in_progress:
+				return new GameInProgressViewHolder(view, viewModelOwner, mainMenuNavigator);
+			case R.layout.vh_single_player:
+				return new SinglePlayerViewHolder(view, viewModelOwner, mainMenuNavigator);
+			case R.layout.vh_multi_player:
+				return new MultiPlayerViewHolder(view, viewModelOwner, mainMenuNavigator);
+			default:
+				throw new RuntimeException("Layout not support");
 			}
 		}
 
@@ -188,11 +188,11 @@ public class MainMenuFragment extends Fragment {
 			showOrHide(!areResourcesLoaded, R.layout.vh_directory_picker);
 		}
 
-        private void showOrHideGameInProgress(MainMenuViewModel.ResumeViewState resumeViewState) {
+		private void showOrHideGameInProgress(MainMenuViewModel.ResumeViewState resumeViewState) {
 			showOrHide(resumeViewState != null, R.layout.vh_game_in_progress);
-        }
+		}
 
-        private void showOrHide(boolean show, int layout) {
+		private void showOrHide(boolean show, int layout) {
 			Integer layoutInteger = layout;
 			int index = layouts.indexOf(layoutInteger);
 
@@ -208,5 +208,5 @@ public class MainMenuFragment extends Fragment {
 				}
 			}
 		}
-    }
+	}
 }

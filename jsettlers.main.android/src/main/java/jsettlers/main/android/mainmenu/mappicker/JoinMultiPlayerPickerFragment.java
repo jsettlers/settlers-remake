@@ -15,6 +15,14 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
+import java.util.concurrent.Semaphore;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -28,14 +36,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import java.util.concurrent.Semaphore;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -43,16 +43,16 @@ import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.resources.PreviewImageConverter;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
-import jsettlers.main.android.core.resources.PreviewImageConverter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 @EFragment(R.layout.fragment_map_picker_join_multiplayer)
-public class JoinMultiPlayerPickerFragment extends Fragment{
+public class JoinMultiPlayerPickerFragment extends Fragment {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
 	public static JoinMultiPlayerPickerFragment create() {
