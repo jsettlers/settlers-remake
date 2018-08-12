@@ -48,6 +48,7 @@ public class GameMenu implements IGameExitListener {
 	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
 	private final GameSpeedLiveData gameSpeedLiveData;
+	private final boolean isMultiplayer;
 
 	private Timer quitConfirmTimer;
 
@@ -55,11 +56,13 @@ public class GameMenu implements IGameExitListener {
 			Context context,
 			AndroidSoundPlayer soundPlayer,
 			ActionControls actionFireable,
-			GameSpeedLiveData gameSpeedLiveData) {
+			GameSpeedLiveData gameSpeedLiveData,
+			boolean isMultiplayer) {
 		this.context = context;
 		this.soundPlayer = soundPlayer;
 		this.actionControls = actionFireable;
 		this.gameSpeedLiveData = gameSpeedLiveData;
+		this.isMultiplayer = isMultiplayer;
 
 		pausedState.postValue(false);
 		gameState.postValue(GameState.PLAYING);
@@ -135,6 +138,10 @@ public class GameMenu implements IGameExitListener {
 	public void setGameSpeed(float speed) {
 		actionControls.fireAction(new SetSpeedAction(speed));
 		gameSpeedLiveData.setValue(speed);
+	}
+
+	public boolean isMultiplayer() {
+		return isMultiplayer;
 	}
 
 	/**

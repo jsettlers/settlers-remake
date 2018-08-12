@@ -16,12 +16,14 @@
 
 		<Space
 			android:layout_width="0dp"
-			android:layout_height="12dp"/>
+			android:layout_height="12dp"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
 
 		<LinearLayout
 			android:orientation="horizontal"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+			android:layout_height="wrap_content"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}">
 
 			<TextView
 				android:layout_width="wrap_content"
@@ -47,18 +49,21 @@
 
 		<Space
 			android:layout_width="0dp"
-			android:layout_height="2dp"/>
+			android:layout_height="2dp"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
 
 		<android.support.v7.widget.AppCompatSeekBar
 			android:id="@+id/seekBar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:max="9"
-			android:progress="@{viewmodel.getGameSpeed()}"/>
+			android:progress="@{viewmodel.getGameSpeed()}"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
 
 		<Space
 			android:layout_width="0dp"
-			android:layout_height="16dp"/>
+			android:layout_height="16dp"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
 
 		<Button
 			style="?attr/buttonBarButtonStyle"

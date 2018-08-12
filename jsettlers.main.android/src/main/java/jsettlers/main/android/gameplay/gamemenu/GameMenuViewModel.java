@@ -20,6 +20,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.GameMenu;
@@ -67,6 +68,10 @@ public class GameMenuViewModel extends ViewModel {
 
 	public SingleLiveEvent<Void> getGameQuitted() {
 		return gameQuittedLiveData;
+	}
+
+	public int getShowGameSpeedControl() {
+		return gameMenu.isMultiplayer() ? View.GONE : View.VISIBLE;
 	}
 
 	public void quitClicked() {
