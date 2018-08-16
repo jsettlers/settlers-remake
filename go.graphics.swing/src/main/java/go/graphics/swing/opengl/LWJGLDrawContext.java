@@ -259,11 +259,11 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, shapeHandle.getInternalId());
+				bindGeometry(shapeHandle);
 				GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
 				GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
 
-				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorHandle.getInternalId());
+				bindGeometry(colorHandle);
 				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
 
 				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
@@ -323,10 +323,10 @@ public class LWJGLDrawContext implements GLDrawContext {
 	private GeometryHandle allocateVBO(EGeometryFormatType type, String name) {
 		int vao = 0;
 		int vbo = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		if (glcaps.GL_ARB_vertex_array_object && type.isSingleBuffer()) {
 			vao = ARBVertexArrayObject.glGenVertexArrays();
 			bindFormat(vao);
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 			GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 			if (type.getTexCoordPos() != -1) {
 				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -340,7 +340,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
 		}
 
-		return new GeometryHandle(this, vbo, vao, type);
+		return lastGeometry = new GeometryHandle(this, vbo, vao, type);
 	}
 
 	private void setObjectLabel(int type, int id, String name) {

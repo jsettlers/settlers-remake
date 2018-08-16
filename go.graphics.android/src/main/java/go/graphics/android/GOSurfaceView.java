@@ -17,6 +17,8 @@ package go.graphics.android;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
+import android.opengl.EGL14;
+import android.opengl.EGLExt;
 import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
@@ -262,9 +264,29 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		@Override
 		public EGLContext createContext(EGL10 arg0, EGLDisplay display, EGLConfig config) {
-			int[] attributes = new int[] { EGL10.EGL_NONE };
-			return arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT,
-					attributes);
+			EGLContext newCtx = null;
+			int i = 0;
+			int[][] attrs = new int[][] {
+					{EGL10.EGL_NONE}, // TODO remove this when all non core profile functions are removed
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 2, EGL10.EGL_NONE}, //3.2
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL10.EGL_NONE}, //3.1
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 0, EGL10.EGL_NONE}, //3.0
+					{EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE}, // highest available version
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 1, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL10.EGL_NONE}, // 1.1
+					{EGL14.EGL_CONTEXT_CLIENT_VERSION, 1, EGL10.EGL_NONE}, // 1.x
+					{EGL10.EGL_NONE}, // lowest available version
+			};
+
+			while(newCtx == null && attrs.length >= i) {
+				int[] attributes = attrs[i];
+				newCtx = arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT, attributes);
+				i++;
+				if(newCtx != null && arg0.eglGetError() != EGL10.EGL_SUCCESS) {
+					arg0.eglDestroyContext(display, newCtx);
+					newCtx = null;
+				}
+			}
+			return newCtx;
 		}
 
 		@Override
