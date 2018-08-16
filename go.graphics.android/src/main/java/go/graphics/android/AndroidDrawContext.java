@@ -236,6 +236,7 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES10.glEnable(GLES10.GL_DEPTH_TEST);
 
 		GLES10.glEnable(GLES10.GL_TEXTURE_2D);
+		GLES10.glClearColor(0, 0, 0, 1);
 
 		if(gles3) {
 			int[] tmp_vaos = new int[1];

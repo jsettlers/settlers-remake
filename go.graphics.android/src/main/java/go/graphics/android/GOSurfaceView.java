@@ -232,18 +232,12 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		private Renderer(Context aContext) {
 			drawcontext = new AndroidDrawContext(aContext, gles3);
 
-			GLES10.glBlendFunc(GLES10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-			GLES10.glEnable(GLES10.GL_BLEND);
 		}
 
 		@Override
 		public void onDrawFrame(GL10 gl) {
-			GLES10.glClearColor(0, 0, 0, 1);
-			GLES10.glClear(GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_COLOR_BUFFER_BIT);
+			GLES10.glClear(GLES10.GL_DEPTH_BUFFER_BIT | GLES10.GL_COLOR_BUFFER_BIT);
 			GLES10.glLoadIdentity();
-
-			GLES10.glDepthFunc(GLES10.GL_LEQUAL);
-			GLES10.glEnable(GLES10.GL_DEPTH_TEST);
 
 			area.drawArea(drawcontext);
 		}
