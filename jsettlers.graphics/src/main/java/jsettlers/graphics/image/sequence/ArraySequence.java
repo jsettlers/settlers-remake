@@ -16,6 +16,7 @@ package jsettlers.graphics.image.sequence;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java8.util.function.Supplier;
 
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
@@ -58,7 +59,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 * @see Sequence#getImageLink(int)
 	 */
 	@Override
-	public T getImage(int index, String name) {
+	public T getImage(int index, Supplier<String> name) {
 		return this.images[index];
 
 	}
@@ -69,7 +70,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 * @see Sequence#getImageSafe(int)
 	 */
 	@Override
-	public Image getImageSafe(int index, String name) {
+	public Image getImageSafe(int index, Supplier<String> name) {
 		if (index >= 0 && index < this.images.length) {
 			return this.images[index];
 		} else {

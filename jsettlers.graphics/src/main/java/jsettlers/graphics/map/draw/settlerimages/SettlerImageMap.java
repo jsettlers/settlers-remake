@@ -326,7 +326,7 @@ public final class SettlerImageMap {
 		} else {
 			imageIndex = item.getStart() + Math.max((int) (progress * duration), duration + 1);
 		}
-		return this.imageProvider.getSettlerSequence(item.getFile(), item.getSequenceIndex()).getImageSafe(imageIndex, Labels.getName(movableType) + "-" + action + "-" + Labels.getName(material, false ) + "-" + direction + "%" + progress);
+		return this.imageProvider.getSettlerSequence(item.getFile(), item.getSequenceIndex()).getImageSafe(imageIndex, () -> Labels.getName(movableType) + "-" + action + "-" + Labels.getName(material, false ) + "-" + direction + "%" + progress);
 	}
 
 	/**

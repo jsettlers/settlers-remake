@@ -251,6 +251,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+			drawcontext.init();
 		}
 	}
 

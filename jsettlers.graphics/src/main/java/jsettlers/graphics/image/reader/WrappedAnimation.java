@@ -14,6 +14,7 @@
  */
 package jsettlers.graphics.image.reader;
 
+import java8.util.function.Supplier;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
@@ -43,12 +44,12 @@ public class WrappedAnimation implements Sequence<Image> {
 	}
 
 	@Override
-	public Image getImage(int index, String name) {
+	public Image getImage(int index, Supplier<String> name) {
 		return imageProvider.getImage(sequence.getImageLink(index));
 	}
 
 	@Override
-	public Image getImageSafe(int index, String name) {
+	public Image getImageSafe(int index, Supplier<String> name) {
 		return index < 0 || index >= length() ? NullImage.getInstance() : getImage(index, name);
 	}
 

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import java8.util.function.Supplier;
 import java8.util.stream.Collectors;
 import java8.util.stream.IntStreams;
 import jsettlers.graphics.image.GuiImage;
@@ -589,10 +590,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 		 * Forces a get of the image.
 		 */
 		@Override
-		public LandscapeImage getImage(int index, String custom_name) {
+		public LandscapeImage getImage(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (landscapeImages[index] == null) {
-				loadLandscapeImage(index, custom_name == null ? file_name+"-L"+index : custom_name+file_name+"-L"+index);
+				String str_custom_name = custom_name != null ? custom_name.get() : null;
+				if(str_custom_name == null) str_custom_name = "";
+				loadLandscapeImage(index, str_custom_name+file_name+"-L"+index);
 			}
 			return landscapeImages[index];
 		}
@@ -604,13 +607,15 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		@Override
-		public SingleImage getImageSafe(int index, String custom_name) {
+		public SingleImage getImageSafe(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
 			} else {
 				if (landscapeImages[index] == null) {
-					loadLandscapeImage(index, custom_name == null ? file_name+"-L"+index : custom_name+file_name+"-L"+index);
+					String str_custom_name = custom_name != null ? custom_name.get() : null;
+					if(str_custom_name == null) str_custom_name = "";
+					loadLandscapeImage(index, str_custom_name+file_name+"-L"+index);
 				}
 				return landscapeImages[index];
 			}
@@ -644,10 +649,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 		 * Forces a get of the image.
 		 */
 		@Override
-		public GuiImage getImage(int index, String custom_name) {
+		public GuiImage getImage(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (guiImages[index] == null) {
-				loadGuiImage(index, custom_name == null ? file_name+"-G"+index : custom_name+file_name+"-G"+index);
+				String str_custom_name = custom_name != null ? custom_name.get() : null;
+				if(str_custom_name == null) str_custom_name = "";
+				loadGuiImage(index, str_custom_name+file_name+"-G"+index);
 			}
 			return guiImages[index];
 		}
@@ -659,13 +666,15 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		@Override
-		public SingleImage getImageSafe(int index, String custom_name) {
+		public SingleImage getImageSafe(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
 			} else {
 				if (guiImages[index] == null) {
-					loadGuiImage(index, custom_name == null ? file_name+"-G"+index : custom_name+file_name+"-G"+index);
+					String str_custom_name = custom_name != null ? custom_name.get() : null;
+					if(str_custom_name == null) str_custom_name = "";
+					loadGuiImage(index, str_custom_name+file_name+"-G"+index);
 				}
 				return guiImages[index];
 			}

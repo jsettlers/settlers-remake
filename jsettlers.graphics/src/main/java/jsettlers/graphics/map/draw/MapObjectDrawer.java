@@ -397,7 +397,7 @@ public class MapObjectDrawer {
 					int count = ship.getCargoCount(j);
 					if (material != null && count > 0) {
 						Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, material.getStackIndex());
-						Image image = seq.getImageSafe(count - 1, Labels.getName(material, false));
+						Image image = seq.getImageSafe(count - 1, () -> Labels.getName(material, false));
 						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, 0, color, shade);
 					}
 				}
@@ -430,7 +430,7 @@ public class MapObjectDrawer {
 					int count = ship.getCargoCount(j);
 					if (material != null && count > 0) {
 						Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, material.getStackIndex());
-						Image image = seq.getImageSafe(count - 1, Labels.getName(material, false));
+						Image image = seq.getImageSafe(count - 1, () -> Labels.getName(material, false));
 						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, 0, color, shade);
 					}
 				}
@@ -643,13 +643,13 @@ public class MapObjectDrawer {
 	private void drawPlantDecoration(int x, int y, float color) {
 		int step = (x * 13 + y * 233) % 8;
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
-		draw(seq.getImageSafe(step, "plant"), x, y, 0, color);
+		draw(seq.getImageSafe(step, () -> "plant"), x, y, 0, color);
 	}
 
 	private void drawDesertDecoration(int x, int y, float color) {
 		int step = (x * 13 + y * 233) % 5 + 10;
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
-		draw(seq.getImageSafe(step, "desert-decoration"), x, y, 0, color);
+		draw(seq.getImageSafe(step, () -> "desert-decoration"), x, y, 0, color);
 	}
 
 	private void drawPig(int x, int y, float color) {
@@ -658,7 +658,7 @@ public class MapObjectDrawer {
 		if (seq.length() > 0) {
 			int i = getAnimationStep(x, y) / 2;
 			int step = i % seq.length();
-			draw(seq.getImageSafe(step, "pig"), x, y, 0, color);
+			draw(seq.getImageSafe(step, () -> "pig"), x, y, 0, color);
 		}
 	}
 
@@ -674,7 +674,7 @@ public class MapObjectDrawer {
 		int substep = step % 1024;
 		if (substep < 15) {
 			int subseq = (step / 1024) % 4;
-			draw(seq.getImageSafe(subseq * 15 + substep, "fish-decoration"), x, y, 0, color);
+			draw(seq.getImageSafe(subseq * 15 + substep, () -> "fish-decoration"), x, y, 0, color);
 		}
 	}
 
@@ -933,12 +933,12 @@ public class MapObjectDrawer {
 	}
 
 	private void drawSelectionMark(float viewX, float viewY, float healthPercentage) {
-		Image image = ImageProvider.getInstance().getSettlerSequence(4, 7).getImageSafe(0, "settler-selection-indicator");
+		Image image = ImageProvider.getInstance().getSettlerSequence(4, 7).getImageSafe(0, () -> "settler-selection-indicator");
 		image.drawAt(context.getGl(), viewX, viewY + 20, MOVABLE_SELECTION_MARKER_Z, Color.BLACK, 1);
 
 		Sequence<? extends Image> sequence = ImageProvider.getInstance().getSettlerSequence(4, 6);
 		int healthId = Math.min((int) ((1 - healthPercentage) * sequence.length()), sequence.length() - 1);
-		Image healthImage = sequence.getImageSafe(healthId, "settler-health-indicator");
+		Image healthImage = sequence.getImageSafe(healthId, () -> "settler-health-indicator");
 		healthImage.drawAt(context.getGl(), viewX, viewY + 38, MOVABLE_SELECTION_MARKER_Z, Color.BLACK, 1);
 	}
 
@@ -992,14 +992,14 @@ public class MapObjectDrawer {
 		if (onGround) {
 			iColor &= 0x7fffffff;
 		}
-		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index, "arrow-" + object.getDirection() + "-" + progress);
+		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index, () -> "arrow-" + object.getDirection() + "-" + progress);
 		image.drawAt(context.getGl(), betweenTilesY + 20 * progress * (1 - progress) + 20, iColor, onGround?-.1f:0, null, 1);
 	}
 
 	private void drawStones(int x, int y, int availableStones, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, STONE);
 		int stones = seq.length() - availableStones - 1;
-		draw(seq.getImageSafe(stones, "stone" + availableStones), x, y, 0, color);
+		draw(seq.getImageSafe(stones, () -> "stone" + availableStones), x, y, 0, color);
 	}
 
 	private void drawWaves(int x, int y, float color) {
@@ -1007,60 +1007,60 @@ public class MapObjectDrawer {
 		int len = seq.length();
 		int step = (animationStep / 2 + x / 2 + y / 2) % len;
 		if (step < len) {
-			draw(seq.getImageSafe(step, "wave"), x, y, WAVES_Z, color); // waves must not be drawn on top of other things than water
+			draw(seq.getImageSafe(step, () -> "wave"), x, y, WAVES_Z, color); // waves must not be drawn on top of other things than water
 		}
 	}
 
 	private void drawGrowingCorn(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, CORN);
 		int step = (int) (object.getStateProgress() * CORN_GROW_STEPS);
-		draw(seq.getImageSafe(step, "growing-corn"), x, y, 0, color);
+		draw(seq.getImageSafe(step, () -> "growing-corn"), x, y, 0, color);
 	}
 
 	private void drawCorn(int x, int y, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, CORN);
-		draw(seq.getImageSafe(CORN_GROW_STEPS, "grown-corn"), x, y, 0, color);
+		draw(seq.getImageSafe(CORN_GROW_STEPS, () -> "grown-corn"), x, y, 0, color);
 	}
 
 	private void drawDeadCorn(int x, int y, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, CORN);
-		draw(seq.getImageSafe(CORN_DEAD_STEP, "dead-corn"), x, y, 0, color);
+		draw(seq.getImageSafe(CORN_DEAD_STEP, () -> "dead-corn"), x, y, 0, color);
 	}
 
 	private void drawGrowingWine(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WINE);
 		int step = (int) (object.getStateProgress() * WINE_GROW_STEPS);
-		draw(seq.getImageSafe(step, "growing-wine"), x, y, 0, color);
+		draw(seq.getImageSafe(step, () -> "growing-wine"), x, y, 0, color);
 	}
 
 	private void drawHarvestableWine(int x, int y, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WINE);
-		draw(seq.getImageSafe(WINE_GROW_STEPS, "grown-wine"), x, y, 0, color);
+		draw(seq.getImageSafe(WINE_GROW_STEPS, () -> "grown-wine"), x, y, 0, color);
 	}
 
 	private void drawDeadWine(int x, int y, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WINE);
-		draw(seq.getImageSafe(WINE_DEAD_STEP, "dead-wine"), x, y, 0, color);
+		draw(seq.getImageSafe(WINE_DEAD_STEP, () -> "dead-wine"), x, y, 0, color);
 	}
 
 	private void drawWineBowl(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(BUILDINGS_FILE, WINE_BOWL_SEQUENCE);
 		int step = (int) (object.getStateProgress() * (WINE_BOWL_IMAGES - 1));
-		draw(seq.getImageSafe(step, "wine-bowl"), x, y, 0, color);
+		draw(seq.getImageSafe(step, () -> "wine-bowl"), x, y, 0, color);
 	}
 
 	private void drawGrowingTree(int x, int y, float progress, float color) {
 		Image image;
 		if (progress < 0.33) {
 			Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, SMALL_GROWING_TREE);
-			image = seq.getImageSafe(0, "growing-tree-step1");
+			image = seq.getImageSafe(0, () -> "growing-tree-step1");
 		} else {
 			int treeType = getTreeType(x, y);
 			Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, TREE_CHANGING_SEQUENCES[treeType]);
 			if (progress < 0.66) {
-				image = seq.getImageSafe(TREE_SMALL, "growing-tree-step2");
+				image = seq.getImageSafe(TREE_SMALL, () -> "growing-tree-step2");
 			} else {
-				image = seq.getImageSafe(TREE_MEDIUM, "growing-tree-step3");
+				image = seq.getImageSafe(TREE_MEDIUM, () -> "growing-tree-step3");
 			}
 		}
 		draw(image, x, y, 0, color);
@@ -1090,7 +1090,7 @@ public class MapObjectDrawer {
 		}
 
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, TREE_CHANGING_SEQUENCES[treeType]);
-		draw(seq.getImageSafe(imageStep, "dying-tree"), x, y, 0, color);
+		draw(seq.getImageSafe(imageStep, () -> "dying-tree"), x, y, 0, color);
 	}
 
 	private void drawTree(int x, int y, float color) {
@@ -1098,7 +1098,7 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, TREE_SEQUENCES[treeType]);
 
 		int step = getAnimationStep(x, y) % seq.length();
-		draw(seq.getImageSafe(step, "grown-tree"), x, y, 0, color);
+		draw(seq.getImageSafe(step, () -> "grown-tree"), x, y, 0, color);
 	}
 
 	/**
@@ -1120,7 +1120,7 @@ public class MapObjectDrawer {
 			return; // break
 		}
 		Color color = context.getPlayerColor(player);
-		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, "border-indicator"), x, y, BORDER_STONE_Z, color);
+		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator"), x, y, BORDER_STONE_Z, color);
 	}
 
 	private static int getTreeType(int x, int y) {
@@ -1175,7 +1175,7 @@ public class MapObjectDrawer {
 		int stackIndex = material.getStackIndex();
 
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, stackIndex);
-		draw(seq.getImageSafe(count - 1, Labels.getName(material, count != 1) + "@" + count), x, y, 0, color);
+		draw(seq.getImageSafe(count - 1, () -> Labels.getName(material, count != 1) + "@" + count), x, y, 0, color);
 	}
 
 	/**
@@ -1217,7 +1217,7 @@ public class MapObjectDrawer {
 				if (seq.length() > 0) {
 					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
-					drawOnlyImage(seq.getImageSafe(step, "mill-" + step), x, y, 0, color);
+					drawOnlyImage(seq.getImageSafe(step, () -> "mill-" + step), x, y, 0, color);
 					ImageLink[] images = type.getImages();
 					if (images.length > 0) {
 						Image image = imageProvider.getImage(images[0]);
@@ -1331,7 +1331,7 @@ public class MapObjectDrawer {
 	}
 
 	private void drawBuildingSelectMarker(int x, int y) {
-		Image image = imageProvider.getSettlerSequence(SELECT_MARK_FILE, SELECT_MARK_SEQUENCE).getImageSafe(0, "building-selection-indicator");
+		Image image = imageProvider.getSettlerSequence(SELECT_MARK_FILE, SELECT_MARK_SEQUENCE).getImageSafe(0, () -> "building-selection-indicator");
 		draw(image, x, y, BUILDING_SELECTION_MARKER_Z, Color.BLACK);
 	}
 
@@ -1367,7 +1367,7 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(DEAD_SETTLER_FILE, DEAD_SETTLER_INDEX);
 		int index = Math.min((int) (object.getStateProgress() * sequence.length()), sequence.length() - 1);
 		Color color = getColor(object);
-		draw(sequence.getImage(index, "dead-settler"), x, y, 0, color, baseColor);
+		draw(sequence.getImage(index, () -> "dead-settler"), x, y, 0, color, baseColor);
 	}
 
 	private Color getColor(IMapObject object) {
@@ -1382,7 +1382,7 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(FLAG_FILE, sequenceIndex);
 		int index = animationStep % sequence.length();
 		Color color = getColor(object);
-		draw(sequence.getImageSafe(index, "flag-" + at), x, y, z, color, baseColor);
+		draw(sequence.getImageSafe(index, () -> "flag-" + at), x, y, z, color, baseColor);
 	}
 
 	private void drawByProgress(int x, int y, float z, int file, int sequenceIndex, float progress, float color) {

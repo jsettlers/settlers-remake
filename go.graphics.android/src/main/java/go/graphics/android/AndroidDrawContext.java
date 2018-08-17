@@ -222,8 +222,9 @@ public class AndroidDrawContext implements GLDrawContext {
 		GLES10.glLoadIdentity();
 		GLES10.glOrthof(0, width, 0, height, -1, 1);
 		GLES10.glMatrixMode(GLES10.GL_MODELVIEW);
-		GLES10.glLoadIdentity();
+	}
 
+	public void init() {
 		GLES10.glEnableClientState(GLES10.GL_VERTEX_ARRAY);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 
@@ -324,7 +325,7 @@ public class AndroidDrawContext implements GLDrawContext {
 				GLES11.glEnableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 			}
 
-			this.specifyFormat(type);
+			specifyFormat(type);
 		}
 
 		// our vbo is currently bound
