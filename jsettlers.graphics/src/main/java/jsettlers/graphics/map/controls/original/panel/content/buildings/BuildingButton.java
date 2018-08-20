@@ -68,7 +68,6 @@ public class BuildingButton extends Button implements UiContentUpdater.IUiConten
 	public void drawAt(GLDrawContext gl) {
 		drawBackground(gl);
 		if (isActive()) {
-			gl.color(1, 1, 1, 1);
 			FloatRectangle position = getPosition();
 			ImageProvider.getInstance().getImage(activeMark, lastButtonWidth, lastButtonHeight)
 					.drawImageAtRect(gl, position.getMinX(), position.getMinY(), position.getMaxX()-position.getMinX(), position.getMaxY()-position.getMinY());
@@ -92,7 +91,6 @@ public class BuildingButton extends Button implements UiContentUpdater.IUiConten
 			calculateIconCoords(buttonHeight, buttonWidth, position.getCenterX(), position.getCenterY(), imageHeight, imageWidth);
 		}
 
-		gl.color(1, 1, 1, 1);
 		buildingImage.drawImageAtRect(gl, iconLeft, iconTop, iconWidth, iconHeight);
 	}
 

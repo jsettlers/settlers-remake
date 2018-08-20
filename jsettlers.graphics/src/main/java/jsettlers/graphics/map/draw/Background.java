@@ -853,6 +853,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private GeometryHandle shapeHandle = null;
 	private GeometryHandle colorHandle = null;
 
+	private boolean useFloatColors;
 	private boolean updateGeometry = false;
 	private BitSet mapInvalid = new BitSet();
 
@@ -1183,7 +1184,11 @@ public class Background implements IGraphicsBackgroundListener {
 				draw_stride = (2*bufferWidth)+1;
 			}
 
-			if(shapeHandle == null || !shapeHandle.isValid()) generateGeometry(context);
+			if(shapeHandle == null || !shapeHandle.isValid()) {
+				useFloatColors = !context.getGl().supports4Bcolors();
+				generateGeometry(context);
+				context.getGl().setHeightMatrix(context.getConverter().getMatrixWithHeight());
+			}
 
 			GLDrawContext gl = context.getGl();
 			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
@@ -1191,12 +1196,9 @@ public class Background implements IGraphicsBackgroundListener {
 
 			updateGeometry(context, screenArea);
 
-			gl.glPushMatrix();
-			gl.glTranslatef(context.getOffsetX(), context.getOffsetY(), -.1f);
-			gl.glScalef(1, 1, 0);
-			gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
-			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride);
-			gl.glPopMatrix();
+			float x = context.getOffsetX();
+			float y = context.getOffsetY();
+			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride, x, y);
 
 			resetFOWDimStatus();
 		} catch (IllegalBufferException e) {
@@ -1461,28 +1463,32 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
-		byte color;
-
+		float fColor;
 		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
-			color = 0;
+			fColor = 0;
 		} else {
 			int height1 = context.getHeight(x, y - 1);
 			int height2 = context.getHeight(x, y);
-			float fColor = 0.85f + (height1 - height2) * .15f;
+			fColor = 0.85f + (height1 - height2) * .15f;
 			if (fColor > 1.0f) {
 				fColor = 1.0f;
 			} else if (fColor < 0.4f) {
 				fColor = 0.4f;
 			}
 			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
-			fColor *= 255f;
-			color = (byte) (int) fColor;
 		}
 
-		buffer.put(color);
-		buffer.put(color);
-		buffer.put(color);
-		buffer.put((byte) 255);
+		if(useFloatColors) {
+			buffer.putFloat(fColor);
+		} else {
+			byte color;
+			fColor *= 255f;
+			color = (byte) (int) fColor;
+			buffer.put(color);
+			buffer.put(color);
+			buffer.put(color);
+			buffer.put((byte) 255);
+		}
 	}
 
 	private static int realModulo(int number, int modulo) {

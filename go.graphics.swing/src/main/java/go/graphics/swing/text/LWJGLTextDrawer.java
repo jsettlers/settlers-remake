@@ -21,7 +21,7 @@ import go.graphics.EGeometryType;
 import go.graphics.GeometryHandle;
 import go.graphics.SharedGeometry;
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.LWJGLDrawContext;
+import go.graphics.swing.opengl.LWJGL15DrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -59,7 +59,7 @@ public final class LWJGLTextDrawer {
 
 	private Color color = Color.WHITE;
 
-	private final LWJGLDrawContext drawContext;
+	private final LWJGL15DrawContext drawContext;
 
 	private static float calculateScalingFactor() {
 		int screenDPI = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -72,7 +72,7 @@ public final class LWJGLTextDrawer {
 	 * Creates a new text drawer.
 	 *
 	 */
-	public LWJGLTextDrawer(LWJGLDrawContext drawContext) {
+	public LWJGLTextDrawer(LWJGL15DrawContext drawContext) {
 		this.drawContext = drawContext;
 		font = new Font(FONTNAME, Font.PLAIN, TEXTURE_GENERATION_SIZE);
 
@@ -207,12 +207,11 @@ public final class LWJGLTextDrawer {
 		}
 
 		public void drawChar(float x, float y, char c) {
-			drawContext.color(color.getRed()/255, color.getGreen()/255, color.getBlue()/255, color.getAlpha()/255);
-			drawContext.glPushMatrix();
-			drawContext.glTranslatef(x, y, 0);
-			drawContext.glScalef(line_height, line_height, 0);
-			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4);
-			drawContext.glPopMatrix();
+			float r = color.getRed()/255;
+			float g = color.getGreen()/255;
+			float b = color.getBlue()/255;
+			float a = color.getAlpha()/255;
+			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4, x, y, 0, line_height, line_height, 0, r, g, b, a);
 		}
 
 		/*

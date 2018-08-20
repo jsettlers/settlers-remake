@@ -103,7 +103,7 @@ public final class Minimap implements IMinimapData {
 		context.updateGeometryAt(geometry, pos*4, bfr);
 	}
 
-	public void draw(GLDrawContext context) {
+	public void draw(GLDrawContext context, float x, float y) {
 		boolean imageWasCreatedJustNow = false;
 		try {
 			if(geometry == null || !geometry.isValid()) {
@@ -158,10 +158,9 @@ public final class Minimap implements IMinimapData {
 				updateMutex.notifyAll();
 			}
 
-			context.color(1, 1, 1, 1);
-			context.draw2D(geometry, texture, EGeometryType.Quad, 0, 4);
+			context.draw2D(geometry, texture, EGeometryType.Quad, 0, 4, x, y, 0, 1, 1, 1, 1, 1, 1, 1);
 
-			drawViewMark(context);
+			drawViewMark(context, x, y);
 		} catch (IllegalBufferException e) {
 			if (imageWasCreatedJustNow) {
 				// TODO: Error reporting
@@ -171,14 +170,14 @@ public final class Minimap implements IMinimapData {
 				synchronized (updateMutex) {
 					imageIsValid = false;
 				}
-				draw(context);
+				draw(context, x, y);
 			}
 		}
 	}
 
-	private void drawViewMark(GLDrawContext context) {
+	private void drawViewMark(GLDrawContext context, float x, float y) {
 		try {
-			context.draw2D(lineGeometry, null, EGeometryType.LineLoop, 0, 6);
+			context.draw2D(lineGeometry, null, EGeometryType.LineLoop, 0, 6, x, y, 0, 1, 1, 1, 1, 1, 1, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

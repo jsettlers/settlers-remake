@@ -169,7 +169,7 @@ public class DatFileTester {
 
 				maxheight = drawSequence(gl2, width, height, y, seq);
 
-				gl2.color(0, 0, 0, 1);
+				drawer.setColor(0, 0, 0, 1);
 				drawer.drawString(offsetX+20, offsetY+y+20, seqIndex + ":");
 
 				seqIndex++;
@@ -200,20 +200,14 @@ public class DatFileTester {
 
 			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D, true, null);
 
-
-			gl2.glPushMatrix();
-
 			try {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), - image.getOffsetX(), image.getHeight() + image.getOffsetY() }, 0, 3);
 				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
 
-				gl2.color(1, 0, 0, 1);
-				gl2.glTranslatef(x, y, 0);
-				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3);
+				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, 1, 0, 0, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
-			gl2.glPopMatrix();
 		}
 
 		private void printHelp() {

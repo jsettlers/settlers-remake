@@ -15,7 +15,6 @@
 package go.graphics.swing.opengl;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
@@ -35,9 +34,6 @@ import go.graphics.text.TextDrawer;
 import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.system.MemoryStack;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 /**
  * This is the draw context implementation for LWJGL. OpenGL draw calles are mapped to the corresponding LWJGL calls.
  *
@@ -45,78 +41,83 @@ import javax.swing.SwingUtilities;
  * @author paul
  *
  */
-public class LWJGLDrawContext implements GLDrawContext {
+public class LWJGL15DrawContext implements GLDrawContext {
 
 	private TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
 	private LWJGLTextDrawer textDrawer = null;
-	private LWJGLDebugOutput debugOutput = null;
+	protected LWJGLDebugOutput debugOutput = null;
 
 	public final GLCapabilities glcaps;
 
 	private GeometryHandle lastGeometry = null;
 	private TextureHandle lastTexture = null;
-	private int lastFormat = 0;
-
-	private void checkGLVersion() {
-		if(glcaps.OpenGL20) return;
-		if(glcaps.OpenGL15 && glcaps.GL_ARB_texture_non_power_of_two) return;
-
-		SwingUtilities.invokeLater(() -> {
-			JOptionPane.showMessageDialog(null, "JSettlers needs at least OpenGL 2.0 or 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
-			System.exit(1);
-		});
-	}
-	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
+	public LWJGL15DrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
 
-		checkGLVersion();
 		if(debug) debugOutput = new LWJGLDebugOutput(this);
 
-		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glDepthFunc(GL11.GL_LEQUAL);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthFunc(GL11.GL_LEQUAL);
+
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+		init();
+	}
+
+	void init() {
+		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	@Override
-	public void color(float r, float g, float b, float a) {
-		GL11.glColor4f(r, g, b, a);
-	}
+	private float lr, lg, lb, la = -1;
+	private float lx, ly, lz = -2;
+	private float lsx, lsy, lsz = -1;
 
-	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices) {
-		bindTexture(texture);
-		if (glcaps.GL_ARB_vertex_array_object) {
-			bindFormat(geometry.getInternalFormatId());
-			GL11.glDrawArrays(primitive, offset * vertices, vertices);
-		} else {
-			bindGeometry(geometry);
-			EGeometryFormatType format = geometry.getFormat();
-
-			if(format.getTexCoordPos() == -1) GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-
-			specifyFormat(format);
-			GL11.glDrawArrays(primitive, offset * vertices, vertices);
-
-			if(format.getTexCoordPos() == -1) GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
+		if(lx != x || ly != y || lz != z || lsx != sx || lsy != sy || lsz != sz) {
+			if(lsz != -1) GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			if(x != 0 || y != 0 || z != 0) GL11.glTranslatef(x, y, z);
+			if(sx != 1 || sy != 1 || sz != 1) GL11.glScalef(sx, sy, sz);
+			lx = x; lsx = sx;
+			ly = y; lsy = sy;
+			lz = z; lsz = sz;
 		}
+		if(lr != r || lg != g || lb != b || la != a) GL11.glColor4f(lr=r, lg=g, lb=b, la=a);
 
+		bindTexture(texture);
+		bindGeometry(geometry);
+		EGeometryFormatType format = geometry.getFormat();
+
+		if(format.getTexCoordPos() == -1) GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+		specifyFormat(format);
+		GL11.glDrawArrays(primitive, offset * vertices, vertices);
+
+		if(format.getTexCoordPos() == -1) GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}
 
-	private void specifyFormat(EGeometryFormatType format) {
+	private boolean tex_coord_on = false;
+
+	protected void specifyFormat(EGeometryFormatType format) {
 		if (format.getTexCoordPos() == -1) {
+			if(tex_coord_on) GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 			GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
 		} else {
+			if(!tex_coord_on) GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 			int stride = format.getBytesPerVertexSize();
 			GL11.glVertexPointer(2, GL11.GL_FLOAT, stride, 0);
 			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, stride, format.getTexCoordPos());
 		}
 
+		tex_coord_on = format.getTexCoordPos() != -1;
 	}
 
 	/**
@@ -124,31 +125,18 @@ public class LWJGLDrawContext implements GLDrawContext {
 	 */
 	private boolean contextValid = true;
 
-	@Override
-	public void glPushMatrix() {
-		GL11.glPushMatrix();
-	}
+	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
+		// reset matrix stack
+		if(lsz != -1) GL11.glPopMatrix();
+		lsz = -1;
 
-	@Override
-	public void glTranslatef(float x, float y, float z) {
+		GL11.glLoadIdentity();
 		GL11.glTranslatef(x, y, z);
-	}
-
-	@Override
-	public void glPopMatrix() {
-		GL11.glPopMatrix();
-	}
-
-	@Override
-	public void glScalef(float x, float y, float z) {
-		GL11.glScalef(x, y, z);
+		GL11.glScalef(sx, sy, sz);
 	}
 
 	@Override
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
-		// 1 byte aligned.
-		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
 		int texture = GL11.glGenTextures();
 		if (texture == 0) {
 			return null;
@@ -170,6 +158,11 @@ public class LWJGLDrawContext implements GLDrawContext {
 		return textureHandle;
 	}
 
+	@Override
+	public boolean supports4Bcolors() {
+		return true;
+	}
+
 	/**
 	 * Sets the texture parameters, assuming that the texture was just created and is bound.
 	 */
@@ -182,8 +175,6 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
 				GL11.GL_NEAREST);
-
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f) ; // prevent writing of transparent pixels to z buffer
 	}
 
 	@Override
@@ -194,7 +185,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
-	private void bindTexture(TextureHandle texture) {
+	protected void bindTexture(TextureHandle texture) {
 		if(lastTexture != texture) {
 			int id = 0;
 			if (texture != null) {
@@ -205,7 +196,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 		}
 	}
 
-	private void bindGeometry(GeometryHandle geometry) {
+	protected void bindGeometry(GeometryHandle geometry) {
 		if(lastGeometry != geometry) {
 			int id = 0;
 			if (geometry != null) {
@@ -216,16 +207,11 @@ public class LWJGLDrawContext implements GLDrawContext {
 		}
 	}
 
-	private void bindFormat(int format) {
-		if(format != lastFormat) {
-			ARBVertexArrayObject.glBindVertexArray(format);
-			lastFormat = format;
-		}
-	}
+	private float[] heightMatrix;
 
 	@Override
-	public void glMultMatrixf(float[] matrix) {
-		GL11.glMultMatrixf(matrix);
+	public void setHeightMatrix(float[] matrix) {
+		heightMatrix = matrix;
 	}
 
 	/**
@@ -245,50 +231,36 @@ public class LWJGLDrawContext implements GLDrawContext {
 		return sizedTextDrawers[size.ordinal()];
 	}
 
-	private int backgroundVAO = 0;
-
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride, float x, float y) {
 		bindTexture(textureid);
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
-		if(glcaps.GL_ARB_vertex_array_object) {
-			if(backgroundVAO == 0) {
-				backgroundVAO = ARBVertexArrayObject.glGenVertexArrays();
-				bindFormat(backgroundVAO);
-				GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+		if(lsz != -1) GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(x, y, -.1f);
+		GL11.glScalef(1, 1, 0);
+		GL11.glMultMatrixf(heightMatrix);
 
-				bindGeometry(shapeHandle);
-				GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
-				GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
-
-				bindGeometry(colorHandle);
-				GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
-
-				setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
-				setObjectLabel(KHRDebug.GL_BUFFER, shapeHandle.getInternalId(), "background-shape");
-				setObjectLabel(KHRDebug.GL_BUFFER, colorHandle.getInternalId(), "background-color");
-			}
-
-			bindFormat(backgroundVAO);
-			for (int i = starti; i != lines; i++) {
-				GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
-			}
-		} else {
-			bindGeometry(shapeHandle);
-			GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
-			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
-
-			bindGeometry(colorHandle);
-			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
-
-			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-			for (int i = starti; i != lines; i++) {
-				GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
-			}
-			GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+		if(!tex_coord_on) {
+			GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+			tex_coord_on = true;
 		}
+
+		bindGeometry(shapeHandle);
+		GL11.glVertexPointer(3, GL11.GL_FLOAT, 5 * 4, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 5 * 4, 3 * 4);
+
+		bindGeometry(colorHandle);
+		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
+
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		for (int i = starti; i != lines; i++) {
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
+		}
+		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+
+		GL11.glPopMatrix();
+		lsz = -1;
 	}
 
 	@Override
@@ -307,6 +279,7 @@ public class LWJGLDrawContext implements GLDrawContext {
 			ByteBuffer bfr = stack.malloc(4*geometry.length);
 			bfr.asFloatBuffer().put(geometry);
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, bfr, writable ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
+			setObjectLabel(KHRDebug.GL_BUFFER, geometryBuffer.getInternalId(), name + "-vertices");
 		}
 
 		return geometryBuffer;
@@ -318,32 +291,18 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 		bindGeometry(vertexBufferId);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*type.getBytesPerVertexSize(), writable ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
+		setObjectLabel(KHRDebug.GL_BUFFER, vertexBufferId.getInternalId(), name + "-vertices");
 		return vertexBufferId;
 	}
-	private GeometryHandle allocateVBO(EGeometryFormatType type, String name) {
-		int vao = 0;
+
+	GeometryHandle allocateVBO(EGeometryFormatType type, String name) {
 		int vbo = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-		if (glcaps.GL_ARB_vertex_array_object && type.isSingleBuffer()) {
-			vao = ARBVertexArrayObject.glGenVertexArrays();
-			bindFormat(vao);
-			GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-			if (type.getTexCoordPos() != -1) {
-				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-			}
 
-			specifyFormat(type);
-		}
-
-		if(type.isSingleBuffer())  {
-			setObjectLabel(KHRDebug.GL_BUFFER, vbo, name + "-vertices");
-			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
-		}
-
-		return lastGeometry = new GeometryHandle(this, vbo, vao, type);
+		return lastGeometry = new GeometryHandle(this, vbo, 0, type);
 	}
 
-	private void setObjectLabel(int type, int id, String name) {
+	protected void setObjectLabel(int type, int id, String name) {
 		if(debugOutput == null) return;
 
 		if(glcaps.GL_KHR_debug) {
@@ -365,5 +324,17 @@ public class LWJGLDrawContext implements GLDrawContext {
 
 	public boolean isValid() {
 		return contextValid;
+	}
+
+	public void resize(int width, int height) {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		// coordinate system origin at lower left with width and height same as
+		// the window
+		GL11.glOrtho(0, width, 0, height, -1, 1);
+
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glViewport(0, 0, width, height);
 	}
 }

@@ -124,7 +124,6 @@ public class UIList<T> implements UIElement {
 
 			// side
 			ImageProvider provider = ImageProvider.getInstance();
-			gl.color(1, 1, 1, 1);
 			provider.getImage(SCROLLBAR_TOP).drawImageAtRect(gl,
 					minX + width * RIGHTBORDER, sliderMaxY - edgeHeight,
 					 width, sliderMaxY);

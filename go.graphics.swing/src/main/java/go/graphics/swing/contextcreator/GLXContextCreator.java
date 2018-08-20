@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLX;
 import org.lwjgl.opengl.GLX13;
 import org.lwjgl.opengl.GLXARBCreateContext;
+import org.lwjgl.opengl.GLXARBCreateContextProfile;
 import org.lwjgl.opengl.GLXCapabilities;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.linux.XVisualInfo;
@@ -35,6 +36,40 @@ public class GLXContextCreator extends JAWTContextCreator {
 		X11.getLibrary().getName();
 	}
 
+	private static final int[][] ctx_attrs = new int[][] {
+			{ // GL2.0 with debugging
+					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
+					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+					GLXARBCreateContextProfile.GLX_CONTEXT_PROFILE_MASK_ARB, GLXARBCreateContextProfile.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
+					0
+			},
+			{// GL1.5 with debugging
+					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 1,
+					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 5,
+					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
+					0
+			},
+			{// GL1.1+ with debugging
+					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
+					0
+			},
+
+			{ // GL2.0
+					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
+					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+					GLXARBCreateContextProfile.GLX_CONTEXT_PROFILE_MASK_ARB, GLXARBCreateContextProfile.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+					0,
+			},
+			{// GL1.5
+					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 1,
+					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 5,
+					0
+			},
+			{// GL1.1+
+					0
+			},
+	};
 
 	@Override
 	protected void onInit() {
@@ -46,17 +81,18 @@ public class GLXContextCreator extends JAWTContextCreator {
 				GLX.GLX_STENCIL_SIZE, 1,
 				0};
 
-		if(debug) {
-			GLXCapabilities glxcaps = GL.createCapabilitiesGLX(windowConnection, screen);
-			if(!glxcaps.GLX13 || !glxcaps.GLX_ARB_create_context) throw new Error("GLX could not create a debug context!");
-
+		GLXCapabilities glxcaps = GL.createCapabilitiesGLX(windowConnection, screen);
+		if(glxcaps.GLX13 && glxcaps.GLX_ARB_create_context && glxcaps.GLX_ARB_create_context_profile) {
 			PointerBuffer fbc = GLX13.glXChooseFBConfig(windowConnection, screen, new int[] {0});
 			if(fbc == null || fbc.capacity() < 1) throw new Error("GLX could not find any FBConfig!");
 
-			context = GLXARBCreateContext.glXCreateContextAttribsARB(windowConnection, fbc.get(), 0, true, new int[] {
-					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB, 0
-			});
+			int i = debug ? 0 : 3;
+			while(context == 0 && ctx_attrs.length > i) {
+				context = GLXARBCreateContext.glXCreateContextAttribsARB(windowConnection, fbc.get(), 0, true, ctx_attrs[i]);
+			}
 		} else {
+			if(debug) throw new Error("GLX could not create a debug context!");
+
 			XVisualInfo xvi = GLX.glXChooseVisual(windowConnection, screen, xvi_attrs);
 			context = GLX.glXCreateContext(windowConnection, xvi, 0, true);
 		}

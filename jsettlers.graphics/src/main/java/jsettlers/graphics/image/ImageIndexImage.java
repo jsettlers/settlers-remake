@@ -16,7 +16,6 @@ package jsettlers.graphics.image;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
@@ -97,30 +96,32 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
 		if(isTorso) return;
-		gl.color(fow, fow, fow, 1);
-		draw(gl, geometryIndex.geometry, geometryIndex.index);
+		draw(gl, geometryIndex.geometry, geometryIndex.index, x, y, z, 1, 1, 1, fow, fow, fow, 1);
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {
 		if(isTorso) {
-			gl.color(torsoColor.getRed()*fow, torsoColor.getGreen()*fow, torsoColor.getBlue()*fow, torsoColor.getAlpha());
-			draw(gl, geometryIndex.geometry, geometryIndex.index);
+			float r = torsoColor.getRed()*fow;
+			float g = torsoColor.getGreen()*fow;
+			float b = torsoColor.getBlue()*fow;
+			float a = torsoColor.getAlpha();
+			draw(gl, geometryIndex.geometry, geometryIndex.index, x, y, z, 1, 1, 1, r, g, b, a);
 		}
-		if(torso != null) torso.drawOnlyTorsoAt(gl, torsoColor, fow);
+		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, z, fow, torsoColor);
 	}
 
-	private void draw(GLDrawContext gl, GeometryHandle handle, int offset) {
+	private void draw(GLDrawContext gl, GeometryHandle handle, int offset, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
 		try {
 			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
 
-			gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4);
+			gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4, x, y, z, sx, sy, sz, r, g, b, a);
 		} catch (IllegalBufferException e) {
 			try {
 				texture.recreateTexture();
-				gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4);
+				gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4, x, y, z, sx, sy, sz, r, g, b, a);
 			} catch (IllegalBufferException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -139,16 +140,12 @@ public class ImageIndexImage extends Image {
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
-		gl.glScalef(width, height, 0);
 		try {
 			if(imageRectHandle == null) imageRectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0,1, 1, 0, umin, vmin, umax, vmax));
-			draw(gl, imageRectHandle.geometry, imageRectHandle.index);
+			draw(gl, imageRectHandle.geometry, imageRectHandle.index, x, y, 0, width, height, 0, 1, 1, 1, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
-		gl.glPopMatrix();
 
 		if (torso != null) {
 			torso.drawImageAtRect(gl, x, y, width, height);

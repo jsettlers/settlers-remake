@@ -134,11 +134,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 			if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, 1, 1));
 
-			gl.glPushMatrix();
-			gl.glTranslatef(x, y, 0);
-			gl.glScalef(width, height, 0);
-			gl.draw2D(rectHandle.geometry, textureHandle, EGeometryType.Quad, rectHandle.index, 4);
-			gl.glPopMatrix();
+			gl.draw2D(rectHandle.geometry, textureHandle, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, width, height, 0, 1, 1, 1, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -151,31 +147,30 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	@Override
 	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
-		drawOnlyImageAt(gl, fow);
-		gl.glPopMatrix();
+		drawOnlyImageAt(gl, x, y, z, fow);
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
-			gl.color(fow, fow, fow, 1);
-			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4);
+			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, fow, fow, fow, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
-			gl.color(torsoColor.getRed()*fow, torsoColor.getGreen()*fow, torsoColor.getBlue()*fow, torsoColor.getAlpha());
-			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4);
+			float r = torsoColor.getRed()*fow;
+			float g = torsoColor.getGreen()*fow;
+			float b = torsoColor.getBlue()*fow;
+			float a = torsoColor.getAlpha();
+			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, r, g, b, a);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -254,13 +249,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 				});
 				gl.updateGeometryAt(buildHandle, 0, buildBfr);
-
-				gl.color(color, color, color, 1);
-
-				gl.glPushMatrix();
-				gl.glTranslatef(left, top ,0);
-				gl.draw2D(buildHandle, getTextureIndex(gl), EGeometryType.Triangle, 0, 3);
-				gl.glPopMatrix();
+				gl.draw2D(buildHandle, getTextureIndex(gl), EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, color, color, color, 1);
 			}
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);

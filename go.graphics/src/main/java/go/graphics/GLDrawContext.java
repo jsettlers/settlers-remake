@@ -26,25 +26,7 @@ import java.nio.ShortBuffer;
  * @author michael
  */
 public interface GLDrawContext {
-	void draw2D(GeometryHandle geometry, TextureHandle texture, int type, int offset, int vertices) throws IllegalBufferException;
-
-	void glPushMatrix();
-
-	void glTranslatef(float x, float y, float z);
-
-	void glScalef(float x, float y, float z);
-
-	void glPopMatrix();
-
-	/**
-	 * Set the color of the context.
-	 * 
-	 * @param red
-	 * @param green
-	 * @param blue
-	 * @param alpha
-	 */
-	void color(float red, float green, float blue, float alpha);
+	void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) throws IllegalBufferException;
 
 	/**
 	 * Returns a texture id which is positive or 0. It returns a negative number on error.
@@ -53,15 +35,17 @@ public interface GLDrawContext {
 	 * @param height
 	 *            The height of the image.
 	 * @param data
-	 *            The data as array. It needs to have a length of width * height and each element is a color with: 5 bits red, 5 bits gree,n, 5 bits
-	 *            blue and 1 bit alpha.
+	 *            The data as array. It needs to have a length of width * height and each element is a color with: 4 bits red, 4 bits green, 4 bits
+	 *            blue and 4 bits alpha.
 	 * @return The id of the generated texture.
 	 */
 	TextureHandle generateTexture(int width, int height, ShortBuffer data, String name);
 
-	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride, float x, float y) throws IllegalBufferException;
 
-	void glMultMatrixf(float[] matrix);
+	void setHeightMatrix(float[] matrix);
+
+	void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz);
 
 	/**
 	 * Updates a part of a texture image.
@@ -88,4 +72,6 @@ public interface GLDrawContext {
 	boolean isValid();
 
 	void deleteTexture(TextureHandle texture);
+
+	boolean supports4Bcolors();
 }

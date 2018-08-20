@@ -37,6 +37,9 @@ public class GeometryHandle extends GLBufferHandle {
 		return vao;
 	}
 
+	public void setInternalFormatId(int vao) {
+		this.vao = vao;
+	}
 
 	@Override
 	public String toString() {

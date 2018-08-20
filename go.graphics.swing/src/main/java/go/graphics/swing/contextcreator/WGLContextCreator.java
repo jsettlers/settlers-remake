@@ -15,8 +15,10 @@
 package go.graphics.swing.contextcreator;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLXARBCreateContext;
 import org.lwjgl.opengl.WGL;
 import org.lwjgl.opengl.WGLARBCreateContext;
+import org.lwjgl.opengl.WGLARBCreateContextProfile;
 import org.lwjgl.opengl.WGLCapabilities;
 import org.lwjgl.system.windows.GDI32;
 import org.lwjgl.system.windows.PIXELFORMATDESCRIPTOR;
@@ -32,6 +34,40 @@ public class WGLContextCreator extends JAWTContextCreator {
 		GDI32.getLibrary().getName();
 	}
 
+
+	private static final int[][] ctx_attrs = new int[][] {
+			{ // GL2.0 with debugging
+					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
+					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+					WGLARBCreateContextProfile.WGL_CONTEXT_PROFILE_MASK_ARB, WGLARBCreateContextProfile.WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
+					0
+			},
+			{// GL1.5 with debugging
+					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 1,
+					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
+					0
+			},
+			{// GL1.1+ with debugging
+					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
+					0
+			},
+
+			{ // GL2.0
+					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
+					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+					WGLARBCreateContextProfile.WGL_CONTEXT_PROFILE_MASK_ARB, WGLARBCreateContextProfile.WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			},
+			{// GL1.5
+					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 1,
+					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+					0
+			},
+			{// GL1.1+
+					0
+			},
+	};
 
 	@Override
 	public void stop() {
@@ -68,19 +104,25 @@ public class WGLContextCreator extends JAWTContextCreator {
 
 		pfd.free();
 
-		if(debug) {
-			long tmp_context = WGL.wglCreateContext(windowDrawable);
-			WGL.wglMakeCurrent(windowDrawable, tmp_context);
-			WGLCapabilities caps = GL.createCapabilitiesWGL();
-			WGL.wglDeleteContext(tmp_context);
-			if(!caps.WGL_ARB_create_context) throw new Error("WGL could not create a debug context!");
-			context = WGLARBCreateContext.wglCreateContextAttribsARB(windowDrawable, 0, new int[] {
-					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB, 0
-			});
 
+		context = WGL.wglCreateContext(windowDrawable);
+		WGL.wglMakeCurrent(windowDrawable, context);
+		WGLCapabilities caps = GL.createCapabilitiesWGL();
+		if(caps.WGL_ARB_create_context && caps.WGL_ARB_create_context_profile) {
+			WGL.wglDeleteContext(context);
+			context = 0;
+
+			int i = debug ? 0 : 3;
+			while(context == 0 && ctx_attrs.length > i) {
+				context = WGLARBCreateContext.wglCreateContextAttribsARB(windowDrawable, 0, ctx_attrs[i]);
+			}
 		} else {
-			context = WGL.wglCreateContext(windowDrawable);
+			if(debug) {
+				WGL.wglDeleteContext(context);
+				throw new Error("WGL could not create a debug context!");
+			}
 		}
+
 		if(context == 0) throw new Error("Could not create WGL context!");
 		parent.wrapNewContext();
 	}

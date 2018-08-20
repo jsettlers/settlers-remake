@@ -7,6 +7,7 @@ import org.lwjgl.egl.EGL10;
 import org.lwjgl.egl.EGL12;
 import org.lwjgl.egl.EGL13;
 import org.lwjgl.egl.EGL14;
+import org.lwjgl.egl.EGL15;
 import org.lwjgl.egl.EGLCapabilities;
 import org.lwjgl.egl.EGLDebugMessageKHRCallback;
 import org.lwjgl.egl.KHRCreateContext;
@@ -47,6 +48,41 @@ public class EGLContextCreator extends JAWTContextCreator {
 			EGL10.eglMakeCurrent(egl_display, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
 		}
 	}
+
+	private static final int[][] ctx_attrs = new int[][] {
+		{ // GL2.0 with debugging
+			EGL15.EGL_CONTEXT_MAJOR_VERSION, 2,
+			EGL15.EGL_CONTEXT_MINOR_VERSION, 0,
+			EGL15.EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL15.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+				KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+			EGL10.EGL_NONE
+		},
+		{// GL1.5 with debugging
+			EGL15.EGL_CONTEXT_MAJOR_VERSION, 1,
+			EGL15.EGL_CONTEXT_MINOR_VERSION, 5,
+			KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+			EGL10.EGL_NONE
+		},
+		{// GL1.1+ with debugging
+			KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+			EGL10.EGL_NONE
+		},
+
+		{ // GL2.0
+			EGL15.EGL_CONTEXT_MAJOR_VERSION, 2,
+			EGL15.EGL_CONTEXT_MINOR_VERSION, 0,
+			EGL15.EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL15.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+			EGL10.EGL_NONE
+		},
+		{// GL1.5
+			EGL15.EGL_CONTEXT_MAJOR_VERSION, 1,
+			EGL15.EGL_CONTEXT_MINOR_VERSION, 5,
+			EGL10.EGL_NONE
+		},
+		{// GL1.1+
+			EGL10.EGL_NONE
+		},
+	};
 
 	private void setEGLDebugFunction(boolean info, boolean warning, boolean error_arg, boolean critical) {
 		try(MemoryStack stack = MemoryStack.stackPush()) {
@@ -99,14 +135,17 @@ public class EGLContextCreator extends JAWTContextCreator {
 		if(num_config[0] == 0) throw new Error("could not found egl configs!");
 		egl_config = cfgs.get(0);
 
-		int[] ctx_attrs;
-		if(debug && caps.EGL_KHR_create_context) {
-			ctx_attrs = new int[] { KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR, EGL10.EGL_NONE};
-		} else {
-			ctx_attrs = new int[] { EGL10.EGL_NONE };
-		}
+		int i = debug ? 0 : 4;
+		while(egl_context == 0 && ctx_attrs.length > i) {
+			int[] current_ctx_attrs = ctx_attrs[i];
 
-		egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, ctx_attrs);
+			egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, current_ctx_attrs);
+			i++;
+			if(egl_context != 0 && EGL10.eglGetError() != EGL10.EGL_SUCCESS) {
+				EGL10.eglDestroyContext(egl_display, egl_context);
+				egl_context = 0;
+			}
+		}
 	}
 
 	@Override

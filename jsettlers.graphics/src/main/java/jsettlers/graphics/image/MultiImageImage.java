@@ -101,30 +101,28 @@ public class MultiImageImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
 		try {
 			if(settlerGeometry == null)	settlerGeometry = SharedGeometry.addGeometry(gl, settlerFloats);
-			gl.color(fow, fow, fow, 1);
 			TextureHandle texture = map.getTexture(gl);
-			gl.draw2D(settlerGeometry.geometry, texture, EGeometryType.Quad, settlerGeometry.index, 4);
+			gl.draw2D(settlerGeometry.geometry, texture, EGeometryType.Quad, settlerGeometry.index, 4, x, y, z, 1, 1, 1, fow, fow, fow, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {
 		if(torsoFloats == null) return;
 
 		try {
 			if(torsoGeometry == null) torsoGeometry = SharedGeometry.addGeometry(gl, torsoFloats);
-			if (torsoColor != null) {
-				gl.color(torsoColor.getRed()*fow,
-						torsoColor.getGreen()*fow,
-						torsoColor.getBlue()*fow, torsoColor.getAlpha());
-			}
+			float r = torsoColor.getRed()*fow;
+			float g = torsoColor.getGreen()*fow;
+			float b = torsoColor.getBlue()*fow;
+			float a = torsoColor.getAlpha();
 			TextureHandle texture = map.getTexture(gl);
-			gl.draw2D(torsoGeometry.geometry, texture, EGeometryType.Quad, torsoGeometry.index, 4);
+			gl.draw2D(torsoGeometry.geometry, texture, EGeometryType.Quad, torsoGeometry.index, 4, x, y, z, 1, 1, 1, r, g, b, a);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
@@ -134,21 +132,16 @@ public class MultiImageImage extends Image {
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
-		gl.glScalef(width, height, 0);
 		try {
-			gl.color(1, 1, 1, 1);
 			if(rectHandle == null) {
 				rectHandle = SharedGeometry.addGeometry(gl, settlerRectFloats);
 				settlerRectFloats = null;
 			}
 
-			gl.draw2D(rectHandle.geometry, map.getTexture(gl), EGeometryType.Quad, rectHandle.index, 4);
+			gl.draw2D(rectHandle.geometry, map.getTexture(gl), EGeometryType.Quad, rectHandle.index, 4, x, y, 0, width, height, 0, 1, 1, 1, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
-		gl.glPopMatrix();
 	}
 
 	@Override

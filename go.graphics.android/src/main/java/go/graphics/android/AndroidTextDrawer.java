@@ -41,7 +41,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
-	private final AndroidDrawContext context;
+	private final GLES11DrawContext context;
 	private TextureHandle texture = null;
 	/**
 	 * The number of lines we use on our texture.
@@ -101,7 +101,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			0,
 	};
 
-	private AndroidTextDrawer(EFontSize size, AndroidDrawContext context) {
+	private AndroidTextDrawer(EFontSize size, GLES11DrawContext context) {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
@@ -149,8 +149,6 @@ public class AndroidTextDrawer implements TextDrawer {
 	public void drawString(float x, float y, String string) {
 		initialize();
 
-		context.color(color_r, color_g, color_b, color_a);
-
 		int line = findLineFor(string);
 
 		for (; line >= 0; line = nextTile[line], x += TEXTURE_WIDTH) {
@@ -166,10 +164,7 @@ public class AndroidTextDrawer implements TextDrawer {
 				e.printStackTrace();
 			}
 
-			context.glPushMatrix();
-			context.glTranslatef(x, y, 0);
-			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4);
-			context.glPopMatrix();
+			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4, x, y, 0f, 1f, 1f, 1f, color_r, color_g, color_b, color_a);
 		}
 	}
 
@@ -320,7 +315,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		color_a = alpha;
 	}
 
-	public static TextDrawer getInstance(EFontSize size, AndroidDrawContext context) {
+	public static TextDrawer getInstance(EFontSize size, GLES11DrawContext context) {
 		int ordinal = size.ordinal();
 		if (instances[ordinal] == null) {
 			instances[ordinal] = new AndroidTextDrawer(size, context);

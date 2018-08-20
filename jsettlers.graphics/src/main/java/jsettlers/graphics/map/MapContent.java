@@ -325,7 +325,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			long foregroundDuration = System.currentTimeMillis() - start;
 
 			start = System.currentTimeMillis();
-			gl.glTranslatef(0, 0, UI_OVERLAY_Z);
+			gl.setGlobalAttributes(0, 0, UI_OVERLAY_Z, 1, 1, 1);
 			drawSelectionHint(gl);
 			controls.drawAt(gl);
 			drawMessages(gl);
@@ -461,9 +461,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				updateSelectionArea = false;
 			}
 
-			gl.color(1, 1, 1, 1);
 			try {
-				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4);
+				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
@@ -637,14 +636,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {
 					int height = context.getHeight(x, y);
-					gl.glPushMatrix();
-					gl.glTranslatef(drawX+context.getConverter().getViewX(x, y, height), drawY+context.getConverter().getViewY(x, y, height), .5f);
-					gl.color(((argb >> 16) & 0xff) / 255f,
-							((argb >> 8) & 0xff) / 255f,
-							((argb >> 0) & 0xff) / 255f,
-							((argb >> 24) & 0xff) / 255f);
-					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4);
-					gl.glPopMatrix();
+					float dx = drawX+context.getConverter().getViewX(x, y, height);
+					float dy = drawY+context.getConverter().getViewY(x, y, height);
+					float r = ((argb >> 16) & 0xff) / 255f;
+					float g = ((argb >> 8) & 0xff) / 255f;
+					float b = ((argb >> 0) & 0xff) / 255f;
+					float a = ((argb >> 24) & 0xff) / 255f;
+					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4, dx, dy, .5f, 1, 1, 1, r, g, b, a);
 				}
 			} catch (IllegalBufferException e) {
 				// TODO: Create a crash report

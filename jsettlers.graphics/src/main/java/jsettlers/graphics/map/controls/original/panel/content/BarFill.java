@@ -61,7 +61,6 @@ public class BarFill extends UIPanel {
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
-		gl.color(0f, 0.78f, 0.78f, 1f);
 		FloatRectangle position = getPosition();
 		float fillX = barFillPercentage < .01f ? 0 : barFillPercentage > .99f ? 1 : EMPTY_X * (1 - barFillPercentage) + FULL_X * barFillPercentage;
 		float maxX = position.getMinX() * (1 - fillX) + position.getMaxX() * fillX;
@@ -76,7 +75,7 @@ public class BarFill extends UIPanel {
 						position.getMinX(), position.getMaxY(), maxX, position.getMaxY()});
 				gl.updateGeometryAt(geometry, 0, geometryBfr);
 			}
-			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4);
+			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4, 0, 0, 0, 1, 1, 1, 0, .78f, .78f, 1f);
 		} catch(IllegalBufferException ex) {
 			ex.printStackTrace();
 		}

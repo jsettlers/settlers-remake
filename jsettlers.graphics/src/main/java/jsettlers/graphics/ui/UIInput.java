@@ -79,15 +79,11 @@ public class UIInput extends UIPanel implements GOEventHandler {
 
 		float carretX = x + drawer.getWidth(inputString.substring(0, carret) + "X") - drawer.getWidth("X");
 
-		gl.glPushMatrix();
 		try {
-			gl.glScalef(0, textHeight, 0);
-			gl.glTranslatef(carretX, y, 0);
-			gl.draw2D(geometry, null, EGeometryType.LineStrip, 0, 2);
+			gl.draw2D(geometry, null, EGeometryType.LineStrip, 0, 2, carretX, y, 0, 0, textHeight, 0, 1, 1, 1, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
-		gl.glPopMatrix();
 	}
 
 	@Override

@@ -146,9 +146,8 @@ public final class MapDrawContext implements IGLProvider {
 
 		// beginTime = System.nanoTime();
 
-		gl2.glPushMatrix();
 		float zoom = screen.getZoom();
-		gl2.glScalef(zoom, zoom, 1);
+		gl2.setGlobalAttributes(0, 0, 0, zoom, zoom, 1);
 
 		offsetX = (int) (-screen.getLeft()+.5f);
 		offsetY = (int) (-screen.getBottom()+.5f);
@@ -168,7 +167,6 @@ public final class MapDrawContext implements IGLProvider {
 	 * Ends a drawing session.
 	 */
 	public void end() {
-		this.gl.glPopMatrix();
 		this.gl = null;
 	}
 

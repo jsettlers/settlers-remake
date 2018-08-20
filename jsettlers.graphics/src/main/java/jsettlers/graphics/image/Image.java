@@ -41,17 +41,14 @@ public abstract class Image {
 	public abstract int getHeight();
 
 	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, z);
-		drawOnlyImageAt(gl, fow);
-		drawOnlyTorsoAt(gl, torsoColor != null ? torsoColor : Color.WHITE, fow);
-		drawOnlyShadowAt(gl, fow);
-		gl.glPopMatrix();
+		drawOnlyImageAt(gl, x, y, z, fow);
+		drawOnlyTorsoAt(gl, x, y, z, fow, torsoColor != null ? torsoColor : Color.WHITE);
+		drawOnlyShadowAt(gl, x, y, z, fow);
 	}
 
-	public void drawOnlyTorsoAt(GLDrawContext gl, Color torsoColor, float fow) {}
-	public void drawOnlyImageAt(GLDrawContext gl, float fow) {}
-	public void drawOnlyShadowAt(GLDrawContext gl, float fow) {}
+	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {}
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {}
+	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z, float fow) {}
 
 	/**
 	 * Draws the image at a given rectangle.

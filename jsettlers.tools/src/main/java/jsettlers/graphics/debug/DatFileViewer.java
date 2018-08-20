@@ -384,13 +384,14 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			txtRenderer.drawString(0.0f, height - 30.f, String.format(Locale.ENGLISH, "Offset: %d, %d", offsetX, offsetY));
 			txtRenderer.drawString(0.0f, height - 45.f, String.format(Locale.ENGLISH, "Zoom: %f", zoom));
 
+			/*
 			// Zoom
 			gl2.glTranslatef(width / 2, height / 2, 0);
 			gl2.glScalef(zoom, zoom, zoom);
 			gl2.glTranslatef(-width / 2, -height / 2, 0);
 
 			// Move
-			gl2.glTranslatef(offsetX, offsetY, 0);
+			gl2.glTranslatef(offsetX, offsetY, 0);*/
 
 			// Render
 			int yPos = height - 100;
@@ -415,7 +416,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 				int maxHeight = drawSingleSequence(gl2, y, 20, seq);
 
-				gl2.color(0, 0, 0, 1);
+				drawer.setColor(0, 0, 0, 1);
 				drawer.drawString(-20, y + 20, seqIndex + ":");
 
 				seqIndex++;
@@ -445,18 +446,14 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D, true, null);
 
-			gl2.glPushMatrix();
 			try {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), -image.getOffsetX(), image.getHeight() + image.getOffsetY()}, 0, 3);
 				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
 
-				gl2.color(1, 0, 0, 1);
-				gl2.glTranslatef(x, y, 0);
-				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3);
+				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, 1, 0, 0, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
-			gl2.glPopMatrix();
 		}
 
 		// endregion
