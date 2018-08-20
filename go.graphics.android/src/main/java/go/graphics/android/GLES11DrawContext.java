@@ -16,6 +16,7 @@ package go.graphics.android;
 
 import android.content.Context;
 import android.opengl.GLES11;
+import android.opengl.GLES20;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -127,14 +128,9 @@ public class GLES11DrawContext implements GLDrawContext {
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
 		TextureHandle texture = genTextureIndex();
 
-		if(texture == null) {
-			return null;
-		}
-
 		bindTexture(texture);
 		GLES11.glTexImage2D(GLES11.GL_TEXTURE_2D, 0, GLES11.GL_RGBA, width,
 				height, 0, GLES11.GL_RGBA, GLES11.GL_UNSIGNED_SHORT_4_4_4_4, data);
-
 		setTextureParameters();
 		return texture;
 	}
@@ -172,7 +168,7 @@ public class GLES11DrawContext implements GLDrawContext {
 				GLES11.GL_RGBA, GLES11.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
-	public TextureHandle generateTextureAlpha(int width, int height) {
+	public TextureHandle generateFontTexture(int width, int height) {
 		TextureHandle texture = genTextureIndex();
 
 		ByteBuffer data = ByteBuffer.allocateDirect(width * height);
@@ -182,18 +178,28 @@ public class GLES11DrawContext implements GLDrawContext {
 		data.rewind();
 
 		bindTexture(texture);
-		GLES11.glTexImage2D(GLES11.GL_TEXTURE_2D, 0, GLES11.GL_ALPHA, width,
-				height, 0, GLES11.GL_ALPHA, GLES11.GL_UNSIGNED_BYTE, data);
+		if(this instanceof GLES20DrawContext) {
+			GLES11.glTexImage2D(GLES11.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width,
+					height, 0, GLES11.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, data);
+		} else {
+			GLES11.glTexImage2D(GLES11.GL_TEXTURE_2D, 0, GLES11.GL_ALPHA, width,
+					height, 0, GLES11.GL_ALPHA, GLES11.GL_UNSIGNED_BYTE, data);
+		}
 
 		setTextureParameters();
 		return texture;
 	}
 
-	public void updateTextureAlpha(TextureHandle textureIndex, int left, int bottom,
+	public void updateFontTexture(TextureHandle textureIndex, int left, int bottom,
 								   int width, int height, ByteBuffer data) {
 		bindTexture(textureIndex);
-		GLES11.glTexSubImage2D(GLES11.GL_TEXTURE_2D, 0, left, bottom, width,
-				height, GLES11.GL_ALPHA, GLES11.GL_UNSIGNED_BYTE, data);
+		if(this instanceof GLES20DrawContext) {
+			GLES11.glTexSubImage2D(GLES11.GL_TEXTURE_2D, 0, left, bottom, width,
+					height, GLES11.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, data);
+		} else {
+			GLES11.glTexSubImage2D(GLES11.GL_TEXTURE_2D, 0, left, bottom, width,
+					height, GLES11.GL_ALPHA, GLES11.GL_UNSIGNED_BYTE, data);
+		}
 	}
 
 	private float[] heightMatrix;

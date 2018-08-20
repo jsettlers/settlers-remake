@@ -239,11 +239,20 @@ public class AndroidTextDrawer implements TextDrawer {
 			canvas.translate(-x, 0);
 			renderer.draw(canvas);
 			// canvas.translate(50, .8f * lineheight);
-			ByteBuffer dst = ByteBuffer.allocateDirect(lineheight * TEXTURE_WIDTH);
-			bitmap.copyPixelsToBuffer(dst);
-			dst.rewind();
-			context.updateTextureAlpha(texture, 0, line * lineheight,
-					TEXTURE_WIDTH, lineheight, dst);
+			int points = lineheight * TEXTURE_WIDTH;
+			ByteBuffer alpha8 = ByteBuffer.allocateDirect(points);
+			bitmap.copyPixelsToBuffer(alpha8);
+			ByteBuffer updateBuffer;
+			if(context instanceof GLES20DrawContext) {
+				updateBuffer = ByteBuffer.allocateDirect(points*4);
+				for(int i = 0;i != points;i++) {
+					updateBuffer.putInt(0xFFFFFF00|alpha8.get(i));
+				}
+			} else {
+				updateBuffer = alpha8;
+			}
+			updateBuffer.rewind();
+			context.updateFontTexture(texture, 0, line*lineheight, TEXTURE_WIDTH, lineheight, updateBuffer);
 			lastLine = line;
 		}
 		lastused[firstLine] = lastUsedCount++;
@@ -260,7 +269,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private void initialize() {
 		if (texture == null || !texture.isValid()) {
-			texture = context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+			texture = context.generateFontTexture(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 			lineheight = (int) (getScaledSize() * 1.3);
 			lines = TEXTURE_HEIGHT / lineheight;
 			linestrings = new String[lines];

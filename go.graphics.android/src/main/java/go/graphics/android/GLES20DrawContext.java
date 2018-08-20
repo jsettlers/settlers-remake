@@ -35,7 +35,6 @@ public class GLES20DrawContext extends GLES11DrawContext {
 		shaders = new ArrayList<>();
 
 		prog_background = new ShaderProgram("background");
-		prog_texcolor = new ShaderProgram("tex-color");
 		prog_color = new ShaderProgram("color");
 		prog_tex = new ShaderProgram("tex");
 
@@ -54,28 +53,39 @@ public class GLES20DrawContext extends GLES11DrawContext {
 	}
 
 	private ShaderProgram prog_background;
-	private ShaderProgram prog_texcolor;
 	private ShaderProgram prog_color;
 	private ShaderProgram prog_tex;
 
+	private float clr, clg, clb, cla, tlr, tlg, tlb, tla;
+
 	@Override
 	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
-		boolean colored;
+		boolean changeColor = false;
 
 		if(texture == null) {
 			useProgram(prog_color);
-			colored = true;
+			if(clr != r || clg != g || clb != b || cla != a) {
+				clr = r;
+				clg = g;
+				clb = b;
+				cla = a;
+				changeColor = true;
+			}
 		} else {
 			bindTexture(texture);
-			colored = r != 1 || g != 1 || b != 1 || a != 1;
-
-			if(colored) useProgram(prog_texcolor);
-			else useProgram(prog_tex);
+			useProgram(prog_tex);
+			if(tlr != r || tlg != g || tlb != b || tla != a) {
+				tlr = r;
+				tlg = g;
+				tlb = b;
+				tla = a;
+				changeColor = true;
+			}
 		}
 
 		GLES20.glUniform3fv(lastProgram.ufs[TRANS], 2, new float[] {x, y, z, sx, sy, sz}, 0);
 
-		if(colored) {
+		if(changeColor) {
 			vec[0] = r;
 			vec[1] = g;
 			vec[2] = b;

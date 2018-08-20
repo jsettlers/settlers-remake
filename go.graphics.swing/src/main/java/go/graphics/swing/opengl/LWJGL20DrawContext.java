@@ -39,7 +39,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 		shaders = new ArrayList<>();
 
 		prog_background = new ShaderProgram("background");
-		prog_texcolor = new ShaderProgram("tex-color");
 		prog_color = new ShaderProgram("color");
 		prog_tex = new ShaderProgram("tex");
 
@@ -58,29 +57,40 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 	}
 
 	private ShaderProgram prog_background;
-	private ShaderProgram prog_texcolor;
 	private ShaderProgram prog_color;
 	private ShaderProgram prog_tex;
 
+	private float clr, clg, clb, cla, tlr, tlg, tlb, tla;
+
 	@Override
 	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
-		boolean colored;
+		boolean changeColor = false;
 
 		if(texture == null) {
 			useProgram(prog_color);
-			colored = true;
+			if(clr != r || clg != g || clb != b || cla != a) {
+				clr = r;
+				clg = g;
+				clb = b;
+				cla = a;
+				changeColor = true;
+			}
 		} else {
 			bindTexture(texture);
-			colored = r != 1 || g != 1 || b != 1 || a != 1;
-
-			if(colored) useProgram(prog_texcolor);
-				else useProgram(prog_tex);
+			useProgram(prog_tex);
+			if(tlr != r || tlg != g || tlb != b || tla != a) {
+				tlr = r;
+				tlg = g;
+				tlb = b;
+				tla = a;
+				changeColor = true;
+			}
 		}
 
 
 		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
 
-		if(colored) {
+		if(changeColor) {
 			vecBfr.put(0, r);
 			vecBfr.put(1, g);
 			vecBfr.put(2, b);
