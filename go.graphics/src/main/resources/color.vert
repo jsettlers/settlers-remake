@@ -1,6 +1,8 @@
 #version 100
 
-attribute highp vec2 vertex;
+precision mediump float;
+
+attribute vec2 vertex;
 
 uniform mat4 globalTransform;
 uniform vec3 transform[2];

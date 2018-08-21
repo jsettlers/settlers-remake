@@ -26,7 +26,6 @@ public class GLES20DrawContext extends GLES11DrawContext {
 
 	private final float[] global = new float[16];
 	private final float[] mat = new float[16];
-	private final float[] vec = new float[4];
 	private boolean gles3;
 
 	@Override
@@ -86,11 +85,7 @@ public class GLES20DrawContext extends GLES11DrawContext {
 		GLES20.glUniform3fv(lastProgram.ufs[TRANS], 2, new float[] {x, y, z, sx, sy, sz}, 0);
 
 		if(changeColor) {
-			vec[0] = r;
-			vec[1] = g;
-			vec[2] = b;
-			vec[3] = a;
-			GLES20.glUniform4fv(lastProgram.ufs[COLOR], 1, vec, 0);
+			GLES20.glUniform4f(lastProgram.ufs[COLOR], r, g, b, a);
 		}
 
 		if(gles3) {
@@ -243,6 +238,10 @@ public class GLES20DrawContext extends GLES11DrawContext {
 			GLES20.glAttachShader(program, vertexShader);
 			GLES20.glAttachShader(program, fragmentShader);
 
+			GLES20.glBindAttribLocation(program, 0, "vertex");
+			GLES20.glBindAttribLocation(program, 1, "texcoord");
+			GLES20.glBindAttribLocation(program, 2, "color");
+
 			GLES20.glLinkProgram(program);
 			GLES20.glValidateProgram(program);
 
@@ -260,10 +259,6 @@ public class GLES20DrawContext extends GLES11DrawContext {
 				GLES20.glDeleteProgram(program);
 				throw new Error("Could not link " + name);
 			}
-
-			GLES20.glBindAttribLocation(program, 0, "vertex");
-			GLES20.glBindAttribLocation(program, 1, "texcoord");
-			GLES20.glBindAttribLocation(program, 2, "color");
 
 			for(int i = 0;i != ufs.length;i++) {
 				int uf = GLES20.glGetUniformLocation(program, uniform_names[i]);

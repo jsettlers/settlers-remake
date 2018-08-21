@@ -1,7 +1,9 @@
 #version 100
 
-varying highp float frag_color;
-varying highp vec2 frag_texcoord;
+precision mediump float;
+
+varying float frag_color;
+varying vec2 frag_texcoord;
 
 uniform sampler2D texHandle;
 

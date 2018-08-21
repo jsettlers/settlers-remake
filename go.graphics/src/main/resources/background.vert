@@ -1,5 +1,7 @@
 #version 100
 
+precision mediump float;
+
 attribute vec3 vertex;
 attribute vec2 texcoord;
 attribute float color;

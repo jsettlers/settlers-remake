@@ -31,7 +31,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 	private final Matrix4f global = new Matrix4f();
 	private final Matrix4f mat = new Matrix4f();
 	private final FloatBuffer matBfr = BufferUtils.createFloatBuffer(16);
-	private final FloatBuffer vecBfr = BufferUtils.createFloatBuffer(4);
 
 	@Override
 	void init() {
@@ -91,11 +90,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
 
 		if(changeColor) {
-			vecBfr.put(0, r);
-			vecBfr.put(1, g);
-			vecBfr.put(2, b);
-			vecBfr.put(3, a);
-			GL20.glUniform4fv(lastProgram.ufs[COLOR], vecBfr);
+			GL20.glUniform4f(lastProgram.ufs[COLOR], r, g, b, a);
 		}
 
 		if(glcaps.GL_ARB_vertex_array_object) {
@@ -256,6 +251,10 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 			GL20.glAttachShader(program, vertexShader);
 			GL20.glAttachShader(program, fragmentShader);
 
+			GL20.glBindAttribLocation(program, 0, "vertex");
+			GL20.glBindAttribLocation(program, 1, "texcoord");
+			GL20.glBindAttribLocation(program, 2, "color");
+
 			GL20.glLinkProgram(program);
 			GL20.glValidateProgram(program);
 
@@ -272,10 +271,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 				GL20.glDeleteProgram(program);
 				throw new Error("Could not link " + name);
 			}
-
-			GL20.glBindAttribLocation(program, 0, "vertex");
-			GL20.glBindAttribLocation(program, 1, "texcoord");
-			GL20.glBindAttribLocation(program, 2, "color");
 
 			for(int i = 0;i != ufs.length;i++) {
 				int uf = GL20.glGetUniformLocation(program, uniform_names[i]);

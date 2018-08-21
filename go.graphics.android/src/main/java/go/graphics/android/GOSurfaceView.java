@@ -14,9 +14,7 @@
  *******************************************************************************/
 package go.graphics.android;
 
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.pm.ConfigurationInfo;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
 import android.opengl.GLES10;
@@ -229,7 +227,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		@Override
 		public void onDrawFrame(GL10 gl) {
 			GLES10.glClear(GLES10.GL_DEPTH_BUFFER_BIT | GLES10.GL_COLOR_BUFFER_BIT);
-
 			area.drawArea(drawcontext);
 		}
 

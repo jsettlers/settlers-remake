@@ -171,7 +171,7 @@ public class GLES11DrawContext implements GLDrawContext {
 	public TextureHandle generateFontTexture(int width, int height) {
 		TextureHandle texture = genTextureIndex();
 
-		ByteBuffer data = ByteBuffer.allocateDirect(width * height);
+		ByteBuffer data = ByteBuffer.allocateDirect(width * height * 4);
 		while (data.hasRemaining()) {
 			data.put((byte) 0);
 		}
@@ -276,7 +276,6 @@ public class GLES11DrawContext implements GLDrawContext {
 
 	@Override
 	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType format, boolean writable, String name) {
-
 		GeometryHandle vertexBufferId = allocateVBO(format);
 		ByteBuffer bfr = ByteBuffer.allocateDirect(4*geometry.length).order(ByteOrder.nativeOrder());
 		bfr.asFloatBuffer().put(geometry);
