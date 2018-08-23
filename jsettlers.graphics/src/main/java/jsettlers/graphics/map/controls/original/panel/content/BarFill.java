@@ -22,6 +22,7 @@ import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
+import jsettlers.common.Color;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -59,6 +60,8 @@ public class BarFill extends UIPanel {
 	private float writtenMaxX = -1;
 	private String name;
 
+	private static final Color barColor = new Color(0, .78f, .78f, 1);
+
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		FloatRectangle position = getPosition();
@@ -75,7 +78,7 @@ public class BarFill extends UIPanel {
 						position.getMinX(), position.getMaxY(), maxX, position.getMaxY()});
 				gl.updateGeometryAt(geometry, 0, geometryBfr);
 			}
-			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4, 0, 0, 0, 1, 1, 1, 0, .78f, .78f, 1f);
+			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4, 0, 0, 0, 1, 1, 1, barColor, 1);
 		} catch(IllegalBufferException ex) {
 			ex.printStackTrace();
 		}

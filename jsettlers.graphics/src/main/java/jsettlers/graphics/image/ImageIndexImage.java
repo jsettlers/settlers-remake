@@ -31,7 +31,6 @@ import jsettlers.common.Color;
  */
 public class ImageIndexImage extends Image {
 	private static final float IMAGE_DRAW_OFFSET = .5f;
-	private static final ByteBuffer tempBuffer = ByteBuffer.allocateDirect(5*4*4).order(ByteOrder.nativeOrder());
 
 	private final short width;
 	private final short height;
@@ -96,32 +95,25 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
-		if(isTorso) return;
-		draw(gl, geometryIndex.geometry, geometryIndex.index, x, y, z, 1, 1, 1, fow, fow, fow, 1);
-	}
-
-	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		if(isTorso) {
-			float r = torsoColor.getRed()*fow;
-			float g = torsoColor.getGreen()*fow;
-			float b = torsoColor.getBlue()*fow;
-			float a = torsoColor.getAlpha();
-			draw(gl, geometryIndex.geometry, geometryIndex.index, x, y, z, 1, 1, 1, r, g, b, a);
+			draw(gl, geometryIndex, x, y, z, 1, 1, 1, torsoColor, fow);
+		} else {
+			draw(gl, geometryIndex, x, y, z, 1, 1, 1, null, fow);
+			torso.draw(gl, torso.geometryIndex, x, y, z, 1, 1, 1, torsoColor, fow);
+
 		}
-		if(torso != null) torso.drawOnlyTorsoAt(gl, x, y, z, fow, torsoColor);
 	}
 
-	private void draw(GLDrawContext gl, GeometryHandle handle, int offset, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
+	private void draw(GLDrawContext gl, SharedGeometry.SharedGeometryHandle handle, float x, float y, float z, float sx, float sy, float sz, Color color, float fow) {
 		try {
-			if(geometryIndex == null) geometryIndex = SharedGeometry.addGeometry(gl, geometry);
+			if(handle == null) geometryIndex = handle = SharedGeometry.addGeometry(gl, geometry);
 
-			gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4, x, y, z, sx, sy, sz, r, g, b, a);
+			gl.draw2D(handle.geometry, texture.getTextureIndex(gl), EGeometryType.Quad, handle.index, 4, x, y, z, sx, sy, sz, color, fow);
 		} catch (IllegalBufferException e) {
 			try {
 				texture.recreateTexture();
-				gl.draw2D(handle, texture.getTextureIndex(gl), EGeometryType.Quad, offset, 4, x, y, z, sx, sy, sz, r, g, b, a);
+				gl.draw2D(handle.geometry, texture.getTextureIndex(gl), EGeometryType.Quad, handle.index, 4, x, y, z, sx, sy, sz, color, fow);
 			} catch (IllegalBufferException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -135,14 +127,14 @@ public class ImageIndexImage extends Image {
 				umin, vmax, umax, vmin);
 	}
 
-	private static SharedGeometry.SharedGeometryHandle imageRectHandle = null;
+	private SharedGeometry.SharedGeometryHandle imageRectHandle = null;
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 
 		try {
 			if(imageRectHandle == null) imageRectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0,1, 1, 0, umin, vmin, umax, vmax));
-			draw(gl, imageRectHandle.geometry, imageRectHandle.index, x, y, 0, width, height, 0, 1, 1, 1, 1);
+			draw(gl, imageRectHandle, x, y, 0, width, height, 0, null, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

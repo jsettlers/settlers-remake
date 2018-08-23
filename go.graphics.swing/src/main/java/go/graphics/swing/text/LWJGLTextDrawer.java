@@ -16,6 +16,7 @@ package go.graphics.swing.text;
 
 import org.lwjgl.opengl.GL11;
 
+import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GeometryHandle;
@@ -56,8 +57,6 @@ public final class LWJGLTextDrawer {
 	private final int[] char_widths;
 
 	private final static int char_spacing = 2; // spacing between two characters (otherwise j and f would overlap with the next character)
-
-	private Color color = Color.WHITE;
 
 	private final LWJGL15DrawContext drawContext;
 
@@ -177,6 +176,7 @@ public final class LWJGLTextDrawer {
 		private final float widthFactor;
 		private final float line_height;
 		private final Font sizedFont;
+		private AbstractColor color = null;
 
 		private SizedLWJGLTextDrawer(EFontSize size) {
 			sizedFont = font.deriveFont(size.getSize());
@@ -202,16 +202,12 @@ public final class LWJGLTextDrawer {
 		/**
 		 * TODO: we should remove this.
 		 */
-		public void setColor(float red, float green, float blue, float alpha) {
-			color = new Color(red, green, blue, alpha);
+		public void setColor(AbstractColor color) {
+			this.color = color;
 		}
 
 		public void drawChar(float x, float y, char c) {
-			float r = color.getRed()/255;
-			float g = color.getGreen()/255;
-			float b = color.getBlue()/255;
-			float a = color.getAlpha()/255;
-			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4, x, y, 0, line_height, line_height, 0, r, g, b, a);
+			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4, x, y, 0, line_height, line_height, 0, color, 1);
 		}
 
 		/*

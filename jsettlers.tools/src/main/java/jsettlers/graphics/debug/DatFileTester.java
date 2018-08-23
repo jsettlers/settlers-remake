@@ -32,11 +32,10 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.mutables.Mutable;
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.DatFileType;
@@ -149,10 +148,10 @@ public class DatFileTester {
 				SequenceList<Image> sequences = reader.getSettlers();
 				drawSequences(gl2, width, height, sequences);
 			} else if (mode == GUI) {
-				Sequence<GuiImage> sequences = reader.getGuis();
+				Sequence<SingleImage> sequences = reader.getGuis();
 				drawSequence(gl2, width, height, 0, sequences);
 			} else {
-				Sequence<LandscapeImage> sequences = reader.getLandscapes();
+				Sequence<SingleImage> sequences = reader.getLandscapes();
 				drawSequence(gl2, width, height, 0, sequences);
 			}
 
@@ -169,7 +168,7 @@ public class DatFileTester {
 
 				maxheight = drawSequence(gl2, width, height, y, seq);
 
-				drawer.setColor(0, 0, 0, 1);
+				drawer.setColor(Color.WHITE);
 				drawer.drawString(offsetX+20, offsetY+y+20, seqIndex + ":");
 
 				seqIndex++;
@@ -204,7 +203,7 @@ public class DatFileTester {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), - image.getOffsetX(), image.getHeight() + image.getOffsetY() }, 0, 3);
 				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
 
-				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, 1, 0, 0, 1);
+				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, Color.RED, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
@@ -249,11 +248,11 @@ public class DatFileTester {
 
 	private static void exportTo(File dir, DatFileReader reader) {
 		export(reader.getSettlers(), new File(dir, "settlers"));
-		Sequence<GuiImage> guis = reader.getGuis();
+		Sequence<SingleImage> guis = reader.getGuis();
 		if (guis.length() > 0) {
 			exportSequence(new File(dir, "gui"), 0, guis);
 		}
-		Sequence<LandscapeImage> landscapes = reader.getLandscapes();
+		Sequence<SingleImage> landscapes = reader.getLandscapes();
 		if (landscapes.length() > 0) {
 			exportSequence(new File(dir, "landscape"), 1, landscapes);
 		}

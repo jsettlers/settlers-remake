@@ -388,20 +388,20 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
 					// black
-					drawer.setColor(1, 1, 1, a / 2);
+					drawer.setColor(new Color(1, 1, 1, a/2));
 				} else if (bright < 2f) {
 					// bad visibility
-					drawer.setColor(0, 0, 0, a / 2);
+					drawer.setColor(new Color(1, 1, 1, a/2));
 				}
 				for (int i = -1; i < 3; i++) {
 					drawer.drawString(x + i, y - 1, name);
 				}
-				drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), a);
+				drawer.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), a));
 				drawer.drawString(x, y, name);
 				x += width + 10;
 			}
 
-			drawer.setColor(1, 1, 1, a);
+			drawer.setColor(new Color(1, 1, 1, a));
 			drawer.drawString(x, y, Labels.getString(m.getMessageLabel()));
 
 			messageIndex++;
@@ -462,7 +462,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 
 			try {
-				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
+				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4, 0, 0, 0, 1, 1, 1, null, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
@@ -638,11 +638,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					int height = context.getHeight(x, y);
 					float dx = drawX+context.getConverter().getViewX(x, y, height);
 					float dy = drawY+context.getConverter().getViewY(x, y, height);
-					float r = ((argb >> 16) & 0xff) / 255f;
-					float g = ((argb >> 8) & 0xff) / 255f;
-					float b = ((argb >> 0) & 0xff) / 255f;
-					float a = ((argb >> 24) & 0xff) / 255f;
-					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4, dx, dy, .5f, 1, 1, 1, r, g, b, a);
+					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4, dx, dy, .5f, 1, 1, 1, Color.fromShort((short) argb), 1);
 				}
 			} catch (IllegalBufferException e) {
 				// TODO: Create a crash report

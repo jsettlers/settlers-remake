@@ -22,7 +22,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.images.TextureMap;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.ImageIndexFile;
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
@@ -219,7 +219,7 @@ public final class ImageProvider {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
-			Sequence<LandscapeImage> landscapes = set.getLandscapes();
+			Sequence<SingleImage> landscapes = set.getLandscapes();
 			if (seqnumber < landscapes.length()) {
 				return (SingleImage) landscapes.getImageSafe(seqnumber, name);
 			}

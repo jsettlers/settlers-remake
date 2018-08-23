@@ -26,7 +26,7 @@ import java.nio.ShortBuffer;
  * @author michael
  */
 public interface GLDrawContext {
-	void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) throws IllegalBufferException;
+	void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) throws IllegalBufferException;
 
 	/**
 	 * Returns a texture id which is positive or 0. It returns a negative number on error.
@@ -72,6 +72,4 @@ public interface GLDrawContext {
 	boolean isValid();
 
 	void deleteTexture(TextureHandle texture);
-
-	boolean supports4Bcolors();
 }

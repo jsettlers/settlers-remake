@@ -636,7 +636,7 @@ public class MapObjectDrawer {
 		Image image;
 		for (ImageLink image1 : images) {
 			image = imageProvider.getImage(image1);
-			drawOnlyImage(image, x, y, PLACEMENT_BUILDING_Z, color);
+			drawOnlyImage(image, x, y, PLACEMENT_BUILDING_Z, null, color);
 		}
 	}
 
@@ -1217,11 +1217,11 @@ public class MapObjectDrawer {
 				if (seq.length() > 0) {
 					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
-					drawOnlyImage(seq.getImageSafe(step, () -> "mill-" + step), x, y, 0, color);
+					drawOnlyImage(seq.getImageSafe(step, () -> "mill-" + step), x, y, 0, context.getPlayerColor(building.getPlayer().getPlayerId()), color);
 					ImageLink[] images = type.getImages();
 					if (images.length > 0) {
 						Image image = imageProvider.getImage(images[0]);
-						drawOnlyShadow(image, x, y, color);
+						drawOnlyShadow(image, x, y);
 					}
 				}
 				playSound(building, SOUND_MILL, x, y);
@@ -1427,18 +1427,18 @@ public class MapObjectDrawer {
 		draw(image, x, y, z, color, fowDim, false);
 	}
 
-	private void drawOnlyImage(Image image, int x, int y, float z, float color) {
+	private void drawOnlyImage(Image image, int x, int y, float z, Color torsoColor, float color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
 		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
-		image.drawOnlyImageAt(context.getGl(), viewX, viewY, z, color);
+		image.drawOnlyImageAt(context.getGl(), viewX, viewY, z, torsoColor, color);
 	}
 
-	private void drawOnlyShadow(Image image, int x, int y, float color) {
+	private void drawOnlyShadow(Image image, int x, int y) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height)+context.getOffsetX();
 		float viewY = context.getConverter().getViewY(x, y, height)+context.getOffsetY();
-		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, 0, color);
+		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, 0);
 	}
 
 	private void drawWithHeight(Image image, int x, int y, int height, float color) {

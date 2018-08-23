@@ -16,7 +16,7 @@ package jsettlers.graphics.image.reader.translator;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.TorsoImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -26,7 +26,7 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  * @author Michael Zangl
  *
  */
-public class TorsoTranslator implements DatBitmapTranslator<TorsoImage> {
+public class TorsoTranslator implements DatBitmapTranslator<SingleImage> {
 	private static final int TORSO_BITS = 0x1f;
 
 	@Override
@@ -46,7 +46,7 @@ public class TorsoTranslator implements DatBitmapTranslator<TorsoImage> {
 	}
 
 	@Override
-	public TorsoImage createImage(ImageMetadata metadata, short[] array, String name) {
-		return new TorsoImage(metadata, array, name);
+	public SingleImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new SingleImage(metadata, array, name);
 	}
 }

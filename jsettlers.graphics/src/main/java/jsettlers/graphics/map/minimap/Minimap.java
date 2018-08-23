@@ -158,7 +158,7 @@ public final class Minimap implements IMinimapData {
 				updateMutex.notifyAll();
 			}
 
-			context.draw2D(geometry, texture, EGeometryType.Quad, 0, 4, x, y, 0, 1, 1, 1, 1, 1, 1, 1);
+			context.draw2D(geometry, texture, EGeometryType.Quad, 0, 4, x, y, 0, 1, 1, 1, null, 1);
 
 			drawViewMark(context, x, y);
 		} catch (IllegalBufferException e) {
@@ -177,7 +177,7 @@ public final class Minimap implements IMinimapData {
 
 	private void drawViewMark(GLDrawContext context, float x, float y) {
 		try {
-			context.draw2D(lineGeometry, null, EGeometryType.LineLoop, 0, 6, x, y, 0, 1, 1, 1, 1, 1, 1, 1);
+			context.draw2D(lineGeometry, null, EGeometryType.LineLoop, 0, 6, x, y, 0, 1, 1, 1, null, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}

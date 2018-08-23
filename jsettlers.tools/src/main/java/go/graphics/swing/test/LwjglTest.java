@@ -130,7 +130,7 @@ public class LwjglTest {
 					for (int i = 1; i != point_index; i++) {
 						bfr.asFloatBuffer().put(new float[]{pointx[i - 1], pointy[i - 1], pointx[i], pointy[i]});
 						gl2.updateGeometryAt(pointGeometry, 0, bfr);
-						gl2.draw2D(pointGeometry, null, EGeometryType.LineStrip, 0, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
+						gl2.draw2D(pointGeometry, null, EGeometryType.LineStrip, 0, 2, 0, 0, 0, 1, 1, 1, null, 1);
 					}
 				} catch (IllegalBufferException ex) {
 					ex.printStackTrace();

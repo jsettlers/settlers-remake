@@ -16,7 +16,7 @@ package jsettlers.graphics.image.reader.translator;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.DatFileType;
 import jsettlers.graphics.image.reader.ImageMetadata;
@@ -26,7 +26,7 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  * 
  * @author Michael Zangl
  */
-public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
+public class GuiTranslator implements DatBitmapTranslator<SingleImage> {
 
 	private final DatFileType type;
 
@@ -56,8 +56,8 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 	}
 
 	@Override
-	public GuiImage createImage(ImageMetadata metadata, short[] array, String name) {
-		return new GuiImage(metadata, array, name);
+	public SingleImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new SingleImage(metadata, array, name);
 	}
 
 }

@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GLCapabilities;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
@@ -80,7 +81,7 @@ public class LWJGL15DrawContext implements GLDrawContext {
 	private float lx, ly, lz = -2;
 	private float lsx, lsy, lsz = -1;
 
-	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
+	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
 		if(lx != x || ly != y || lz != z || lsx != sx || lsy != sy || lsz != sz) {
 			if(lsz != -1) GL11.glPopMatrix();
 			GL11.glPushMatrix();
@@ -90,7 +91,18 @@ public class LWJGL15DrawContext implements GLDrawContext {
 			ly = y; lsy = sy;
 			lz = z; lsz = sz;
 		}
-		if(lr != r || lg != g || lb != b || la != a) GL11.glColor4f(lr=r, lg=g, lb=b, la=a);
+
+		if(color != null) {
+			float r = color.red*intensity;
+			float g = color.green*intensity;
+			float b = color.blue*intensity;
+			float a = color.alpha;
+			if(lr != r || lg != g || lb != b || la != a) GL11.glColor4f(lr=r, lg=g, lb=b, la=a);
+		} else {
+			if(lr != lg || lr != lb || lr != intensity || la != 1) GL11.glColor4f(intensity, intensity, intensity, 1);
+			lr = lg = lb = intensity;
+			la = 1;
+		}
 
 		bindTexture(texture);
 		bindGeometry(geometry);
@@ -156,11 +168,6 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		setObjectLabel(GL11.GL_TEXTURE, texture, name + "-tex");
 
 		return textureHandle;
-	}
-
-	@Override
-	public boolean supports4Bcolors() {
-		return true;
 	}
 
 	/**

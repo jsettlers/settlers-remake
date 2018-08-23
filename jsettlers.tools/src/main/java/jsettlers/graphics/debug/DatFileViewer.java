@@ -62,11 +62,10 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.utils.FileUtils;
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileType;
 import jsettlers.graphics.image.sequence.Sequence;
@@ -221,9 +220,9 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 	}
 
 	private void showFileInfo(DatFileType type, AdvancedDatFileReader datFile) {
-		Sequence<GuiImage> ui = datFile.getGuis();
+		Sequence<SingleImage> ui = datFile.getGuis();
 		SequenceList<Image> settlers = datFile.getSettlers();
-		Sequence<LandscapeImage> landscapes = datFile.getLandscapes();
+		Sequence<SingleImage> landscapes = datFile.getLandscapes();
 
 		lblDatType.setText("Type: " + type.toString());
 		lblNumUiSeqs.setText("# GUI Sequences: " + String.valueOf(ui.length()));
@@ -280,12 +279,12 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 	private void exportFile(File dir, AdvancedDatFileReader reader) {
 		exportSequences(new File(dir, "settlers"), reader.getSettlers());
 
-		Sequence<GuiImage> guis = reader.getGuis();
+		Sequence<SingleImage> guis = reader.getGuis();
 		if (guis.length() > 0) {
 			exportSequence(new File(dir, "gui"), 0, guis);
 		}
 
-		Sequence<LandscapeImage> landscapes = reader.getLandscapes();
+		Sequence<SingleImage> landscapes = reader.getLandscapes();
 		if (landscapes.length() > 0) {
 			exportSequence(new File(dir, "landscape"), 1, landscapes);
 		}
@@ -399,10 +398,10 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				SequenceList<Image> sequences = reader.getSettlers();
 				drawMultipleSequences(gl2, yPos, sequences);
 			} else if (currentSet == ImageSet.GUI) {
-				Sequence<GuiImage> sequences = reader.getGuis();
+				Sequence<SingleImage> sequences = reader.getGuis();
 				drawSingleSequence(gl2, yPos, 20, sequences);
 			} else {
-				Sequence<LandscapeImage> sequences = reader.getLandscapes();
+				Sequence<SingleImage> sequences = reader.getLandscapes();
 				drawSingleSequence(gl2, yPos, 20, sequences);
 			}
 		}
@@ -416,7 +415,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 				int maxHeight = drawSingleSequence(gl2, y, 20, seq);
 
-				drawer.setColor(0, 0, 0, 1);
+				drawer.setColor(Color.WHITE);
 				drawer.drawString(-20, y + 20, seqIndex + ":");
 
 				seqIndex++;
@@ -450,7 +449,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), -image.getOffsetX(), image.getHeight() + image.getOffsetY()}, 0, 3);
 				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
 
-				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, 1, 0, 0, 1);
+				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, Color.RED, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}

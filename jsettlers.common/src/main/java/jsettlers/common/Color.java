@@ -16,12 +16,14 @@ package jsettlers.common;
 
 import java.util.Locale;
 
+import go.graphics.AbstractColor;
+
 /**
  * This class represents a color with an alpha value.
  * 
  * @author Michael Zangl
  */
-public final class Color {
+public final class Color extends AbstractColor{
 	/**
 	 * Constant to quickly access black.
 	 */
@@ -71,12 +73,6 @@ public final class Color {
 	private static final int SHORT_FIELD_MAX = 0xf;
 	private static final int SHORT_MASK_ALPHA = 0xf;
 
-	private final float blue;
-	private final float red;
-	private final float green;
-	private final float alpha;
-
-	private final int argb;
 	private final short shortColor;
 
 	/**
@@ -92,16 +88,12 @@ public final class Color {
 				argbFieldToFloat(argb >> SHIFT_ARGB_A));
 	}
 
-	private Color(float red, float green, float blue, float alpha) {
+	public Color(float red, float green, float blue, float alpha) {
 		this(Color.getARGB(red, green, blue, alpha), red, green, blue, alpha);
 	}
 
 	private Color(int argb, float red, float green, float blue, float alpha) {
-		this.argb = argb;
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-		this.alpha = alpha;
+		super(argb, red, green, blue, alpha);
 
 		this.shortColor = toShortColorForced(1);
 	}

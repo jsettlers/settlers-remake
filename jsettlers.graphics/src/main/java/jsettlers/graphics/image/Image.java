@@ -41,14 +41,12 @@ public abstract class Image {
 	public abstract int getHeight();
 
 	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		drawOnlyImageAt(gl, x, y, z, fow);
-		drawOnlyTorsoAt(gl, x, y, z, fow, torsoColor != null ? torsoColor : Color.WHITE);
-		drawOnlyShadowAt(gl, x, y, z, fow);
+		drawOnlyImageAt(gl, x, y, z, torsoColor, fow);
+		drawOnlyShadowAt(gl, x, y, z);
 	}
 
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {}
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {}
-	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z, float fow) {}
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {}
+	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z) {}
 
 	/**
 	 * Draws the image at a given rectangle.

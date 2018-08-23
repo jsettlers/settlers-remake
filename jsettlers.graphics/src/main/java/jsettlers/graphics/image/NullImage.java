@@ -21,6 +21,7 @@ import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
+import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
 /**
@@ -44,7 +45,7 @@ public final class NullImage extends SingleImage {
 	}
 
 	private static NullImage instance;
-	private static LandscapeImage landscapeinstance = null;
+	private static SingleImage landscapeinstance = null;
 
 	/**
 	 * Gets an instance of the null image.
@@ -77,27 +78,27 @@ public final class NullImage extends SingleImage {
 	};
 
 	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		try {
 			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeGeometry(nullData, EGeometryFormatType.VertexOnly2D, false, "placeholder/null");
 
-			gl.draw2D(nullGeometry, null, EGeometryType.Quad, 0, 4, x, y, z, 1, 1, 1, 1, 1, 1, NULL_IMAGE_ALPHA);
-			gl.draw2D(nullGeometry, null, EGeometryType.LineLoop, 0, 4, x, y, z, 1, 1, 1, 1, 0, 0, 1);
+			gl.draw2D(nullGeometry, null, EGeometryType.Quad, 0, 4, x, y, z, 1, 1, 1, null, NULL_IMAGE_ALPHA);
+			gl.draw2D(nullGeometry, null, EGeometryType.LineLoop, 0, 4, x, y, z, 1, 1, 1, Color.RED, 1);
 		} catch (IllegalBufferException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static GuiImage guiinstance;
+	private static SingleImage guiinstance;
 
 	/**
 	 * Gets an empty landscape image.
 	 * 
 	 * @return The imge instance.
 	 */
-	public static LandscapeImage getForLandscape() {
+	public static SingleImage getForLandscape() {
 		if (landscapeinstance == null) {
-			landscapeinstance = new LandscapeImage(NULL_IMAGE_METADATA, NULL_DATA, "landscape-placeholder/null");
+			landscapeinstance = new SingleImage(NULL_IMAGE_METADATA, NULL_DATA, "landscape-placeholder/null");
 		}
 		return landscapeinstance;
 	}
@@ -107,9 +108,9 @@ public final class NullImage extends SingleImage {
 	 * 
 	 * @return The imge instance.
 	 */
-	public static GuiImage getForGui() {
+	public static SingleImage getForGui() {
 		if (guiinstance == null) {
-			guiinstance = new GuiImage(NULL_IMAGE_METADATA, NULL_DATA, "gui-placeholder/null");
+			guiinstance = new SingleImage(NULL_IMAGE_METADATA, NULL_DATA, "gui-placeholder/null");
 		}
 		return guiinstance;
 	}

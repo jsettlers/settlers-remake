@@ -14,11 +14,13 @@ import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
+import go.graphics.GL2DrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
 
-public class LWJGL20DrawContext extends LWJGL15DrawContext {
+public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawContext{
 	public LWJGL20DrawContext(GLCapabilities glcaps, boolean debug) {
 		super(glcaps, debug);
 		global.identity();
@@ -34,10 +36,11 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 
 	@Override
 	void init() {
-		uniform_names = new String[] {"projection", "globalTransform", "transform", "texHandle", "color", "height"};
+		uniform_names = new String[] {"projection", "globalTransform", "transform", "texHandle", "color", "height", "uni_info"};
 		shaders = new ArrayList<>();
 
 		prog_background = new ShaderProgram("background");
+		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");
 		prog_tex = new ShaderProgram("tex");
 
@@ -56,14 +59,26 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 	}
 
 	private ShaderProgram prog_background;
+	private ShaderProgram prog_unified;
 	private ShaderProgram prog_color;
 	private ShaderProgram prog_tex;
 
 	private float clr, clg, clb, cla, tlr, tlg, tlb, tla;
 
 	@Override
-	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, float r, float g, float b, float a) {
+	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity){
 		boolean changeColor = false;
+
+		float r, g, b, a;
+		if(color != null) {
+			r = color.red*intensity;
+			g = color.green*intensity;
+			b = color.blue*intensity;
+			a = color.alpha;
+		} else {
+			r = g = b = intensity;
+			a = 1;
+		}
 
 		if(texture == null) {
 			useProgram(prog_color);
@@ -86,12 +101,58 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 			}
 		}
 
-
 		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
 
 		if(changeColor) {
 			GL20.glUniform4f(lastProgram.ufs[COLOR], r, g, b, a);
 		}
+
+		if(glcaps.GL_ARB_vertex_array_object) {
+			bindFormat(geometry.getInternalFormatId());
+		} else {
+			bindGeometry(geometry);
+			specifyFormat(geometry.getFormat());
+		}
+		GL11.glDrawArrays(primitive, offset*vertices, vertices);
+	}
+
+	private float ulr, ulg, ulb, ula, uli;
+	private boolean ulim, ulsh;
+
+	@Override
+	public void drawUnified2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
+		useProgram(prog_unified);
+		bindTexture(texture);
+
+		if(image) {
+			float r, g, b, a;
+			if (color != null) {
+				r = color.red * intensity;
+				g = color.green * intensity;
+				b = color.blue * intensity;
+				a = color.alpha;
+			} else {
+				r = g = b = intensity;
+				a = 1;
+			}
+
+			if(ulr != r || ulg != g || ulb != b || ula != a) {
+				ulr = r;
+				ulg = g;
+				ulb = b;
+				ula = a;
+				GL20.glUniform4f(prog_unified.ufs[COLOR], r, g, b, a);
+			}
+		}
+
+		if(ulim != image || ulsh != shadow || uli != intensity) {
+			GL20.glUniform3f(prog_unified.ufs[UNI_INFO], image?1:0, shadow?1:0, intensity);
+			ulim = image;
+			ulsh = shadow;
+			uli = intensity;
+		}
+
+		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
 
 		if(glcaps.GL_ARB_vertex_array_object) {
 			bindFormat(geometry.getInternalFormatId());
@@ -174,11 +235,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 		GL20.glUniformMatrix4fv(prog_background.ufs[HEIGHT], false, matrix);
 	}
 
-	@Override
-	public boolean supports4Bcolors() {
-		return false;
-	}
-
 	private int backgroundVAO = -1;
 
 	@Override
@@ -222,11 +278,11 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext {
 	private static final int TEX = 3;
 	private static final int COLOR = 4;
 	private static final int HEIGHT = 5;
-
+	private static final int UNI_INFO = 6;
 
 	private class ShaderProgram  {
 		public final int program;
-		public final int[] ufs = new int[6];
+		public final int[] ufs = new int[7];
 
 		private ShaderProgram(String name) {
 			int vertexShader = -1;

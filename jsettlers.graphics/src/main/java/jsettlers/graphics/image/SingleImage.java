@@ -45,9 +45,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected final int height;
 	protected final int offsetX;
 	protected final int offsetY;
-	private String name;
+	protected String name;
 
-	private TextureHandle texture = null;
+	protected TextureHandle texture = null;
 	protected SharedGeometry.SharedGeometryHandle geometryIndex = null;
 
 	/**
@@ -82,7 +82,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * @param data
 	 * 		The data to use.
 	 */
-	protected SingleImage(ImageMetadata metadata, short[] data, String name) {
+	public SingleImage(ImageMetadata metadata, short[] data, String name) {
 		this.data = ShortBuffer.wrap(data);
 		this.width = metadata.width;
 		this.height = metadata.height;
@@ -134,7 +134,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 			if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, 1, 1));
 
-			gl.draw2D(rectHandle.geometry, textureHandle, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, width, height, 0, 1, 1, 1, 1);
+			gl.draw2D(rectHandle.geometry, textureHandle, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, width, height, 0, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -146,31 +146,11 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		drawOnlyImageAt(gl, x, y, z, fow);
-	}
-
-	@Override
-	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, float fow) {
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		try {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			GeometryHandle geometryIndex2 = getGeometry(gl);
-			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, fow, fow, fow, 1);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
-	}
-
-	@Override
-	public void drawOnlyTorsoAt(GLDrawContext gl, float x, float y, float z, float fow, Color torsoColor) {
-		try {
-			TextureHandle textureIndex = getTextureIndex(gl);
-			GeometryHandle geometryIndex2 = getGeometry(gl);
-			float r = torsoColor.getRed()*fow;
-			float g = torsoColor.getGreen()*fow;
-			float b = torsoColor.getBlue()*fow;
-			float a = torsoColor.getAlpha();
-			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, r, g, b, a);
+			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -249,7 +229,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 				});
 				gl.updateGeometryAt(buildHandle, 0, buildBfr);
-				gl.draw2D(buildHandle, getTextureIndex(gl), EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, color, color, color, 1);
+				gl.draw2D(buildHandle, getTextureIndex(gl), EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, null, color);
 			}
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);

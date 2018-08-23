@@ -14,9 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.font;
 
+import go.graphics.AbstractColor;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+import jsettlers.common.Color;
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -109,7 +111,7 @@ public class FontDrawer implements TextDrawer {
 	}
 
 	@Override
-	public void setColor(float red, float green, float blue, float alpha) {
+	public void setColor(AbstractColor color) {
 		// TODO Support color changes.
 	}
 }

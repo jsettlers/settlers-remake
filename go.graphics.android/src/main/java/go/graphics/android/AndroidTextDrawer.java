@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GeometryHandle;
@@ -164,7 +165,7 @@ public class AndroidTextDrawer implements TextDrawer {
 				e.printStackTrace();
 			}
 
-			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4, x, y, 0f, 1f, 1f, 1f, color_r, color_g, color_b, color_a);
+			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4, x, y, 0f, 1f, 1f, 1f, color, 1);
 		}
 	}
 
@@ -314,14 +315,11 @@ public class AndroidTextDrawer implements TextDrawer {
 		return size.getSize() * pixelScale;
 	}
 
-	private float color_r = 1, color_g = 1, color_b = 1, color_a = 1;
+	private AbstractColor color;
 
 	@Override
-	public void setColor(float red, float green, float blue, float alpha) {
-		color_r = red;
-		color_g = green;
-		color_b = blue;
-		color_a = alpha;
+	public void setColor(AbstractColor color) {
+		this.color = color;
 	}
 
 	public static TextDrawer getInstance(EFontSize size, GLES11DrawContext context) {

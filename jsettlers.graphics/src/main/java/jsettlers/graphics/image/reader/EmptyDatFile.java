@@ -16,9 +16,9 @@ package jsettlers.graphics.image.reader;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.image.reader.translator.LandscapeTranslator;
@@ -43,17 +43,17 @@ public class EmptyDatFile implements DatFileReader {
 	}
 
 	@Override
-	public Sequence<LandscapeImage> getLandscapes() {
-		return new ArraySequence<>(new LandscapeImage[0]);
+	public Sequence<SingleImage> getLandscapes() {
+		return new ArraySequence<>(new SingleImage[0]);
 	}
 
 	@Override
-	public Sequence<GuiImage> getGuis() {
-		return new ArraySequence<>(new GuiImage[0]);
+	public Sequence<SingleImage> getGuis() {
+		return new ArraySequence<>(new SingleImage[0]);
 	}
 
 	@Override
-	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
+	public DatBitmapTranslator<SingleImage> getLandscapeTranslator() {
 		return new LandscapeTranslator(DatFileType.RGB555);
 	}
 

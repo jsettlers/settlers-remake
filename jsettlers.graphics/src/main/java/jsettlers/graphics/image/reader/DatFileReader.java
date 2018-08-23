@@ -17,13 +17,13 @@ package jsettlers.graphics.image.reader;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.translator.DatBitmapTranslator;
 
 public interface DatFileReader extends DatFileSet {
 
-	DatBitmapTranslator<LandscapeImage> getLandscapeTranslator();
+	DatBitmapTranslator<SingleImage> getLandscapeTranslator();
 
 	ByteReader getReaderForLandscape(int index) throws IOException;
 

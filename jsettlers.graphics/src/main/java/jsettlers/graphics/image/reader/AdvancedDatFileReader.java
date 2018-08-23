@@ -21,15 +21,12 @@ import java.io.RandomAccessFile;
 import java8.util.function.Supplier;
 import java8.util.stream.Collectors;
 import java8.util.stream.IntStreams;
-import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.MultiImageMap;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
-import jsettlers.graphics.image.ShadowImage;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.image.TorsoImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.image.reader.translator.GuiTranslator;
@@ -189,10 +186,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private static final int ID_GUIS             = 0x11306;
 
 	private final DatBitmapTranslator<SettlerImage>   settlerTranslator;
-	private final DatBitmapTranslator<TorsoImage>     torsoTranslator;
-	private final DatBitmapTranslator<LandscapeImage> landscapeTranslator;
-	private final DatBitmapTranslator<ShadowImage>    shadowTranslator;
-	private final DatBitmapTranslator<GuiImage>       guiTranslator;
+	private final DatBitmapTranslator<SingleImage>     torsoTranslator;
+	private final DatBitmapTranslator<SingleImage> landscapeTranslator;
+	private final DatBitmapTranslator<SingleImage>    shadowTranslator;
+	private final DatBitmapTranslator<SingleImage>       guiTranslator;
 
 	private final DatFileMapping mapping;
 
@@ -220,13 +217,13 @@ public class AdvancedDatFileReader implements DatFileReader {
 	/**
 	 * A list of loaded landscae images.
 	 */
-	private       LandscapeImage[]         landscapeImages   = null;
-	private final Sequence<LandscapeImage> landscapeSequence = new LandscapeImageSequence();
+	private       SingleImage[]         landscapeImages   = null;
+	private final Sequence<SingleImage> landscapeSequence = new LandscapeImageSequence();
 	private       int[]                    landscapeStarts;
 
-	private       GuiImage[]         guiImages   = null;
+	private       SingleImage[]         guiImages   = null;
 	private       int[]              guiStarts;
-	private final Sequence<GuiImage> guiSequence = new GuiImageSequence();
+	private final Sequence<SingleImage> guiSequence = new GuiImageSequence();
 
 	private final SequenceList<Image> directSettlerList;
 
@@ -274,7 +271,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 	}
 
 	public Hashes getGuiHashes() {
-		Sequence<GuiImage> sequence = getGuis();
+		Sequence<SingleImage> sequence = getGuis();
 
 		return new Hashes(IntStreams.range(0, sequence.length())
 				.mapToObj(index -> sequence.getImage(index, null))
@@ -302,9 +299,9 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 		initializeNullFile();
 
-		landscapeImages = new LandscapeImage[landscapeStarts.length];
+		landscapeImages = new SingleImage[landscapeStarts.length];
 
-		guiImages = new GuiImage[guiStarts.length];
+		guiImages = new SingleImage[guiStarts.length];
 		settlerSequences = new Sequence[settlerStarts.length];
 
 		int torsoDifference = settlerStarts.length - torsoStarts.length;
@@ -538,7 +535,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			long[] torsoPositions = readSequenceHeader(torsoPosition);
 			for (int i = 0; i < torsoPositions.length && i < framePositions.length; i++) {
 				reader.skipTo(torsoPositions[i]);
-				TorsoImage torso = DatBitmapReader.getImage(torsoTranslator, reader, name + "-T" + goldIndex + ":" + i);
+				SingleImage torso = DatBitmapReader.getImage(torsoTranslator, reader, name + "-T" + goldIndex + ":" + i);
 				images[i].setTorso(torso);
 			}
 		}
@@ -549,7 +546,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			for (int i = 0; i < shadowPositions.length
 				&& i < framePositions.length; i++) {
 				reader.skipTo(shadowPositions[i]);
-				ShadowImage shadow = DatBitmapReader.getImage(shadowTranslator, reader, name + "-SH" + goldIndex + ":" + i);
+				SingleImage shadow = DatBitmapReader.getImage(shadowTranslator, reader, name + "-SH" + goldIndex + ":" + i);
 				images[i].setShadow(shadow);
 			}
 		}
@@ -571,12 +568,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 	}
 
 	@Override
-	public Sequence<LandscapeImage> getLandscapes() {
+	public Sequence<SingleImage> getLandscapes() {
 		return landscapeSequence;
 	}
 
 	@Override
-	public Sequence<GuiImage> getGuis() {
+	public Sequence<SingleImage> getGuis() {
 		return guiSequence;
 	}
 
@@ -585,12 +582,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 *
 	 * @author michael
 	 */
-	private class LandscapeImageSequence implements Sequence<LandscapeImage> {
+	private class LandscapeImageSequence implements Sequence<SingleImage> {
 		/**
 		 * Forces a get of the image.
 		 */
 		@Override
-		public LandscapeImage getImage(int index, Supplier<String> custom_name) {
+		public SingleImage getImage(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (landscapeImages[index] == null) {
 				String str_custom_name = custom_name != null ? custom_name.get() : null;
@@ -632,7 +629,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private void loadLandscapeImage(int index, String name) {
 		try {
 			reader.skipTo(landscapeStarts[index]);
-			LandscapeImage image = DatBitmapReader.getImage(landscapeTranslator, reader, name);
+			SingleImage image = DatBitmapReader.getImage(landscapeTranslator, reader, name);
 			landscapeImages[index] = image;
 		} catch (IOException e) {
 			landscapeImages[index] = NullImage.getForLandscape();
@@ -644,12 +641,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 *
 	 * @author michael
 	 */
-	private class GuiImageSequence implements Sequence<GuiImage> {
+	private class GuiImageSequence implements Sequence<SingleImage> {
 		/**
 		 * Forces a get of the image.
 		 */
 		@Override
-		public GuiImage getImage(int index, Supplier<String> custom_name) {
+		public SingleImage getImage(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (guiImages[index] == null) {
 				String str_custom_name = custom_name != null ? custom_name.get() : null;
@@ -685,7 +682,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		try {
 			int theseGraphicsFilesIndex = mapping.mapGuiImage(goldIndex);
 			reader.skipTo(guiStarts[theseGraphicsFilesIndex]);
-			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader, name);
+			SingleImage image = DatBitmapReader.getImage(guiTranslator, reader, name);
 			guiImages[goldIndex] = image;
 		} catch (IOException | ArrayIndexOutOfBoundsException e) {
 			guiImages[goldIndex] = NullImage.getForGui();
@@ -737,12 +734,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 		return settlerTranslator;
 	}
 
-	public DatBitmapTranslator<TorsoImage> getTorsoTranslator() {
+	public DatBitmapTranslator<SingleImage> getTorsoTranslator() {
 		return torsoTranslator;
 	}
 
 	@Override
-	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
+	public DatBitmapTranslator<SingleImage> getLandscapeTranslator() {
 		return landscapeTranslator;
 	}
 }

@@ -20,6 +20,7 @@ import java.nio.ByteOrder;
 import java.util.BitSet;
 
 import go.graphics.EGeometryFormatType;
+import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -1185,7 +1186,7 @@ public class Background implements IGraphicsBackgroundListener {
 			}
 
 			if(shapeHandle == null || !shapeHandle.isValid()) {
-				useFloatColors = !context.getGl().supports4Bcolors();
+				useFloatColors = (context.getGl() instanceof GL2DrawContext);
 				generateGeometry(context);
 				context.getGl().setHeightMatrix(context.getConverter().getMatrixWithHeight());
 			}
