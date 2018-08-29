@@ -56,10 +56,11 @@ public class SettlerImage extends SingleImage {
 		if((geometryIndex == null || SharedGeometry.isInvalid(gl, geometryIndex))) {
 			gl2 = gl instanceof GL2DrawContext && (this.torso != null || this.shadow != null);
 
+			if(!gl2) return false;
 			if(unifiedData == null) generateUData();
 			try {
 				texture = gl.generateTexture(uwidth, uheight, unifiedData, name+"-merged");
-				geometryIndex = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(uoffX, -uoffY, uoffX + uwidth, -uoffY -height, 0, 0, 1, 1));
+				geometryIndex = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(uoffX, -uoffY, uoffX + uwidth, -uoffY - uheight, 0, 0, 1, 1));
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}
