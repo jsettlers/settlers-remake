@@ -21,6 +21,10 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java8.util.Optional;
+import java8.util.function.BiFunction;
+import java8.util.function.Predicate;
+import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
@@ -86,11 +90,6 @@ import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import java8.util.Optional;
-import java8.util.function.BiFunction;
-import java8.util.function.Predicate;
-import java8.util.stream.Collectors;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -340,7 +339,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (selected instanceof Building) {
 					final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
 					scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
-						a.getAmount(), a.isRelative()
+																 a.getAmount(), a.isRelative()
 					));
 				}
 				break;
@@ -351,7 +350,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (selected instanceof Building) {
 					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
 					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
-						a.getWaypointType(), a.getPosition()
+															   a.getWaypointType(), a.getPosition()
 					));
 				}
 				break;
@@ -615,9 +614,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void filterWounded() {
-		final List<ISelectable> selected = currentSelection.stream().filter(selectable -> selectable.isWounded()).collect(Collectors.toList());
+		if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+			return;
+		}
 
-        setSelection(new SelectionSet(selected));
+		final List<ISelectable> wounded = currentSelection.stream().filter(ISelectable::isWounded).collect(Collectors.toList());
+		setSelection(new SelectionSet(wounded));
 	}
 
 	private void deselect() {
