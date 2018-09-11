@@ -24,47 +24,47 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageFlavor;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.ui.UIPanel;
 
 public class SelectionRow extends UIPanel {
 
-	private final EMovableType type;
+	private final Image movableImage;
+	private String localizedLabelName;
 	private final int count;
 
 	/**
-	 * Creates a new row in the selection view
-	 * 
-	 * @param type
-	 *            The type of the movables
-	 * @param count
-	 *            How many of them are selected.
+	 * Creates a new row in the selection view.
+	 *
+	 * @param movableImage
+	 * @param localizedLabelName
+	 * @param selectionCount how many are selected.
 	 */
-	public SelectionRow(EMovableType type, int count) {
-		this.type = type;
-		this.count = count;
+	public SelectionRow(Image movableImage, String localizedLabelName, int selectionCount) {
+		this.count = selectionCount;
+		this.movableImage = movableImage;
+		this.localizedLabelName = localizedLabelName;
+	}
+
+	static SelectionRow createFromMovableType(EMovableType type, int count) {
+		SettlerImageFlavor flavor = new SettlerImageFlavor(type, EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL, EDirection.SOUTH_EAST);
+		return new SelectionRow(SettlerImageMap.getInstance().getImageForSettler(flavor, 0.0f), Labels.getName(type), count);
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		float width = getPosition().getWidth();
-		Image image =
-				SettlerImageMap.getInstance().getImageForSettler(type,
-						EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL,
-						EDirection.SOUTH_EAST, 0);
 
 		Color color = getColor();
-		float bottomy = getPosition()
-				.getMinY() + getPosition().getHeight() / 4;
+		float bottomY = getPosition().getMinY() + getPosition().getHeight() / 4;
 		float left = getPosition().getMinX();
-		float imagex = left + width / 20;
-		image.drawAt(gl, imagex, bottomy, color);
+		float imageX = left + width / 20;
+		movableImage.drawAt(gl, imageX, bottomY, color);
 
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
-
 		drawer.drawString(left + width / 5, getPosition().getMinY() + getPosition().getHeight() * .75f, "" + count);
-		drawer.drawString(left + width / 5, bottomy, Labels.getName(type));
-
+		drawer.drawString(left + width / 5, bottomY, localizedLabelName);
 	}
 
 	private Color getColor() {

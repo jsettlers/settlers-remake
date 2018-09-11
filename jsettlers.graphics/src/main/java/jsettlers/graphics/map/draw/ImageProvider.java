@@ -35,6 +35,8 @@ import jsettlers.graphics.image.reader.versions.GfxFolderMapping;
 import jsettlers.graphics.image.reader.versions.SettlersVersionMapping;
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageMapItem;
 
 import java.io.File;
 import java.util.Arrays;
@@ -51,7 +53,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author michael
  */
-public final class ImageProvider {
+public class ImageProvider {
 	private static final String FILE_PREFIX = "siedler3_";
 	private static final int LAST_SEQUENCE_NUMBER = 2;
 	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
@@ -73,7 +75,7 @@ public final class ImageProvider {
 	private Thread preloadingThread;
 	private ImageIndexFile indexFile = null;
 
-	private ImageProvider() {
+	public ImageProvider() {
 	}
 
 	/**
@@ -305,7 +307,7 @@ public final class ImageProvider {
 	 */
 	public void startPreloading() {
 		if (lookupPath != null && preloadingThread == null) {
-			preloadingThread = new Thread(new ImagePreloadTask(), "image preloader");
+			preloadingThread = new Thread(new ImagePreloadTask(SettlerImageMap.getInstance()), "image preloader");
 			preloadingThread.start();
 		}
 	}
@@ -327,4 +329,9 @@ public final class ImageProvider {
 	public void addPreloadTask(GLPreloadTask task) {
 		tasks.add(task);
 	}
+
+    public Image getImageSafe(SettlerImageMapItem item, float progress) {
+        return getSettlerSequence(item.getFile(), item.getSequenceIndex())
+                .getImageSafe(item.imageIndex(progress));
+    }
 }
