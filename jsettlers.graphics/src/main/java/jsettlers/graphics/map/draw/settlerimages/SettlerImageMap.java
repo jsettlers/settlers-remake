@@ -111,7 +111,8 @@ public final class SettlerImageMap {
 
 		SettlerImageFlavor flavor = new SettlerImageFlavor(type, action, material, direction);
 		int priority = flavor.calculatePriority();
-		if(!priorities.containsKey(flavor) || priorities.get(flavor) < priority) {
+		Integer cachedPriority = priorities.get(flavor);
+		if(cachedPriority == null || cachedPriority < priority) {
 			map.put(flavor, new SettlerImageMapItem(fileIndex, sequence, start, duration));
 			priorities.put(flavor, priority);
 		}
