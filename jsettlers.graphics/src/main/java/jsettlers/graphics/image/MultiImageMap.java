@@ -33,8 +33,6 @@ import jsettlers.graphics.image.reader.DatBitmapReader;
 import jsettlers.graphics.image.reader.ImageArrayProvider;
 import jsettlers.graphics.image.reader.ImageMetadata;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
-import jsettlers.graphics.image.sequence.ArraySequence;
-import jsettlers.graphics.image.sequence.Sequence;
 
 /**
  * This is a map of multiple images of one sequence. It always contains the settler image and the torso. This class allows packing the settler images
@@ -67,7 +65,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	 *            The height of the base image.
 	 * @param id
 	 *            The id of the map.
-	 * @see #addSequences(AdvancedDatFileReader, int[], Sequence[])
+	 * @see #addSequences(AdvancedDatFileReader, int[])
 	 */
 	public MultiImageMap(int width, int height, String id) {
 		this.width = width;
@@ -89,13 +87,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	 *            The reader to read the textures from.
 	 * @param sequenceIndexes
 	 *            The indexes where the sequences start.
-	 * @param addTo
-	 *            The image sequence to add image references to the newly added images to.
 	 * @throws IOException
 	 *             If the file could not be read.
 	 */
-	public synchronized void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
-			Sequence<Image>[] addTo) throws IOException {
+	public synchronized void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes) throws IOException {
 		allocateBuffers();
 
 		ImageMetadata settlermeta = new ImageMetadata();
@@ -104,21 +99,12 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			long[] settlers = dfr.getSettlerPointers(seqindex);
 			long[] torsos = dfr.getTorsoPointers(seqindex);
 
-			Image[] images = new Image[settlers.length];
 			for (int i = 0; i < settlers.length; i++) {
-				// System.out.println("Processing seq + " + seqindex +
-				// ", image " + i + ":");
-
 				ByteReader reader;
 				reader = dfr.getReaderForPointer(settlers[i]);
 				DatBitmapReader.uncompressImage(reader,
 						dfr.getSettlerTranslator(), settlermeta,
 						this);
-				int settlerx = drawx - settlermeta.width;
-				int settlery = linetop;
-
-				int torsox = 0;
-				int torsoy = 0;
 
 				ImageMetadata torsometa;
 				if (torsos != null) {
@@ -128,19 +114,9 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 						DatBitmapReader.uncompressImage(reader,
 								dfr.getTorsoTranslator(),
 								torsometa, this);
-						torsox = drawx - torsometa.width;
-						torsoy = linetop;
 					}
-				} else {
-					torsometa = null;
 				}
-
-				images[i] =
-						new MultiImageImage(this, settlermeta, settlerx,
-								settlery, torsometa,
-								torsox, torsoy);
 			}
-			addTo[seqindex] = new ArraySequence<>(images);
 		}
 
 		// request a opengl rerender, or do it ourselves on the next image
