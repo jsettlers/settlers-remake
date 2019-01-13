@@ -10,6 +10,7 @@ uniform vec4 color;
 
 void main() {
 	vec4 tex_color = texture2D(texHandle, frag_texcoord);
+	gl_FragColor = vec4(0,0,0,0);
 
 	if(uni_info.x > 0.1) { // draw image
 		if(tex_color.a < 0.1 && tex_color.r > 0.1) { // torso pixel
