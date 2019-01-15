@@ -19,10 +19,8 @@ import java.nio.ShortBuffer;
 import go.graphics.EGeometryType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedGeometry;
-import go.graphics.TextureHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -37,8 +35,7 @@ public class SettlerImage extends SingleImage {
 
 	private SingleImage torso = null;
 	private SingleImage shadow = null;
-	private boolean gl2;
-	private ShortBuffer unifiedData = null;
+	private boolean gl2 = false;
 
 	/**
 	 * Creates a new settler image.
@@ -52,22 +49,28 @@ public class SettlerImage extends SingleImage {
 		super(metadata, data, name);
 	}
 
-	private boolean gl2Draw(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow, boolean settler, boolean shadow) {
-		if((geometryIndex == null || SharedGeometry.isInvalid(gl, geometryIndex))) {
+	@Override
+	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
+		if ((texture == null || !texture.isValid())) {
 			gl2 = gl instanceof GL2DrawContext && (this.torso != null || this.shadow != null);
+			if(gl2) generateUData();
+		}
 
-			if(!gl2) return false;
-			if(unifiedData == null) generateUData();
-			try {
-				texture = gl.generateTexture(uwidth, uheight, unifiedData, name+"-merged");
-				geometryIndex = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(uoffX, -uoffY, uoffX + uwidth, -uoffY - uheight, 0, 0, 1, 1));
-			} catch (IllegalBufferException e) {
-				e.printStackTrace();
+		super.checkHandles(gl);
+		if(!gl2) {
+			if (torso != null && torso.getWidth() == getWidth()
+					&& torso.getHeight() == getHeight()
+					&& torso.getOffsetX() == getOffsetX()
+					&& torso.getOffsetY() == getOffsetY()) {
+				torso.setGeometry(geometryIndex);
 			}
 		}
-		if(!gl2) return false;
+	}
 
+	private boolean gl2Draw(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow, boolean settler, boolean shadow) {
 		try {
+			checkHandles(gl);
+			if(!gl2) return false;
 			((GL2DrawContext)gl).drawUnified2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, settler, shadow, x, y, z, 1, 1, 1, torsoColor, fow);
 		} catch(IllegalBufferException e) {
 			e.printStackTrace();
@@ -87,14 +90,12 @@ public class SettlerImage extends SingleImage {
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		if(gl2Draw(gl, x, y, z, torsoColor, fow, true, false)) return;
 		try {
-			TextureHandle settlerTex = getTextureIndex(gl);
-			GeometryHandle settlerGeo = getGeometry(gl);
-			gl.draw2D(settlerGeo, settlerTex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, fow);
+			checkHandles(gl);
+			gl.draw2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, fow);
 
 			if(torso != null && torsoColor != null) {
-				TextureHandle torsoTex = torso.getTextureIndex(gl);
-				GeometryHandle torsoGeo = torso.getGeometry(gl);
-				gl.draw2D(torsoGeo, torsoTex, EGeometryType.Quad, torso.geometryIndex.index, 4, x, y, z, 1, 1, 1, torsoColor, fow);
+				torso.checkHandles(gl);
+				gl.draw2D(torso.geometryIndex.geometry, torso.texture, EGeometryType.Quad, torso.geometryIndex.index, 4, x, y, z, 1, 1, 1, torsoColor, fow);
 			}
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
@@ -106,9 +107,8 @@ public class SettlerImage extends SingleImage {
 		if(gl2Draw(gl, x, y, z, null, 0, false, true)) return;
 		if(shadow != null) {
 			try {
-				TextureHandle shadowTex = shadow.getTextureIndex(gl);
-				GeometryHandle shadowGeo = shadow.getGeometry(gl);
-				gl.draw2D(shadowGeo, shadowTex, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
+				shadow.checkHandles(gl);
+				gl.draw2D(shadow.geometryIndex.geometry, shadow.texture, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
 			} catch (IllegalBufferException e) {
 				handleIllegalBufferException(e);
 			}
@@ -138,51 +138,37 @@ public class SettlerImage extends SingleImage {
 		return this.torso;
 	}
 
-	@Override
-	protected GeometryHandle getGeometry(GLDrawContext context) throws IllegalBufferException {
-		GeometryHandle index = super.getGeometry(context);
-		if (torso != null && torso.getWidth() == getWidth()
-				&& torso.getHeight() == getHeight()
-				&& torso.getOffsetX() == getOffsetX()
-				&& torso.getOffsetY() == getOffsetY()) {
-			torso.setGeometry(geometryIndex);
-		}
-		return index;
-	}
-
-	private int uoffX, uoffY, uwidth, uheight;
-
 	private void generateUData() {
-		uoffX = offsetX;
-		uoffY = offsetY;
+		toffsetX = offsetX;
+		toffsetY = offsetY;
 
 		int tx = offsetX+width;
 		int ty = offsetY+height;
 
 		if(torso != null) {
-			if(torso.offsetX < uoffX) uoffX = torso.offsetX;
-			if(torso.offsetY < uoffY) uoffY = torso.offsetY;
+			if(torso.offsetX < toffsetX) toffsetX = torso.offsetX;
+			if(torso.offsetY < toffsetY) toffsetY = torso.offsetY;
 			if(torso.offsetX+torso.width > tx) tx = torso.offsetX+torso.width;
 			if(torso.offsetY+torso.height > ty) ty = torso.offsetY+torso.height;
 		}
 
 		if(shadow != null) {
-			if(shadow.offsetX < uoffX) uoffX = shadow.offsetX;
-			if(shadow.offsetY < uoffY) uoffY = shadow.offsetY;
+			if(shadow.offsetX < toffsetX) toffsetX = shadow.offsetX;
+			if(shadow.offsetY < toffsetY) toffsetY = shadow.offsetY;
 			if(shadow.offsetX+shadow.width > tx) tx = shadow.offsetX+shadow.width;
 			if(shadow.offsetY+shadow.height > ty) ty = shadow.offsetY+shadow.height;
 		}
 
-		uwidth = tx-uoffX;
-		uheight = ty-uoffY;
+		twidth = tx-toffsetX;
+		theight = ty-toffsetY;
 
-		unifiedData = ShortBuffer.allocate(uwidth * uheight);
+		tdata = ShortBuffer.allocate(twidth * theight);
 
 		short[] temp = new short[0];
 
 		if(shadow != null) {
-			int hoffX = shadow.offsetX-uoffX;
-			int hoffY = shadow.offsetY-uoffY;
+			int hoffX = shadow.offsetX-toffsetX;
+			int hoffY = shadow.offsetY-toffsetY;
 
 			if(temp.length < shadow.width) temp = new short[shadow.width];
 
@@ -192,14 +178,14 @@ public class SettlerImage extends SingleImage {
 
 				for(int x = 0;x != shadow.width;x++) {
 					if(temp[x] == 0) continue;
-					unifiedData.put((y+hoffY)* uwidth +hoffX+x, (short)((temp[x]&0xF)<<8)); // move alpha to green
+					tdata.put((y+hoffY)*twidth+hoffX+x, (short)((temp[x]&0xF)<<8)); // move alpha to green
 				}
 			}
 		}
 
 		if(torso != null) {
-			int toffX = torso.offsetX-uoffX;
-			int toffY = torso.offsetY-uoffY;
+			int toffX = torso.offsetX-toffsetX;
+			int toffY = torso.offsetY-toffsetY;
 
 			if(temp.length < torso.width) temp = new short[torso.width];
 
@@ -209,13 +195,13 @@ public class SettlerImage extends SingleImage {
 
 				for(int x = 0;x != torso.width;x++) {
 					if(temp[x] == 0) continue;
-					unifiedData.put((y+toffY)* uwidth +toffX+x, (short) ((temp[x]&0xF0)|0xF000)); // strip out everything except blue channel and set full red channel
+					tdata.put((y+toffY)*twidth+toffX+x, (short) ((temp[x]&0xF0)|0xF000)); // strip out everything except blue channel and set full red channel
 				}
 			}
 		}
 
-		int soffX = offsetX-uoffX;
-		int soffY = offsetY-uoffY;
+		int soffX = offsetX-toffsetX;
+		int soffY = offsetY-toffsetY;
 
 		if(temp.length < width) temp = new short[width];
 
@@ -224,7 +210,7 @@ public class SettlerImage extends SingleImage {
 			data.get(temp, 0, width);
 
 			for(int x = 0;x != width;x++) {
-				if(temp[x] != 0) unifiedData.put((y+soffY)* uwidth +soffX+x, temp[x]);
+				if(temp[x] != 0) tdata.put((y+soffY)*twidth+soffX+x, temp[x]);
 			}
 		}
 	}

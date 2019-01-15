@@ -67,7 +67,7 @@ public interface GLDrawContext {
 
 	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
-	GeometryHandle generateGeometry(int bytes, EGeometryFormatType type, boolean writable, String name);
+	GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, boolean writable, String name);
 
 	boolean isValid();
 

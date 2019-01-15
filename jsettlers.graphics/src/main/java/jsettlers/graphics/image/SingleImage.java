@@ -40,9 +40,10 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  */
 public class SingleImage extends Image implements ImageDataPrivider {
 
-	protected ShortBuffer data;
+	protected ShortBuffer data, tdata;
 	protected final int width;
 	protected final int height;
+	protected int twidth, theight, toffsetX, toffsetY;
 	protected final int offsetX;
 	protected final int offsetY;
 	protected String name;
@@ -66,11 +67,11 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 */
 	protected SingleImage(ShortBuffer data, int width, int height, int offsetX,
 			int offsetY, String name) {
-		this.data = data;
-		this.width = width;
-		this.height = height;
-		this.offsetX = offsetX;
-		this.offsetY = offsetY;
+		this.data = tdata = data;
+		this.width = twidth = width;
+		this.height = theight = height;
+		this.offsetX = toffsetX = offsetX;
+		this.offsetY = toffsetY = offsetY;
 		this.name = name;
 	}
 
@@ -83,12 +84,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * 		The data to use.
 	 */
 	public SingleImage(ImageMetadata metadata, short[] data, String name) {
-		this.data = ShortBuffer.wrap(data);
-		this.width = metadata.width;
-		this.height = metadata.height;
-		this.offsetX = metadata.offsetX;
-		this.offsetY = metadata.offsetY;
-		this.name = name;
+		this(ShortBuffer.wrap(data), metadata.width, metadata.height, metadata.offsetX, metadata.offsetY, name);
 	}
 
 	@Override
@@ -111,30 +107,11 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return this.offsetY;
 	}
 
-	/**
-	 * Generates the texture, if needed, and returns the index of that texutre.
-	 *
-	 * @param gl
-	 * 		The gl context to use to generate the image.
-	 * @return The gl handle or <code>null</code> if the texture is not allocated.
-	 */
-	public TextureHandle getTextureIndex(GLDrawContext gl) {
-		if (texture == null || !texture.isValid()) {
-			texture = gl.generateTexture(width, height, this.data, name);
-		}
-		return this.texture;
-	}
-
-	private static SharedGeometry.SharedGeometryHandle rectHandle = null;
-
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 		try {
-			TextureHandle textureHandle = getTextureIndex(gl);
-
-			if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, 1, 1));
-
-			gl.draw2D(rectHandle.geometry, textureHandle, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, width, height, 0, null, 1);
+			checkStaticHandles(gl);
+			gl.draw2D(rectHandle.geometry, texture, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, twidth/this.width*width, theight/this.height*height, 0, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -148,32 +125,44 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		try {
-			TextureHandle textureIndex = getTextureIndex(gl);
-			GeometryHandle geometryIndex2 = getGeometry(gl);
-			gl.draw2D(geometryIndex2, textureIndex, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
+			checkHandles(gl);
+			gl.draw2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
 	}
 
+	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
+		if (texture == null || !texture.isValid()) {
+			texture = gl.generateTexture(twidth, theight, tdata, name);
+		}
+
+		if(geometryIndex == null || SharedGeometry.isInvalid(gl, geometryIndex)) {
+			geometryIndex = SharedGeometry.addGeometry(gl, getGeometry());
+		}
+	}
+
+	private void checkStaticHandles(GLDrawContext gl) throws IllegalBufferException {
+		checkHandles(gl);
+		if(buildHandle == null || !buildHandle.isValid()) {
+			buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, true, "building-progress");
+		}
+		if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) {
+			rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, 1, 1));
+		}
+	}
+
 	protected float[] getGeometry() {
-		int left = getOffsetX();
-		int top = -getOffsetY();
-		return SharedGeometry.createQuadGeometry(left, top, left+width, top-height, 0, 0, 1, 1);
+		return SharedGeometry.createQuadGeometry(toffsetX, -toffsetY, toffsetX + twidth, -toffsetY - theight, 0, 0, 1, 1);
 	}
 
 	protected void setGeometry(SharedGeometry.SharedGeometryHandle geometry) {
 		geometryIndex = geometry;
 	}
 
-	protected GeometryHandle getGeometry(GLDrawContext context) throws IllegalBufferException {
-		if(geometryIndex == null || SharedGeometry.isInvalid(context, geometryIndex)) geometryIndex = SharedGeometry.addGeometry(context, getGeometry());
-		return geometryIndex.geometry;
-	}
-
-	private static final Object buildLock = new Object(); // should never be triggered, but who knows ?
 	private static GeometryHandle buildHandle = null;
-	private static ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
+	private static SharedGeometry.SharedGeometryHandle rectHandle = null;
+	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
 
 	/**
 	 * Draws a triangle part of this image on the image buffer.
@@ -195,42 +184,40 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	public void drawTriangle(GLDrawContext gl, float viewX,
 			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, float color) {
 		try {
-			float left = getOffsetX() + viewX;
-			float top = -getOffsetY() + viewY;
+			checkStaticHandles(gl);
+			float left = toffsetX + viewX;
+			float top = -toffsetY + viewY;
 			// In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
 			// growing
 			// image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more predictable and
 			// controlled
 			// manner.
-			u1 = (float) Math.round(u1 * width) / width;
-			u2 = (float) Math.round(u2 * width) / width;
-			u3 = (float) Math.round(u3 * width) / width;
-			v1 = (float) Math.round(v1 * height) / height;
-			v2 = (float) Math.round(v2 * height) / height;
-			v3 = (float) Math.round(v3 * height) / height;
+			u1 = (float) Math.round(u1 * twidth) / twidth;
+			u2 = (float) Math.round(u2 * twidth) / twidth;
+			u3 = (float) Math.round(u3 * twidth) / twidth;
+			v1 = (float) Math.round(v1 * theight) / theight;
+			v2 = (float) Math.round(v2 * theight) / theight;
+			v3 = (float) Math.round(v3 * theight) / theight;
 
-			synchronized (buildLock) {
-				if(buildHandle == null || !buildHandle.isValid()) buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, true, "building-progress");
-				buildBfr.asFloatBuffer().put(new float[] {
-						u1 * width,
-						-v1 * height,
-						u1,
-						v1,
+			buildBfr.asFloatBuffer().put(new float[] {
+					u1 * twidth,
+					-v1 * theight,
+					u1,
+					v1,
 
-						u2 * width,
-						-v2 * height,
-						u2,
-						v2,
+					u2 * twidth,
+					-v2 * theight,
+					u2,
+					v2,
 
-						u3 * width,
-						-v3 * height,
-						u3,
-						v3,
+					u3 * twidth,
+					-v3 * theight,
+					u3,
+					v3,
 
-				});
-				gl.updateGeometryAt(buildHandle, 0, buildBfr);
-				gl.draw2D(buildHandle, getTextureIndex(gl), EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, null, color);
-			}
+			});
+			gl.updateGeometryAt(buildHandle, 0, buildBfr);
+			gl.draw2D(buildHandle, texture, EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, null, color);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
