@@ -113,6 +113,10 @@ public interface IGraphicsGrid {
 	 * @param y
 	 *            y coordinate
 	 * @return visibility value defined by the fog of war algorithm
+	 *
+	 * @implNote if your instance does not implement jsettlers.common.map.IVisibilityStateProvider.IDGPProvider
+	 * graphics will consider this function to always return CommonConstants.FOG_OF_WAR_VISIBLE.
+	 *
 	 */
 	byte getVisibleStatus(int x, int y);
 

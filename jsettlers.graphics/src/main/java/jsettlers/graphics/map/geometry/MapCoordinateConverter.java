@@ -54,14 +54,6 @@ public final class MapCoordinateConverter {
 	private float[] inverse = new float[4 * 4];
 
 	private float[] heightinverse = new float[4 * 4];
-	/**
-	 * The width of a tile in view space.
-	 */
-	private float xscale;
-	/**
-	 * The height of a tile in view space.
-	 */
-	private float yscale;
 
 	/**
 	 * Creates a new converter.
@@ -86,14 +78,20 @@ public final class MapCoordinateConverter {
 
 		int realMapWidth = mapwidth - 1;
 		int realMapHeight = mapheight - 1;
-		this.xscale = viewwidth / realMapWidth;
-		this.yscale = viewheight / realMapHeight;
+		/*
+	  The width of a tile in view space.
+	 */
+		float xscale = viewwidth / realMapWidth;
+		/*
+	  The height of a tile in view space.
+	 */
+		float yscale = viewheight / realMapHeight;
 
-		this.matrix[M_00] = this.xscale;
-		this.matrix[M_01] = -.5f * this.xscale;
-		this.matrix[M_02] = .5f * realMapHeight * this.xscale;
+		this.matrix[M_00] = xscale;
+		this.matrix[M_01] = -.5f * xscale;
+		this.matrix[M_02] = .5f * realMapHeight * xscale;
 		this.matrix[M_10] = 0;
-		this.matrix[M_11] = -this.yscale;
+		this.matrix[M_11] = -yscale;
 		this.matrix[M_12] = viewheight;
 		this.matrix[2 + 2 * 4] = 1;
 		this.matrix[3 + 3 * 4] = 1;
@@ -103,19 +101,19 @@ public final class MapCoordinateConverter {
 		this.heightmatrix[M_HX] = HEIGHT_X_DISPLACEMENT;
 		this.heightmatrix[M_HY] = HEIGHT_Y_DISPLACEMENT;
 
-		this.inverse[M_00] = 1 / this.xscale;
-		this.inverse[M_01] = -.5f / this.yscale;
+		this.inverse[M_00] = 1 / xscale;
+		this.inverse[M_01] = -.5f / yscale;
 		this.inverse[M_02] = 0;
 		this.inverse[M_10] = 0;
-		this.inverse[M_11] = -1 / this.yscale;
+		this.inverse[M_11] = -1 / yscale;
 		this.inverse[M_12] = realMapHeight;
 		this.inverse[2 + 2 * 4] = 1;
 		this.inverse[3 + 3 * 4] = 1;
 
 		System.arraycopy(this.inverse, 0, this.heightinverse, 0,
 				this.inverse.length);
-		this.heightinverse[M_HX] = 1 / this.yscale;
-		this.heightinverse[M_HY] = 2 / this.yscale;
+		this.heightinverse[M_HX] = 1 / yscale;
+		this.heightinverse[M_HY] = 2 / yscale;
 	}
 
 	/**
@@ -125,13 +123,13 @@ public final class MapCoordinateConverter {
 	 *            The x coordinate in map space.
 	 * @param y
 	 *            The y coordinate in map space.
-	 * @param width
+	 * @param arg
 	 *            The width of the tile.
 	 * @return The view x coordinate
 	 */
-	public float getViewX(float x, float y, float width) {
+	public float getViewX(float x, float y, float arg) {
 		return x * this.heightmatrix[M_00] + y * this.heightmatrix[M_01]
-				+ width * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
+				+ arg * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
 	}
 
 	/**
@@ -198,42 +196,6 @@ public final class MapCoordinateConverter {
 	}
 
 	/**
-	 * Gets the matrix for the conversion from map coordinates to screen coordinates. The matrix must not be changed.
-	 *
-	 * @return The opengl-compatibel matrix.
-	 */
-	public float[] getMatrix() {
-		return this.matrix;
-	}
-
-	private short roundUpShort(float f) {
-		return (short) Math.ceil(f);
-	}
-
-	/**
-	 * Gets all tiles that are mapped to the given pixel.
-	 *
-	 * @param x
-	 *            the x pixel pos.
-	 * @param y
-	 *            the y pixel pos.
-	 * @return The area. Might be empty but not null;
-	 */
-	public IMapArea getAreaForPixel(int x, int y) {
-		float mapx = getExactMapX(x, y);
-		float mapy = getExactMapY(x, y);
-
-		float mapstartx = mapx - .5f / this.xscale;
-		float mapstarty = mapy - .5f / this.yscale;
-		float mapendx = mapx + .5f / this.xscale;
-		float mapendy = mapy + .5f / this.yscale;
-
-		return new Parallelogram(roundUpShort(mapstartx),
-				roundUpShort(mapstarty), roundUpShort(mapendx - 1),
-				roundUpShort(mapendy - 1));
-	}
-
-	/**
 	 * Gets the position of a map point on the screen
 	 *
 	 * @param x
@@ -257,24 +219,6 @@ public final class MapCoordinateConverter {
 	 */
 	public ShortPoint2D getMap(float x, float y) {
 		return new ShortPoint2D(getMapX(x, y), getMapY(x, y));
-	}
-
-	/**
-	 * Gets the x distance between two tile origins.
-	 *
-	 * @return The distance.
-	 */
-	public float getTileXDistance() {
-		return this.matrix[M_00];
-	}
-
-	/**
-	 * Gets the y disntance between two tiles.
-	 *
-	 * @return The distance in y direction.
-	 */
-	public float getTileYDistance() {
-		return this.matrix[M_11];
 	}
 
 	/**

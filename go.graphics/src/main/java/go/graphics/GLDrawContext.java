@@ -26,44 +26,7 @@ import java.nio.ShortBuffer;
  * @author michael
  */
 public interface GLDrawContext {
-
-	/**
-	 * Fills a quad.
-	 * 
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
-	 */
-	void fillQuad(float x1, float y1, float x2, float y2);
-
-	/**
-	 * Draws a line between an array of points
-	 * 
-	 * @param points
-	 *            The array of points. It's length has to be a multiple of 3.
-	 * @param loop
-	 *            If the line should be closed.
-	 */
-	void drawLine(float[] points, boolean loop);
-
-	void glPushMatrix();
-
-	void glTranslatef(float x, float y, float z);
-
-	void glScalef(float x, float y, float z);
-
-	void glPopMatrix();
-
-	/**
-	 * Set the color of the context.
-	 * 
-	 * @param red
-	 * @param green
-	 * @param blue
-	 * @param alpha
-	 */
-	void color(float red, float green, float blue, float alpha);
+	void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) throws IllegalBufferException;
 
 	/**
 	 * Returns a texture id which is positive or 0. It returns a negative number on error.
@@ -72,38 +35,17 @@ public interface GLDrawContext {
 	 * @param height
 	 *            The height of the image.
 	 * @param data
-	 *            The data as array. It needs to have a length of width * height and each element is a color with: 5 bits red, 5 bits gree,n, 5 bits
-	 *            blue and 1 bit alpha.
+	 *            The data as array. It needs to have a length of width * height and each element is a color with: 4 bits red, 4 bits green, 4 bits
+	 *            blue and 4 bits alpha.
 	 * @return The id of the generated texture.
 	 */
-	TextureHandle generateTexture(int width, int height, ShortBuffer data);
+	TextureHandle generateTexture(int width, int height, ShortBuffer data, String name);
 
-	/**
-	 * Draws with a texture.
-	 * 
-	 * @param textureid
-	 *            The id of the texture
-	 * @param geometry
-	 *            A float array of the form: x,y,z,u,v
-	 * @throws IllegalBufferException
-	 */
-	void drawQuadWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride, float x, float y) throws IllegalBufferException;
 
-	void drawQuadWithTexture(TextureHandle textureid, GeometryHandle geometryindex) throws IllegalBufferException;
+	void setHeightMatrix(float[] matrix);
 
-	void drawTrianglesWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
-
-	void drawTrianglesWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
-
-	void drawTrianglesWithTextureColored(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
-
-	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
-
-	int makeWidthValid(int width);
-
-	int makeHeightValid(int height);
-
-	void glMultMatrixf(float[] matrix);
+	void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz);
 
 	/**
 	 * Updates a part of a texture image.
@@ -121,22 +63,13 @@ public interface GLDrawContext {
 
 	TextDrawer getTextDrawer(EFontSize size);
 
-	GeometryHandle storeGeometry(float[] geometry);
+	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, boolean writable, String name);
 
-	GLBuffer startWriteGeometry(GeometryHandle geometryindex) throws IllegalBufferException;
+	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
-	void endWriteGeometry(GeometryHandle geometryindex);
+	GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, boolean writable, String name);
 
-	GeometryHandle generateGeometry(int bytes);
+	boolean isValid();
 
-	interface GLBuffer {
-		void putFloat(float f);
-
-		void putByte(byte b);
-
-		void position(int position);
-	}
-
-	void drawTrianglesWithTextureColored(TextureHandle currentTexture,
-			ByteBuffer byteBuffer, int currentTriangles) throws IllegalBufferException;
+	void deleteTexture(TextureHandle texture);
 }

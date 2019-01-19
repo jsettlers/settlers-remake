@@ -357,7 +357,7 @@ public class MapData implements IMapData {
 		undoDelta.addLandscapeChange(x, y, landscapes[x][y]);
 		landscapes[x][y] = type;
 		if (backgroundListener != null) {
-			backgroundListener.backgroundChangedAt((short) x, (short) y);
+			backgroundListener.backgroundShapeChangedAt((short) x, (short) y);
 		}
 		return true;
 	}
@@ -425,7 +425,7 @@ public class MapData implements IMapData {
 		heights[x][y] = safeHeight;
 
 		if (backgroundListener != null) {
-			backgroundListener.backgroundChangedAt((short) x, (short) y);
+			backgroundListener.backgroundShapeChangedAt((short) x, (short) y);
 		}
 	}
 
@@ -493,7 +493,7 @@ public class MapData implements IMapData {
 		while (c != null) {
 			inverse.addHeightChange(c.x, c.y, heights[c.x][c.y]);
 			heights[c.x][c.y] = c.height;
-			backgroundListener.backgroundChangedAt(c.x, c.y);
+			backgroundListener.backgroundShapeChangedAt(c.x, c.y);
 			c = c.next;
 		}
 
@@ -502,7 +502,7 @@ public class MapData implements IMapData {
 		while (cl != null) {
 			inverse.addLandscapeChange(cl.x, cl.y, landscapes[cl.x][cl.y]);
 			landscapes[cl.x][cl.y] = cl.landscape;
-			backgroundListener.backgroundChangedAt(cl.x, cl.y);
+			backgroundListener.backgroundShapeChangedAt(cl.x, cl.y);
 			cl = cl.next;
 		}
 

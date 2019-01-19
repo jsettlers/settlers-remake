@@ -16,7 +16,7 @@ package jsettlers.graphics.image.reader.translator;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.ShadowImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -26,7 +26,7 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  * @author Michael Zangl
  *
  */
-public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
+public class ShadowTranslator implements DatBitmapTranslator<SingleImage> {
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
 		return 0x8; // shadow: A = 0.5 in 4444 coding
@@ -43,7 +43,7 @@ public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
 	}
 
 	@Override
-	public ShadowImage createImage(ImageMetadata metadata, short[] array) {
-		return new ShadowImage(metadata, array);
+	public SingleImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new SingleImage(metadata, array, name);
 	}
 }

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -26,7 +27,6 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
@@ -104,11 +104,6 @@ public final class MapDrawContext implements IGLProvider {
 	public boolean ENABLE_ORIGINAL = true;
 
 	/**
-	 * The basic draw buffer we use.
-	 */
-	private final DrawBuffer buffer;
-
-	/**
 	 * Creates a new map context for a given map.
 	 *
 	 * @param map
@@ -125,8 +120,6 @@ public final class MapDrawContext implements IGLProvider {
 			DrawConstants.DISTANCE_Y, map.getWidth(),
 			map.getHeight()
 		);
-
-		buffer = new DrawBuffer(this);
 	}
 
 	/**
@@ -153,19 +146,27 @@ public final class MapDrawContext implements IGLProvider {
 
 		// beginTime = System.nanoTime();
 
-		gl2.glPushMatrix();
 		float zoom = screen.getZoom();
-		gl2.glScalef(zoom, zoom, 1);
-		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
-			(int) -this.screen.getBottom() + .5f, 0
-		);
+		gl2.setGlobalAttributes(0, 0, 0, zoom, zoom, 1);
+
+		offsetX = (int) (-screen.getLeft()+.5f);
+		offsetY = (int) (-screen.getBottom()+.5f);
+	}
+
+	private int offsetX, offsetY;
+
+	public int getOffsetX() {
+		return offsetX;
+	}
+
+	public int getOffsetY() {
+		return offsetY;
 	}
 
 	/**
 	 * Ends a drawing session.
 	 */
 	public void end() {
-		this.gl.glPopMatrix();
 		this.gl = null;
 	}
 
@@ -177,16 +178,6 @@ public final class MapDrawContext implements IGLProvider {
 	@Override
 	public GLDrawContext getGl() {
 		return this.gl;
-	}
-
-	/**
-	 * Gets the current draw buffer used for this context. You can add draws to this buffer instead of directly calling OpenGL since this object
-	 * buffers the calls.
-	 *
-	 * @return The buffer.
-	 */
-	public DrawBuffer getDrawBuffer() {
-		return buffer;
 	}
 
 	/**
@@ -272,30 +263,6 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public MapCoordinateConverter getConverter() {
 		return this.converter;
-	}
-
-	/**
-	 * sets up the gl drawing context to draw a given tile.
-	 *
-	 * @param x
-	 *            The tile to draw.
-	 * @param y
-	 *            The tile to draw.
-	 */
-	public void beginTileContext(int x, int y) {
-		this.gl.glPushMatrix();
-		int height = getHeight(x, y);
-		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
-			this.converter.getViewY(x, y, height), 0
-		);
-	}
-
-	/**
-	 * Assumes that the user begun drawing a tile recently, and ends drawing the tile. This also resets the view matrix to the one before starting to
-	 * draw.
-	 */
-	public void endTileContext() {
-		this.gl.glPopMatrix();
 	}
 
 	/**
@@ -491,6 +458,13 @@ public final class MapDrawContext implements IGLProvider {
 
 	public byte getVisibleStatus(int x, int y) {
 		return map.getVisibleStatus(x, y);
+	}
+
+	public IDirectGridProvider getFow() {
+		if(map instanceof IDirectGridProvider) {
+			return ((IDirectGridProvider)map);
+		}
+		return null;
 	}
 
 	public IGraphicsGrid getMap() {

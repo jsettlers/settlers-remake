@@ -14,7 +14,11 @@
  *******************************************************************************/
 package go.graphics.swing.test;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -27,9 +31,8 @@ import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map.Entry;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import javax.swing.JFrame;
 
@@ -43,25 +46,21 @@ public class LwjglTest {
 	private Area area;
 
 	public static Area generateArea() {
-		Region region1 = new Region(Region.POSITION_TOP);
-		Region region2 = new Region(Region.POSITION_LEFT);
-		Region region3 = new Region(Region.POSITION_CENTER);
+		Region region = new Region(Region.POSITION_CENTER);
 
 		Area area = new Area();
-		area.add(region1);
-		area.add(region2);
-		region2.setSize(200);
-		area.add(region3);
-		RegionContent content = new TestContent(region3);
-		region3.setContent(content);
-		region3.addEventHandler(content);
+		area.set(region);
+		RegionContent content = new TestContent(region);
+		region.setContent(content);
+		region.addEventHandler(content);
 		return area;
 	}
 
 	private static class TestContent implements RegionContent {
 
-		private Hashtable<Object, ArrayList<UIPoint>> draw =
-				new Hashtable<>();
+		private int point_index = 0;
+		private float[] pointx = new float[10];
+		private float[] pointy = new float[10];
 		private final Region region;
 
 		private TestContent(Region region) {
@@ -81,63 +80,66 @@ public class LwjglTest {
 
 			@Override
 			public void aborted(GOEvent event) {
-				draw.remove(event);
+
 			}
 
 			@Override
 			public void eventDataChanged(GOEvent event) {
+				UIPoint point = null;
 				if (event instanceof GOHoverEvent) {
-					draw.get(event).add(
-							((GOHoverEvent) event).getHoverPosition());
+					point = ((GOHoverEvent) event).getHoverPosition();
 				} else if (event instanceof GODrawEvent) {
-					draw.get(event)
-							.add(((GODrawEvent) event).getDrawPosition());
+					point = ((GODrawEvent) event).getDrawPosition();
 				} else if (event instanceof GOPanEvent) {
-					draw.get(event).add(((GOPanEvent) event).getPanDistance());
+					point = ((GOPanEvent) event).getPanDistance();
 				} else if (event instanceof GOCommandEvent) {
-					draw.get(event).add(
-							((GOCommandEvent) event).getCommandPosition());
+					point = ((GOCommandEvent) event).getCommandPosition();
 				}
-				region.requestRedraw();
+
+				synchronized (pointLock) {
+					if (point != null && point_index != 10) {
+						pointx[point_index] = (float) point.getX();
+						pointy[point_index] = (float) point.getY();
+						point_index++;
+					}
+					region.requestRedraw();
+				}
 			}
 		};
 
 		@Override
 		public void handleEvent(GOEvent event) {
 			event.setHandler(handler);
-			draw.put(event, new ArrayList<>());
 			handler.eventDataChanged(event);
 		}
 
+		private final Object pointLock = new Object();
+
+		private GeometryHandle pointGeometry = null;
+		private ByteBuffer bfr = ByteBuffer.allocateDirect(4*2*2).order(ByteOrder.nativeOrder());
+
 		@Override
 		public void drawContent(GLDrawContext gl2, int width, int height) {
-			for (Entry<Object, ArrayList<UIPoint>> e : draw.entrySet()) {
-				if (e.getKey() instanceof GOHoverEvent) {
-					gl2.color(.7f, .0f, .0f, .5f);
-				} else if (e.getKey() instanceof GODrawEvent) {
-					gl2.color(.7f, .7f, .0f, .5f);
-				} else if (e.getKey() instanceof GOPanEvent) {
-					gl2.color(.0f, .7f, .0f, .5f);
-				} else if (e.getKey() instanceof GOCommandEvent) {
-					gl2.color(.0f, .0f, .7f, .5f);
-				} else {
-					gl2.color(1, 1, 1, 1);
+
+			if(point_index < 2) return;
+
+			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D, true, null);
+
+			synchronized (pointLock) {
+				try {
+					for (int i = 1; i != point_index; i++) {
+						bfr.asFloatBuffer().put(new float[]{pointx[i - 1], pointy[i - 1], pointx[i], pointy[i]});
+						gl2.updateGeometryAt(pointGeometry, 0, bfr);
+						gl2.draw2D(pointGeometry, null, EGeometryType.LineStrip, 0, 2, 0, 0, 0, 1, 1, 1, null, 1);
+					}
+				} catch (IllegalBufferException ex) {
+					ex.printStackTrace();
 				}
-
-				int pointn = e.getValue().size();
-
-				float[] points = new float[pointn * 3];
-				for (int i = 0; i < pointn; i++) {
-					UIPoint point = e.getValue().get(i);
-					points[i * 3] = (float) point.getX();
-					points[i * 3 + 1] = (float) point.getY();
-					points[i * 3 + 2] = 0;
-				}
-
-				gl2.drawLine(points, false);
+				pointx[0] = pointx[point_index-1];
+				pointy[0] = pointy[point_index-1];
+				point_index = 1;
 			}
 		}
-
 	}
 
 	/**
@@ -147,7 +149,12 @@ public class LwjglTest {
 		JFrame window = new JFrame("Test");
 		area = generateArea();
 
-		AreaContainer content = new AreaContainer(area);
+		AreaContainer content = new AreaContainer(area) {
+			@Override
+			public void draw() {
+				area.drawArea(context);
+			}
+		};
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		window.add(content);

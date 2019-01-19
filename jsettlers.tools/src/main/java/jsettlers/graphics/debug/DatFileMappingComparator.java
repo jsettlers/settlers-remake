@@ -100,8 +100,8 @@ public class DatFileMappingComparator {
 	}
 
 	private static IndexingDatFileMapping compareDatFiles(File file1, File file2) {
-		AdvancedDatFileReader reader1 = new AdvancedDatFileReader(file1, DatFileType.getForPath(file1));
-		AdvancedDatFileReader reader2 = new AdvancedDatFileReader(file2, DatFileType.getForPath(file2));
+		AdvancedDatFileReader reader1 = new AdvancedDatFileReader(file1, DatFileType.getForPath(file1), null);
+		AdvancedDatFileReader reader2 = new AdvancedDatFileReader(file2, DatFileType.getForPath(file2), null);
 
 		System.out.println("Comparing settlers hashes for files " + file1 + " and " + file2);
 		int[] settlersMapping = reader1.getSettlersHashes().compareAndCreateMapping(reader2.getSettlersHashes());

@@ -2,30 +2,36 @@ package go.graphics.swing;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLCapabilities;
 
 import java.awt.Component;
 import java.awt.LayoutManager;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
-import go.graphics.swing.opengl.LWJGLDrawContext;
+import go.graphics.swing.contextcreator.JAWTContextCreator;
+import go.graphics.swing.opengl.LWJGL15DrawContext;
+import go.graphics.swing.opengl.LWJGL20DrawContext;
 
 public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
 
 
 	protected ContextCreator cc;
-	protected LWJGLDrawContext context;
+	protected LWJGL15DrawContext context;
+	private boolean debug;
 
-	public GLContainer(EBackendType backend, LayoutManager layout) {
+	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
 		setLayout(layout);
+		this.debug = debug;
 
 		try {
-			cc = BackendSelector.createBackend(this, backend);
+			cc = BackendSelector.createBackend(this, backend, debug);
 			cc.init();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -35,20 +41,30 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	}
 
 	public void resize_gl(int width, int height) {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		// coordinate system origin at lower left with width and height same as
-		// the window
-		GL11.glOrtho(0, width, 0, height, -1, 1);
-
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glViewport(0, 0, width, height);
+		context.resize(width, height);
 	}
 
+	public void wrapNewContext() {
+		if(cc instanceof JAWTContextCreator) ((JAWTContextCreator)cc).makeCurrent(true);
+		if(context != null) context.disposeAll();
 
-	public void init() {
-		context = new LWJGLDrawContext(GL.createCapabilities());
+		GLCapabilities caps = GL.createCapabilities();
+
+		if(caps.OpenGL20) {
+			context = new LWJGL20DrawContext(caps, debug);
+		} else if(caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) {
+			context = new LWJGL15DrawContext(caps, debug);
+		} else {
+			context = null;
+			errorGLVersion();
+		}
+	}
+
+	private void errorGLVersion() {
+		SwingUtilities.invokeLater(() -> {
+			JOptionPane.showMessageDialog(null, "JSettlers needs at least OpenGL 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
+			System.exit(1);
+		});
 	}
 
 	/**
@@ -63,10 +79,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	}
 
 	public void draw() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glLoadIdentity();
-
-		context.startFrame();
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
 	public void requestRedraw() {

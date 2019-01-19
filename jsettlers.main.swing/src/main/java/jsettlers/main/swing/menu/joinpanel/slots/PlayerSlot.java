@@ -284,7 +284,7 @@ public class PlayerSlot {
 	}
 
 	private static Image getReadyButtonImage(int file, int seq, int imagenumber, boolean imageIsForEnabledState) {
-		BufferedImage readyImage = ((SingleImage) ImageProvider.getInstance().getSettlerSequence(file, seq).getImage(imagenumber)).convertToBufferedImage();
+		BufferedImage readyImage = ((SingleImage) ImageProvider.getInstance().getSettlerSequence(file, seq).getImage(imagenumber, null)).convertToBufferedImage();
 		if (!imageIsForEnabledState) {
 			readyImage = JSettlersSwingUtil.createDisabledImage(readyImage);
 		}

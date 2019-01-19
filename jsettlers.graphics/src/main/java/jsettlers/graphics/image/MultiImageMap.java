@@ -53,6 +53,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private TextureHandle texture = null;
 	private ShortBuffer buffers;
 	private ByteBuffer byteBuffer;
+	private String name;
 
 	private final File cacheFile;
 
@@ -67,9 +68,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	 *            The id of the map.
 	 * @see #addSequences(AdvancedDatFileReader, int[])
 	 */
-	public MultiImageMap(int width, int height, String id) {
+	public MultiImageMap(int width, int height, String id, String name) {
 		this.width = width;
 		this.height = height;
+		this.name = name;
 		File root = new File(ResourceManager.getResourcesDirectory(), "cache");
 		cacheFile = new File(root, "cache-" + id);
 	}
@@ -236,7 +238,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	public TextureHandle getTexture(GLDrawContext gl) {
 		if (!textureValid || !texture.isValid()) {
 			if (texture != null) {
-				texture.delete();
+				gl.deleteTexture(texture);
 			}
 			try {
 				loadTexture(gl);
@@ -267,7 +269,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		}
 
 		buffers.rewind();
-		texture = gl.generateTexture(width, height, buffers);
+		texture = gl.generateTexture(width, height, buffers, name);
 		System.out.println("opengl Texture: " + texture
 				+ ", thread: " + Thread.currentThread().toString());
 		if (texture != null) {

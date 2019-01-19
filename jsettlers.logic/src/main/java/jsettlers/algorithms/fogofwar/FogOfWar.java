@@ -85,6 +85,11 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
+	public byte[][] getVisibleStatusArray() {
+		if(enabled) return sight;
+		return null;
+	}
+
 	private boolean isPlayerOK(IPlayerable playerable) {
 		return (MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayer().getTeamId() == team));
 	}
