@@ -17,7 +17,6 @@ package jsettlers.graphics.image;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
-import jsettlers.graphics.map.draw.DrawBuffer;
 
 /**
  * This is an image that can be displayed on the GUI.
@@ -41,114 +40,30 @@ public abstract class Image {
 	 */
 	public abstract int getHeight();
 
-	/**
-	 * Draws the image around 0,0 with the given color.
-	 * 
-	 * @param gl
-	 *            The gl context
-	 * @param color
-	 *            The color to use. If it is <code>null</code>, white is used.
-	 */
-	public abstract void draw(GLDrawContext gl, Color color);
-
-	/**
-	 * Draws the image around 0,0 with the given color.
-	 * 
-	 * @param gl
-	 *            The gl context
-	 * @param color
-	 *            The color to use. If it is <code>null</code>, white is used.
-	 * @param multiply
-	 *            A number to multiply all color values with.
-	 */
-	public abstract void draw(GLDrawContext gl, Color color, float multiply);
-
-	/**
-	 * Convenience method, calls drawAt(gl, x, y, -1).
-	 * 
-	 * @param gl
-	 *            The context.
-	 * @param x
-	 *            The x position of the center.
-	 * @param y
-	 *            The y position of the center
-	 */
-	public abstract void drawAt(GLDrawContext gl, float x, float y);
-
-	/**
-	 * Draws an object for a given player. The player -1 means no player.
-	 * 
-	 * @param gl
-	 *            The gl context.
-	 * @param x
-	 *            The x coordinate on the screen.
-	 * @param y
-	 *            The y coordinate on the screen.
-	 * @param color
-	 *            The player number.
-	 */
-	public abstract void drawAt(GLDrawContext gl, float x, float y, Color color);
-
-	/**
-	 * Draws the image at a given {@link DrawBuffer}.
-	 * 
-	 * @param gl
-	 *            The gl context to use.
-	 * @param buffer
-	 *            The draw buffer to draw the image to.
-	 * @param viewX
-	 *            The x position the center of the image should be.
-	 * @param viewY
-	 *            The y position the center of the image should be.
-	 * @param color
-	 *            The color the image should have (argb)
-	 */
-	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
-								float viewX, float viewY, int color);
-
-	public abstract void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer,
-										 float viewX, float viewY, int color);
-	public abstract void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer,
-										 float viewX, float viewY, int color);
-
-	/**
-	 * Draws the image at a given {@link DrawBuffer}.
-	 * 
-	 * @param gl
-	 *            The gl context to use.
-	 * @param buffer
-	 *            The draw buffer to draw the image to.
-	 * @param viewX
-	 *            The x position the center of the image should be.
-	 * @param viewY
-	 *            The y position the center of the image should be.
-	 * @param color
-	 *            The color the image should have (argb)
-	 * @param multiply
-	 *            A value to multiply the color with.
-	 */
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, Color color, float multiply) {
-		int iColor = dimColor(color, multiply);
-		drawAt(gl, buffer, viewX, viewY, iColor);
+	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
+		drawOnlyImageAt(gl, x, y, z, torsoColor, fow);
+		drawOnlyShadowAt(gl, x, y, z);
 	}
+
+	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {}
+	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z) {}
 
 	/**
 	 * Draws the image at a given rectangle.
 	 * 
 	 * @param gl
 	 *            The gl context to draw on.
-	 * @param minX
+	 * @param x
 	 *            The x coordinate to draw the left bound to.
-	 * @param minY
+	 * @param y
 	 *            The y coordinate to draw the top bound to.
-	 * @param maxX
-	 *            The x coordinate to draw the right bound to.
-	 * @param maxY
-	 *            The y coordinate to draw the bottom bound to.
+	 * @param width
+	 *            The width of the image.
+	 * @param height
+	 *            The height of the image.
 	 */
-	public abstract void drawImageAtRect(GLDrawContext gl, float minX,
-			float minY, float maxX, float maxY);
+	public abstract void drawImageAtRect(GLDrawContext gl, float x,
+			float y, float width, float height);
 
 	/**
 	 * Multiplies the color with an float.

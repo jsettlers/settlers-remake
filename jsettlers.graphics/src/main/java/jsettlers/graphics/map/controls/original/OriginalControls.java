@@ -160,10 +160,7 @@ public class OriginalControls implements IControls {
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		if (minimap != null) {
-			gl.glPushMatrix();
-			gl.glTranslatef(getMinimapLeft(), getMinimapBottom(), 0);
-			minimap.draw(gl);
-			gl.glPopMatrix();
+			minimap.draw(gl, getMinimapLeft(), getMinimapBottom());
 		}
 		uiBase.drawAt(gl); // Frame decoration should be drawn after and over the edges of the minimap.
 	}

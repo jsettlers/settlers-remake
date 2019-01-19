@@ -77,4 +77,6 @@ public abstract class ImageLink implements Serializable {
 	public abstract EImageLinkType getType();
 
     public abstract int getFile();
+
+    public abstract String getHumanName();
 }

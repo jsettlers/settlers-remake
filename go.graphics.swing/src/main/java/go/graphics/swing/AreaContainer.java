@@ -42,11 +42,11 @@ public class AreaContainer extends GLContainer implements RedrawListener {
 	 *            The area to display
 	 */
 	public AreaContainer(Area area) {
-		this(area, EBackendType.DEFAULT);
+		this(area, EBackendType.DEFAULT, false);
 	}
 
-	public AreaContainer(Area area, EBackendType backend) {
-		super(backend, new BorderLayout());
+	public AreaContainer(Area area, EBackendType backend, boolean debug) {
+		super(backend, new BorderLayout(), debug);
 		this.area = area;
 
 		if(cc instanceof DrawmodeListener) {

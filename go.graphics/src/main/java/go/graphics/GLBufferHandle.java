@@ -19,23 +19,34 @@ package go.graphics;
  * 
  * @author Michael Zangl
  */
-public interface GLBufferHandle {
+public abstract class GLBufferHandle {
+	protected GLDrawContext dc;
+	protected int id;
+
+	public GLBufferHandle(GLDrawContext dc, int id) {
+		this.dc = dc;
+		this.id = id;
+	}
 	/**
 	 * Checks if this buffer is valid.
 	 * 
 	 * @return <code>true</code> if the buffer is valid and can be used.
 	 */
-	boolean isValid();
-
-	/**
-	 * Deletes the buffer represented by this handle. If the buffer is already deleted, this call is ignored.
-	 */
-	void delete();
+	public boolean isValid() {
+		return dc.isValid();
+	}
 
 	/**
 	 * Gets the index by which this buffer is referenced internally. You should not need this.
 	 * 
 	 * @return Thge buffer id.
 	 */
-	int getInternalId();
+	public int getInternalId() {
+		return id;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[index=" + id + " ]";
+	}
 }

@@ -128,7 +128,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		goRegion.setContent(mapContent);
 
 		Area goArea = new Area();
-		goArea.add(goRegion);
+		goArea.set(goRegion);
 
 		GOSurfaceView goView = new GOSurfaceView(getActivity(), goArea);
 		goView.setContextDestroyedListener(() -> ImageProvider.getInstance().invalidateAll());

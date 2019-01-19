@@ -67,6 +67,10 @@ public final class MovableGrid implements Serializable {
 		return this.movableGrid[x + y * width];
 	}
 
+	public ILogicMovable[] getMovableArray() {
+		return movableGrid;
+	}
+
 	public final void movableLeft(ShortPoint2D position, ILogicMovable movable) {
 		int idx = position.x + position.y * width;
 		if (this.movableGrid[idx] == movable) {
