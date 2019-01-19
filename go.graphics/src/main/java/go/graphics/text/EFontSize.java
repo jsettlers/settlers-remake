@@ -34,13 +34,13 @@ public enum EFontSize {
 	 */
 	HEADLINE(17);
 
-	private final int size;
+	private final float size;
 
-	EFontSize(int size) {
+	EFontSize(float size) {
 		this.size = size;
 	}
 
-	public int getSize() {
+	public float getSize() {
 		return size;
 	}
 }

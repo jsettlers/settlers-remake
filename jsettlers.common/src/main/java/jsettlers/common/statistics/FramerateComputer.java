@@ -12,33 +12,50 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package go.graphics.swing.opengl;
+package jsettlers.common.statistics;
 
-import org.lwjgl.opengl.GLCapabilities;
-
-public final class TextureCalculator {
-	private TextureCalculator() {
-
-	}
+/**
+ * This class keeps track of the frames.
+ * 
+ * @author Michael Zangl
+ */
+public class FramerateComputer {
+	private static final long RECOMPUTE_INTERVALL = 500*1000*1000;
+	private long calcFrameStart = System.nanoTime();
+	private double timePerFrame = 0;
+	private long calcFrameEnd;
+	private int capturedFrames = 0;
 
 	/**
-	 * Makes the size a power of two, if needed.
-	 * 
-	 * @param glcaps
-	 *            The opengl capabilities
-	 * @param width
-	 *            THe old size
-	 * @return The good size.
+	 * Called whenever a new frame is displayed.
 	 */
-	public static int supportedTextureSize(GLCapabilities glcaps, int width) {
-		if (glcaps.GL_ARB_texture_non_power_of_two) {
-			return width;
-		} else {
-			int real = 1;
-			while (real < width) {
-				real *= 2;
-			}
-			return real;
+	public void nextFrame() {
+		calcFrameEnd = System.nanoTime();
+		capturedFrames++;
+		if ((calcFrameEnd - calcFrameStart > RECOMPUTE_INTERVALL) && capturedFrames > 1) {
+			recompute();
 		}
+	}
+
+	private void recompute() {
+		double deltaT = calcFrameEnd - calcFrameStart;
+		timePerFrame = deltaT / capturedFrames;
+		calcFrameStart = calcFrameEnd;
+		capturedFrames = 1;
+	}
+
+	private static final double NS_PER_S = 1000*1000*1000.0;
+
+	/**
+	 * Gets the current frame rate.
+	 * 
+	 * @return The rate.
+	 */
+	public double getRate() {
+		return NS_PER_S / timePerFrame;
+	}
+
+	public double getTime() {
+		return timePerFrame / NS_PER_S;
 	}
 }

@@ -14,9 +14,9 @@
  */
 package jsettlers.graphics.image.reader;
 
-import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.image.sequence.SequenceList;
 
@@ -42,12 +42,12 @@ public interface DatFileSet {
 	 * 
 	 * @return The unmodifiable list.
 	 */
-	Sequence<LandscapeImage> getLandscapes();
+	Sequence<SingleImage> getLandscapes();
 
 	/**
 	 * Gets a list of gui images.
 	 * 
 	 * @return The unmodifiable list.
 	 */
-	Sequence<GuiImage> getGuis();
+	Sequence<SingleImage> getGuis();
 }

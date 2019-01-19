@@ -44,8 +44,6 @@ public class UIPanel implements UIElement {
 	/**
 	 * Sets the background. file=-1 means no background
 	 *
-	 * @param file
-	 * @param settlerSeqIndex
 	 */
 	public void setBackground(ImageLink imageLink) {
 		this.background = imageLink;
@@ -106,12 +104,9 @@ public class UIPanel implements UIElement {
 
 	protected void drawChildren(GLDrawContext gl) {
 		if (children.size() > 0) {
-			gl.glPushMatrix();
-			gl.glTranslatef(position.getMinX(), position.getMinY(), 0);
 			for (ChildLink link : children) {
-				link.drawAt(gl, position.getWidth(), position.getHeight());
+				link.drawAt(gl, position);
 			}
-			gl.glPopMatrix();
 		}
 	}
 
@@ -135,12 +130,11 @@ public class UIPanel implements UIElement {
 	 *            The position to draw the image at
 	 */
 	protected void drawAtRect(GLDrawContext gl, Image image, FloatRectangle position) {
-		gl.color(1, 1, 1, 1);
 		float minX = position.getMinX();
 		float minY = position.getMinY();
 		float maxX = position.getMaxX();
 		float maxY = position.getMaxY();
-		image.drawImageAtRect(gl, minX, minY, maxX, maxY);
+		image.drawImageAtRect(gl, minX, minY, maxX-minX, maxY-minY);
 	}
 
 	protected ImageLink getBackgroundImage() {
@@ -163,8 +157,9 @@ public class UIPanel implements UIElement {
 			this.bottom = bottom;
 		}
 
-		public void drawAt(GLDrawContext gl, float width, float height) {
-			child.setPosition(new FloatRectangle((left * width), (bottom * height), (right * width), (top * height)));
+		public void drawAt(GLDrawContext gl, FloatRectangle pos) {
+			child.setPosition(new FloatRectangle((left * pos.getWidth())+pos.getMinX(), (bottom * pos.getHeight())+pos.getMinY(),
+					(right * pos.getWidth())+pos.getMinX(), (top * pos.getHeight())+pos.getMinY()));
 			child.drawAt(gl);
 		}
 

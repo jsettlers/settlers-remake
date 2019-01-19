@@ -55,6 +55,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 	private static final String SETTING_VOLUME = "volume";
 	private static final String SETTING_FULL_SCREEN_MODE = "fullScreenMode";
 
+	private static final String SETTING_GRAPHICS_DEBUG = "debug-opengl";
 	private static final String SETTING_CONTROL_ALL = "control-all";
 	private static final String SETTING_ACTIVATE_ALL_PLAYERS = "activate-all-players";
 	private static final String SETTING_ENABLE_CONSOLE_LOGGING = "console-output";
@@ -279,5 +280,9 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	public void setUserName(String userName) {
 		set(SETTING_USERNAME, userName);
+	}
+
+	public boolean isGraphicsDebug() {
+		return getOptional(SETTING_GRAPHICS_DEBUG);
 	}
 }

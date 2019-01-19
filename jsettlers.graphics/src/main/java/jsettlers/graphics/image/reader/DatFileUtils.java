@@ -30,9 +30,10 @@ public class DatFileUtils {
 		File[] gfxDatFiles = gfxDirectory.listFiles();
 		List<File> distinctGfxDatFiles = distinctFileNames(gfxDatFiles);
 
+		// F-1 because we dont know the dat file index
 		Hashes hashes = new Hashes(stream(distinctGfxDatFiles)
 			.filter(file -> file.getName().toLowerCase().endsWith(".dat"))
-			.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile)))
+			.map(datFile -> new AdvancedDatFileReader(datFile, DatFileType.getForPath(datFile) , "F-1"))
 			.flatMap(reader -> stream(Arrays.asList(reader.getSettlersHashes(), reader.getGuiHashes())))
 			.flatMap(hash -> stream(hash.getHashes()))
 			.collect(Collectors.toList()));

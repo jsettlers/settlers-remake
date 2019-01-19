@@ -29,4 +29,5 @@ dependencies {
     compile "org.jogamp.jogl:jogl-all:2.3.2"
     runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal"
     runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal"
+    implementation 'org.joml:joml:1.9.11'
 }

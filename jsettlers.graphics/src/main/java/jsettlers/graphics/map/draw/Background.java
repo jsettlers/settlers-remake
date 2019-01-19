@@ -19,14 +19,16 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 
+import go.graphics.EGeometryFormatType;
+import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
-import go.graphics.GLDrawContext.GLBuffer;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
@@ -56,6 +58,9 @@ public class Background implements IGraphicsBackgroundListener {
 	 * Our base texture is divided into multiple squares that all hold a single texture. Continuous textures occupy 5*5 squares
 	 */
 	private static final int TEXTURE_GRID = 32;
+
+	private static final int BYTES_PER_FIELD_SHAPE = 4*5*3*2; // 4 bytes per float * 5 components(x,y,z,t,v) * 3 points per triangle * 2 triangles per field
+	private static final int BYTES_PER_FIELD_COLOR = 4*3*2; // 4 component(r,g,b,a actually gray) * 3 points per triangle * 2 triangles per field
 
 	/**
 	 * Where are the textures on the map?
@@ -836,38 +841,22 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private final BitSet fowDimmed = new BitSet();
 
-	private static final short FLOAT_SIZE = 4;
-	/**
-	 * How many bytes are needed per vertex
-	 */
-	private static final short VERTEX_SIZE = 6 * FLOAT_SIZE;
-
 	private static final byte DIM_MAX = 20;
 
-	private static final byte[] BLACK = new byte[] {
-			0, 0, 0, (byte) 255
-	};
 	private static final Object preloadMutex = new Object();
 
-	/**
-	 * Offset of color definition in bytes, relative to vertex start
-	 */
-	// private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
-
 	private byte[] fogOfWarStatus = new byte[1];
-	private MapRectangle oldBufferPosition = new MapRectangle(0, 0, 0, 0);
 	private int bufferWidth = 1; // in map points.
 	private int bufferHeight = 1; // in map points.
 
 	private static TextureHandle texture = null;
 
-	private GeometryHandle geometryhandle = null;
+	private GeometryHandle shapeHandle = null;
+	private GeometryHandle colorHandle = null;
 
-	private int geometrytirs;
-
-	private BitSet geometryInvalid = new BitSet();
-
-	private boolean mapViewResized;
+	private boolean useFloatColors;
+	private boolean updateGeometry = false;
+	private BitSet mapInvalid = new BitSet();
 
 	private static short[] preloadedTexture = null;
 
@@ -905,7 +894,7 @@ public class Background implements IGraphicsBackgroundListener {
 			}
 			ByteBuffer buffer = ByteBuffer.allocateDirect(data.length * 2).order(ByteOrder.nativeOrder());
 			buffer.asShortBuffer().put(data);
-			texture = context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer.asShortBuffer());
+			texture = context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer.asShortBuffer(), "background");
 
 			System.out.println("Background texture generated in " + (System.currentTimeMillis() - startTime) + "ms");
 		}
@@ -920,11 +909,11 @@ public class Background implements IGraphicsBackgroundListener {
 
 		// nothing to do. We assume images are a rectangle and have the right size.
 		@Override
-		public void startImage(int width, int height) throws IOException {
+		public void startImage(int width, int height) {
 		}
 
 		@Override
-		public void writeLine(short[] data, int length) throws IOException {
+		public void writeLine(short[] data, int length) {
 			if (arrayOffset < maxOffset) {
 				for (int i = 0; i < cellSize; i++) {
 					this.data[arrayOffset + i] = data[i % length];
@@ -1176,6 +1165,8 @@ public class Background implements IGraphicsBackgroundListener {
 		return index;
 	}
 
+	private int draw_stride = 0;
+
 	/**
 	 * Draws a given map content.
 	 * 
@@ -1185,26 +1176,30 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
 		try {
-			GLDrawContext gl = context.getGl();
-			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			mapViewResized = geometryhandle == null || !geometryhandle.isValid() || screenArea.getWidth() + 1 != bufferWidth || screenArea.getHeight() != bufferHeight;
-			if (mapViewResized) {
-				regenerateGeometry(gl, screenArea);
+			if(shapeHandle == null) {
+				bufferWidth = context.getMap().getWidth()-1;
+				bufferHeight = context.getMap().getHeight()-1;
+
+				generateFogOfWarBuffer(context);
+				mapInvalid = new BitSet(bufferWidth*bufferHeight);
+				draw_stride = (2*bufferWidth)+1;
 			}
 
-			GLBuffer boundBuffer = gl.startWriteGeometry(geometryhandle);
-			reloadGeometry(boundBuffer, screenArea, context);
-			gl.endWriteGeometry(geometryhandle);
-			gl.glPushMatrix();
-			try {
-				gl.glTranslatef(0, 0, -.1f);
-				gl.glScalef(1, 1, 0);
-				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
-				gl.color(1, 1, 1, 1);
-				gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), geometryhandle, geometrytirs);
-			} finally {
-				gl.glPopMatrix();
+			if(shapeHandle == null || !shapeHandle.isValid()) {
+				useFloatColors = (context.getGl() instanceof GL2DrawContext);
+				generateGeometry(context);
+				context.getGl().setHeightMatrix(context.getConverter().getMatrixWithHeight());
 			}
+
+			GLDrawContext gl = context.getGl();
+			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
+			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
+
+			updateGeometry(context, screenArea);
+
+			float x = context.getOffsetX();
+			float y = context.getOffsetY();
+			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride, x, y);
 
 			resetFOWDimStatus();
 		} catch (IllegalBufferException e) {
@@ -1217,125 +1212,121 @@ public class Background implements IGraphicsBackgroundListener {
 		fowDimmed.clear();
 	}
 
-	private void regenerateGeometry(GLDrawContext gl, MapRectangle screenArea) {
-		if (geometryhandle != null && geometryhandle.isValid()) {
-			geometryhandle.delete();
-		}
-		bufferWidth = niceRoundUp(screenArea.getWidth() + 1);
-		bufferHeight = niceRoundUp(screenArea.getHeight());
-		int count = bufferHeight * bufferWidth;
-		fogOfWarStatus = new byte[count * 4];
-		geometryInvalid = new BitSet(count);
-		geometrytirs = count * 2;
+	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
+		int vertices = bufferWidth*bufferHeight*3*2;
+		shapeHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Texture3D, false, "background-shape");
+		colorHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.ColorOnly, true, "background-color");
 
-		geometryhandle = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
-	}
+		ByteBuffer shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
+		ByteBuffer color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
 
-	private static int niceRoundUp(int i) {
-		return i;
-	}
-
-	/**
-	 * Gets the geometry of the background as array.
-	 * 
-	 * @param boundBuffer
-	 *            The buffer of opengl.
-	 * @param context
-	 *            The context to use.
-	 * @return The geometry as float array.
-	 */
-	private void reloadGeometry(GLBuffer boundBuffer, MapRectangle area, MapDrawContext context) {
-		boolean hasInvalidFields = hasInvalidFields();
-
-		int width = context.getMap().getWidth();
-		int height = context.getMap().getHeight();
-		int oldBufferTop = oldBufferPosition.getLineY(0);
-		int oldBufferBottom = oldBufferTop + bufferHeight; // excluding
-
-		for (int line = 0; line < bufferHeight; line++) {
-
-			int y = area.getLineY(line);
-			int minx = area.getLineStartX(line);
-			int maxx = minx + bufferWidth;
-			int oldMinX = 0;
-			int oldMaxX = 0; // excluding
-			if (y >= oldBufferTop && y < oldBufferBottom) {
-				oldMinX = oldBufferPosition.getLineStartX(y - oldBufferTop);
-				oldMaxX = oldMinX + bufferWidth;
+		for(int y = 0;y != bufferHeight;y++) {
+			for(int x = 0; x != bufferWidth;x++) {
+				addTrianglesToGeometry(context, shape_bfr, x, y);
 			}
-			boolean lineIsInMap = y >= 0 && y < height;
+			context.getGl().updateGeometryAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
+			shape_bfr.rewind();
+		}
+		for(int y = 0;y != bufferHeight;y++) {
+			int line_bfr4 = y*bufferWidth*4;
+			for(int x = 0; x != bufferWidth;x++) {
+				addColorTrianglesToGeometry(context, color_bfr, x, y, line_bfr4+x*4);
+			}
+			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
+			color_bfr.rewind();
+		}
+	}
 
-			for (int x = minx; x < maxx; x++) {
-				int bufferPosition = getBufferPosition(y, x);
-				if (mapViewResized || oldMinX > x || oldMaxX <= x) {
-					redrawPoint(boundBuffer, context, x, y, false, bufferPosition);
-				} else if (lineIsInMap && x >= 0 && x < width) {
-					if (hasInvalidFields && getAndResetInvalid(bufferPosition)) {
-						redrawPoint(boundBuffer, context, x, y, true, bufferPosition);
-					} else if (context.getVisibleStatus(x, y) != fogOfWarStatus[bufferPosition * 4]) {
-						redrawPoint(boundBuffer, context, x, y, true, bufferPosition);
-						invalidatePoint(x - 1, y); // only for next pass
-						invalidatePoint(x - 1, y - 1);
-						invalidatePoint(x - 1, y - 1);
+	private final ByteBuffer shape_update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
+	private final ByteBuffer color_update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR).order(ByteOrder.nativeOrder());
+
+	private void updateMapType(MapDrawContext context, int x, int y) throws IllegalBufferException {
+		int bfr_pos = y*bufferWidth+x;
+
+		if(mapInvalid.get(bfr_pos)) {
+			mapInvalid.clear(bfr_pos);
+			shape_update_bfr.rewind();
+			addTrianglesToGeometry(context, shape_update_bfr, x, y);
+			context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_update_bfr);
+		}
+	}
+
+	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
+		IDirectGridProvider vsp = context.getFow();
+		byte[][] visibleStatus = vsp != null ? vsp.getVisibleStatusArray() : null;
+
+		try {
+			int height = screen.getHeight();
+			int width = screen.getWidth();
+			int miny = screen.getMinY();
+			int minx = screen.getMinX();
+			int maxy = miny+height;
+
+			if(maxy > bufferHeight) maxy = bufferHeight;
+			if(miny < 0) miny = 0;
+
+			int linestart = minx-(miny/2);
+			for (int y = miny; y < maxy; y++) {
+				int lineStartX = linestart + (y / 2);
+
+				int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
+				int linex = lineStartX < 0 ? 0 : lineStartX;
+
+				int line_bfr_pos4 = y*bufferWidth*4;
+				int line_bfr_pos = y*bufferWidth;
+				for (int x = linex; x < linewidth; x++) {
+					int bfr_pos4 = line_bfr_pos4+x*4;
+					int bfr_pos = line_bfr_pos+x;
+
+					byte fow = visibleStatus != null ? visibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
+					if(fow != fogOfWarStatus[bfr_pos4]) {
+						color_update_bfr.rewind();
+						dimFogOfWarBuffer(context, bfr_pos4, x, y);
+						dimFogOfWarBuffer(context, bfr_pos4+1, x + 1, y);
+						dimFogOfWarBuffer(context, bfr_pos4+2, x, y + 1);
+						dimFogOfWarBuffer(context, bfr_pos4+3, x + 1, y + 1);
+						addColorTrianglesToGeometry(context, color_update_bfr, x, y, bfr_pos4);
+						context.getGl().updateGeometryAt(colorHandle, bfr_pos * BYTES_PER_FIELD_COLOR, color_update_bfr);
 					}
 				}
 			}
-		}
 
-		oldBufferPosition = area;
-	}
+			if (updateGeometry) {
+				for (int y = miny; y < maxy; y++) {
+					int lineStartX = linestart+(y/2);
 
-	private synchronized boolean getAndResetInvalid(int bufferPosition) {
-		boolean invalid = geometryInvalid.get(bufferPosition);
-		geometryInvalid.clear(bufferPosition);
-		return invalid;
-	}
+					int linewidth = (width+lineStartX) < bufferWidth ? width+lineStartX : bufferWidth;
+					int linex = lineStartX < 0 ? 0 : lineStartX;
 
-	private synchronized boolean hasInvalidFields() {
-		return !geometryInvalid.isEmpty();
-	}
-
-	/**
-	 * Redraws a point on the map to the buffer.
-	 * 
-	 * @param boundBuffer
-	 *            The buffer to use
-	 * @param context
-	 *            The context
-	 * @param x
-	 *            The x coordinate of the point
-	 * @param y
-	 *            The y coordinate of the point
-	 * @param wasVisible
-	 *            true if and only if the point was already in the buffer.
-	 */
-	private void redrawPoint(GLBuffer boundBuffer, MapDrawContext context, int x, int y, boolean wasVisible, int pointOffset) {
-		boundBuffer.position(pointOffset * 2 * 3 * VERTEX_SIZE);
-
-		if (x >= 0 && y >= 0 && x < context.getMap().getWidth() - 1 && y < context.getMap().getHeight() - 1) {
-			if (wasVisible) {
-				dimFogOfWarBuffer(context, (pointOffset * 4), x, y);
-				dimFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
-				dimFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
-				dimFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
-			} else {
-				addFogOfWarBuffer(context, (pointOffset * 4), x, y);
-				addFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
-				addFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
-				addFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
+					for (int x = linex; x < linewidth; x++) {
+						updateMapType(context, x, y);
+					}
+				}
+				updateGeometry = false;
 			}
-			addTrianglesToGeometry(context, boundBuffer, x, y, pointOffset * 4);
-		} else {
-			addPseudoTrianglesToGeometry(context, boundBuffer, x, y);
+		} catch (IllegalBufferException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private synchronized void invalidatePoint(int x, int y) {
-		geometryInvalid.set(getBufferPosition(y, x));
+	private synchronized void invalidateShapePoint(int x, int y) {
+		if(x > bufferWidth || y > bufferHeight || x < 0 || y < 0) return;
+		updateGeometry = true;
+		mapInvalid.set(getBufferPosition(x, y));
 	}
 
-	private void addFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
-		fogOfWarStatus[offset] = context.getVisibleStatus(x, y);
+	private void generateFogOfWarBuffer(MapDrawContext context) {
+		fogOfWarStatus = new byte[bufferWidth*bufferHeight*4];
+
+		for(int y = 0;y != bufferHeight;y++) {
+			for(int x = 0; x != bufferWidth;x++) {
+				int fieldOffset = getBufferPosition(x, y);
+				fogOfWarStatus[fieldOffset*4] = context.getVisibleStatus(x, y);
+				fogOfWarStatus[(fieldOffset*4)+1] = context.getVisibleStatus(x+1, y);
+				fogOfWarStatus[(fieldOffset*4)+2] = context.getVisibleStatus(x+1, y+1);
+				fogOfWarStatus[(fieldOffset*4)+3] = context.getVisibleStatus(x, y+1);
+			}
+		}
 	}
 
 	/**
@@ -1353,8 +1344,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
 		if (!fowDimmed.get(offset)) {
-			byte newFog = context.getVisibleStatus(x, y);
-			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], context.getVisibleStatus(x, y));
 			fowDimmed.set(offset);
 		}
 	}
@@ -1373,17 +1363,8 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	private final int getBufferPosition(int y, int x) {
-		int linePos = y % bufferHeight;
-		int colPos = x % bufferWidth;
-		while (linePos < 0) {
-			linePos += bufferHeight;
-		}
-		while (colPos < 0) {
-			colPos += bufferWidth;
-		}
-
-		return (linePos * bufferWidth + colPos);
+	private int getBufferPosition(int x, int y) {
+		return (y*bufferHeight+x);
 	}
 
 	/**
@@ -1393,131 +1374,50 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param buffer
 	 * @param x
 	 * @param y
-	 * @param fogBase
 	 */
-	private void addTrianglesToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, int fogBase) {
-		addTriangle1ToGeometry(context, buffer, x, y, fogBase);
-		addTriangle2ToGeometry(context, buffer, x, y, fogBase);
+	private void addTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
+		addTriangleToGeometry(context, buffer, x, y, true,x*37 + y*17);
+		addTriangleToGeometry(context, buffer, x, y, false, x);
 	}
 
-	private static void addPseudoTrianglesToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y) { // manually do everything...
-		addBlackPointToGeometry(context, buffer, x, y);
-		addBlackPointToGeometry(context, buffer, x, y + 1);
-		addBlackPointToGeometry(context, buffer, x + 1, y + 1);
-		addBlackPointToGeometry(context, buffer, x, y);
-		addBlackPointToGeometry(context, buffer, x + 1, y + 1);
-		addBlackPointToGeometry(context, buffer, x + 1, y);
+	private void addColorTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
+		addColorPointToGeometry(context, buffer, x, y, fogBase);
+		addColorPointToGeometry(context, buffer, x, y + 1, fogBase + 2);
+		addColorPointToGeometry(context, buffer, x + 1, y + 1, fogBase + 3);
+
+		addColorPointToGeometry(context, buffer, x, y, fogBase);
+		addColorPointToGeometry(context, buffer, x + 1, y + 1, fogBase + 3);
+		addColorPointToGeometry(context, buffer, x + 1, y, fogBase + 1);
 	}
 
-	/**
-	 * Draws the triangle that is facing up
-	 * 
-	 * @param context
-	 * @param buffer
-	 * @param x
-	 * @param y
-	 * @param fogBase
-	 */
-	private void addTriangle1ToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, int fogBase) {
-		ELandscapeType topLandscape = context.getLandscape(x, y);
-		ELandscapeType leftLandscape = context.getLandscape(x, y + 1);
-		ELandscapeType rightLandscape = context.getLandscape(x + 1, y + 1);
+	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, boolean up, int useSecondParameter) {
+		int x1 = x;
+		int y1 = y + (up?1:0);
+		int x2 = x + (up?0:1);
+		int y2 = y + (up?0:1);
+		int x3 = x + 1;
+		int y3 = y + (up?1:0);
 
-		boolean useSecond = ((x * 37 + y * 17) & 0x1) == 0;
-		ETextureOrientation texturePos;
+		ELandscapeType leftLandscape = context.getLandscape(x1, y1);
+		ELandscapeType aLandscape = context.getLandscape(x2, y2);
+		ELandscapeType rightLandscape = context.getLandscape(x3, y3);
+
+		boolean useSecond = (useSecondParameter&1) == 0;
+		float[] texturePos;
 		int textureIndex;
-		if (topLandscape == leftLandscape && topLandscape == rightLandscape) {
-			textureIndex = topLandscape.getImageNumber();
-			texturePos = ETextureOrientation.CONTINUOUS_UP;
+		int orientationIndex = up?0:1;
+		if (aLandscape == leftLandscape && aLandscape == rightLandscape) {
+			textureIndex = aLandscape.getImageNumber();
+			texturePos = ETextureOrientation.CONTINUOS[orientationIndex];
 		} else if (leftLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.BOTTOM;
-			textureIndex = getBorder(leftLandscape, topLandscape, useSecond);
-		} else if (leftLandscape == topLandscape) {
-			texturePos = ETextureOrientation.TOPLEFT;
+			texturePos = ETextureOrientation.ORIENTATION[orientationIndex];
+			textureIndex = getBorder(leftLandscape, aLandscape, useSecond);
+		} else if (leftLandscape == aLandscape) {
+			texturePos = ETextureOrientation.LEFT[orientationIndex];
 			textureIndex = getBorder(leftLandscape, rightLandscape, useSecond);
 		} else {
-			texturePos = ETextureOrientation.TOPRIGHT;
-			textureIndex = getBorder(topLandscape, leftLandscape, useSecond);
-		}
-
-		int[] positions = TEXTURE_POSITIONS[textureIndex];
-		// texture position
-		int adddx = 0;
-		int adddy = 0;
-		if (positions[2] >= 2) {
-			adddx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
-			adddy = y * DrawConstants.DISTANCE_Y;
-			adddx = realModulo(adddx, (positions[2] - 1) * TEXTURE_GRID);
-			adddy = realModulo(adddy, (positions[2] - 1) * TEXTURE_GRID);
-		}
-		adddx += positions[0] * TEXTURE_GRID;
-		adddy += positions[1] * TEXTURE_GRID;
-
-		float[] relativeTexCoordinates = texturePos.getRelativecoords();
-
-		{
-			// top
-			float u = (relativeTexCoordinates[0] + adddx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[1] + adddy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x, y, u, v, fogBase);
-		}
-		{
-			// left
-			float u = (relativeTexCoordinates[2] + adddx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[3] + adddy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x, y + 1, u, v, fogBase + 2);
-		}
-		{
-			// right
-			float u = (relativeTexCoordinates[4] + adddx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[5] + adddy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
-		}
-	}
-
-	private void addPointToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, float u, float v, int fogOffset) {
-		buffer.putFloat(x);
-		buffer.putFloat(y);
-		buffer.putFloat(context.getHeight(x, y));
-
-		buffer.putFloat(u);
-		buffer.putFloat(v);
-
-		addVertexColor(context, buffer, x, y, fogOffset);
-	}
-
-	private static void addBlackPointToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y) {
-		buffer.putFloat(x);
-		buffer.putFloat(y);
-		buffer.putFloat(context.getHeight(x, y));
-		buffer.putFloat(0);
-		buffer.putFloat(0);
-		buffer.putByte(BLACK[0]);
-		buffer.putByte(BLACK[1]);
-		buffer.putByte(BLACK[2]);
-		buffer.putByte(BLACK[3]);
-	}
-
-	private void addTriangle2ToGeometry(MapDrawContext context, GLBuffer buffer, int x, int y, int fogBase) {
-		ELandscapeType leftLandscape = context.getLandscape(x, y);
-		ELandscapeType bottomLandscape = context.getLandscape(x + 1, y + 1);
-		ELandscapeType rightLandscape = context.getLandscape(x + 1, y);
-
-		boolean useSecond = (x & 0x1) == 0;
-		ETextureOrientation texturePos;
-		int textureIndex;
-		if (bottomLandscape == leftLandscape && bottomLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.CONTINUOUS_DOWN;
-			textureIndex = bottomLandscape.getImageNumber();
-		} else if (leftLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.TOP;
-			textureIndex = getBorder(leftLandscape, bottomLandscape, useSecond);
-		} else if (leftLandscape == bottomLandscape) {
-			texturePos = ETextureOrientation.BOTTOMLEFT;
-			textureIndex = getBorder(leftLandscape, rightLandscape, useSecond);
-		} else {
-			texturePos = ETextureOrientation.BOTTOMRIGHT;
-			textureIndex = getBorder(rightLandscape, leftLandscape, useSecond);
+			texturePos = ETextureOrientation.RIGHT[orientationIndex];
+			textureIndex = getBorder(up?aLandscape:rightLandscape, leftLandscape, useSecond);
 		}
 
 		int[] positions = TEXTURE_POSITIONS[textureIndex];
@@ -1533,27 +1433,63 @@ public class Background implements IGraphicsBackgroundListener {
 		addDx += positions[0] * TEXTURE_GRID;
 		addDy += positions[1] * TEXTURE_GRID;
 
-		float[] relativeTexCoordinates = texturePos.getRelativecoords();
-
 		{
 			// left
-			float u = (relativeTexCoordinates[0] + addDx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[1] + addDy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x, y, u, v, fogBase);
+			float u = (texturePos[0] + addDx) / TEXTURE_SIZE;
+			float v = (texturePos[1] + addDy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, up?x2:x1, up?y2:y1, u, v);
 		}
 		{
 			// bottom
-			float u = (relativeTexCoordinates[2] + addDx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[3] + addDy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
+			float u = (texturePos[2] + addDx) / TEXTURE_SIZE;
+			float v = (texturePos[3] + addDy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, up?x1:x2, up?y1:y2, u, v);
 		}
 		{
 			// right
-			float u = (relativeTexCoordinates[4] + addDx) / TEXTURE_SIZE;
-			float v = (relativeTexCoordinates[5] + addDy) / TEXTURE_SIZE;
-			addPointToGeometry(context, buffer, x + 1, y, u, v, fogBase + 1);
+			float u = (texturePos[4] + addDx) / TEXTURE_SIZE;
+			float v = (texturePos[5] + addDy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, x3, y3, u, v);
 		}
 
+	}
+
+
+	private void addPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, float u, float v) {
+		buffer.putFloat(x);
+		buffer.putFloat(y);
+		buffer.putFloat(context.getHeight(x, y));
+		buffer.putFloat(u);
+		buffer.putFloat(v);
+	}
+
+	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
+		float fColor;
+		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
+			fColor = 0;
+		} else {
+			int height1 = context.getHeight(x, y - 1);
+			int height2 = context.getHeight(x, y);
+			fColor = 0.85f + (height1 - height2) * .15f;
+			if (fColor > 1.0f) {
+				fColor = 1.0f;
+			} else if (fColor < 0.4f) {
+				fColor = 0.4f;
+			}
+			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
+		}
+
+		if(useFloatColors) {
+			buffer.putFloat(fColor);
+		} else {
+			byte color;
+			fColor *= 255f;
+			color = (byte) (int) fColor;
+			buffer.put(color);
+			buffer.put(color);
+			buffer.put(color);
+			buffer.put((byte) 255);
+		}
 	}
 
 	private static int realModulo(int number, int modulo) {
@@ -1564,47 +1500,12 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	private void addVertexColor(MapDrawContext context, GLBuffer buffer, int x, int y, int fogOffset) {
-		byte color;
-
-		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
-			color = 0;
-		} else {
-			int height1 = context.getHeight(x, y - 1);
-			int height2 = context.getHeight(x, y);
-			float fColor = 0.85f + (height1 - height2) * .15f;
-			if (fColor > 1.0f) {
-				fColor = 1.0f;
-			} else if (fColor < 0.4f) {
-				fColor = 0.4f;
-			}
-			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
-			fColor *= 255f;
-			color = (byte) (int) fColor;
-		}
-
-		buffer.putByte(color);
-		buffer.putByte(color);
-		buffer.putByte(color);
-		buffer.putByte((byte) 255);
-	}
-
 	@Override
-	public void backgroundChangedAt(int x, int y) {
-		if (oldBufferPosition != null) {
-			if (oldBufferPosition.contains(x, y)) {
-				invalidatePoint(x, y);
-			}
-			if (oldBufferPosition.contains(x - 1, y)) {
-				invalidatePoint(x - 1, y);
-			}
-			if (oldBufferPosition.contains(x - 1, y - 1)) {
-				invalidatePoint(x - 1, y - 1);
-			}
-			if (oldBufferPosition.contains(x, y - 1)) {
-				invalidatePoint(x, y - 1);
-			}
-		}
+	public void backgroundShapeChangedAt(int x, int y) {
+		invalidateShapePoint(x, y);
+		invalidateShapePoint(x - 1, y);
+		invalidateShapePoint(x - 1, y - 1);
+		invalidateShapePoint(x, y - 1);
 	}
 
 	/**

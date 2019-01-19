@@ -54,7 +54,7 @@ public class SettlersDynamicLabelUi extends BasicLabelUI {
 	public SettlersDynamicLabelUi(Color foregroundColor, int x, int y, int width, int heigth) {
 		this.foregroundColor = foregroundColor;
 		ImageProvider imageProvider = ImageProvider.getInstance();
-		BufferedImage guiImage = imageProvider.getGuiImage(2, 13).convertToBufferedImage();
+		BufferedImage guiImage = imageProvider.getGuiImage(2, 13, null).convertToBufferedImage();
 
 		this.backgroundImage = guiImage.getSubimage(x, y, width, heigth);
 	}

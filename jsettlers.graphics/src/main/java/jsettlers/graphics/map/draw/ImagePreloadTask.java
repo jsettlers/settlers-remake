@@ -69,7 +69,7 @@ public class ImagePreloadTask implements Runnable {
 					103,
 					104,
 					105,
-			}, "1");
+			}, "1", "trees/signs/arrows");
 		} catch (Throwable e) {
 		}
 
@@ -112,7 +112,7 @@ public class ImagePreloadTask implements Runnable {
 					33,
 					34,
 					45
-			}, "10");
+			}, "10", "settlers");
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -180,7 +180,7 @@ public class ImagePreloadTask implements Runnable {
 
 					231,
 					232,
-			}, "11");
+			}, "11", "workers/civil-units");
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -218,7 +218,7 @@ public class ImagePreloadTask implements Runnable {
 
 					// inside tower
 					28
-			}, "12");
+			}, "12", "soldiers");
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

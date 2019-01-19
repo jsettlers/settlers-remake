@@ -55,27 +55,21 @@ class MiniMapShapeCalculator {
                 // bottom left
                 minViewX,
                 minViewY,
-                0,
                 // bottom right
                 Math.min(maxViewX, (minViewY / height * stride + 1) * width),
                 minViewY,
-                0,
                 // mid right
                 maxViewX,
                 Math.max(minViewY, (maxViewX - width) / width / stride * height),
-                0,
                 // top right
                 maxViewX,
                 maxViewY,
-                0,
                 // top left
                 Math.max(minViewX, (maxViewY / height * stride ) * width),
                 maxViewY,
-                0,
                 // mid left
                 minViewX,
                 Math.min(maxViewY, minViewX  / stride / width * height + 10),
-                0,
         };
     }
 

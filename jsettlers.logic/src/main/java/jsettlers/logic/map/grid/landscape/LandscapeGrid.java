@@ -50,8 +50,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		private static final long serialVersionUID = -332117701485179252L;
 
 		@Override
-		public final void backgroundChangedAt(int x, int y) {
-		}
+		public void backgroundShapeChangedAt(int x, int y) {}
 	}
 
 	private final byte[] heightGrid;
@@ -158,12 +157,12 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 
 		this.landscapeGrid[x + y * width] = landscapeType.ordinal;
-		backgroundListener.backgroundChangedAt(x, y);
+		backgroundListener.backgroundShapeChangedAt(x, y);
 	}
 
 	public final void setHeightAt(short x, short y, byte height) {
 		this.heightGrid[x + y * width] = height;
-		backgroundListener.backgroundChangedAt(x, y);
+		backgroundListener.backgroundShapeChangedAt(x, y);
 	}
 
 	public void flattenAndChangeHeightTowards(int x, int y, byte targetHeight) {
@@ -173,7 +172,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		this.landscapeGrid[index] = ELandscapeType.FLATTENED.ordinal;
 		this.temporaryFlatened[index] = Byte.MAX_VALUE; // cancel the flattening
 
-		backgroundListener.backgroundChangedAt(x, y);
+		backgroundListener.backgroundShapeChangedAt(x, y);
 	}
 
 	public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
