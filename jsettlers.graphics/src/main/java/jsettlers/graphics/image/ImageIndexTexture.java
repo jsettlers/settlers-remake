@@ -33,6 +33,7 @@ import java.nio.ShortBuffer;
 public final class ImageIndexTexture {
 	private TextureHandle textureIndex = null;
 	private final InputStream file;
+	private String name;
 
 	/**
 	 * Creates a new {@link ImageIndexTexture} from an input stream.
@@ -40,8 +41,9 @@ public final class ImageIndexTexture {
 	 * @param inputStream
 	 * 		The stream.
 	 */
-	public ImageIndexTexture(InputStream inputStream) {
+	public ImageIndexTexture(InputStream inputStream, String name) {
 		this.file = inputStream;
+		this.name = name;
 	}
 
 	/**
@@ -71,7 +73,7 @@ public final class ImageIndexTexture {
 				data.put(in.readShort());
 			}
 			data.rewind();
-			textureIndex = gl.generateTexture(width, height, data);
+			textureIndex = gl.generateTexture(width, height, data, name);
 		} catch (final IOException e) {
 			e.printStackTrace();
 			textureIndex = null;

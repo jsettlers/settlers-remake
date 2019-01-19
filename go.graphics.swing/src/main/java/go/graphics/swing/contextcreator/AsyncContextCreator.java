@@ -41,8 +41,8 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	private Thread render_thread;
 
-	public AsyncContextCreator(GLContainer container)  {
-		super(container);
+	public AsyncContextCreator(GLContainer container, boolean debug)  {
+		super(container, debug);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 	public void run() {
 		async_init();
 
-		parent.init();
+		parent.wrapNewContext();
 
 		while(continue_run) {
 			if (change_res) {
@@ -114,7 +114,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 					parent.resize_gl(width, height);
 
-					bi = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+					bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 					pixels = BufferUtils.createIntBuffer(width * height);
 				}
 				ignore_resize = false;

@@ -14,7 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.BitSet;
+
+import go.graphics.EGeometryFormatType;
+import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
@@ -30,9 +37,17 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.ScreenChangeAction;
+import jsettlers.common.action.SelectAreaAction;
+import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.AnimationSequence;
@@ -41,6 +56,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -48,22 +64,16 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.UIState;
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.IAction;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.common.statistics.FramerateComputer;
 import jsettlers.common.statistics.IGameTimeProvider;
-import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
-import jsettlers.common.action.PointAction;
-import jsettlers.common.action.ScreenChangeAction;
-import jsettlers.common.action.SelectAreaAction;
-import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
@@ -145,9 +155,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	/**
 	 * Sound ID when we are attacked.
 	 */
-	public static final int NOTIFY_ATTACKED_SOUND_ID = 80;
+	private static final int NOTIFY_ATTACKED_SOUND_ID = 80;
 
 	private final IGraphicsGrid map;
+	private final IMapObject[] objectsGrid;
+	private final IMovable[] movableGrid;
+	private final BitSet borderGrid;
+	private final short width, height;
+	private final boolean isVisibleGridAvailable;
 
 	private final Background background = new Background();
 
@@ -160,7 +175,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	private final MapInterfaceConnector connector;
 
-	private final FramerateComputer framerate;
+	private final FramerateComputer framerate = new FramerateComputer();
 
 	private final Messenger messenger;
 	private final SoundManager soundmanager;
@@ -201,17 +216,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private UIPoint currentSelectionAreaStart;
 
-	/**
-	 * Creates a new map content for the given map.
-	 * 
-	 * @param game
-	 *            The map.
-	 * @param soundPlayer
-	 */
-	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
-		this(game, soundPlayer, 60, textDrawPosition,null);
-	}
-
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition) {
 		this(game, soundPlayer, fpsLimit, textDrawPosition,null);
 	}
@@ -229,10 +233,24 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param soundPlayer
 	 *            The player
 	 * @param controls
+	 * 			  The menus on the side (swing) or on the bottom (android)
 	 */
-	public MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
-		this.framerate = new FramerateComputer(fpsLimit);
+	private MapContent(IStartedGame game, SoundPlayer soundPlayer, int fpsLimit, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.map = game.getMap();
+		if(map instanceof IDirectGridProvider) {
+			IDirectGridProvider dgp = (IDirectGridProvider) map;
+			objectsGrid = dgp.getObjectArray();
+			movableGrid = dgp.getMovableArray();
+			borderGrid = dgp.getBorderArray();
+			isVisibleGridAvailable = true;
+		} else {
+			objectsGrid = null;
+			movableGrid = null;
+			borderGrid = null;
+			isVisibleGridAvailable = false;
+		}
+		width = map.getWidth();
+		height = map.getHeight();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
@@ -278,6 +296,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
 			}
 
+			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(((IDirectGridProvider)map).getVisibleStatusArray());
+
 			if (newWidth != windowWidth || newHeight != windowHeight) {
 				resizeTo(newWidth, newHeight);
 			}
@@ -306,7 +326,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			long foregroundDuration = System.currentTimeMillis() - start;
 
 			start = System.currentTimeMillis();
-			gl.glTranslatef(0, 0, UI_OVERLAY_Z);
+			gl.setGlobalAttributes(0, 0, UI_OVERLAY_Z, 1, 1, 1);
 			drawSelectionHint(gl);
 			controls.drawAt(gl);
 			drawMessages(gl);
@@ -369,20 +389,20 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
 					// black
-					drawer.setColor(1, 1, 1, a / 2);
+					drawer.setColor(new Color(1, 1, 1, a/2));
 				} else if (bright < 2f) {
 					// bad visibility
-					drawer.setColor(0, 0, 0, a / 2);
+					drawer.setColor(new Color(1, 1, 1, a/2));
 				}
 				for (int i = -1; i < 3; i++) {
 					drawer.drawString(x + i, y - 1, name);
 				}
-				drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), a);
+				drawer.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), a));
 				drawer.drawString(x, y, name);
 				x += width + 10;
 			}
 
-			drawer.setColor(1, 1, 1, a);
+			drawer.setColor(new Color(1, 1, 1, a));
 			drawer.drawString(x, y, Labels.getString(m.getMessageLabel()));
 
 			messageIndex++;
@@ -402,15 +422,51 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		oldScreen = newScreen;
 	}
 
+	private GeometryHandle selectionArea = null;
+	private boolean updateSelectionArea = true;
+	private ByteBuffer selectionAreaBuffer = ByteBuffer.allocateDirect(4*2*4).order(ByteOrder.nativeOrder());
+
+	private void updateSelectionArea() {
+		float x1 = (float) this.currentSelectionAreaStart.getX();
+		float y1 = (float) this.currentSelectionAreaStart.getY();
+		float x2 = (float) this.currentSelectionAreaEnd.getX();
+		float y2 = (float) this.currentSelectionAreaEnd.getY();
+
+		selectionAreaBuffer.putFloat(x1);
+		selectionAreaBuffer.putFloat(y1);
+
+		selectionAreaBuffer.putFloat(x2);
+		selectionAreaBuffer.putFloat(y1);
+
+		selectionAreaBuffer.putFloat(x2);
+		selectionAreaBuffer.putFloat(y2);
+
+		selectionAreaBuffer.putFloat(x1);
+		selectionAreaBuffer.putFloat(y2);
+	}
+
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
-			float x1 = (float) this.currentSelectionAreaStart.getX();
-			float y1 = (float) this.currentSelectionAreaStart.getY();
-			float x2 = (float) this.currentSelectionAreaEnd.getX();
-			float y2 = (float) this.currentSelectionAreaEnd.getY();
 
-			gl.color(1, 1, 1, 1);
-			gl.drawLine(new float[] { x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0 }, true);
+			if(selectionArea == null || !selectionArea.isValid()) {
+				selectionArea = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, true, "selection-area");
+			}
+
+			if(updateSelectionArea) {
+				updateSelectionArea();
+				try {
+					gl.updateGeometryAt(selectionArea, 0, selectionAreaBuffer);
+				} catch (IllegalBufferException e) {
+					e.printStackTrace();
+				}
+				updateSelectionArea = false;
+			}
+
+			try {
+				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4, 0, 0, 0, 1, 1, 1, null, 1);
+			} catch (IllegalBufferException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -472,8 +528,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * Draws the main content (buildings, settlers, ...), assuming the context is set up.
 	 */
 	private void drawMain(FloatRectangle screen) {
-		short height = map.getHeight();
-		short width = map.getWidth();
 		MapRectangle area = this.context.getConverter().getMapForScreen(screen);
 
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
@@ -516,67 +570,76 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
 		}
-
-		context.getDrawBuffer().flush();
 	}
 
 	private void drawTile(int x, int y) {
-		IMapObject object = map.getMapObjectsAt(x, y);
+		int tileIndex = x+y*width;
+
+		IMapObject object = objectsGrid != null ? objectsGrid[tileIndex] : map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
 		if (y > 3) {
-			object = map.getMapObjectsAt(x, y - 3);
+			object = objectsGrid != null ? objectsGrid[tileIndex-3*width] :map.getMapObjectsAt(x, y - 3);
 			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
 				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
 			}
 		}
-		if (y < map.getHeight() - 3) {
-			object = map.getMapObjectsAt(x, y + 3);
-			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
-				this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+		if (y < height - 3) {
+			object = objectsGrid != null ? objectsGrid[tileIndex+3*width] : map.getMapObjectsAt(x, y + 3);
+			if (object != null) {
+				EMapObjectType type = object.getObjectType();
+				if (type == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
+					this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
+				} else if (type == EMapObjectType.DOCK) {
+					this.objectDrawer.drawDock(x, y + 3, object);
+				}
 			}
 		}
 
-		IMovable movable = map.getMovableAt(x, y);
+		IMovable movable = movableGrid != null ? movableGrid[tileIndex] : map.getMovableAt(x, y);
 		if (movable != null) {
 			this.objectDrawer.draw(movable);
 		}
 
-		if (map.isBorder(x, y)) {
+		if (borderGrid != null ? borderGrid.get(tileIndex) : map.isBorder(x, y)) {
 			byte player = map.getPlayerIdAt(x, y);
 			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}
 	}
 
+	// @formatter:off
+	public static final float[] shape = new float[] {
+			0,  4,
+			-3,  2,
+			-3, -2,
+			0, -4,
+			0, -4,
+			3, -2,
+			3,  2,
+			0,  4,
+	};
+	// @formatter:on
+
+	private GeometryHandle shapeHandle = null;
+
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		// @formatter:off
-		float[] shape = new float[] {
-									  0,  4, .5f,  0,  0,
-									 -3,  2, .5f,  0,  0,
-									 -3, -2, .5f,  0,  0,
-									  0, -4, .5f,  0,  0,
-									  0, -4, .5f,  0,  0,
-									  3, -2, .5f,  0,  0,
-									  3,  2, .5f,  0,  0,
-									  0,  4, .5f,  0,  0
-									};
-		// @formatter:on
+		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeGeometry(shape, EGeometryFormatType.VertexOnly2D, false, "debugshape");
 
-		context.getScreenArea().stream().filterBounds(map.getWidth(), map.getHeight()).forEach((x, y) -> {
+		int drawX = context.getOffsetX();
+		int drawY = context.getOffsetY();
+
+		context.getScreenArea().stream().filterBounds(width, height).forEach((x, y) -> {
 			try {
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {
-					this.context.beginTileContext(x, y);
-					gl.color(((argb >> 16) & 0xff) / 255f,
-							((argb >> 8) & 0xff) / 255f,
-							((argb >> 0) & 0xff) / 255f,
-							((argb >> 24) & 0xff) / 255f);
-					gl.drawQuadWithTexture(null, shape);
-					context.endTileContext();
+					int height = context.getHeight(x, y);
+					float dx = drawX+context.getConverter().getViewX(x, y, height);
+					float dy = drawY+context.getConverter().getViewY(x, y, height);
+					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4, dx, dy, .5f, 1, 1, 1, Color.fromShort((short) argb), 1);
 				}
 			} catch (IllegalBufferException e) {
 				// TODO: Create a crash report
@@ -707,6 +770,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.ZOOM_OUT);
 		} else if ("F2".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SAVE);
+		} else if ("TAB".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.FILTER_WOUNDED);
 		} else if ("DELETE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DESTROY);
 		} else if ("ESCAPE".equalsIgnoreCase(keyCode)) {
@@ -778,6 +843,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private void handleDrawOnMap(GODrawEvent drawEvent) {
 		this.currentSelectionAreaStart = drawEvent.getDrawPosition();
+		updateSelectionArea = true;
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
@@ -860,6 +926,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.currentSelectionAreaEnd = null;
 		} else {
 			this.currentSelectionAreaEnd = mousePosition;
+			updateSelectionArea = true;
 		}
 	}
 

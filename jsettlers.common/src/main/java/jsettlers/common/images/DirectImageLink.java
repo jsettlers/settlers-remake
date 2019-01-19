@@ -35,6 +35,11 @@ public class DirectImageLink extends ImageLink {
 	}
 
 	@Override
+	public String getHumanName() {
+		return name;
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}

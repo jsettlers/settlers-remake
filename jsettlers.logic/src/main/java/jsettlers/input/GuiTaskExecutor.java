@@ -367,7 +367,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private boolean canMoveTo(ILogicMovable movable, int x, int y) {
-		return (movable.isShip() && grid.isWater(x, y))
+		return (movable.isShip() && grid.isNavigable(x, y))
 			|| (!grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPosition().x, movable.getPosition().y) == grid.getBlockedPartition(x, y));
 	}
 

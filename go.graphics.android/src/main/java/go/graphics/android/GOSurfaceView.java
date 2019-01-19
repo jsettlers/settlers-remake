@@ -15,6 +15,8 @@
 package go.graphics.android;
 
 import android.content.Context;
+import android.opengl.EGL14;
+import android.opengl.EGLExt;
 import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
@@ -45,7 +47,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 	private final ActionAdapter actionAdapter = new ActionAdapter(getContext(), this);
 
-	private AndroidDrawContext drawcontext;
+	private GLES11DrawContext drawcontext;
 
 	private IContextDestroyedListener contextDestroyedListener = null;
 
@@ -216,21 +218,15 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 	private class Renderer implements GLSurfaceView.Renderer {
 
-		private Renderer(Context aContext) {
-			drawcontext = new AndroidDrawContext(aContext);
+		private Context ctx;
 
-			GLES10.glBlendFunc(GLES10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-			GLES10.glEnable(GLES10.GL_BLEND);
+		private Renderer(Context aContext) {
+			this.ctx = aContext;
 		}
 
 		@Override
 		public void onDrawFrame(GL10 gl) {
-			GLES10.glClearColor(0, 0, 0, 1);
-			GLES10.glClear(GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_COLOR_BUFFER_BIT);
-
-			GLES10.glDepthFunc(GLES10.GL_LEQUAL);
-			GLES10.glEnable(GLES10.GL_DEPTH_TEST);
-
+			GLES10.glClear(GLES10.GL_DEPTH_BUFFER_BIT | GLES10.GL_COLOR_BUFFER_BIT);
 			area.drawArea(drawcontext);
 		}
 
@@ -243,6 +239,13 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+			String version = gl.glGetString(GL10.GL_VERSION);
+			int major = version.split(" ")[2].charAt(0)-'0';
+			if(major == 1) {
+				drawcontext = new GLES11DrawContext(ctx);
+			} else {
+				drawcontext = new GLES20DrawContext(ctx, major >= 3);
+			}
 		}
 	}
 
@@ -250,15 +253,33 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		@Override
 		public EGLContext createContext(EGL10 arg0, EGLDisplay display, EGLConfig config) {
-			int[] attributes = new int[] { EGL10.EGL_NONE };
-			return arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT,
-					attributes);
+			EGLContext newCtx = null;
+			int i = 0;
+			int[][] attrs = new int[][] {
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 2, EGL10.EGL_NONE}, //3.2
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL10.EGL_NONE}, //3.1
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 0, EGL10.EGL_NONE}, //3.0
+					{EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE}, // highest available version
+					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 1, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL10.EGL_NONE}, // 1.1
+					{EGL14.EGL_CONTEXT_CLIENT_VERSION, 1, EGL10.EGL_NONE}, // 1.x
+					{EGL10.EGL_NONE}, // lowest available version
+			};
+
+			while(newCtx == null && attrs.length >= i) {
+				int[] attributes = attrs[i];
+				newCtx = arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT, attributes);
+				i++;
+				if(newCtx != null && arg0.eglGetError() != EGL10.EGL_SUCCESS) {
+					newCtx = null;
+				}
+			}
+			return newCtx;
 		}
 
 		@Override
 		public void destroyContext(EGL10 arg0, EGLDisplay arg1, EGLContext arg2) {
 			Log.w("gl", "Invalidating texture context");
-			drawcontext.invalidateContext();
+			if(drawcontext != null) drawcontext.invalidateContext();
 			AndroidTextDrawer.invalidateTextures();
 			IContextDestroyedListener listener = contextDestroyedListener;
 			if (listener != null) {

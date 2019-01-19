@@ -14,10 +14,13 @@
  *******************************************************************************/
 package go.graphics.swing.contextcreator;
 
+import org.lwjgl.system.Platform;
 import org.lwjgl.system.jawt.JAWT;
 import org.lwjgl.system.jawt.JAWTDrawingSurface;
 import org.lwjgl.system.jawt.JAWTDrawingSurfaceInfo;
 import org.lwjgl.system.jawt.JAWTFunctions;
+import org.lwjgl.system.jawt.JAWTWin32DrawingSurfaceInfo;
+import org.lwjgl.system.jawt.JAWTX11DrawingSurfaceInfo;
 
 import java.awt.Canvas;
 import java.awt.Graphics;
@@ -30,9 +33,12 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	protected JAWT jawt = JAWT.create();
 	protected JAWTDrawingSurface surface;
 	protected JAWTDrawingSurfaceInfo surfaceinfo;
+	protected long windowConnection;
+	protected long windowDrawable;
+	protected Platform currentPlatform = Platform.get();
 
-	public JAWTContextCreator(GLContainer container) {
-		super(container);
+	public JAWTContextCreator(GLContainer container, boolean debug) {
+		super(container, debug);
 
 		jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
 		JAWTFunctions.JAWT_GetAWT(jawt);
@@ -41,6 +47,28 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
 	@Override
 	public abstract void stop();
+
+	private void regenerateWindowInfo() {
+		long oldWindowConnection = windowConnection;
+		long oldWindowDrawable = windowDrawable;
+		if(currentPlatform == Platform.LINUX) {
+			JAWTX11DrawingSurfaceInfo dsi = JAWTX11DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
+			windowConnection = dsi.display();
+			windowDrawable = dsi.drawable();
+		} else {
+			JAWTWin32DrawingSurfaceInfo dsi = JAWTWin32DrawingSurfaceInfo.create(surfaceinfo.platformInfo());
+			windowConnection = dsi.hwnd();
+			windowDrawable = dsi.hdc();
+		}
+
+		if(windowDrawable != oldWindowDrawable) onNewDrawable();
+		if(windowConnection != oldWindowConnection) onNewConnection();
+	}
+
+	protected void onNewConnection() {}
+	protected void onNewDrawable() {}
+
+	protected void onInit() {}
 
 	@Override
 	public void initSpecific() {
@@ -55,17 +83,13 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
 				JAWTFunctions.JAWT_DrawingSurface_Lock(surface.Lock(), surface);
 				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface.GetDrawingSurfaceInfo(), surface);
-				createNewSurfaceInfo();
+				regenerateWindowInfo();
 
 				if (first_draw) {
+					first_draw = false;
 					new GOSwingEventConverter(this, parent);
 
-					initContext();
-					makeCurrent(true);
-
-					parent.init();
-
-					first_draw = false;
+					onInit();
 				}
 				makeCurrent(true);
 
@@ -93,11 +117,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
 	protected abstract void swapBuffers();
 
-	protected abstract void makeCurrent(boolean draw);
-
-	protected abstract void initContext();
-
-	protected abstract void createNewSurfaceInfo();
+	public abstract void makeCurrent(boolean draw);
 
 	@Override
 	public void repaint() {

@@ -158,7 +158,7 @@ public class JSettlersFrame extends JFrame {
 		Region region = new Region(500, 500);
 		region.setContent(content);
 		Area area = new Area();
-		area.add(region);
+		area.set(region);
 
 		redrawTimer = new Timer("opengl-redraw");
 		redrawTimer.schedule(new TimerTask() {
@@ -169,7 +169,7 @@ public class JSettlersFrame extends JFrame {
 		}, 100, 1000/SettingsManager.getInstance().getFpsLimit());
 
 		SwingUtilities.invokeLater(() -> {
-			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend()));
+			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend(), SettingsManager.getInstance().isGraphicsDebug()));
 			revalidate();
 			repaint();
 		});

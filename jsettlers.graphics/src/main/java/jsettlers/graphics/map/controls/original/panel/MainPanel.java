@@ -37,6 +37,7 @@ import jsettlers.graphics.map.controls.original.panel.content.ContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
 /**
@@ -74,32 +75,30 @@ public class MainPanel extends UIPanel {
 			new TabButton(ContentType.PRODUCTION, BUTTONS_FILE, 243, 255, ""),
 	};
 
-	private final MessageContent quitPrompt = new MessageContent(
-			Labels.getString("game-quit"),
-			Labels.getString("game-quit-cancel"),
-			new ExecutableAction() {
-				@Override
-				public void execute() {
-					setContent(ContentType.BUILD_NORMAL);
-					btnSystem.setActive(false);
-				}
-			},
-			Labels.getString("game-quit-ok"),
-			new Action(EActionType.EXIT)) {
-		@Override
-		public void contentShowing(ActionFireable actionFireable) {
-			btnSystem.setActive(true);
-		}
+	private final UIPanel gamePanel = new UIPanel();
 
-		@Override
-		public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+	private final LabeledButton exitButton = new LabeledButton(Labels.getString("game-menu-quit"), new Action(EActionType.EXIT));
+	private final LabeledButton saveButton = new LabeledButton(Labels.getString("game-menu-save"), new Action(EActionType.SAVE));
+	private final LabeledButton cancelButton = new LabeledButton(Labels.getString("game-menu-cancel"), new ExecutableAction() {
+		public void execute() {
+			setContent(ContentType.BUILD_NORMAL);
 			btnSystem.setActive(false);
 		}
+	});
+
+	{
+		gamePanel.addChild(saveButton, .1f, .4f, .9f, .5f);
+		gamePanel.addChild(exitButton, .1f, .25f, .9f, .35f);
+		gamePanel.addChild(cancelButton, .1f, .1f, .9f, .2f);
+	}
+
+	private AbstractContentProvider gamePanelACP = new AbstractContentProvider() {
+		public UIPanel getPanel() { return gamePanel; }
 	};
 
-	private final Button btnSystem = new TabButton(quitPrompt,
+	private final Button btnSystem = new TabButton(gamePanelACP,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
-			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), Labels.getString("game-quit-description"));
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), Labels.getString("game-menu-description"));
 
 	private final Button btnScroll = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
 	private final Button btnSwords = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 114, 102, "");
@@ -333,8 +332,8 @@ public class MainPanel extends UIPanel {
 			goBackContent = activeContent;
 			setContent(new MessageContent(
 					Labels.getString("really_destroy_building"),
-					Labels.getName(EActionType.DESTROY), new Action(
-							EActionType.DESTROY),
+					Labels.getString("action_ASK_DESTROY"),
+					new Action(EActionType.DESTROY),
 					Labels.getString("abort"),
 					new Action(EActionType.ABORT)) {
 				@Override

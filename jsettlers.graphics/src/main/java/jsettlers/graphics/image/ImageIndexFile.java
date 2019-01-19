@@ -88,7 +88,7 @@ public class ImageIndexFile {
 		float vMax = (float) in.readShort() / Short.MAX_VALUE;
 
 		while (textureFileNumber >= textures.size()) {
-			textures.add(new ImageIndexTexture(getResource("images_" + textures.size())));
+			textures.add(new ImageIndexTexture(getResource("images_" + textures.size()), "texturemap-image"+textures.size()));
 		}
 
 		ImageIndexImage primaryImage = new ImageIndexImage(textures.get(textureFileNumber), offsetX, offsetY, width, height, uMin, vMin, uMax, vMax, isTorso);

@@ -62,5 +62,6 @@ clean {
 }
 
 dependencies {
+    compile project(':go.graphics')
     testImplementation project(':jsettlers.testutils')
 }

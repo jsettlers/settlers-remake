@@ -42,7 +42,6 @@ import javax.swing.SwingUtilities;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
-import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
 import jsettlers.common.CommonConstants;
@@ -283,8 +282,8 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		// map display
 		Area area = new Area();
 		final Region region = new Region(Region.POSITION_CENTER);
-		area.add(region);
-		displayPanel = new AreaContainer(area, SettingsManager.getInstance().getBackend());
+		area.set(region);
+		displayPanel = new AreaContainer(area, SettingsManager.getInstance().getBackend(), SettingsManager.getInstance().isGraphicsDebug());
 		displayPanel.setMinimumSize(new Dimension(640, 480));
 		displayPanel.setFocusable(true);
 		root.add(displayPanel, BorderLayout.CENTER);

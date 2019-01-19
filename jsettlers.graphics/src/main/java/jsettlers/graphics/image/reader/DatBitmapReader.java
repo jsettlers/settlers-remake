@@ -248,11 +248,11 @@ public final class DatBitmapReader<T extends Image> {
 	 *             If an read error occurred.
 	 */
 	public static <T extends Image> T getImage(
-			DatBitmapTranslator<T> translator, ByteReader reader)
+			DatBitmapTranslator<T> translator, ByteReader reader, String name)
 			throws IOException {
 		ImageMetadata metadata = new ImageMetadata();
 		ShortArrayWriter array = new ShortArrayWriter();
 		uncompressImage(reader, translator, metadata, array);
-		return translator.createImage(metadata, array.getArray());
+		return translator.createImage(metadata, array.getArray(), name);
 	}
 }

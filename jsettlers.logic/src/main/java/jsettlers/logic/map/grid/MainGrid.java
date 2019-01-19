@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -51,6 +51,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
@@ -494,10 +495,18 @@ public final class MainGrid implements Serializable {
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 		if (pathCalculatable.isShip()) {
-			return isSurroundedByWater((short) x, (short) y);
+			return isNavigable(x, y);
 		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
 			&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
+	}
+
+	final boolean isNavigable(int x, int y) {
+		Optional<ShortPoint2D> blockingOptional = HexGridArea.stream(x, y, 0, 2)
+															 .filterBounds(width, height)
+															 .filter((x1, y1) -> !landscapeGrid.getLandscapeTypeAt(x1, y1).isWater || objectsGrid.getMapObjectAt(x1, y1, EMapObjectType.DOCK) != null)
+															 .getFirst();
+		return !blockingOptional.isPresent();
 	}
 
 	public FlagsGrid getFlagsGrid() {
@@ -521,7 +530,6 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final float getCost(int sx, int sy, int tx, int ty) {
-			// return Constants.TILE_PATHFINDER_COST * (flagsGrid.isProtected(sx, sy) ? 3.5f : 1);
 			return 1;
 		}
 
@@ -748,7 +756,7 @@ public final class MainGrid implements Serializable {
 
 	}
 
-	final class GraphicsGrid implements IGraphicsGrid {
+	final class GraphicsGrid implements IGraphicsGrid, IDirectGridProvider {
 		private transient BitSet bordersGrid = new BitSet(width * height);
 
 		@Override
@@ -767,8 +775,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public IMovable[] getMovableArray() {
+			return movableGrid.getMovableArray();
+		}
+
+		@Override
 		public final IMapObject getMapObjectsAt(int x, int y) {
 			return objectsGrid.getObjectsAt(x, y);
+		}
+
+		public final IMapObject[] getObjectArray() {
+			return objectsGrid.getObjectArray();
 		}
 
 		@Override
@@ -829,6 +846,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public BitSet getBorderArray() {
+			return bordersGrid;
+		}
+
+		@Override
 		public final byte getPlayerIdAt(int x, int y) {
 			return partitionsGrid.getPlayerIdAt(x, y);
 		}
@@ -836,6 +858,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final byte getVisibleStatus(int x, int y) {
 			return fogOfWar.getVisibleStatus(x, y);
+		}
+
+		@Override
+		public byte[][] getVisibleStatusArray() {
+			return fogOfWar.getVisibleStatusArray();
 		}
 
 		@Override
@@ -1571,7 +1598,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isCoastReachable(ShortPoint2D position) {
-			return !HexGridArea.stream(position.x, position.y, 0, 2)
+			return !HexGridArea.stream(position.x, position.y, 0, 3)
 							   .filterBounds(width, height)
 							   .filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater)
 							   .isEmpty();
@@ -1919,8 +1946,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isWater(int x, int y) {
-			return landscapeGrid.getLandscapeTypeAt(x, y).isWater;
+		public boolean isNavigable(int x, int y) {
+			return MainGrid.this.isNavigable(x, y);
 		}
 
 		@Override

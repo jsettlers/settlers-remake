@@ -19,7 +19,7 @@ package jsettlers.graphics.map.draw;
  * 
  * @author Michael Zangl
  */
-public enum ETextureOrientation {
+public class ETextureOrientation {
 
 	/**
 	 * The triangle consists of these points: The upper point,
@@ -28,16 +28,16 @@ public enum ETextureOrientation {
 	 * <p>
 	 * the right point
 	 */
-	CONTINUOUS_UP(true, new float[] {
+	private static final float[] CONTINUOUS_UP = new float[] {
 			DrawConstants.DISTANCE_X / 2,
 			0,
 			0,
 			DrawConstants.DISTANCE_Y,
 			DrawConstants.DISTANCE_X,
 			DrawConstants.DISTANCE_Y
-	}),
+	};
 
-	TOPLEFT(false, new float[] {
+	private static final float[] TOPLEFT = new float[] {
 			DrawConstants.TEXTUREUNIT_X / 2
 					+ DrawConstants.TEXTURE_BORDER_OFFSET,
 			0,
@@ -45,9 +45,9 @@ public enum ETextureOrientation {
 			DrawConstants.TEXTUREUNIT_Y,
 			DrawConstants.TEXTUREUNIT_X,
 			DrawConstants.TEXTUREUNIT_Y
-	}),
+	};
 
-	TOPRIGHT(false, new float[] {
+	private static final float[] TOPRIGHT = new float[] {
 			DrawConstants.TEXTUREUNIT_X * 3 / 2
 					- DrawConstants.TEXTURE_BORDER_OFFSET,
 			0,
@@ -56,16 +56,16 @@ public enum ETextureOrientation {
 			DrawConstants.TEXTUREUNIT_X * 2
 					- DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y
-	}),
+	};
 
-	BOTTOM(false, new float[] {
+	private static final float[] BOTTOM = new float[] {
 			DrawConstants.TEXTUREUNIT_X,
 			DrawConstants.TEXTUREUNIT_Y,
 			DrawConstants.TEXTUREUNIT_X / 2,
 			DrawConstants.TEXTUREUNIT_Y * 2,
 			DrawConstants.TEXTUREUNIT_X * 3 / 2,
 			DrawConstants.TEXTUREUNIT_Y * 2
-	}),
+	};
 	/**
 	 * left
 	 * <p>
@@ -73,55 +73,44 @@ public enum ETextureOrientation {
 	 * <p>
 	 * right
 	 */
-	CONTINUOUS_DOWN(true, new float[] {
+	private static final float[] CONTINUOUS_DOWN = new float[] {
 			DrawConstants.DISTANCE_X / 2,
 			0,
 			DrawConstants.DISTANCE_X,
 			DrawConstants.DISTANCE_Y,
 			DrawConstants.DISTANCE_X * 3 / 2,
 			0
-	}),
+	};
 
-	TOP(false, new float[] {
+	private static final float[] TOP = new float[] {
 			DrawConstants.TEXTUREUNIT_X / 2,
 			0,
 			DrawConstants.TEXTUREUNIT_X,
 			DrawConstants.TEXTUREUNIT_Y,
 			DrawConstants.TEXTUREUNIT_X * 3 / 2,
 			0
-	}),
-	BOTTOMLEFT(false, new float[] {
+	};
+
+	private static final float[] BOTTOMLEFT = new float[] {
 			0 + DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y,
 			DrawConstants.TEXTUREUNIT_X / 2 + DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y * 2,
 			DrawConstants.TEXTUREUNIT_X + DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y
-	}),
-	BOTTOMRIGHT(false, new float[] {
+	};
+
+	private static final float[] BOTTOMRIGHT = new float[] {
 			DrawConstants.TEXTUREUNIT_X - DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y,
 			DrawConstants.TEXTUREUNIT_X * 3 / 2 - DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y * 2,
 			DrawConstants.TEXTUREUNIT_X * 2 - DrawConstants.TEXTURE_BORDER_OFFSET,
 			DrawConstants.TEXTUREUNIT_Y
-	});
+	};
 
-	static final int CONTINOUS_SIZE = 128;
-
-	private final boolean continous;
-	private final float[] relativecoords;
-
-	ETextureOrientation(boolean continous, float[] relativecoords) {
-		this.continous = continous;
-		this.relativecoords = relativecoords;
-	}
-
-	public boolean isContinous() {
-		return continous;
-	}
-
-	public float[] getRelativecoords() {
-		return relativecoords;
-	}
+	public static final float[][] CONTINUOS = {CONTINUOUS_UP, CONTINUOUS_DOWN};
+	public static final float[][] ORIENTATION = {BOTTOM, TOP};
+	public static final float[][] RIGHT = {TOPRIGHT, BOTTOMRIGHT};
+	public static final float[][] LEFT = {TOPLEFT, BOTTOMLEFT};
 }

@@ -18,17 +18,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import java8.util.function.Supplier;
 import java8.util.stream.Collectors;
 import java8.util.stream.IntStreams;
-import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.MultiImageMap;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
-import jsettlers.graphics.image.ShadowImage;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.image.TorsoImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
 import jsettlers.graphics.image.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.image.reader.translator.GuiTranslator;
@@ -188,10 +186,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private static final int ID_GUIS             = 0x11306;
 
 	private final DatBitmapTranslator<SettlerImage>   settlerTranslator;
-	private final DatBitmapTranslator<TorsoImage>     torsoTranslator;
-	private final DatBitmapTranslator<LandscapeImage> landscapeTranslator;
-	private final DatBitmapTranslator<ShadowImage>    shadowTranslator;
-	private final DatBitmapTranslator<GuiImage>       guiTranslator;
+	private final DatBitmapTranslator<SingleImage>     torsoTranslator;
+	private final DatBitmapTranslator<SingleImage> landscapeTranslator;
+	private final DatBitmapTranslator<SingleImage>    shadowTranslator;
+	private final DatBitmapTranslator<SingleImage>       guiTranslator;
 
 	private final DatFileMapping mapping;
 
@@ -219,13 +217,13 @@ public class AdvancedDatFileReader implements DatFileReader {
 	/**
 	 * A list of loaded landscae images.
 	 */
-	private       LandscapeImage[]         landscapeImages   = null;
-	private final Sequence<LandscapeImage> landscapeSequence = new LandscapeImageSequence();
+	private       SingleImage[]         landscapeImages   = null;
+	private final Sequence<SingleImage> landscapeSequence = new LandscapeImageSequence();
 	private       int[]                    landscapeStarts;
 
-	private       GuiImage[]         guiImages   = null;
+	private       SingleImage[]         guiImages   = null;
 	private       int[]              guiStarts;
-	private final Sequence<GuiImage> guiSequence = new GuiImageSequence();
+	private final Sequence<SingleImage> guiSequence = new GuiImageSequence();
 
 	private final SequenceList<Image> directSettlerList;
 
@@ -240,15 +238,17 @@ public class AdvancedDatFileReader implements DatFileReader {
 	};
 
 	private final DatFileType type;
+	private final String file_name;
 
-	public AdvancedDatFileReader(File file, DatFileType type) {
-		this(file, type, new DefaultDatFileMapping());
+	public AdvancedDatFileReader(File file, DatFileType type, String file_name) {
+		this(file, type, new DefaultDatFileMapping(), file_name);
 	}
 
-	public AdvancedDatFileReader(File file, DatFileType type, DatFileMapping mapping) {
+	public AdvancedDatFileReader(File file, DatFileType type, DatFileMapping mapping, String file_name) {
 		this.file = file;
 		this.type = type;
 		this.mapping = mapping;
+		this.file_name = file_name;
 
 		directSettlerList = new DirectSettlerSequenceList();
 		settlerTranslator = new SettlerTranslator(type);
@@ -263,7 +263,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 		return new Hashes(IntStreams.range(0, settlers.size())
 				.mapToObj(settlers::get)
-				.map(sequence -> sequence.getImage(0))
+				.map(sequence -> sequence.getImage(0, null))
 				.filter(image -> image instanceof SingleImage)
 				.map(image -> (SingleImage) image)
 				.map(SingleImage::hash)
@@ -271,10 +271,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 	}
 
 	public Hashes getGuiHashes() {
-		Sequence<GuiImage> sequence = getGuis();
+		Sequence<SingleImage> sequence = getGuis();
 
 		return new Hashes(IntStreams.range(0, sequence.length())
-				.mapToObj(sequence::getImage)
+				.mapToObj(index -> sequence.getImage(index, null))
 				.map(SingleImage::hash)
 				.collect(Collectors.toList()));
 	}
@@ -299,9 +299,9 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 		initializeNullFile();
 
-		landscapeImages = new LandscapeImage[landscapeStarts.length];
+		landscapeImages = new SingleImage[landscapeStarts.length];
 
-		guiImages = new GuiImage[guiStarts.length];
+		guiImages = new SingleImage[guiStarts.length];
 		settlerSequences = new Sequence[settlerStarts.length];
 
 		int torsoDifference = settlerStarts.length - torsoStarts.length;
@@ -367,6 +367,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 				shadowStarts[17] = shadowStarts[9]; // donkey
 				shadowStarts[16] = shadowStarts[8]; // donkey
 				shadowStarts[15] = shadowStarts[7]; // donkey
+			} else if (shadowDifference == 28) { // change shadows in file 36:
+				shadowStarts[4] = shadowStarts[1]; // roman ferry
+				shadowStarts[6] = -1; // roman ferry front has no extra shadow
+				shadowStarts[2] = -1; // roman cargo ship front has no extra shadow
 			}
 		} else if (shadowDifference == 0) {
 			if (settlerStarts.length == 239) { // change shadows in file 11:
@@ -494,14 +498,13 @@ public class AdvancedDatFileReader implements DatFileReader {
 	private static final Sequence<Image> NULL_SETTLER_SEQUENCE = new ArraySequence<>(new SettlerImage[0]);
 
 	private class DirectSettlerSequenceList implements SequenceList<Image> {
-
 		@Override
 		public Sequence<Image> get(int index) {
 			initializeIfNeeded();
 			if (settlerSequences[index] == null) {
 				settlerSequences[index] = NULL_SETTLER_SEQUENCE;
 				try {
-					loadSettlers(index);
+					loadSettlers(index, file_name);
 				} catch (Exception e) {
 				}
 			}
@@ -515,7 +518,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 	}
 
-	private synchronized void loadSettlers(int goldIndex) throws IOException {
+	private synchronized void loadSettlers(int goldIndex, String name) throws IOException {
 		int theseGraphicsFilesIndex = mapping.mapSettlersSequence(goldIndex);
 
 		int position = settlerStarts[theseGraphicsFilesIndex];
@@ -524,7 +527,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		SettlerImage[] images = new SettlerImage[framePositions.length];
 		for (int i = 0; i < framePositions.length; i++) {
 			reader.skipTo(framePositions[i]);
-			images[i] = DatBitmapReader.getImage(settlerTranslator, reader);
+			images[i] = DatBitmapReader.getImage(settlerTranslator, reader, name + "-S" + goldIndex + ":" + i);
 		}
 
 		int torsoPosition = torsoStarts[theseGraphicsFilesIndex];
@@ -532,7 +535,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			long[] torsoPositions = readSequenceHeader(torsoPosition);
 			for (int i = 0; i < torsoPositions.length && i < framePositions.length; i++) {
 				reader.skipTo(torsoPositions[i]);
-				TorsoImage torso = DatBitmapReader.getImage(torsoTranslator, reader);
+				SingleImage torso = DatBitmapReader.getImage(torsoTranslator, reader, name + "-T" + goldIndex + ":" + i);
 				images[i].setTorso(torso);
 			}
 		}
@@ -543,7 +546,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 			for (int i = 0; i < shadowPositions.length
 				&& i < framePositions.length; i++) {
 				reader.skipTo(shadowPositions[i]);
-				ShadowImage shadow = DatBitmapReader.getImage(shadowTranslator, reader);
+				SingleImage shadow = DatBitmapReader.getImage(shadowTranslator, reader, name + "-SH" + goldIndex + ":" + i);
 				images[i].setShadow(shadow);
 			}
 		}
@@ -565,12 +568,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 	}
 
 	@Override
-	public Sequence<LandscapeImage> getLandscapes() {
+	public Sequence<SingleImage> getLandscapes() {
 		return landscapeSequence;
 	}
 
 	@Override
-	public Sequence<GuiImage> getGuis() {
+	public Sequence<SingleImage> getGuis() {
 		return guiSequence;
 	}
 
@@ -579,15 +582,17 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 *
 	 * @author michael
 	 */
-	private class LandscapeImageSequence implements Sequence<LandscapeImage> {
+	private class LandscapeImageSequence implements Sequence<SingleImage> {
 		/**
 		 * Forces a get of the image.
 		 */
 		@Override
-		public LandscapeImage getImage(int index) {
+		public SingleImage getImage(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (landscapeImages[index] == null) {
-				loadLandscapeImage(index);
+				String str_custom_name = custom_name != null ? custom_name.get() : null;
+				if(str_custom_name == null) str_custom_name = "";
+				loadLandscapeImage(index, str_custom_name+file_name+"-L"+index);
 			}
 			return landscapeImages[index];
 		}
@@ -599,13 +604,15 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		@Override
-		public SingleImage getImageSafe(int index) {
+		public SingleImage getImageSafe(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
 			} else {
 				if (landscapeImages[index] == null) {
-					loadLandscapeImage(index);
+					String str_custom_name = custom_name != null ? custom_name.get() : null;
+					if(str_custom_name == null) str_custom_name = "";
+					loadLandscapeImage(index, str_custom_name+file_name+"-L"+index);
 				}
 				return landscapeImages[index];
 			}
@@ -619,10 +626,10 @@ public class AdvancedDatFileReader implements DatFileReader {
 		return reader;
 	}
 
-	private void loadLandscapeImage(int index) {
+	private void loadLandscapeImage(int index, String name) {
 		try {
 			reader.skipTo(landscapeStarts[index]);
-			LandscapeImage image = DatBitmapReader.getImage(landscapeTranslator, reader);
+			SingleImage image = DatBitmapReader.getImage(landscapeTranslator, reader, name);
 			landscapeImages[index] = image;
 		} catch (IOException e) {
 			landscapeImages[index] = NullImage.getForLandscape();
@@ -634,15 +641,17 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 *
 	 * @author michael
 	 */
-	private class GuiImageSequence implements Sequence<GuiImage> {
+	private class GuiImageSequence implements Sequence<SingleImage> {
 		/**
 		 * Forces a get of the image.
 		 */
 		@Override
-		public GuiImage getImage(int index) {
+		public SingleImage getImage(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (guiImages[index] == null) {
-				loadGuiImage(index);
+				String str_custom_name = custom_name != null ? custom_name.get() : null;
+				if(str_custom_name == null) str_custom_name = "";
+				loadGuiImage(index, str_custom_name+file_name+"-G"+index);
 			}
 			return guiImages[index];
 		}
@@ -654,24 +663,26 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		@Override
-		public SingleImage getImageSafe(int index) {
+		public SingleImage getImageSafe(int index, Supplier<String> custom_name) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
 			} else {
 				if (guiImages[index] == null) {
-					loadGuiImage(index);
+					String str_custom_name = custom_name != null ? custom_name.get() : null;
+					if(str_custom_name == null) str_custom_name = "";
+					loadGuiImage(index, str_custom_name+file_name+"-G"+index);
 				}
 				return guiImages[index];
 			}
 		}
 	}
 
-	private void loadGuiImage(int goldIndex) {
+	private void loadGuiImage(int goldIndex, String name) {
 		try {
 			int theseGraphicsFilesIndex = mapping.mapGuiImage(goldIndex);
 			reader.skipTo(guiStarts[theseGraphicsFilesIndex]);
-			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader);
+			SingleImage image = DatBitmapReader.getImage(guiTranslator, reader, name);
 			guiImages[goldIndex] = image;
 		} catch (IOException | ArrayIndexOutOfBoundsException e) {
 			guiImages[goldIndex] = NullImage.getForGui();
@@ -709,12 +720,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 	}
 
 	@Override
-	public void generateImageMap(int width, int height, int[] sequences, String id) throws IOException {
+	public void generateImageMap(int width, int height, int[] sequences, String id, String name) throws IOException {
 		initializeIfNeeded();
 
-		MultiImageMap map = new MultiImageMap(width, height, id);
+		MultiImageMap map = new MultiImageMap(width, height, id, name);
 		if (!map.hasCache()) {
-			map.addSequences(this, sequences, settlerSequences);
+			map.addSequences(this, sequences);
 			map.writeCache();
 		}
 	}
@@ -723,12 +734,12 @@ public class AdvancedDatFileReader implements DatFileReader {
 		return settlerTranslator;
 	}
 
-	public DatBitmapTranslator<TorsoImage> getTorsoTranslator() {
+	public DatBitmapTranslator<SingleImage> getTorsoTranslator() {
 		return torsoTranslator;
 	}
 
 	@Override
-	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
+	public DatBitmapTranslator<SingleImage> getLandscapeTranslator() {
 		return landscapeTranslator;
 	}
 }

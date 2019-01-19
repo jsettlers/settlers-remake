@@ -73,6 +73,11 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill, IBuilding.
 	}
 
 	@Override
+	public boolean isWounded() {
+		return false;
+	}
+
+	@Override
 	public IMapObject getNextObject() {
 		return null;
 	}

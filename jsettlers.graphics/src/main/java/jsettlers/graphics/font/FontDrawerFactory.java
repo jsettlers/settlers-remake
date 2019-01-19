@@ -18,7 +18,6 @@ import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.graphics.map.IGLProvider;
-import jsettlers.graphics.map.draw.DrawBuffer;
 
 /**
  * This class generates a (cached) fall back font drawer.
@@ -30,7 +29,6 @@ public class FontDrawerFactory implements ITextDrawerFactory, IGLProvider {
 
 	private GLDrawContext lastGl = null;
 	private FontDrawer[] cache;
-	private final DrawBuffer buffer = new DrawBuffer(this);
 
 	@Override
 	public TextDrawer getTextDrawer(GLDrawContext gl, EFontSize size) {
@@ -41,7 +39,7 @@ public class FontDrawerFactory implements ITextDrawerFactory, IGLProvider {
 
 		FontDrawer drawer = cache[size.ordinal()];
 		if (drawer == null) {
-			drawer = new FontDrawer(gl, buffer, size);
+			drawer = new FontDrawer(gl, size);
 			cache[size.ordinal()] = drawer;
 		}
 		return drawer;
