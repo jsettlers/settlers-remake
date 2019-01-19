@@ -37,9 +37,17 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.ScreenChangeAction;
+import jsettlers.common.action.SelectAreaAction;
+import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.AnimationSequence;
@@ -56,8 +64,6 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.UIState;
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.IAction;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
@@ -65,14 +71,9 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.statistics.FramerateComputer;
 import jsettlers.common.statistics.IGameTimeProvider;
-import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
-import jsettlers.common.action.PointAction;
-import jsettlers.common.action.ScreenChangeAction;
-import jsettlers.common.action.SelectAreaAction;
-import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
@@ -769,6 +770,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.ZOOM_OUT);
 		} else if ("F2".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SAVE);
+		} else if ("TAB".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.FILTER_WOUNDED);
 		} else if ("DELETE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DESTROY);
 		} else if ("ESCAPE".equalsIgnoreCase(keyCode)) {

@@ -101,6 +101,11 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
+	public boolean isWounded() {
+		return false;
+	}
+
+	@Override
 	public void setSelected(boolean b) {
 	}
 

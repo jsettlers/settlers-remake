@@ -14,6 +14,16 @@
  *******************************************************************************/
 package jsettlers.logic.buildings;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -56,16 +66,6 @@ import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, IScheduledTimerable,
 		IDebugable, IDiggerRequester, IViewDistancable {
@@ -424,6 +424,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public boolean isSelected() {
 		return this.selected;
+	}
+
+	@Override
+	public boolean isWounded() {
+		return false;
 	}
 
 	@Override

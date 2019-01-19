@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import java8.util.Optional;
 import java8.util.function.BiFunction;
 import java8.util.function.Predicate;
+import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
@@ -212,6 +213,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				handleSelectPointAction((PointAction) action);
 				break;
 
+			case FILTER_WOUNDED:
+				filterWounded();
+				break;
+
 			case SELECT_AREA:
 				selectArea((SelectAreaAction) action);
 				break;
@@ -334,7 +339,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (selected instanceof Building) {
 					final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
 					scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
-						a.getAmount(), a.isRelative()
+																 a.getAmount(), a.isRelative()
 					));
 				}
 				break;
@@ -345,7 +350,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (selected instanceof Building) {
 					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
 					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
-						a.getWaypointType(), a.getPosition()
+															   a.getWaypointType(), a.getPosition()
 					));
 				}
 				break;
@@ -608,6 +613,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
 	}
 
+	private void filterWounded() {
+		if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+			return;
+		}
+
+		final List<ISelectable> wounded = currentSelection.stream().filter(ISelectable::isWounded).collect(Collectors.toList());
+		setSelection(new SelectionSet(wounded));
+	}
+
 	private void deselect() {
 		setSelection(new SelectionSet());
 	}
@@ -625,7 +639,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		} else {
 			setSelection(new SelectionSet());
 		}
-
 	}
 
 	private void scheduleTask(SimpleGuiTask guiTask) {

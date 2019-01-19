@@ -17,6 +17,7 @@ package jsettlers.graphics.map;
 import java.util.Iterator;
 
 import go.graphics.GLDrawContext;
+
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IDirectGridProvider;
@@ -211,6 +212,7 @@ public final class MapDrawContext implements IGLProvider {
 		height = map.getHeightAt(mapX, mapY);
 		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
 		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
+
 		return new ShortPoint2D(mapX, mapY);
 	}
 
