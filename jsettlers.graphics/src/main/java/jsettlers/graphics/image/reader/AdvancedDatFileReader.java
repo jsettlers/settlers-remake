@@ -725,7 +725,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 		MultiImageMap map = new MultiImageMap(width, height, id, name);
 		if (!map.hasCache()) {
-			map.addSequences(this, sequences, settlerSequences);
+			map.addSequences(this, sequences);
 			map.writeCache();
 		}
 	}
