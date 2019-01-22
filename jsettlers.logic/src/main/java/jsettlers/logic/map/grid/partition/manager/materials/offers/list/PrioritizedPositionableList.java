@@ -21,6 +21,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
 
 import java8.util.function.Consumer;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
 /**
  * Created by Andreas Eberle on 23.08.2016.
@@ -63,9 +64,9 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 		lists[offer.getPriority().ordinal()].remove(offer);
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PrioritizedPositionableList<P, T> otherList, Consumer<T> movedVisitor) {
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PrioritizedPositionableList<P, T> otherList, IOffersCountListener countListener) {
 		for (int i = lists.length - 1; i >= 0; i--) {
-			lists[i].moveObjectsAtPositionTo(position, otherList.lists[i], movedVisitor);
+			lists[i].moveObjectsAtPositionTo(position, otherList.lists[i], countListener);
 		}
 	}
 

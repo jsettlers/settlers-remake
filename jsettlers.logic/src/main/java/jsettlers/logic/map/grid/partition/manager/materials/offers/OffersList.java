@@ -133,7 +133,7 @@ public final class OffersList implements Serializable {
 
 	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
 		for (int materialTypeIndex = 0; materialTypeIndex < EMaterialType.NUMBER_OF_MATERIALS; materialTypeIndex++) {
-			offersLists[materialTypeIndex].moveObjectsAtPositionTo(position, otherList.offersLists[materialTypeIndex], movedOffer -> movedOffer.changeOffersCountListener(otherList.materialCounts));
+			offersLists[materialTypeIndex].moveObjectsAtPositionTo(position, otherList.offersLists[materialTypeIndex], otherList.materialCounts);
 		}
 	}
 

@@ -288,10 +288,18 @@ public class AiStatistics {
 	}
 
 	private boolean hasNeighborIngestibleByPioneersOf(int x, int y, Player player) {
-		return !MapNeighboursArea.stream(x, y)
-				.filterBounds(mainGrid.getWidth(), mainGrid.getHeight())
-				.filter((currX, currY) -> isIngestibleByPioneersOf(currX, currY, player))
-				.isEmpty();
+		short width = mainGrid.getWidth();
+		short height = mainGrid.getHeight();
+
+		for (EDirection direction : EDirection.values()) {
+			int dx = direction.gridDeltaX + x;
+			int dy = direction.gridDeltaY + y;
+
+			if(dx > 0 && dy > 0 && dx < width && dy < height && isIngestibleByPioneersOf(dx, dy, player)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean isIngestibleByPioneersOf(int x, int y, Player player) {

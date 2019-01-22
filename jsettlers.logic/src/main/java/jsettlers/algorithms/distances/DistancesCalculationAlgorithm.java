@@ -15,6 +15,7 @@
 package jsettlers.algorithms.distances;
 
 import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 
 import java.util.BitSet;
@@ -44,9 +45,15 @@ public class DistancesCalculationAlgorithm {
 				int x = index % width;
 				int y = index / width;
 
-				MapNeighboursArea.stream(x, y).filterBounds(width, height).forEach((neighborX, neighborY) -> { // set neighbors for next run
-					neighbors.set(width * neighborY + neighborX);
-				});
+				for (EDirection direction : EDirection.values()) {
+					int dx = direction.gridDeltaX + x;
+					int dy = direction.gridDeltaY + y;
+
+					if(dx > 0 && dy > 0 && dx < width && dy < height) {
+						// set neighbors for next run
+						neighbors.set(width * dy + dy);
+					}
+				}
 			}
 
 			next = neighbors;
@@ -63,9 +70,15 @@ public class DistancesCalculationAlgorithm {
 				if (provider.test(x, y)) {
 					done.set(width * y + x); // set as done
 
-					MapNeighboursArea.stream(x, y).filterBounds(width, height).forEach((neighborX, neighborY) -> { // set neighbors for next run
-						next.set(width * neighborY + neighborX);
-					});
+					for (EDirection direction : EDirection.values()) {
+						int dx = direction.gridDeltaX + x;
+						int dy = direction.gridDeltaY + y;
+
+						if(dx > 0 && dy > 0 && dx < width && dy < height) {
+							// set neighbors for next run
+							next.set(width * dy + dx);
+						}
+					}
 				}
 			}
 		}

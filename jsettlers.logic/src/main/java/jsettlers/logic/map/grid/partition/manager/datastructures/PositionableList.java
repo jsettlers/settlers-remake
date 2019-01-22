@@ -22,6 +22,8 @@ import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -131,14 +133,17 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		return data.isEmpty();
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, Consumer<T> movedVisitor) {
-		Iterator<T> iterator = data.iterator();
-		while (iterator.hasNext()) {
-			T curr = iterator.next();
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IOffersCountListener countListener) {
+		int len = data.size();
+		for(int i = 0;i != len;) {
+			T curr = data.get(i);
 			if (curr.getPosition().equals(position)) {
-				iterator.remove();
-				movedVisitor.accept(curr);
+				data.remove(i);
+				if(curr instanceof  MaterialOffer) ((MaterialOffer)curr).changeOffersCountListener(countListener);
 				newList.data.add(curr);
+				len--;
+			} else {
+				i++;
 			}
 		}
 	}
