@@ -108,7 +108,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		}
 
 		if(glcaps.GL_ARB_vertex_array_object) {
-			bindFormat(geometry.getInternalFormatId());
+			bindFormat(geometry.vao);
 		} else {
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
@@ -155,7 +155,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
 
 		if(glcaps.GL_ARB_vertex_array_object) {
-			bindFormat(geometry.getInternalFormatId());
+			bindFormat(geometry.vao);
 		} else {
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());

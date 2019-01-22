@@ -20,7 +20,7 @@ package go.graphics;
  * @author Michael Zangl
  */
 public class GeometryHandle extends GLBufferHandle {
-	private int vao;
+	public int vao;
 	private EGeometryFormatType format;
 
 	public GeometryHandle(GLDrawContext dc, int vbo, int vao, EGeometryFormatType format) {

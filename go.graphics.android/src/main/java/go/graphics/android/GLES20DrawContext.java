@@ -104,7 +104,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		}
 
 		if(gles3) {
-			bindFormat(geometry.getInternalFormatId());
+			bindFormat(geometry.vao);
 		} else {
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
@@ -151,7 +151,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		GLES20.glUniform3fv(lastProgram.ufs[TRANS], 2, new float[] {x, y, z, sx, sy, sz}, 0);
 
 		if(gles3) {
-			bindFormat(geometry.getInternalFormatId());
+			bindFormat(geometry.vao);
 		} else {
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
