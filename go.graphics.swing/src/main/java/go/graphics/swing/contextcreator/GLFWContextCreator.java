@@ -23,7 +23,7 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
-import java.awt.Dimension;
+import java.awt.Window;
 import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
@@ -63,11 +63,23 @@ public class GLFWContextCreator extends AsyncContextCreator {
 
 	public void async_set_size(int width, int height) {
 		GLFW.glfwSetWindowSize(glfw_wnd, width, height);
-
 	}
 
+	private long glfw_resize_time = -1;
+	private int glfw_width, glfw_height;
 
 	public void async_refresh() {
+		if(glfw_resize_time != -1) {
+			if(glfw_resize_time+10 <= System.currentTimeMillis()) {
+				Window wnd = SwingUtilities.windowForComponent(canvas);
+				int dw = wnd.getWidth()-canvas.getWidth();
+				int dh = wnd.getHeight()-canvas.getHeight();
+
+				wnd.setSize(glfw_width+dw, glfw_height+dh);
+
+				glfw_resize_time = -1;
+			}
+		}
 		GLFW.glfwPollEvents();
 	}
 
@@ -198,9 +210,16 @@ public class GLFWContextCreator extends AsyncContextCreator {
 		private GLFWWindowSizeCallback size_callback = new GLFWWindowSizeCallback() {
 			@Override
 			public void invoke(long window, int width, int height) {
-				Dimension size = parent.getSize();
-				if(size.width != width || size.height != height) SwingUtilities.windowForComponent(canvas).setSize(width, height);
-				ignore_resize = true;
+				synchronized (wnd_lock) {
+					if(GLFWContextCreator.this.width == width && GLFWContextCreator.this.height == height) {
+						glfw_resize_time = -1;
+						return;
+					}
+
+					glfw_resize_time = System.currentTimeMillis();
+					glfw_width = width;
+					glfw_height = height;
+				}
 			}
 		};
 

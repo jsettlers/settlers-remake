@@ -118,15 +118,4 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	protected abstract void swapBuffers();
 
 	public abstract void makeCurrent(boolean draw);
-
-	@Override
-	public void repaint() {
-		canvas.repaint();
-	}
-
-	@Override
-	public void requestFocus() {
-		canvas.requestFocus();
-
-	}
 }

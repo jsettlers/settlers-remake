@@ -18,7 +18,10 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Window;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 
@@ -35,11 +38,10 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 	private boolean clear_offscreen = true;
 	private boolean continue_run = true;
 
-	protected boolean ignore_resize = false;
 	protected BufferedImage bi = null;
 	protected IntBuffer pixels;
 
-	private Thread render_thread;
+	private Thread render_thread = new Thread(this);
 
 	public AsyncContextCreator(GLContainer container, boolean debug)  {
 		super(container, debug);
@@ -52,7 +54,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	@Override
 	public void initSpecific() {
-		JPanel panel = new JPanel() {
+		canvas = new JPanel() {
 			public void paintComponent(Graphics graphics) {
 				super.paintComponent(graphics);
 
@@ -72,21 +74,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 			}
 		};
 
-		canvas = panel;
-		render_thread = new Thread(this);
 		render_thread.start();
-
-
-	}
-
-	@Override
-	public void repaint() {
-		canvas.repaint();
-	}
-
-	@Override
-	public void requestFocus() {
-		canvas.requestFocus();
 	}
 
 	public abstract void async_init();
@@ -107,7 +95,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 		while(continue_run) {
 			if (change_res) {
-				if(!ignore_resize) {
+				synchronized (wnd_lock) {
 					width = new_width;
 					height = new_height;
 					async_set_size(width, height);
@@ -117,7 +105,6 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 					bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 					pixels = BufferUtils.createIntBuffer(width * height);
 				}
-				ignore_resize = false;
 				change_res = false;
 			}
 
@@ -136,7 +123,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				}
 			}
 
-			if(!offscreen || clear_offscreen ){
+			if(!offscreen || clear_offscreen) {
 				if(clear_offscreen) {
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 					clear_offscreen = false;

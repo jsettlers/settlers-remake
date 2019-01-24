@@ -25,7 +25,7 @@ import com.jogamp.opengl.awt.GLJPanel;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
-public class JOGLContextCreator extends ContextCreator implements GLEventListener{
+public class JOGLContextCreator extends ContextCreator<GLJPanel>  implements GLEventListener{
 
 	public JOGLContextCreator(GLContainer container, boolean debug) {
 		super(container, debug);
@@ -42,19 +42,9 @@ public class JOGLContextCreator extends ContextCreator implements GLEventListene
 		caps.setStencilBits(1);
 
 		canvas = new GLJPanel(caps);
-		((GLJPanel)canvas).addGLEventListener(this);
+		canvas.addGLEventListener(this);
 
 		new GOSwingEventConverter(canvas, parent);
-	}
-
-	@Override
-	public void repaint() {
-		canvas.repaint();
-	}
-
-	@Override
-	public void requestFocus() {
-		canvas.requestFocus();
 	}
 
 	@Override

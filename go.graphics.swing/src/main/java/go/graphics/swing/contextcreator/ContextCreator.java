@@ -20,7 +20,7 @@ import java.awt.event.ComponentListener;
 
 import go.graphics.swing.GLContainer;
 
-public abstract class ContextCreator implements ComponentListener{
+public abstract class ContextCreator<T extends Component> implements ComponentListener{
 
 	public ContextCreator(GLContainer ac, boolean debug) {
 		parent = ac;
@@ -32,7 +32,7 @@ public abstract class ContextCreator implements ComponentListener{
 	protected boolean change_res = true;
 	protected final Object wnd_lock = new Object();
 	protected boolean first_draw = true;
-	protected Component canvas;
+	protected T canvas;
 	protected GLContainer parent;
 	protected boolean debug;
 
@@ -40,9 +40,13 @@ public abstract class ContextCreator implements ComponentListener{
 	public abstract void stop();
 	public abstract void initSpecific();
 
-	public abstract void repaint();
+	public void repaint() {
+		canvas.repaint();
+	}
 
-	public abstract void requestFocus();
+	public void requestFocus() {
+		canvas.requestFocus();
+	}
 
 
 	public void init() {
