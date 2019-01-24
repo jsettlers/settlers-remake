@@ -131,7 +131,7 @@ public final class LWJGLTextDrawer {
 			for (int y = 0; y != tex_height; y++) {
 				int pixel = pre_render.getRGB(x, tex_height-y-1);
 
-				short a = (short) ((pixel >> 24) != 0 ? alpha_channel : 0);
+				short a = ((pixel >> 24) != 0 ? alpha_channel : 0);
 				short_tex_data[y*tex_width+x] = (short) (a | alpha_white);
 			}
 		}
@@ -186,7 +186,7 @@ public final class LWJGLTextDrawer {
 			tmp_graph.setFont(sizedFont);
 			FontMetrics fm = tmp_graph.getFontMetrics();
 			line_height = fm.getHeight()*SCALING_FACTOR;
-			widthFactor = line_height/(float)gentex_line_height;
+			widthFactor = line_height/gentex_line_height;
 		}
 
 		/*
@@ -206,7 +206,7 @@ public final class LWJGLTextDrawer {
 			this.color = color;
 		}
 
-		public void drawChar(float x, float y, char c) {
+		private void drawChar(float x, float y, char c) {
 			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4, x, y, 0, line_height, line_height, 0, color, 1);
 		}
 

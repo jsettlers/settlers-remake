@@ -52,6 +52,7 @@ public class LWJGL15DrawContext implements GLDrawContext {
 
 	private GeometryHandle lastGeometry = null;
 	private TextureHandle lastTexture = null;
+
 	public LWJGL15DrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
 
