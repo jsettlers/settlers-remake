@@ -17,7 +17,6 @@ package go.graphics.swing.contextcreator;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
@@ -62,6 +61,7 @@ public class JOGLContextCreator extends ContextCreator<GLJPanel>  implements GLE
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		parent.draw();
+		if(fpsLimit == 0) repaint();
 	}
 
 	@Override

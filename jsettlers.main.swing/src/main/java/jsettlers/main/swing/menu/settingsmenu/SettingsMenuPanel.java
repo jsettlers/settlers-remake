@@ -45,8 +45,8 @@ public class SettingsMenuPanel extends JPanel {
 	 * Name of the player
 	 */
 	private final JTextField playerNameField = new JTextField();
-	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100);
-	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 1,240);
+	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100, null);
+	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 0,240, "timerless redraw");
 	private final BackendSelector backendSelector = new BackendSelector();
 
 	/**

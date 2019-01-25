@@ -111,6 +111,8 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
 				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surface.FreeDrawingSurfaceInfo(), surfaceinfo);
 				JAWTFunctions.JAWT_FreeDrawingSurface(jawt.FreeDrawingSurface(), surface);
+
+				if(fpsLimit == 0) repaint();
 			}
 		};
 	}

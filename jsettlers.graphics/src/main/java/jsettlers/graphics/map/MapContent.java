@@ -69,7 +69,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.statistics.FramerateComputer;
+import go.graphics.FramerateComputer;
 import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;

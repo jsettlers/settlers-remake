@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.statistics;
+package go.graphics;
 
 /**
  * This class keeps track of the frames.
@@ -24,6 +24,7 @@ public class FramerateComputer {
 	private long calcFrameStart = System.nanoTime();
 	private double timePerFrame = 0;
 	private long calcFrameEnd;
+	private long calcLastFrameStart;
 	private int capturedFrames = 0;
 
 	/**
@@ -45,6 +46,7 @@ public class FramerateComputer {
 	}
 
 	private static final double NS_PER_S = 1000*1000*1000.0;
+	private static final double MS_PER_S = 1000.0;
 
 	/**
 	 * Gets the current frame rate.
@@ -57,5 +59,18 @@ public class FramerateComputer {
 
 	public double getTime() {
 		return timePerFrame / NS_PER_S;
+	}
+
+	public void nextFrame(int fpsLimit) {
+		nextFrame();
+
+		long ft = calcFrameEnd-calcLastFrameStart;
+		long minft = (long) (NS_PER_S/fpsLimit);
+		if(minft > ft) {
+			try {
+				Thread.sleep((long) ((minft-ft)/NS_PER_S*MS_PER_S));
+			} catch (InterruptedException e) {}
+		}
+		calcLastFrameStart = System.nanoTime();
 	}
 }

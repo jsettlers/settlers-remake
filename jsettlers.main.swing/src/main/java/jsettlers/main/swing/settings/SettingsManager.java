@@ -189,7 +189,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 		String fpsLimitString = get(SETTING_FPS_LIMIT);
 		try {
 			int fps_limit = fpsLimitString != null ? Integer.parseInt(fpsLimitString) : 60;
-			return Math.max(Math.min(fps_limit, 240), 1);
+			return Math.max(Math.min(fps_limit, 240), 0);
 		} catch (NumberFormatException e) {
 		}
 		return 1;

@@ -97,4 +97,8 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	public void addCanvas(Component canvas) {
 		add(canvas);
 	}
+
+	public void updateFPSLimit(int fpsLimit) {
+		cc.updateFPSLimit(fpsLimit);
+	}
 }

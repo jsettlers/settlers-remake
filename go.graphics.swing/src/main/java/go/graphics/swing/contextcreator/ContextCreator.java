@@ -32,6 +32,7 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 	protected boolean change_res = true;
 	protected final Object wnd_lock = new Object();
 	protected boolean first_draw = true;
+	protected int fpsLimit = 0;
 	protected T canvas;
 	protected GLContainer parent;
 	protected boolean debug;
@@ -78,4 +79,8 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 
 	@Override
 	public void componentShown(ComponentEvent componentEvent) {}
+
+	public void updateFPSLimit(int fpsLimit) {
+		this.fpsLimit = fpsLimit;
+	}
 }

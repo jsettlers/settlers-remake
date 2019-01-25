@@ -18,10 +18,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Window;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 
@@ -29,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import go.graphics.DrawmodeListener;
+import go.graphics.FramerateComputer;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
@@ -41,7 +39,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 	protected BufferedImage bi = null;
 	protected IntBuffer pixels;
 
-	private Thread render_thread = new Thread(this);
+	private Thread render_thread = new Thread(this, "AsyncRenderer");
 
 	public AsyncContextCreator(GLContainer container, boolean debug)  {
 		super(container, debug);
@@ -71,6 +69,8 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				} else {
 					graphics.drawString("Press m to enable offscreen transfer", width/3, height/2);
 				}
+
+				if(fpsLimit == 0) repaint();
 			}
 		};
 
@@ -92,6 +92,8 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 		async_init();
 
 		parent.wrapNewContext();
+
+		FramerateComputer fpsComputer = new FramerateComputer();
 
 		while(continue_run) {
 			if (change_res) {
@@ -129,6 +131,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 					clear_offscreen = false;
 				}
 				async_swapbuffers();
+				if(fpsLimit != 0) fpsComputer.nextFrame(fpsLimit);
 			}
 		}
 
