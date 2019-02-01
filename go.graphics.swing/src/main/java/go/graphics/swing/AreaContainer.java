@@ -58,8 +58,8 @@ public class AreaContainer extends GLContainer implements RedrawListener {
 
 	}
 
-	public void resize_gl(int width, int height) {
-		super.resize_gl(width, height);
+	public void resizeContext(int width, int height) {
+		super.resizeContext(width, height);
 		area.setWidth(width);
 		area.setHeight(height);
 

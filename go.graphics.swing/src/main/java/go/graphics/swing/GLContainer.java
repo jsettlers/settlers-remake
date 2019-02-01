@@ -40,7 +40,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		}
 	}
 
-	public void resize_gl(int width, int height) {
+	public void resizeContext(int width, int height) {
 		context.resize(width, height);
 	}
 

@@ -98,7 +98,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 						width = new_width;
 						height = new_height;
 
-						parent.resize_gl(width, height);
+						parent.resizeContext(width, height);
 						change_res = false;
 					}
 				}

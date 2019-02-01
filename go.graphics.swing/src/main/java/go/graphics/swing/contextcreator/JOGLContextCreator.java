@@ -66,6 +66,6 @@ public class JOGLContextCreator extends ContextCreator<GLJPanel>  implements GLE
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		parent.resize_gl(width, height);
+		parent.resizeContext(width, height);
 	}
 }

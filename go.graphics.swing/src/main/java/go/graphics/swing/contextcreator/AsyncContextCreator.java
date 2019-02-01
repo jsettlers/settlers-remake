@@ -102,7 +102,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 					height = new_height;
 					async_set_size(width, height);
 
-					parent.resize_gl(width, height);
+					parent.resizeContext(width, height);
 
 					bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 					pixels = BufferUtils.createIntBuffer(width * height);
