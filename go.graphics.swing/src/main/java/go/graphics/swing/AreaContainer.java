@@ -15,6 +15,8 @@
 package go.graphics.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import go.graphics.DrawmodeListener;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
@@ -53,6 +55,7 @@ public class AreaContainer extends GLContainer implements RedrawListener {
 			area.setDrawmodeListener((DrawmodeListener) cc);
 		}
 
+		setBackground(Color.BLACK);
 
 		area.addRedrawListener(this);
 
