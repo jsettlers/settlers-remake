@@ -14,6 +14,8 @@
  *******************************************************************************/
 package go.graphics;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * This class keeps track of the frames.
  * 
@@ -46,7 +48,6 @@ public class FramerateComputer {
 	}
 
 	private static final double NS_PER_S = 1000*1000*1000.0;
-	private static final double MS_PER_S = 1000.0;
 
 	/**
 	 * Gets the current frame rate.
@@ -68,7 +69,7 @@ public class FramerateComputer {
 		long minft = (long) (NS_PER_S/fpsLimit);
 		if(minft > ft) {
 			try {
-				Thread.sleep((long) ((minft-ft)/NS_PER_S*MS_PER_S));
+				TimeUnit.NANOSECONDS.sleep(minft-ft);
 			} catch (InterruptedException e) {}
 		}
 		calcLastFrameStart = System.nanoTime();
