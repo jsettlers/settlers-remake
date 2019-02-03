@@ -37,6 +37,7 @@ import jsettlers.graphics.image.reader.DatBitmapReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.ImageArrayProvider;
 import jsettlers.graphics.image.reader.ImageMetadata;
+import jsettlers.graphics.utils.UpdateGeometryCache;
 
 /**
  * The map background.
@@ -854,9 +855,14 @@ public class Background implements IGraphicsBackgroundListener {
 	private GeometryHandle shapeHandle = null;
 	private GeometryHandle colorHandle = null;
 
+	private boolean hasdgp;
+	private byte[][] dgpVisibleStatus;
+	private byte[] dgpHeightGrid;
+
 	private boolean useFloatColors;
 	private boolean updateGeometry = false;
 	private BitSet mapInvalid = new BitSet();
+	private int mapWidth, mapHeight;
 
 	private static short[] preloadedTexture = null;
 
@@ -1175,10 +1181,19 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param screen
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
+		IDirectGridProvider dgp = context.getFow();
+		hasdgp = dgp != null;
+		if(hasdgp) {
+			dgpVisibleStatus = dgp.getVisibleStatusArray();
+			dgpHeightGrid = dgp.getHeightArray();
+		}
+
 		try {
 			if(shapeHandle == null) {
 				bufferWidth = context.getMap().getWidth()-1;
 				bufferHeight = context.getMap().getHeight()-1;
+				mapWidth = context.getMap().getWidth();
+				mapHeight = context.getMap().getHeight();
 
 				generateFogOfWarBuffer(context);
 				mapInvalid = new BitSet(bufferWidth*bufferHeight);
@@ -1217,8 +1232,8 @@ public class Background implements IGraphicsBackgroundListener {
 		shapeHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Texture3D, false, "background-shape");
 		colorHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.ColorOnly, true, "background-color");
 
-		ByteBuffer shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
-		ByteBuffer color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
+		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
+		color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
 
 		for(int y = 0;y != bufferHeight;y++) {
 			for(int x = 0; x != bufferWidth;x++) {
@@ -1235,26 +1250,16 @@ public class Background implements IGraphicsBackgroundListener {
 			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
 			color_bfr.rewind();
 		}
+
+		shape_bfr.limit(BYTES_PER_FIELD_SHAPE);
+		color_cache = new UpdateGeometryCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
 	}
 
-	private final ByteBuffer shape_update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
-	private final ByteBuffer color_update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR).order(ByteOrder.nativeOrder());
-
-	private void updateMapType(MapDrawContext context, int x, int y) throws IllegalBufferException {
-		int bfr_pos = y*bufferWidth+x;
-
-		if(mapInvalid.get(bfr_pos)) {
-			mapInvalid.clear(bfr_pos);
-			shape_update_bfr.rewind();
-			addTrianglesToGeometry(context, shape_update_bfr, x, y);
-			context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_update_bfr);
-		}
-	}
+	private UpdateGeometryCache color_cache;
+	private ByteBuffer shape_bfr;
+	private ByteBuffer color_bfr;
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
-		IDirectGridProvider vsp = context.getFow();
-		byte[][] visibleStatus = vsp != null ? vsp.getVisibleStatusArray() : null;
-
 		try {
 			int height = screen.getHeight();
 			int width = screen.getWidth();
@@ -1272,23 +1277,26 @@ public class Background implements IGraphicsBackgroundListener {
 				int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
 				int linex = lineStartX < 0 ? 0 : lineStartX;
 
-				int line_bfr_pos4 = y*bufferWidth*4;
-				int line_bfr_pos = y*bufferWidth;
-				for (int x = linex; x < linewidth; x++) {
-					int bfr_pos4 = line_bfr_pos4+x*4;
-					int bfr_pos = line_bfr_pos+x;
+				int bfr_pos = y*bufferWidth+linex;
+				int bfr_pos4 = bfr_pos*4;
 
-					byte fow = visibleStatus != null ? visibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
+				boolean changes = false;
+
+				for (int x = linex; x < linewidth; x++) {
+					byte fow = hasdgp ? dgpVisibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 					if(fow != fogOfWarStatus[bfr_pos4]) {
-						color_update_bfr.rewind();
+						color_cache.gotoPos(bfr_pos);
+						changes = true;
 						dimFogOfWarBuffer(context, bfr_pos4, x, y);
 						dimFogOfWarBuffer(context, bfr_pos4+1, x + 1, y);
 						dimFogOfWarBuffer(context, bfr_pos4+2, x, y + 1);
 						dimFogOfWarBuffer(context, bfr_pos4+3, x + 1, y + 1);
-						addColorTrianglesToGeometry(context, color_update_bfr, x, y, bfr_pos4);
-						context.getGl().updateGeometryAt(colorHandle, bfr_pos * BYTES_PER_FIELD_COLOR, color_update_bfr);
+						addColorTrianglesToGeometry(context, color_bfr, x, y, bfr_pos4);
 					}
+					bfr_pos++;
+					bfr_pos4 += 4;
 				}
+				if(changes) color_cache.clearCache();
 			}
 
 			if (updateGeometry) {
@@ -1297,9 +1305,16 @@ public class Background implements IGraphicsBackgroundListener {
 
 					int linewidth = (width+lineStartX) < bufferWidth ? width+lineStartX : bufferWidth;
 					int linex = lineStartX < 0 ? 0 : lineStartX;
+					int bfr_pos = y*bufferWidth+linex;
 
 					for (int x = linex; x < linewidth; x++) {
-						updateMapType(context, x, y);
+						if(mapInvalid.get(bfr_pos)) {
+							mapInvalid.clear(bfr_pos);
+							shape_bfr.rewind();
+							addTrianglesToGeometry(context, shape_bfr, x, y);
+							context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
+						}
+						bfr_pos++;
 					}
 				}
 				updateGeometry = false;
@@ -1318,13 +1333,14 @@ public class Background implements IGraphicsBackgroundListener {
 	private void generateFogOfWarBuffer(MapDrawContext context) {
 		fogOfWarStatus = new byte[bufferWidth*bufferHeight*4];
 
+		int fieldOffset = 0;
 		for(int y = 0;y != bufferHeight;y++) {
 			for(int x = 0; x != bufferWidth;x++) {
-				int fieldOffset = getBufferPosition(x, y);
-				fogOfWarStatus[fieldOffset*4] = context.getVisibleStatus(x, y);
-				fogOfWarStatus[(fieldOffset*4)+1] = context.getVisibleStatus(x+1, y);
-				fogOfWarStatus[(fieldOffset*4)+2] = context.getVisibleStatus(x+1, y+1);
-				fogOfWarStatus[(fieldOffset*4)+3] = context.getVisibleStatus(x, y+1);
+				fogOfWarStatus[fieldOffset*4] = hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y);
+				fogOfWarStatus[(fieldOffset*4)+1] = hasdgp ? dgpVisibleStatus[x+1][y  ] : context.getVisibleStatus(x+1, y);
+				fogOfWarStatus[(fieldOffset*4)+2] = hasdgp ? dgpVisibleStatus[x+1][y+1] : context.getVisibleStatus(x+1, y+1);
+				fogOfWarStatus[(fieldOffset*4)+3] = hasdgp ? dgpVisibleStatus[x  ][y+1] : context.getVisibleStatus(x, y+1);
+				fieldOffset++;
 			}
 		}
 	}
@@ -1344,7 +1360,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
 		if (!fowDimmed.get(offset)) {
-			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], context.getVisibleStatus(x, y));
+			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y));
 			fowDimmed.set(offset);
 		}
 	}
@@ -1458,19 +1474,23 @@ public class Background implements IGraphicsBackgroundListener {
 	private void addPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, float u, float v) {
 		buffer.putFloat(x);
 		buffer.putFloat(y);
-		buffer.putFloat(context.getHeight(x, y));
+		buffer.putFloat(hasdgp ? dgpHeightGrid[y*mapWidth+x] : context.getHeight(x, y));
 		buffer.putFloat(u);
 		buffer.putFloat(v);
 	}
 
 	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
 		float fColor;
-		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
+		if (x <= 0 || x >= mapWidth - 2 || y <= 0 || y >= mapHeight - 2 || (hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y)) <= 0) {
 			fColor = 0;
 		} else {
-			int height1 = context.getHeight(x, y - 1);
-			int height2 = context.getHeight(x, y);
-			fColor = 0.85f + (height1 - height2) * .15f;
+			int dHeight;
+			if(hasdgp) {
+				dHeight = dgpHeightGrid[(y-1)*mapWidth+x] - dgpHeightGrid[y*mapWidth+x];
+			} else {
+				dHeight = context.getHeight(x, y-1) - context.getHeight(x, y);
+			}
+			fColor = 0.85f + dHeight * .15f;
 			if (fColor > 1.0f) {
 				fColor = 1.0f;
 			} else if (fColor < 0.4f) {

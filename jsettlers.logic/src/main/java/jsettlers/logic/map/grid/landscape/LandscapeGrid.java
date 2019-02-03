@@ -108,6 +108,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return heightGrid[x + y * width];
 	}
 
+	public byte[] getHeightArray() {
+		return heightGrid;
+	}
+
 	public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 		return ELandscapeType.VALUES[landscapeGrid[x + y * width]];
 	}
