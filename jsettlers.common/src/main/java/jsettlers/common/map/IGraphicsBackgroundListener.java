@@ -30,4 +30,7 @@ public interface IGraphicsBackgroundListener {
 	 *            y coordinate
 	 */
 	void backgroundShapeChangedAt(int x, int y);
+
+	void backgroundColorChangedAt(int x, int y);
+	void updateAllColors();
 }

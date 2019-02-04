@@ -17,6 +17,7 @@ package jsettlers.graphics.map.draw;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.BitSet;
 
 import go.graphics.EGeometryFormatType;
@@ -858,7 +859,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private IDirectGridProvider dgp;
 	private byte[][] dgpVisibleStatus;
 	private byte[] dgpHeightGrid;
-	private boolean[][] dgpFowWritten;
+	private boolean[][] fowWritten;
 	private boolean fowEnabled;
 
 	private boolean useFloatColors;
@@ -1173,6 +1174,24 @@ public class Background implements IGraphicsBackgroundListener {
 		return index;
 	}
 
+	public Background(MapDrawContext context) {
+		bufferWidth = context.getMap().getWidth()-1;
+		bufferHeight = context.getMap().getHeight()-1;
+		mapWidth = context.getMap().getWidth();
+		mapHeight = context.getMap().getHeight();
+
+		dgp = context.getFow();
+		hasdgp = dgp != null;
+		if(hasdgp) {
+			dgpVisibleStatus = dgp.getVisibleStatusArray();
+			dgpHeightGrid = dgp.getHeightArray();
+		}
+
+		fowWritten = new boolean[mapWidth][mapHeight];
+		mapInvalid = new BitSet(bufferWidth*bufferHeight);
+		draw_stride = (2*bufferWidth)+1;
+	}
+
 	private int draw_stride = 0;
 
 	/**
@@ -1183,33 +1202,14 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param screen
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
-
 		try {
-			if(shapeHandle == null) {
-				bufferWidth = context.getMap().getWidth()-1;
-				bufferHeight = context.getMap().getHeight()-1;
-				mapWidth = context.getMap().getWidth();
-				mapHeight = context.getMap().getHeight();
-
-				dgp = context.getFow();
-				hasdgp = dgp != null;
-				if(hasdgp) {
-					dgpVisibleStatus = dgp.getVisibleStatusArray();
-					dgpHeightGrid = dgp.getHeightArray();
-					dgpFowWritten = dgp.getFoWWritten();
-				}
-
-				mapInvalid = new BitSet(bufferWidth*bufferHeight);
-				draw_stride = (2*bufferWidth)+1;
-			}
-
+			GLDrawContext gl = context.getGl();
 			if(shapeHandle == null || !shapeHandle.isValid()) {
-				useFloatColors = (context.getGl() instanceof GL2DrawContext);
+				useFloatColors = (gl instanceof GL2DrawContext);
 				generateGeometry(context);
 				context.getGl().setHeightMatrix(context.getConverter().getMatrixWithHeight());
 			}
 
-			GLDrawContext gl = context.getGl();
 			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
 			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
 
@@ -1264,7 +1264,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private ByteBuffer color_bfr;
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
-		synchronized (dgpFowWritten) {
+		synchronized (fowWritten) {
 			fowEnabled = hasdgp && dgp.isFoWEnabled();
 		}
 		try {
@@ -1289,8 +1289,8 @@ public class Background implements IGraphicsBackgroundListener {
 				boolean changes = false;
 
 				for (int x = linex; x < linewidth; x++) {
-					if(!dgpFowWritten[x][y]) {
-						dgpFowWritten[x][y] = true;
+					if(!fowWritten[x][y]) {
+						fowWritten[x][y] = true;
 						color_cache.gotoPos(bfr_pos);
 						changes = true;
 						addColorTrianglesToGeometry(context, color_bfr, x, y);
@@ -1478,6 +1478,37 @@ public class Background implements IGraphicsBackgroundListener {
 		invalidateShapePoint(x - 1, y);
 		invalidateShapePoint(x - 1, y - 1);
 		invalidateShapePoint(x, y - 1);
+	}
+
+	@Override
+	public void backgroundColorChangedAt(int x, int y) {
+		// f stands for not first, l for not last
+		boolean ly = y<mapHeight-1;
+		boolean fy = y>0;
+
+		fowWritten[x][y] = false;
+
+		// update all points around that will still use the wrong fow value;
+		if(x < (mapWidth-1)) {
+			fowWritten[x+1][y] = false;
+			if(fy) fowWritten[x+1][y-1] = false;
+			if(ly) fowWritten[x+1][y+1] = false;
+		}
+
+		if(fy) fowWritten[x][y-1] = false;
+		if(ly) fowWritten[x][y+1] = false;
+
+		if(x > 0) {
+			fowWritten[x-1][y] = false;
+			if(fy) fowWritten[x-1][y-1] = false;
+			if(ly) fowWritten[x-1][y+1] = false;
+		}
+
+	}
+
+	@Override
+	public void updateAllColors() {
+		for (int i = 0; i != mapWidth; i++) Arrays.fill(fowWritten[i], false);
 	}
 
 	/**

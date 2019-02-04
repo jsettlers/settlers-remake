@@ -164,7 +164,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private final short width, height;
 	private final boolean isVisibleGridAvailable;
 
-	private final Background background = new Background();
+	private final Background background;
 
 	private final MapDrawContext context;
 
@@ -257,6 +257,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(soundPlayer);
+		this.background = new Background(this.context);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);

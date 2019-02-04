@@ -15,17 +15,18 @@
 package jsettlers.algorithms.fogofwar;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import go.graphics.FramerateComputer;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 
 /**
@@ -46,12 +47,12 @@ public final class FogOfWar implements Serializable {
 	public final short width;
 	public final short height;
 	public byte[][] sight;
-	public boolean[][] fowWritten;
 	public short[][][] visibleRefs;
 	public FowDimThread dimThread;
 	public FoWRefThread refThread;
 
 	public transient CircleDrawer circleDrawer = new CircleDrawer();
+	private transient IGraphicsBackgroundListener backgroundListener = new MainGrid.NullBackgroundListener();
 	public transient boolean enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
 	public transient boolean canceled = false;
 
@@ -60,14 +61,9 @@ public final class FogOfWar implements Serializable {
 		this.height = height;
 		this.team = player.getTeamId();
 		this.sight = new byte[width][height];
-		this.fowWritten = new boolean[width][height];
 		this.visibleRefs = new short[width][height][0];
 		refThread = new FoWRefThread();
 		dimThread = new FowDimThread();
-	}
-
-	public boolean[][] getFoWWritten() {
-		return fowWritten;
 	}
 
 	public void start() {
@@ -87,6 +83,14 @@ public final class FogOfWar implements Serializable {
 	}
 
 	public static FogOfWar instance;
+
+	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+		if (backgroundListener != null) {
+			this.backgroundListener = backgroundListener;
+		} else {
+			this.backgroundListener = new MainGrid.NullBackgroundListener();
+		}
+	}
 
 	public static class BuildingFoWTask implements FoWTask {
 		ShortPoint2D at;
@@ -113,16 +117,12 @@ public final class FogOfWar implements Serializable {
 
 	public final void toggleEnabled() {
 		enabled = !enabled;
-		synchronized (fowWritten) {
-			for (int i = 0; i != width; i++) Arrays.fill(fowWritten[i], false);
-		}
+		backgroundListener.updateAllColors();
 	}
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		synchronized (fowWritten) {
-			for (int i = 0; i != width; i++) Arrays.fill(fowWritten[i], false);
-		}
+		backgroundListener.updateAllColors();
 	}
 
 	public static final int CIRCLE_REMOVE = 1;
@@ -194,37 +194,15 @@ public final class FogOfWar implements Serializable {
 				update = (BitSet) nextUpdate.clone();
 			}
 
-			// f stands for not first, l for not last
-			boolean fy, ly;
 			for(int x=0;x != width;x++) {
 				for(int y=0;y!=height;y++) {
 					if(!update.get(y*width+x)) continue;
-
-					fy = y>0;
-					ly = y<height-1;
 
 					byte dimTo = dimmedSight(x, y);
 
 					if(dimTo != sight[x][y]) {
 						sight[x][y] = dim(sight[x][y], dimTo);
-						fowWritten[x][y] = false;
-
-						// update all points around that will still use the wrong fow value;
-						if(x < (width-1)) {
-							fowWritten[x+1][y] = false;
-							if(fy) fowWritten[x+1][y-1] = false;
-							if(ly) fowWritten[x+1][y+1] = false;
-						}
-
-						if(fy) fowWritten[x][y-1] = false;
-						if(ly) fowWritten[x][y+1] = false;
-
-						if(x > 0) {
-							fowWritten[x-1][y] = false;
-							if(fy) fowWritten[x-1][y-1] = false;
-							if(ly) fowWritten[x-1][y+1] = false;
-						}
-
+						backgroundListener.backgroundColorChangedAt(x, y);
 
 						if (sight[x][y] == dimTo) update.set(y * width + x, false);
 					} else {

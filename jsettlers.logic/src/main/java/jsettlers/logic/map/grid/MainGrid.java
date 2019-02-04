@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
@@ -869,11 +868,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean[][] getFoWWritten() {
-			return fogOfWar.getFoWWritten();
-		}
-
-		@Override
 		public boolean isFoWEnabled() {
 			return fogOfWar.isEnabled();
 		}
@@ -881,6 +875,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
+			fogOfWar.setBackgroundListener(backgroundListener);
 		}
 
 		@Override
@@ -2071,5 +2066,21 @@ public final class MainGrid implements Serializable {
 				building.kill();
 			}
 		}
+	}
+
+	/**
+	 * This class is used as null object to get rid of a lot of null checks
+	 *
+	 * @author Andreas Eberle
+	 */
+	public static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+		private static final long serialVersionUID = -332117701485179252L;
+
+		@Override
+		public void backgroundShapeChangedAt(int x, int y) {}
+		@Override
+		public void backgroundColorChangedAt(int x, int y) {}
+
+		public void updateAllColors() {}
 	}
 }
