@@ -846,7 +846,6 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private static final Object preloadMutex = new Object();
 
-	private byte[] fogOfWarStatus = new byte[1];
 	private int bufferWidth = 1; // in map points.
 	private int bufferHeight = 1; // in map points.
 
@@ -856,8 +855,11 @@ public class Background implements IGraphicsBackgroundListener {
 	private GeometryHandle colorHandle = null;
 
 	private boolean hasdgp;
+	private IDirectGridProvider dgp;
 	private byte[][] dgpVisibleStatus;
 	private byte[] dgpHeightGrid;
+	private boolean[][] dgpFowWritten;
+	private boolean fowEnabled;
 
 	private boolean useFloatColors;
 	private boolean updateGeometry = false;
@@ -1181,12 +1183,6 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param screen
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
-		IDirectGridProvider dgp = context.getFow();
-		hasdgp = dgp != null;
-		if(hasdgp) {
-			dgpVisibleStatus = dgp.getVisibleStatusArray();
-			dgpHeightGrid = dgp.getHeightArray();
-		}
 
 		try {
 			if(shapeHandle == null) {
@@ -1195,7 +1191,14 @@ public class Background implements IGraphicsBackgroundListener {
 				mapWidth = context.getMap().getWidth();
 				mapHeight = context.getMap().getHeight();
 
-				generateFogOfWarBuffer(context);
+				dgp = context.getFow();
+				hasdgp = dgp != null;
+				if(hasdgp) {
+					dgpVisibleStatus = dgp.getVisibleStatusArray();
+					dgpHeightGrid = dgp.getHeightArray();
+					dgpFowWritten = dgp.getFoWWritten();
+				}
+
 				mapInvalid = new BitSet(bufferWidth*bufferHeight);
 				draw_stride = (2*bufferWidth)+1;
 			}
@@ -1242,10 +1245,11 @@ public class Background implements IGraphicsBackgroundListener {
 			context.getGl().updateGeometryAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 			shape_bfr.rewind();
 		}
+		fowEnabled = hasdgp && dgp.isFoWEnabled();
+
 		for(int y = 0;y != bufferHeight;y++) {
-			int line_bfr4 = y*bufferWidth*4;
 			for(int x = 0; x != bufferWidth;x++) {
-				addColorTrianglesToGeometry(context, color_bfr, x, y, line_bfr4+x*4);
+				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
 			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
 			color_bfr.rewind();
@@ -1260,6 +1264,9 @@ public class Background implements IGraphicsBackgroundListener {
 	private ByteBuffer color_bfr;
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
+		synchronized (dgpFowWritten) {
+			fowEnabled = hasdgp && dgp.isFoWEnabled();
+		}
 		try {
 			int height = screen.getHeight();
 			int width = screen.getWidth();
@@ -1278,23 +1285,17 @@ public class Background implements IGraphicsBackgroundListener {
 				int linex = lineStartX < 0 ? 0 : lineStartX;
 
 				int bfr_pos = y*bufferWidth+linex;
-				int bfr_pos4 = bfr_pos*4;
 
 				boolean changes = false;
 
 				for (int x = linex; x < linewidth; x++) {
-					byte fow = hasdgp ? dgpVisibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
-					if(fow != fogOfWarStatus[bfr_pos4]) {
+					if(!dgpFowWritten[x][y]) {
+						dgpFowWritten[x][y] = true;
 						color_cache.gotoPos(bfr_pos);
 						changes = true;
-						dimFogOfWarBuffer(context, bfr_pos4, x, y);
-						dimFogOfWarBuffer(context, bfr_pos4+1, x + 1, y);
-						dimFogOfWarBuffer(context, bfr_pos4+2, x, y + 1);
-						dimFogOfWarBuffer(context, bfr_pos4+3, x + 1, y + 1);
-						addColorTrianglesToGeometry(context, color_bfr, x, y, bfr_pos4);
+						addColorTrianglesToGeometry(context, color_bfr, x, y);
 					}
 					bfr_pos++;
-					bfr_pos4 += 4;
 				}
 				if(changes) color_cache.clearCache();
 			}
@@ -1327,56 +1328,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private synchronized void invalidateShapePoint(int x, int y) {
 		if(x > bufferWidth || y > bufferHeight || x < 0 || y < 0) return;
 		updateGeometry = true;
-		mapInvalid.set(getBufferPosition(x, y));
-	}
-
-	private void generateFogOfWarBuffer(MapDrawContext context) {
-		fogOfWarStatus = new byte[bufferWidth*bufferHeight*4];
-
-		int fieldOffset = 0;
-		for(int y = 0;y != bufferHeight;y++) {
-			for(int x = 0; x != bufferWidth;x++) {
-				fogOfWarStatus[fieldOffset*4] = hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y);
-				fogOfWarStatus[(fieldOffset*4)+1] = hasdgp ? dgpVisibleStatus[x+1][y  ] : context.getVisibleStatus(x+1, y);
-				fogOfWarStatus[(fieldOffset*4)+2] = hasdgp ? dgpVisibleStatus[x+1][y+1] : context.getVisibleStatus(x+1, y+1);
-				fogOfWarStatus[(fieldOffset*4)+3] = hasdgp ? dgpVisibleStatus[x  ][y+1] : context.getVisibleStatus(x, y+1);
-				fieldOffset++;
-			}
-		}
-	}
-
-	/**
-	 * Dims the fog of war buffer
-	 * 
-	 * @param context
-	 *            The context
-	 * @param offset
-	 *            The fog of war buffer offset
-	 * @param x
-	 *            The x coordinate of the tile
-	 * @param y
-	 *            The y coordinate of the tile.
-	 * @return true if and only if the dim has finished.
-	 */
-	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
-		if (!fowDimmed.get(offset)) {
-			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y));
-			fowDimmed.set(offset);
-		}
-	}
-
-	private static byte dim(byte value, byte dimTo) {
-		if (value < dimTo - DIM_MAX) {
-			return (byte) (dimTo - DIM_MAX);
-		} else if (value > dimTo + DIM_MAX) {
-			return (byte) (dimTo + DIM_MAX);
-		} else if (value > dimTo) {
-			return (byte) (value - 1);
-		} else if (value < dimTo) {
-			return (byte) (value + 1);
-		} else {
-			return value;
-		}
+		mapInvalid.set(y*bufferWidth+x);
 	}
 
 	private int getBufferPosition(int x, int y) {
@@ -1396,14 +1348,14 @@ public class Background implements IGraphicsBackgroundListener {
 		addTriangleToGeometry(context, buffer, x, y, false, x);
 	}
 
-	private void addColorTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
-		addColorPointToGeometry(context, buffer, x, y, fogBase);
-		addColorPointToGeometry(context, buffer, x, y + 1, fogBase + 2);
-		addColorPointToGeometry(context, buffer, x + 1, y + 1, fogBase + 3);
+	private void addColorTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
+		addColorPointToGeometry(context, buffer, x, y);
+		addColorPointToGeometry(context, buffer, x, y + 1);
+		addColorPointToGeometry(context, buffer, x + 1, y + 1);
 
-		addColorPointToGeometry(context, buffer, x, y, fogBase);
-		addColorPointToGeometry(context, buffer, x + 1, y + 1, fogBase + 3);
-		addColorPointToGeometry(context, buffer, x + 1, y, fogBase + 1);
+		addColorPointToGeometry(context, buffer, x, y);
+		addColorPointToGeometry(context, buffer, x + 1, y + 1);
+		addColorPointToGeometry(context, buffer, x + 1, y);
 	}
 
 	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, boolean up, int useSecondParameter) {
@@ -1479,9 +1431,9 @@ public class Background implements IGraphicsBackgroundListener {
 		buffer.putFloat(v);
 	}
 
-	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
+	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
 		float fColor;
-		if (x <= 0 || x >= mapWidth - 2 || y <= 0 || y >= mapHeight - 2 || (hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y)) <= 0) {
+		if((x <= 0 || x >= mapWidth - 2 || y <= 0 || y >= mapHeight - 2 || ((hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y)) <= 0) && fowEnabled)) {
 			fColor = 0;
 		} else {
 			int dHeight;
@@ -1496,7 +1448,7 @@ public class Background implements IGraphicsBackgroundListener {
 			} else if (fColor < 0.4f) {
 				fColor = 0.4f;
 			}
-			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
+			if(fowEnabled) fColor *= dgpVisibleStatus[x][y] / (float)CommonConstants.FOG_OF_WAR_VISIBLE;
 		}
 
 		if(useFloatColors) {

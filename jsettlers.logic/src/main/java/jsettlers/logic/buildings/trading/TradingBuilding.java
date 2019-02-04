@@ -57,11 +57,7 @@ public abstract class TradingBuilding extends Building implements IBuilding.ITra
 
 	TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(type, player, position, buildingsGrid);
-	}
-
-	@Override
-	public boolean isOccupied() {
-		return false;
+		setOccupied(false);
 	}
 
 	@Override

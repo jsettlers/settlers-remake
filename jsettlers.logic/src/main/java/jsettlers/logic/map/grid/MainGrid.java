@@ -27,8 +27,6 @@ import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.algorithms.fogofwar.FogOfWar;
-import jsettlers.algorithms.fogofwar.IFogOfWarGrid;
-import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.algorithms.path.IPathCalculatable;
@@ -220,7 +218,7 @@ public final class MainGrid implements Serializable {
 	public void startThreads() {
 		bordersThread.start();
 		if (fogOfWar != null) {
-			fogOfWar.start(new FogOfWarGrid());
+			fogOfWar.start();
 		}
 	}
 
@@ -868,6 +866,16 @@ public final class MainGrid implements Serializable {
 		@Override
 		public byte[][] getVisibleStatusArray() {
 			return fogOfWar.getVisibleStatusArray();
+		}
+
+		@Override
+		public boolean[][] getFoWWritten() {
+			return fogOfWar.getFoWWritten();
+		}
+
+		@Override
+		public boolean isFoWEnabled() {
+			return fogOfWar.isEnabled();
 		}
 
 		@Override
@@ -2062,28 +2070,6 @@ public final class MainGrid implements Serializable {
 			if (building != null && building.getPlayer().getPlayerId() != newPlayerId) {
 				building.kill();
 			}
-		}
-	}
-
-	final class FogOfWarGrid implements IFogOfWarGrid {
-		@Override
-		public final IMovable getMovableAt(short x, short y) {
-			return movableGrid.getMovableAt(x, y);
-		}
-
-		@Override
-		public final IMapObject getMapObjectsAt(short x, short y) {
-			return objectsGrid.getObjectsAt(x, y);
-		}
-
-		@Override
-		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
-			return Movable.getAllMovables();
-		}
-
-		@Override
-		public final ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables() {
-			return Building.getAllBuildings();
 		}
 	}
 }

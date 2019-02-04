@@ -296,7 +296,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
 			}
 
-			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(((IDirectGridProvider)map).getVisibleStatusArray());
+			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(((IDirectGridProvider)map).isFoWEnabled()?((IDirectGridProvider)map).getVisibleStatusArray():null);
 
 			if (newWidth != windowWidth || newHeight != windowHeight) {
 				resizeTo(newWidth, newHeight);
