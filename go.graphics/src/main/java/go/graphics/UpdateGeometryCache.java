@@ -1,10 +1,7 @@
-package jsettlers.graphics.utils;
+package go.graphics;
 
 import java.nio.ByteBuffer;
 
-import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
-import go.graphics.IllegalBufferException;
 import java8.util.function.Supplier;
 
 public class UpdateGeometryCache {

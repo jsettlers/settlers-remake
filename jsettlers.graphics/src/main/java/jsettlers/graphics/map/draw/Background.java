@@ -38,7 +38,7 @@ import jsettlers.graphics.image.reader.DatBitmapReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.ImageArrayProvider;
 import jsettlers.graphics.image.reader.ImageMetadata;
-import jsettlers.graphics.utils.UpdateGeometryCache;
+import go.graphics.UpdateGeometryCache;
 
 /**
  * The map background.
