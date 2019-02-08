@@ -1242,8 +1242,8 @@ public class Background implements IGraphicsBackgroundListener {
 			for(int x = 0; x != bufferWidth;x++) {
 				addTrianglesToGeometry(context, shape_bfr, x, y);
 			}
-			context.getGl().updateGeometryAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 			shape_bfr.rewind();
+			context.getGl().updateGeometryAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 		}
 		fowEnabled = hasdgp && dgp.isFoWEnabled();
 
@@ -1251,8 +1251,8 @@ public class Background implements IGraphicsBackgroundListener {
 			for(int x = 0; x != bufferWidth;x++) {
 				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
-			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
 			color_bfr.rewind();
+			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
 		}
 
 		shape_bfr.limit(BYTES_PER_FIELD_SHAPE);

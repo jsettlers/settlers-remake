@@ -301,7 +301,6 @@ public class GLES11DrawContext implements GLDrawContext {
 	@Override
 	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) {
 		bindGeometry(handle);
-		data.rewind();
 		GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, pos, data.limit(), data);
 	}
 

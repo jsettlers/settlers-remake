@@ -98,8 +98,7 @@ public final class Minimap implements IMinimapData {
 	private ByteBuffer bfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
 
 	private void replaceGeometryValue(GLDrawContext context, int pos, float value) throws IllegalBufferException {
-		bfr.rewind();
-		bfr.putFloat(value);
+		bfr.putFloat(0, value);
 		context.updateGeometryAt(geometry, pos*4, bfr);
 	}
 

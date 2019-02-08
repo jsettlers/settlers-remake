@@ -112,8 +112,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
 
 	private void updateTexturePos(int pos, float value) throws IllegalBufferException {
-		updateBfr.rewind();
-		updateBfr.putFloat(value);
+		updateBfr.putFloat(0, value);
 		context.updateGeometryAt(texturepos, pos*4, updateBfr);
 	}
 

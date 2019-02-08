@@ -274,7 +274,6 @@ public class LWJGL15DrawContext implements GLDrawContext {
 	@Override
 	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) {
 		bindGeometry(handle);
-		data.rewind();
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, data);
 	}
 

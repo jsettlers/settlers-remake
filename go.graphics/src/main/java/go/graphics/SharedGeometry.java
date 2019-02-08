@@ -35,7 +35,6 @@ public class SharedGeometry {
 				// add it to our vbo
 				generate_buffer.asFloatBuffer().put(data);
 				dc.updateGeometryAt(geometry.geometry, QUAD_SIZE*geometry.size, generate_buffer);
-				generate_buffer.rewind();
 
 				geometry.size++;
 				return new SharedGeometryHandle(geometry);

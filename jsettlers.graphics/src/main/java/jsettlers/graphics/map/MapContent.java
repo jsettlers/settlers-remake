@@ -444,6 +444,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		selectionAreaBuffer.putFloat(x1);
 		selectionAreaBuffer.putFloat(y2);
+		selectionAreaBuffer.rewind();
 	}
 
 	private void drawSelectionHint(GLDrawContext gl) {

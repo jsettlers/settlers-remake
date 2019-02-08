@@ -36,8 +36,8 @@ public class UpdateGeometryCache {
 		if(cache_size == 0) return;
 
 		buffer.limit(cache_size);
-		ctx_supp.get().updateGeometryAt(bfr_supp.get(), cache_start*bfr_data_steps, buffer);
 		buffer.rewind();
+		ctx_supp.get().updateGeometryAt(bfr_supp.get(), cache_start*bfr_data_steps, buffer);
 		buffer.limit(buffer.capacity());
 		position = 0;
 		cache_size = 0;
