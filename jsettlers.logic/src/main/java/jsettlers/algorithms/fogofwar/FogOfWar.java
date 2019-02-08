@@ -26,6 +26,7 @@ import jsettlers.common.position.ShortPoint2D;
 import go.graphics.FramerateComputer;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 
@@ -255,7 +256,7 @@ public final class FogOfWar implements Serializable {
 			Building.initFow(team);
 
 			while (!canceled) {
-				taskProcessor();
+				if(!MatchConstants.clock().isPausing()) taskProcessor();
 				fc.nextFrame(framerate);
 			}
 		}
