@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.algorithms.fogofwar;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -49,8 +51,8 @@ public final class FogOfWar implements Serializable {
 	public final short height;
 	public byte[][] sight;
 	public short[][][] visibleRefs;
-	public FowDimThread dimThread;
-	public FoWRefThread refThread;
+	public transient FowDimThread dimThread;
+	public transient FoWRefThread refThread;
 
 	public transient CircleDrawer circleDrawer = new CircleDrawer();
 	private transient IGraphicsBackgroundListener backgroundListener = new MainGrid.NullBackgroundListener();
@@ -91,6 +93,15 @@ public final class FogOfWar implements Serializable {
 		} else {
 			this.backgroundListener = new MainGrid.NullBackgroundListener();
 		}
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		refThread = new FoWRefThread();
+		dimThread = new FowDimThread();
+		circleDrawer = new CircleDrawer();
+		enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
+		backgroundListener = new MainGrid.NullBackgroundListener();
 	}
 
 	public static class BuildingFoWTask implements FoWTask {
