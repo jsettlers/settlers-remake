@@ -841,9 +841,7 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
-	private final BitSet fowDimmed = new BitSet();
-
-	private static final byte DIM_MAX = 20;
+	private static final boolean asyncBufferBuilding = false;
 
 	private static final Object preloadMutex = new Object();
 
@@ -864,7 +862,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private boolean useFloatColors;
 	private boolean updateGeometry = false;
-	private BitSet mapInvalid = new BitSet();
+	private BitSet mapInvalid;
 	private int mapWidth, mapHeight;
 
 	private static short[] preloadedTexture = null;
@@ -1211,23 +1209,17 @@ public class Background implements IGraphicsBackgroundListener {
 			}
 
 			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
+			int offset = screenArea.getMinY() * bufferWidth + screenArea.getMinX();
 
 			updateGeometry(context, screenArea);
 
 			float x = context.getOffsetX();
 			float y = context.getOffsetY();
-			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride, x, y);
-
-			resetFOWDimStatus();
+			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset * 2, screenArea.getHeight(), screenArea.getWidth() * 2, draw_stride, x, y);
 		} catch (IllegalBufferException e) {
 			// TODO: Create crash report.
 			e.printStackTrace();
 		}
-	}
-
-	private void resetFOWDimStatus() {
-		fowDimmed.clear();
 	}
 
 	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
@@ -1255,7 +1247,7 @@ public class Background implements IGraphicsBackgroundListener {
 			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
 		}
 
-		shape_bfr.limit(BYTES_PER_FIELD_SHAPE);
+		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
 		color_cache = new UpdateGeometryCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
 	}
 
@@ -1278,26 +1270,28 @@ public class Background implements IGraphicsBackgroundListener {
 			if(miny < 0) miny = 0;
 
 			int linestart = minx-(miny/2);
-			for (int y = miny; y < maxy; y++) {
-				int lineStartX = linestart + (y / 2);
+			if(!asyncBufferBuilding) {
+				for (int y = miny; y < maxy; y++) {
+					int lineStartX = linestart + (y / 2);
 
-				int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
-				int linex = lineStartX < 0 ? 0 : lineStartX;
+					int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
+					int linex = lineStartX < 0 ? 0 : lineStartX;
 
-				int bfr_pos = y*bufferWidth+linex;
+					int bfr_pos = y * bufferWidth + linex;
 
-				boolean changes = false;
+					boolean changes = false;
 
-				for (int x = linex; x < linewidth; x++) {
-					if(!fowWritten[x][y]) {
-						fowWritten[x][y] = true;
-						color_cache.gotoPos(bfr_pos);
-						changes = true;
-						addColorTrianglesToGeometry(context, color_bfr, x, y);
+					for (int x = linex; x < linewidth; x++) {
+						if (!fowWritten[x][y]) {
+							fowWritten[x][y] = true;
+							color_cache.gotoPos(bfr_pos);
+							changes = true;
+							addColorTrianglesToGeometry(context, color_bfr, x, y);
+						}
+						bfr_pos++;
 					}
-					bfr_pos++;
+					if (changes) color_cache.clearCache();
 				}
-				if(changes) color_cache.clearCache();
 			}
 
 			if (updateGeometry) {
@@ -1313,6 +1307,7 @@ public class Background implements IGraphicsBackgroundListener {
 							mapInvalid.clear(bfr_pos);
 							shape_bfr.rewind();
 							addTrianglesToGeometry(context, shape_bfr, x, y);
+							shape_bfr.rewind();
 							context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
 						}
 						bfr_pos++;
@@ -1331,11 +1326,7 @@ public class Background implements IGraphicsBackgroundListener {
 		mapInvalid.set(y*bufferWidth+x);
 	}
 
-	private int getBufferPosition(int x, int y) {
-		return (y*bufferHeight+x);
-	}
-
-	/**
+	/**y
 	 * Adds the two triangles for a point to the list of verteces
 	 * 
 	 * @param context
@@ -1474,6 +1465,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 	@Override
 	public void backgroundShapeChangedAt(int x, int y) {
+		backgroundColorChangedAt(x, y);
 		invalidateShapePoint(x, y);
 		invalidateShapePoint(x - 1, y);
 		invalidateShapePoint(x - 1, y - 1);
@@ -1482,33 +1474,36 @@ public class Background implements IGraphicsBackgroundListener {
 
 	@Override
 	public void backgroundColorChangedAt(int x, int y) {
-		// f stands for not first, l for not last
-		boolean ly = y<mapHeight-1;
-		boolean fy = y>0;
+		if(!asyncBufferBuilding) {
+			// f stands for not first, l for not last
+			boolean ly = y < mapHeight - 1;
+			boolean fy = y > 0;
 
-		fowWritten[x][y] = false;
+			fowWritten[x][y] = false;
 
-		// update all points around that will still use the wrong fow value;
-		if(x < (mapWidth-1)) {
-			fowWritten[x+1][y] = false;
-			if(fy) fowWritten[x+1][y-1] = false;
-			if(ly) fowWritten[x+1][y+1] = false;
+			// update all points around that will still use the wrong fow value
+			if (x < (mapWidth - 1)) {
+				fowWritten[x + 1][y] = false;
+				if (fy) fowWritten[x + 1][y - 1] = false;
+				if (ly) fowWritten[x + 1][y + 1] = false;
+			}
+
+			if (fy) fowWritten[x][y - 1] = false;
+			if (ly) fowWritten[x][y + 1] = false;
+
+			if (x > 0) {
+				fowWritten[x - 1][y] = false;
+				if (fy) fowWritten[x - 1][y - 1] = false;
+				if (ly) fowWritten[x - 1][y + 1] = false;
+			}
 		}
-
-		if(fy) fowWritten[x][y-1] = false;
-		if(ly) fowWritten[x][y+1] = false;
-
-		if(x > 0) {
-			fowWritten[x-1][y] = false;
-			if(fy) fowWritten[x-1][y-1] = false;
-			if(ly) fowWritten[x-1][y+1] = false;
-		}
-
 	}
 
 	@Override
 	public void updateAllColors() {
-		for (int i = 0; i != mapWidth; i++) Arrays.fill(fowWritten[i], false);
+		if(!asyncBufferBuilding) {
+			for (int i = 0; i != mapWidth; i++) Arrays.fill(fowWritten[i], false);
+		}
 	}
 
 	/**
