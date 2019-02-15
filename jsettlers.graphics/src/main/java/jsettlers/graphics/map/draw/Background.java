@@ -17,9 +17,9 @@ package jsettlers.graphics.map.draw;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.BitSet;
 
+import go.graphics.AdvancedUpdateGeometryCache;
 import go.graphics.EGeometryFormatType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
@@ -841,7 +841,7 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
-	private static final boolean asyncBufferBuilding = false;
+	private static final boolean asyncBufferBuilding = true;
 
 	private static final Object preloadMutex = new Object();
 
@@ -1185,12 +1185,20 @@ public class Background implements IGraphicsBackgroundListener {
 			dgpHeightGrid = dgp.getHeightArray();
 		}
 
-		fowWritten = new boolean[mapWidth][mapHeight];
+		if(asyncBufferBuilding) {
+			color_bfr2 = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferHeight*bufferWidth).order(ByteOrder.nativeOrder());
+			color_cache2 = new AdvancedUpdateGeometryCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
+			asyncAccessContext = context;
+		} else {
+			fowWritten = new boolean[mapWidth][mapHeight];
+		}
 		mapInvalid = new BitSet(bufferWidth*bufferHeight);
 		draw_stride = (2*bufferWidth)+1;
 	}
 
 	private int draw_stride = 0;
+
+	private MapDrawContext asyncAccessContext;
 
 	/**
 	 * Draws a given map content.
@@ -1239,26 +1247,29 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 		fowEnabled = hasdgp && dgp.isFoWEnabled();
 
-		for(int y = 0;y != bufferHeight;y++) {
-			for(int x = 0; x != bufferWidth;x++) {
+		for (int y = 0; y != bufferHeight; y++) {
+			for (int x = 0; x != bufferWidth; x++) {
 				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
 			color_bfr.rewind();
-			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
+			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR * bufferWidth * y, color_bfr);
 		}
 
 		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
-		color_cache = new UpdateGeometryCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
+
+		if (!asyncBufferBuilding) {
+			color_cache = new UpdateGeometryCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
+		}
 	}
 
+	private AdvancedUpdateGeometryCache color_cache2;
+	private ByteBuffer color_bfr2;
 	private UpdateGeometryCache color_cache;
 	private ByteBuffer shape_bfr;
 	private ByteBuffer color_bfr;
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
-		synchronized (fowWritten) {
-			fowEnabled = hasdgp && dgp.isFoWEnabled();
-		}
+		fowEnabled = hasdgp && dgp.isFoWEnabled();
 		try {
 			int height = screen.getHeight();
 			int width = screen.getWidth();
@@ -1270,15 +1281,18 @@ public class Background implements IGraphicsBackgroundListener {
 			if(miny < 0) miny = 0;
 
 			int linestart = minx-(miny/2);
-			if(!asyncBufferBuilding) {
-				for (int y = miny; y < maxy; y++) {
-					int lineStartX = linestart + (y / 2);
+			for (int y = miny; y < maxy; y++) {
+				int lineStartX = linestart + (y / 2);
 
-					int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
-					int linex = lineStartX < 0 ? 0 : lineStartX;
+				int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
+				int linex = lineStartX < 0 ? 0 : lineStartX;
+				int bfr_pos = y * bufferWidth + linex;
 
-					int bfr_pos = y * bufferWidth + linex;
-
+				if(asyncBufferBuilding) {
+					synchronized (color_bfr2) {
+						color_cache2.clearCacheRegion(bfr_pos, bfr_pos+linewidth-linex);
+					}
+				} else {
 					boolean changes = false;
 
 					for (int x = linex; x < linewidth; x++) {
@@ -1465,45 +1479,37 @@ public class Background implements IGraphicsBackgroundListener {
 
 	@Override
 	public void backgroundShapeChangedAt(int x, int y) {
-		backgroundColorChangedAt(x, y);
+		backgroundColorLineChangedAt(x, y, 1);
 		invalidateShapePoint(x, y);
 		invalidateShapePoint(x - 1, y);
 		invalidateShapePoint(x - 1, y - 1);
 		invalidateShapePoint(x, y - 1);
 	}
 
-	@Override
-	public void backgroundColorChangedAt(int x, int y) {
-		if(!asyncBufferBuilding) {
-			// f stands for not first, l for not last
-			boolean ly = y < mapHeight - 1;
-			boolean fy = y > 0;
-
-			fowWritten[x][y] = false;
-
-			// update all points around that will still use the wrong fow value
-			if (x < (mapWidth - 1)) {
-				fowWritten[x + 1][y] = false;
-				if (fy) fowWritten[x + 1][y - 1] = false;
-				if (ly) fowWritten[x + 1][y + 1] = false;
+	public void updateLine(int y, int x1, int x2) {
+		if(asyncBufferBuilding) {
+			synchronized (color_bfr2) {
+				color_cache2.gotoLine(y * bufferWidth + x1, x2 - x1);
+				for (int i = x1; i != x2; i++) {
+					addColorTrianglesToGeometry(asyncAccessContext, color_bfr2, i, y);
+				}
 			}
-
-			if (fy) fowWritten[x][y - 1] = false;
-			if (ly) fowWritten[x][y + 1] = false;
-
-			if (x > 0) {
-				fowWritten[x - 1][y] = false;
-				if (fy) fowWritten[x - 1][y - 1] = false;
-				if (ly) fowWritten[x - 1][y + 1] = false;
-			}
+		} else {
+			for(int i = x1;i != x2;i++) fowWritten[i][y] = false;
 		}
 	}
 
 	@Override
-	public void updateAllColors() {
-		if(!asyncBufferBuilding) {
-			for (int i = 0; i != mapWidth; i++) Arrays.fill(fowWritten[i], false);
-		}
+	public void backgroundColorLineChangedAt(int x, int y, int length) {
+		if(y == bufferHeight) return;
+
+		int x2 = x + length;
+		if(x != 0) x = x-1;
+		if(x2 < bufferWidth) x2 = x2+1;
+
+		updateLine(y, x, x2);
+		if(y > 0) updateLine(y-1, x, x2);
+		if(y < bufferHeight-1) updateLine(y+1, x, x2);
 	}
 
 	/**

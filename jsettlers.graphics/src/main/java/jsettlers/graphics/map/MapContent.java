@@ -257,7 +257,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(soundPlayer);
-		this.background = new Background(this.context);
+		this.background = new Background(context);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);

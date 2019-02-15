@@ -31,6 +31,5 @@ public interface IGraphicsBackgroundListener {
 	 */
 	void backgroundShapeChangedAt(int x, int y);
 
-	void backgroundColorChangedAt(int x, int y);
-	void updateAllColors();
+	void backgroundColorLineChangedAt(int x, int y, int length);
 }

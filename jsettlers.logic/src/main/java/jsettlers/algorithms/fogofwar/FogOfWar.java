@@ -129,12 +129,12 @@ public final class FogOfWar implements Serializable {
 
 	public final void toggleEnabled() {
 		enabled = !enabled;
-		backgroundListener.updateAllColors();
+		for(int y = 0; y != height;y++) backgroundListener.backgroundColorLineChangedAt(0, y, width);
 	}
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		backgroundListener.updateAllColors();
+		for(int y = 0; y != height;y++) backgroundListener.backgroundColorLineChangedAt(0, y, width);
 	}
 
 	public static final int CIRCLE_REMOVE = 1;
@@ -206,24 +206,41 @@ public final class FogOfWar implements Serializable {
 				update = (BitSet) nextUpdate.clone();
 			}
 
-			for(int x=0;x != width;x++) {
-				for(int y=0;y!=height;y++) {
+			for(int y=0;y!=height;y++) {
+				int first = -1;
+				int last = -1;
+				for(int x=0;x != width;x++) {
 					if(!update.get(y*width+x)) continue;
 
 					byte dimTo = dimmedSight(x, y);
 
 					if(dimTo != sight[x][y]) {
+						if(last+1 != x) {
+							if(first != -1) update(y, first, last);
+							first = last = x;
+						} else {
+							if (first == -1) first = x;
+							last = x;
+						}
+
 						sight[x][y] = dim(sight[x][y], dimTo);
-						backgroundListener.backgroundColorChangedAt(x, y);
 
 						if (sight[x][y] == dimTo) update.set(y * width + x, false);
 					} else {
 						update.set(y*width+x, false);
 					}
 				}
+				if(first != -1) {
+					update(y, first, last);
+				}
 			}
 		}
+
+		private void update(int y, int from, int to) {
+			backgroundListener.backgroundColorLineChangedAt(from, y, to-from);
+		}
 	}
+
 
 	public static byte dim(byte value, byte dimTo) {
 		if(value >= CommonConstants.FOG_OF_WAR_EXPLORED && dimTo < CommonConstants.FOG_OF_WAR_EXPLORED) dimTo = CommonConstants.FOG_OF_WAR_EXPLORED;

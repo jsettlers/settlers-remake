@@ -2079,8 +2079,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void backgroundShapeChangedAt(int x, int y) {}
 		@Override
-		public void backgroundColorChangedAt(int x, int y) {}
+		public void backgroundColorLineChangedAt(int x, int y, int length) {}
 
-		public void updateAllColors() {}
 	}
 }
