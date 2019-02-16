@@ -39,6 +39,8 @@ public interface IGameClock extends IPausingSupplier {
 
 	void setGameSpeed(float speedFactor);
 
+	float getGameSpeed();
+
 	void invertPausing();
 
 	void setPausing(boolean b);

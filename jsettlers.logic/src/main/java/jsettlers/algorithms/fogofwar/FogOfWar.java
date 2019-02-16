@@ -208,7 +208,7 @@ public final class FogOfWar implements Serializable {
 
 			double sync_factor = fc.getTime();
 			if(sync_factor == 0) sync_factor = 1.0/CommonConstants.FOG_OF_WAR_DIM_FRAMERATE;
-			byte dim = (byte) Math.round(sync_factor*CommonConstants.FOG_OF_WAR_DIM);
+			byte dim = (byte) Math.round(sync_factor*CommonConstants.FOG_OF_WAR_DIM*MatchConstants.clock().getGameSpeed());
 
 			for(int y = 0;y != height;y++) {
 				int first = -1;
