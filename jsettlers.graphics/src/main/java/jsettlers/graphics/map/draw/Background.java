@@ -857,7 +857,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private IDirectGridProvider dgp;
 	private byte[][] dgpVisibleStatus;
 	private byte[] dgpHeightGrid;
-	private boolean[][] fowWritten;
+	private BitSet fowWritten;
 	private boolean fowEnabled;
 
 	private boolean useFloatColors;
@@ -1190,7 +1190,7 @@ public class Background implements IGraphicsBackgroundListener {
 			color_cache2 = new AdvancedUpdateGeometryCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
 			asyncAccessContext = context;
 		} else {
-			fowWritten = new boolean[mapWidth][mapHeight];
+			fowWritten = new BitSet(mapWidth*mapHeight);
 		}
 		mapInvalid = new BitSet(bufferWidth*bufferHeight);
 		draw_stride = (2*bufferWidth)+1;
@@ -1296,8 +1296,8 @@ public class Background implements IGraphicsBackgroundListener {
 					boolean changes = false;
 
 					for (int x = linex; x < linewidth; x++) {
-						if (!fowWritten[x][y]) {
-							fowWritten[x][y] = true;
+						if (fowWritten.get(y*mapWidth+x)) {
+							fowWritten.clear(y*mapWidth+x);
 							color_cache.gotoPos(bfr_pos);
 							changes = true;
 							addColorTrianglesToGeometry(context, color_bfr, x, y);
@@ -1495,7 +1495,7 @@ public class Background implements IGraphicsBackgroundListener {
 				}
 			}
 		} else {
-			for(int i = x1;i != x2;i++) fowWritten[i][y] = false;
+			fowWritten.set(y*mapWidth+x1, y*mapWidth+x2);
 		}
 	}
 

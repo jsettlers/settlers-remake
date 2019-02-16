@@ -225,7 +225,7 @@ public final class FogOfWar implements Serializable {
 
 						sight[x][y] = dim(sight[x][y], dimTo);
 
-						if (sight[x][y] == dimTo) update.set(y * width + x, false);
+						if (sight[x][y] == dimTo) update.clear(y * width + x);
 					} else {
 						update.set(y*width+x, false);
 					}
