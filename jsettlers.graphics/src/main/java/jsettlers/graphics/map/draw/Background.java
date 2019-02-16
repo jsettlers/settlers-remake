@@ -841,7 +841,7 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
-	private static final boolean asyncBufferBuilding = true;
+	private static final boolean asyncBufferBuilding = false;
 
 	private static final Object preloadMutex = new Object();
 
@@ -1187,7 +1187,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 		if(asyncBufferBuilding) {
 			color_bfr2 = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferHeight*bufferWidth).order(ByteOrder.nativeOrder());
-			color_cache2 = new AdvancedUpdateGeometryCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
+			color_cache2 = new AdvancedUpdateGeometryCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle, bufferWidth);
 			asyncAccessContext = context;
 		} else {
 			fowWritten = new BitSet(mapWidth*mapHeight);
@@ -1290,7 +1290,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 				if(asyncBufferBuilding) {
 					synchronized (color_bfr2) {
-						color_cache2.clearCacheRegion(bfr_pos, bfr_pos+linewidth-linex);
+						color_cache2.clearCacheRegion(y, linex, linewidth);
 					}
 				} else {
 					boolean changes = false;
@@ -1489,7 +1489,7 @@ public class Background implements IGraphicsBackgroundListener {
 	public void updateLine(int y, int x1, int x2) {
 		if(asyncBufferBuilding) {
 			synchronized (color_bfr2) {
-				color_cache2.gotoLine(y * bufferWidth + x1, x2 - x1);
+				color_cache2.gotoLine(y,x1, x2 - x1);
 				for (int i = x1; i != x2; i++) {
 					addColorTrianglesToGeometry(asyncAccessContext, color_bfr2, i, y);
 				}
