@@ -109,12 +109,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		initGeometry();
 	}
 
-	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
-
-	private void updateTexturePos(int pos, float value) throws IllegalBufferException {
-		updateBfr.putFloat(0, value);
-		context.updateGeometryAt(texturepos, pos*4, updateBfr);
-	}
+	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(textureposarray.length*4).order(ByteOrder.nativeOrder());
 
 	private void checkInvariants() {
 		boolean[] isNextTile = new boolean[lines];
@@ -155,14 +150,12 @@ public class AndroidTextDrawer implements TextDrawer {
 			// texture mirrored
 			float bottom = (float) ((line + 1) * lineheight) / TEXTURE_HEIGHT;
 			float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
-			try {
-				updateTexturePos(3, top);
-				updateTexturePos(7, bottom);
-				updateTexturePos(11, bottom);
-				updateTexturePos(15, top);
-			} catch (IllegalBufferException e) {
-				e.printStackTrace();
-			}
+
+			updateBfr.putFloat(3*4, top);
+			updateBfr.putFloat(7*4, bottom);
+			updateBfr.putFloat(11*4, bottom);
+			updateBfr.putFloat(15*4, top);
+			context.updateGeometryAt(texturepos, 0, updateBfr);
 
 			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4, x, y, 0f, 1f, 1f, 1f, color, 1);
 		}
@@ -264,7 +257,10 @@ public class AndroidTextDrawer implements TextDrawer {
 	}
 
 	private void initGeometry() {
-		if(texturepos == null || !texturepos.isValid()) texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D, true, "android-textdrawer" + size.getSize());
+		if(texturepos == null || !texturepos.isValid()) {
+			texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D, true, "android-textdrawer" + size.getSize());
+			updateBfr.asFloatBuffer().put(textureposarray);
+		}
 	}
 
 	private void initialize() {
@@ -278,13 +274,9 @@ public class AndroidTextDrawer implements TextDrawer {
 			nextTile = new int[lines];
 			Arrays.fill(nextTile, -1);
 
-			try {
-				updateTexturePos(1, lineheight);
-				updateTexturePos(13, lineheight);
-			} catch (IllegalBufferException e) {
-				e.printStackTrace();
-			}
-
+			updateBfr.putFloat(1*4, lineheight);
+			updateBfr.putFloat(13*4, lineheight);
+			context.updateGeometryAt(texturepos, 0, updateBfr);
 		}
 		initGeometry();
 	}
