@@ -116,11 +116,9 @@ public class WGLContextCreator extends JAWTContextCreator {
 			while(context == 0 && ctx_attrs.length > i) {
 				context = WGLARBCreateContext.wglCreateContextAttribsARB(windowDrawable, 0, ctx_attrs[i]);
 			}
-		} else {
-			if(debug) {
-				WGL.wglDeleteContext(context);
-				throw new Error("WGL could not create a debug context!");
-			}
+		} else if(debug) {
+			WGL.wglDeleteContext(context);
+			throw new Error("WGL could not create a debug context!");
 		}
 
 		if(context == 0) throw new Error("Could not create WGL context!");

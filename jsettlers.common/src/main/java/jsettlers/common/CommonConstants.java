@@ -25,9 +25,9 @@ public abstract class CommonConstants {
 	public static final int FOG_OF_WAR_EXPLORED = 50;
 
 	/**
-	 * How much the current fog of war status can be changed per frame
+	 * How much the current fog of war status can be changed per second
 	 */
-	public static final int FOG_OF_WAR_DIM = 2;
+	public static final int FOG_OF_WAR_DIM = 30;
 
 	public static final int FOG_OF_WAR_DIM_FRAMERATE = 15;
 	public static final int FOG_OF_WAR_REF_UPDATE_FRAMERATE = 1;

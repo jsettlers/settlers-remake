@@ -841,7 +841,7 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
-	private static final boolean asyncBufferBuilding = false;
+	private static final boolean asyncBufferBuilding = true;
 
 	private static final Object preloadMutex = new Object();
 

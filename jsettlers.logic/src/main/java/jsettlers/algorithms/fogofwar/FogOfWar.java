@@ -206,10 +206,14 @@ public final class FogOfWar implements Serializable {
 				update = (BitSet) nextUpdate.clone();
 			}
 
-			for(int y=0;y!=height;y++) {
+			double sync_factor = fc.getTime();
+			if(sync_factor == 0) sync_factor = 1.0/CommonConstants.FOG_OF_WAR_DIM_FRAMERATE;
+			byte dim = (byte) Math.round(sync_factor*CommonConstants.FOG_OF_WAR_DIM);
+
+			for(int y = 0;y != height;y++) {
 				int first = -1;
 				int last = -1;
-				for(int x=0;x != width;x++) {
+				for(int x = 0;x != width;x++) {
 					if(!update.get(y*width+x)) continue;
 
 					byte dimTo = dimmedSight(x, y);
@@ -223,7 +227,7 @@ public final class FogOfWar implements Serializable {
 							last = x;
 						}
 
-						sight[x][y] = dim(sight[x][y], dimTo);
+						sight[x][y] = dim(sight[x][y], dimTo, dim);
 
 						if (sight[x][y] == dimTo) update.clear(y * width + x);
 					} else {
@@ -242,19 +246,19 @@ public final class FogOfWar implements Serializable {
 	}
 
 
-	public static byte dim(byte value, byte dimTo) {
+	private static byte dim(byte value, byte dimTo, byte dim) {
 		if(value >= CommonConstants.FOG_OF_WAR_EXPLORED && dimTo < CommonConstants.FOG_OF_WAR_EXPLORED) dimTo = CommonConstants.FOG_OF_WAR_EXPLORED;
 		if(value < CommonConstants.FOG_OF_WAR_EXPLORED && dimTo < value) return value;
 
 		byte dV = (byte) (value-dimTo);
 		if(dV < 0) dV = (byte) -dV;
 
-		if(dV < CommonConstants.FOG_OF_WAR_DIM) return dimTo;
-		if(value < dimTo) return (byte) (value+CommonConstants.FOG_OF_WAR_DIM);
-		else return (byte) (value-CommonConstants.FOG_OF_WAR_DIM);
+		if(dV < dim) return dimTo;
+		if(value < dimTo) return (byte) (value+dim);
+		else return (byte) (value-dim);
 	}
 
-	public byte dimmedSight(int x, int y) {
+	private byte dimmedSight(int x, int y) {
 		short[] refs = instance.visibleRefs[x][y];
 		if(refs.length == 0) return 0;
 
