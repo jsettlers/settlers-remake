@@ -10,6 +10,7 @@ dependencies {
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version
     compile "org.lwjgl:lwjgl-egl:"+lwjgl_version
     compile "org.lwjgl:lwjgl-jawt:"+lwjgl_version
+    compile 'org.joml:joml:1.9.11'
 
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-linux"
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-macos"
@@ -29,5 +30,4 @@ dependencies {
     compile "org.jogamp.jogl:jogl-all:2.3.2"
     runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal"
     runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal"
-    implementation 'org.joml:joml:1.9.11'
 }
