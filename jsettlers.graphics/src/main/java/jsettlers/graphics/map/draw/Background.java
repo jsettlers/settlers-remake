@@ -44,7 +44,7 @@ import go.graphics.UpdateGeometryCache;
  * The map background.
  * <p>
  * This class draws the map background (landscape) layer. It has support for smooth FOW transitions and buffers the background to make it faster.
- * 
+ *
  * @author Michael Zangl
  */
 public class Background implements IGraphicsBackgroundListener {
@@ -70,7 +70,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 * x and y coordinates are in Grid units.
 	 * <p>
 	 * The third entry is the size of the texture. It must be 1 for border tiles and 2..5 for continuous images. Always 1 more than they are wide.
-	 * 
+	 *
 	 * <pre>
 	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 	 * |0             |1             |3             |4             |5             |7             | 5| 6|
@@ -841,12 +841,12 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
-	private static final boolean asyncBufferBuilding = true;
+	private static boolean asyncBufferBuilding = true;
 
 	private static final Object preloadMutex = new Object();
 
-	private int bufferWidth = 1; // in map points.
-	private int bufferHeight = 1; // in map points.
+	private int bufferWidth; // in map points.
+	private int bufferHeight; // in map points.
 
 	private static TextureHandle texture = null;
 
@@ -877,7 +877,7 @@ public class Background implements IGraphicsBackgroundListener {
 		return data;
 	}
 
-	public static void preloadTexture() {
+	static void preloadTexture() {
 		synchronized (preloadMutex) {
 			if (preloadedTexture == null) {
 				preloadedTexture = getTexture();
@@ -932,10 +932,11 @@ public class Background implements IGraphicsBackgroundListener {
 
 	/**
 	 * Generates the texture data.
-	 * 
+	 *
 	 * @param data
 	 *            The texture data buffer.
 	 * @throws IOException
+	 *            If the necessary file reader is missing
 	 */
 	private static void addTextures(short[] data) throws IOException {
 		DatFileReader reader = ImageProvider.getInstance().getFileReader(LAND_FILE);
@@ -1190,22 +1191,24 @@ public class Background implements IGraphicsBackgroundListener {
 			color_cache2 = new AdvancedUpdateGeometryCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle, bufferWidth);
 			asyncAccessContext = context;
 		} else {
+			color_bfr2 = null;
 			fowWritten = new BitSet(mapWidth*mapHeight);
 		}
 		mapInvalid = new BitSet(bufferWidth*bufferHeight);
 		draw_stride = (2*bufferWidth)+1;
 	}
 
-	private int draw_stride = 0;
+	private int draw_stride;
 
 	private MapDrawContext asyncAccessContext;
 
 	/**
 	 * Draws a given map content.
-	 * 
+	 *
 	 * @param context
 	 *            The context to draw at.
 	 * @param screen
+	 *            The area to draw
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
 		try {
@@ -1263,7 +1266,7 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	private AdvancedUpdateGeometryCache color_cache2;
-	private ByteBuffer color_bfr2;
+	private final ByteBuffer color_bfr2;
 	private UpdateGeometryCache color_cache;
 	private ByteBuffer shape_bfr;
 	private ByteBuffer color_bfr;
@@ -1340,13 +1343,8 @@ public class Background implements IGraphicsBackgroundListener {
 		mapInvalid.set(y*bufferWidth+x);
 	}
 
-	/**y
+	/**
 	 * Adds the two triangles for a point to the list of verteces
-	 * 
-	 * @param context
-	 * @param buffer
-	 * @param x
-	 * @param y
 	 */
 	private void addTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
 		addTriangleToGeometry(context, buffer, x, y, true,x*37 + y*17);
@@ -1363,12 +1361,11 @@ public class Background implements IGraphicsBackgroundListener {
 		addColorPointToGeometry(context, buffer, x + 1, y);
 	}
 
-	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, boolean up, int useSecondParameter) {
-		int x1 = x;
+	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x1, int y, boolean up, int useSecondParameter) {
 		int y1 = y + (up?1:0);
-		int x2 = x + (up?0:1);
+		int x2 = x1 + (up?0:1);
 		int y2 = y + (up?0:1);
-		int x3 = x + 1;
+		int x3 = x1 + 1;
 		int y3 = y + (up?1:0);
 
 		ELandscapeType leftLandscape = context.getLandscape(x1, y1);
@@ -1398,7 +1395,7 @@ public class Background implements IGraphicsBackgroundListener {
 		int addDx = 0;
 		int addDy = 0;
 		if (positions[2] >= 2) {
-			addDx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
+			addDx = x1 * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
 			addDy = y * DrawConstants.DISTANCE_Y;
 			addDx = realModulo(addDx, (positions[2] - 1) * TEXTURE_GRID);
 			addDy = realModulo(addDy, (positions[2] - 1) * TEXTURE_GRID);
@@ -1486,7 +1483,7 @@ public class Background implements IGraphicsBackgroundListener {
 		invalidateShapePoint(x, y - 1);
 	}
 
-	public void updateLine(int y, int x1, int x2) {
+	private void updateLine(int y, int x1, int x2) {
 		if(asyncBufferBuilding) {
 			synchronized (color_bfr2) {
 				color_cache2.gotoLine(y,x1, x2 - x1);
@@ -1515,7 +1512,7 @@ public class Background implements IGraphicsBackgroundListener {
 	/**
 	 * Invalidates the background texture.
 	 */
-	public static void invalidateTexture() {
+	static void invalidateTexture() {
 		texture = null;
 	}
 }
