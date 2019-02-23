@@ -199,7 +199,7 @@ public class JSettlersFrame extends JFrame {
 	}
 
 	public IMapInterfaceConnector showStartedGame(IStartedGame startedGame) {
-		MapContent content = new MapContent(startedGame, soundPlayer, SettingsManager.getInstance().getFpsLimit(), ETextDrawPosition.TOP_RIGHT);
+		MapContent content = new MapContent(startedGame, soundPlayer, ETextDrawPosition.TOP_RIGHT);
 		SwingUtilities.invokeLater(() -> setContent(content));
 		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(this::showMainMenu));
 		return content.getInterfaceConnector();
