@@ -155,15 +155,10 @@ public class LWJGL15DrawContext implements GLDrawContext {
 			return null;
 		}
 
-		//fix strange alpha test problem (minimap and landscape are unaffected)
-		ShortBuffer bfr = BufferUtils.createShortBuffer(data.capacity());
-		int cap = data.capacity();
-		for(int i = 0;i != cap;i++)	bfr.put(i, data.get(i));
-
 		TextureHandle textureHandle = new TextureHandle(this, texture);
 		bindTexture(textureHandle);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0,
-				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, bfr);
+				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, data);
 		setTextureParameters();
 
 		setObjectLabel(GL11.GL_TEXTURE, texture, name + "-tex");

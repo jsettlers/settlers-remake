@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryFormatType;
@@ -60,7 +61,7 @@ public final class NullImage extends SingleImage {
 	}
 
 	private NullImage() {
-		super(ShortBuffer.allocate(1), 1, 1, 0, 0, "placeholder/null");
+		super(ByteBuffer.allocateDirect(2).asShortBuffer(), 1, 1, 0, 0, "placeholder/null");
 	}
 
 

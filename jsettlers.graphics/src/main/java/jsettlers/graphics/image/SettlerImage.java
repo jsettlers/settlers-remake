@@ -14,13 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
-import go.graphics.SharedGeometry;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -162,7 +163,7 @@ public class SettlerImage extends SingleImage {
 		twidth = tx-toffsetX;
 		theight = ty-toffsetY;
 
-		tdata = ShortBuffer.allocate(twidth * theight);
+		tdata = ByteBuffer.allocateDirect(twidth * theight * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
 
 		short[] temp = new short[0];
 

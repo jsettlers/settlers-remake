@@ -84,7 +84,14 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * 		The data to use.
 	 */
 	public SingleImage(ImageMetadata metadata, short[] data, String name) {
-		this(ShortBuffer.wrap(data), metadata.width, metadata.height, metadata.offsetX, metadata.offsetY, name);
+		this(wrap(data), metadata.width, metadata.height, metadata.offsetX, metadata.offsetY, name);
+	}
+
+	private static ShortBuffer wrap(short[] data) {
+		ShortBuffer bfr = ByteBuffer.allocateDirect(data.length*2).order(ByteOrder.nativeOrder()).asShortBuffer();
+		bfr.put(data);
+		bfr.rewind();
+		return bfr;
 	}
 
 	@Override
@@ -111,7 +118,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 		try {
 			checkStaticHandles(gl);
-			gl.draw2D(rectHandle.geometry, texture, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, twidth/this.width*width, theight/this.height*height, 0, null, 1);
+			gl.draw2D(rectHandle.geometry, texture, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, twidth/(float)this.width*width, theight/(float)this.height*height, 0, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

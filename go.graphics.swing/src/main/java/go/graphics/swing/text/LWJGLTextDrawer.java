@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import go.graphics.AbstractColor;
@@ -33,6 +34,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
@@ -123,20 +126,20 @@ public final class LWJGLTextDrawer {
 		}
 		graph.dispose();
 
-		short[] short_tex_data = new short[tex_width*tex_height];
+		ShortBuffer bfr = BufferUtils.createShortBuffer(tex_width*tex_height);
 
 		final short alpha_channel = 0b1111;
 		final short alpha_white = ~alpha_channel;
-		for(int x = 0;x != tex_width;x++) {
-			for (int y = 0; y != tex_height; y++) {
+		for (int y = 0; y != tex_height; y++) {
+			for(int x = 0;x != tex_width;x++) {
 				int pixel = pre_render.getRGB(x, tex_height-y-1);
 
 				short a = ((pixel >> 24) != 0 ? alpha_channel : 0);
-				short_tex_data[y*tex_width+x] = (short) (a | alpha_white);
+				bfr.put((short) (a | alpha_white));
 			}
 		}
-		ShortBuffer bfr = ShortBuffer.wrap(short_tex_data);
 
+		bfr.rewind();
 		font_tex = drawContext.generateTexture(max_len, tex_height, bfr, font.getName());
 
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
