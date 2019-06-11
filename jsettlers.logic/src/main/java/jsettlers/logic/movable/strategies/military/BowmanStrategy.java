@@ -43,6 +43,8 @@ public final class BowmanStrategy extends SoldierStrategy {
 
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
+		if(!enemy.isAlive()) return false;
+
 		ShortPoint2D pos = getAttackPosition();
 		ShortPoint2D enemyPos = enemy.getPosition();
 
