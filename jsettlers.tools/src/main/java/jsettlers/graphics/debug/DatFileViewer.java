@@ -383,14 +383,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			txtRenderer.drawString(0.0f, height - 30.f, String.format(Locale.ENGLISH, "Offset: %d, %d", offsetX, offsetY));
 			txtRenderer.drawString(0.0f, height - 45.f, String.format(Locale.ENGLISH, "Zoom: %f", zoom));
 
-			/*
-			// Zoom
-			gl2.glTranslatef(width / 2, height / 2, 0);
-			gl2.glScalef(zoom, zoom, zoom);
-			gl2.glTranslatef(-width / 2, -height / 2, 0);
-
-			// Move
-			gl2.glTranslatef(offsetX, offsetY, 0);*/
+			gl2.setGlobalAttributes(width/2f+(-width/2f+offsetX)*zoom, height/2f+(-height/2f+offsetY)*zoom, 0, zoom, zoom, 0);
 
 			// Render
 			int yPos = height - 100;
