@@ -24,7 +24,6 @@ import go.graphics.TextureHandle;
 public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawContext{
 	public LWJGL20DrawContext(GLCapabilities glcaps, boolean debug) {
 		super(glcaps, debug);
-		global.identity();
 
 	}
 
@@ -220,8 +219,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	public void resize(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 
-		mat.identity();
-		mat.ortho(0, width, 0, height, -1, 1);
+		mat.setOrtho(0, width, 0, height, -1, 1);
 		mat.get(matBfr);
 
 		for(ShaderProgram shader : shaders) {
