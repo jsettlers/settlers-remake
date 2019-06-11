@@ -39,6 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -61,23 +62,27 @@ import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
+import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileType;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.image.sequence.SequenceList;
+import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.settings.SettingsManager;
 
 public class DatFileViewer extends JFrame implements ListSelectionListener {
 	private JLabel                   lblDatType;
 	private JLabel                   lblNumUiSeqs;
 	private JLabel                   lblNumSettlerSeqs;
 	private JLabel                   lblNumLandscapeSeqs;
+	private JLabel                   directoryLabel;
 	private JList                    listView;
 	private Surface                  glCanvas;
+	private File                     defaultDirectory;
 	private File                     gfxDirectory;
 	private DefaultListModel<String> listItems;
 	private AdvancedDatFileReader    reader;
@@ -90,6 +95,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	public static void main(String[] args) {
 		try {
+			SwingManagedJSettlers.setupResources(false, args);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			new DatFileViewer();
 		} catch (Exception ex) {
@@ -99,6 +105,8 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	private DatFileViewer() {
 		glCanvas = new Surface();
+
+		defaultDirectory = SettlersFolderChecker.checkSettlersFolder(SettingsManager.getInstance().getSettlersFolder()).gfxFolder;
 
 		JPanel infoField = new JPanel();
 		infoField.setLayout(new BoxLayout(infoField, BoxLayout.PAGE_AXIS));
@@ -117,8 +125,13 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		listView = new JList<>(listItems);
 		listView.getSelectionModel().addListSelectionListener(this);
 
+		JSplitPane filePane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		filePane.setDividerSize(0);
+		filePane.setTopComponent(directoryLabel = new JLabel());
+		filePane.setBottomComponent(new JScrollPane(listView));
+
 		JSplitPane splitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		splitPane2.setTopComponent(new JScrollPane(listView));
+		splitPane2.setTopComponent(filePane);
 		splitPane2.setBottomComponent(infoField);
 		splitPane2.setResizeWeight(0.5);
 		splitPane2.setEnabled(false);
@@ -127,6 +140,8 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		splitPane.setLeftComponent(splitPane2);
 		splitPane.setRightComponent(glCanvas);
 		splitPane.setResizeWeight(0.10);
+
+		updateDirectory(defaultDirectory);
 
 		this.setTitle("DatFileViewer");
 		this.setJMenuBar(createMenu());
@@ -140,6 +155,12 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		JMenu openMenu = new JMenu("Open");
 		JMenuItem openDirItem = new JMenuItem("GFX Folder");
 		openMenu.add(openDirItem);
+
+		JMenuItem openDefaultItem = null;
+
+		if(defaultDirectory != null) {
+			openMenu.add(openDefaultItem = new JMenuItem("Default Folder"));
+		}
 
 		JMenu exportMenu = new JMenu("Export Images");
 		JMenuItem exportThis = new JMenuItem("from this file");
@@ -159,16 +180,15 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			JFileChooser openDirDlg = new JFileChooser();
 			openDirDlg.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if (openDirDlg.showDialog(null, null) == JFileChooser.APPROVE_OPTION) {
-				gfxDirectory = new File(openDirDlg.getSelectedFile().getAbsolutePath());
-
-				FileUtils.iterateChildren(gfxDirectory, (currentFile) -> {
-					String fileName = currentFile.getName();
-					if (currentFile.isFile() && fileName.endsWith(".dat")) {
-						listItems.addElement(currentFile.getName());
-					}
-				});
+				updateDirectory(new File(openDirDlg.getSelectedFile().getAbsolutePath()));
 			}
 		});
+
+		if(openDefaultItem != null) {
+			openDefaultItem.addActionListener((e) -> {
+				updateDirectory(defaultDirectory);
+			});
+		}
 
 		exportThis.addActionListener((e) -> onExportSelectedFile());
 		exportAll.addActionListener((e) -> onExportAllFiles());
@@ -193,6 +213,18 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		bar.add(exportMenu);
 		bar.add(showMenu);
 		return bar;
+	}
+
+	private void updateDirectory(File dir) {
+		gfxDirectory = dir;
+		directoryLabel.setText(gfxDirectory.getAbsolutePath());
+		listItems.clear();
+		FileUtils.iterateChildren(gfxDirectory, (currentFile) -> {
+			String fileName = currentFile.getName();
+			if (currentFile.isFile() && fileName.endsWith(".dat")) {
+				listItems.addElement(currentFile.getName());
+			}
+		});
 	}
 
 	@Override
