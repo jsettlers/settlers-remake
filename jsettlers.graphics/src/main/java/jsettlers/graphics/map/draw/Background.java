@@ -1501,6 +1501,7 @@ public class Background implements IGraphicsBackgroundListener {
 		int x2 = x + length;
 		if(x != 0) x = x-1;
 		if(x2 < bufferWidth) x2 = x2+1;
+		if(x2 > bufferWidth) x2 = bufferWidth;
 
 		updateLine(y, x, x2);
 		if(y > 0) updateLine(y-1, x, x2);
