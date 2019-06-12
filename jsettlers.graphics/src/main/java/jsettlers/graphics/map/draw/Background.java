@@ -1224,9 +1224,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 			updateGeometry(context, screenArea);
 
-			float x = context.getOffsetX();
-			float y = context.getOffsetY();
-			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset * 2, screenArea.getHeight(), screenArea.getWidth() * 2, draw_stride, x, y);
+			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset * 2, screenArea.getHeight(), screenArea.getWidth() * 2, draw_stride);
 		} catch (IllegalBufferException e) {
 			// TODO: Create crash report.
 			e.printStackTrace();

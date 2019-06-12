@@ -121,8 +121,8 @@ public class GLES11DrawContext implements GLDrawContext {
 		lsz = -1;
 
 		GLES11.glLoadIdentity();
-		GLES11.glTranslatef(x, y, z);
 		GLES11.glScalef(sx, sy, sz);
+		GLES11.glTranslatef(x, y, z);
 	}
 
 	protected void bindGeometry(GeometryHandle geometry) {
@@ -249,13 +249,13 @@ public class GLES11DrawContext implements GLDrawContext {
 		return geometry;
 	}
 
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride, float x, float y) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
 		if(lsz != -1) GLES11.glPopMatrix();
 		GLES11.glPushMatrix();
-		GLES11.glTranslatef(x, y, -.1f);
+		GLES11.glTranslatef(0, 0, -.1f);
 		GLES11.glScalef(1, 1, 0);
 		GLES11.glMultMatrixf(heightMatrix, 0);
 

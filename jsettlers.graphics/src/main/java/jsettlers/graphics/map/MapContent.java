@@ -627,16 +627,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeGeometry(shape, EGeometryFormatType.VertexOnly2D, false, "debugshape");
 
-		int drawX = context.getOffsetX();
-		int drawY = context.getOffsetY();
-
 		context.getScreenArea().stream().filterBounds(width, height).forEach((x, y) -> {
 			try {
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {
 					int height = context.getHeight(x, y);
-					float dx = drawX+context.getConverter().getViewX(x, y, height);
-					float dy = drawY+context.getConverter().getViewY(x, y, height);
+					float dx = context.getConverter().getViewX(x, y, height);
+					float dy = context.getConverter().getViewY(x, y, height);
 					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4, dx, dy, .5f, 1, 1, 1, Color.fromShort((short) argb), 1);
 				}
 			} catch (IllegalBufferException e) {

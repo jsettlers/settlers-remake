@@ -205,8 +205,8 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	@Override
 	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
 		global.identity();
-		global.translate(x, y, z);
 		global.scale(sx, sy, sz);
+		global.translate(x, y, z);
 		global.get(matBfr);
 
 		for(ShaderProgram shader : shaders) {
@@ -237,7 +237,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	private int backgroundVAO = -1;
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride, float x, float y) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 
 		if(backgroundVAO == -1) {
@@ -263,8 +263,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
 		useProgram(prog_background);
-
-		GL20.glUniform2f(prog_background.ufs[TRANS], x, y);
 
 		bindFormat(backgroundVAO);
 		for (int i = starti; i != lines; i++) {

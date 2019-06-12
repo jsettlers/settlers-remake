@@ -199,8 +199,8 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	@Override
 	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
 		Matrix.setIdentityM(global, 0);
-		Matrix.translateM(global, 0, x, y, z);
 		Matrix.scaleM(global, 0, sx, sy, sz);
+		Matrix.translateM(global, 0, x, y, z);
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
@@ -230,7 +230,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private int[] backgroundVAO = new int[] {-1};
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride, float x, float y) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 
 		if(backgroundVAO[0] == -1) {
@@ -252,9 +252,6 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
 		useProgram(prog_background);
-
-
-		GLES20.glUniform2f(prog_background.ufs[TRANS], x, y);
 
 		bindFormat(backgroundVAO[0]);
 		for (int i = starti; i != lines; i++) {

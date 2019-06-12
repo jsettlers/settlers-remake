@@ -41,7 +41,7 @@ public interface GLDrawContext {
 	 */
 	TextureHandle generateTexture(int width, int height, ShortBuffer data, String name);
 
-	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride, float x, float y) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
 
 	void setHeightMatrix(float[] matrix);
 

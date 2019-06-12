@@ -144,8 +144,8 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		lsz = -1;
 
 		GL11.glLoadIdentity();
-		GL11.glTranslatef(x, y, z);
 		GL11.glScalef(sx, sy, sz);
+		GL11.glTranslatef(x, y, z);
 	}
 
 	@Override
@@ -234,13 +234,13 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		return sizedTextDrawers[size.ordinal()];
 	}
 
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride, float x, float y) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
 		if(lsz != -1) GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, -.1f);
+		GL11.glTranslatef(0 , 0, -.1f);
 		GL11.glScalef(1, 1, 0);
 		GL11.glMultMatrixf(heightMatrix);
 
