@@ -49,7 +49,7 @@ public class Button extends UIPanel {
 
 	@Override
 	protected ImageLink getBackgroundImage() {
-		return active ? activeImage : image;
+		return isActive() ? activeImage : image;
 	}
 
 	public boolean isActive() {

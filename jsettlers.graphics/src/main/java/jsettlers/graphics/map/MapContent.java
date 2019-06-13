@@ -260,7 +260,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		backgroundSound.start();
 
 		if (controls == null) {
-			this.controls = new OriginalControls(this, game.getInGamePlayer());
+			this.controls = new OriginalControls(this, game);
 		} else {
 			this.controls = controls;
 		}
