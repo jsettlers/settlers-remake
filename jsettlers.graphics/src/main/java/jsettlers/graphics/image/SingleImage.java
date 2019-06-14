@@ -24,6 +24,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedGeometry;
+import go.graphics.SharedTexture;
 import go.graphics.TextureHandle;
 
 import java.awt.image.BufferedImage;
@@ -48,7 +49,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected final int offsetY;
 	protected String name;
 
-	protected TextureHandle texture = null;
+	protected SharedTexture.SharedTextureHandle texture = null;
 	protected SharedGeometry.SharedGeometryHandle geometryIndex = null;
 
 	/**
@@ -118,7 +119,13 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 		try {
 			checkStaticHandles(gl);
-			gl.draw2D(rectHandle.geometry, texture, EGeometryType.Quad, rectHandle.index, 4, x, y, 0, twidth/(float)this.width*width, theight/(float)this.height*height, 0, null, 1);
+
+			// dark magic
+			float sx = width/(float)twidth;
+			float sy = height/(float)theight;
+			float tx = x-offsetX*sx;
+			float ty = y + height + offsetY*sy;
+			gl.draw2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, tx, ty, 0, sx, sy, 0, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -133,15 +140,16 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		try {
 			checkHandles(gl);
-			gl.draw2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
+			gl.draw2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
 	}
 
 	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
-		if (texture == null || !texture.isValid()) {
-			texture = gl.generateTexture(twidth, theight, tdata, name);
+		if(texture == null || SharedTexture.isInvalid(gl, texture)) {
+			//texture = gl.generateTexture(twidth, theight, tdata, name);
+			texture = SharedTexture.addTexture(gl, tdata, twidth, theight);
 		}
 
 		if(geometryIndex == null || SharedGeometry.isInvalid(gl, geometryIndex)) {
@@ -154,13 +162,10 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		if(buildHandle == null || !buildHandle.isValid()) {
 			buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, true, "building-progress");
 		}
-		if(rectHandle == null || SharedGeometry.isInvalid(gl, rectHandle)) {
-			rectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0, 1, 1, 0, 0, 0, 1, 1));
-		}
 	}
 
 	protected float[] getGeometry() {
-		return SharedGeometry.createQuadGeometry(toffsetX, -toffsetY, toffsetX + twidth, -toffsetY - theight, 0, 0, 1, 1);
+		return SharedGeometry.createQuadGeometry(toffsetX, -toffsetY, toffsetX + twidth, -toffsetY - theight, texture.x, texture.y, texture.x+texture.width, texture.y+texture.height);
 	}
 
 	protected void setGeometry(SharedGeometry.SharedGeometryHandle geometry) {
@@ -168,7 +173,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	private static GeometryHandle buildHandle = null;
-	private static SharedGeometry.SharedGeometryHandle rectHandle = null;
+	private SharedGeometry.SharedGeometryHandle rectHandle = null;
 	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
 
 	/**
@@ -209,22 +214,22 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			buildBfr.asFloatBuffer().put(new float[] {
 					u1 * twidth,
 					-v1 * theight,
-					u1,
-					v1,
+					texture.x+u1*texture.width,
+					texture.y+v1*texture.height,
 
 					u2 * twidth,
 					-v2 * theight,
-					u2,
-					v2,
+					texture.x+u2*texture.width,
+					texture.y+v2*texture.height,
 
 					u3 * twidth,
 					-v3 * theight,
-					u3,
-					v3,
+					texture.x+u3*texture.width,
+					texture.y+v3*texture.height,
 
 			});
 			gl.updateGeometryAt(buildHandle, 0, buildBfr);
-			gl.draw2D(buildHandle, texture, EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, null, color);
+			gl.draw2D(buildHandle, texture.texture, EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, null, color);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

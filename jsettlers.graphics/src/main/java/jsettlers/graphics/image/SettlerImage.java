@@ -22,6 +22,7 @@ import go.graphics.EGeometryType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
+import go.graphics.SharedTexture;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -52,7 +53,7 @@ public class SettlerImage extends SingleImage {
 
 	@Override
 	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
-		if ((texture == null || !texture.isValid())) {
+		if (texture == null || SharedTexture.isInvalid(gl, texture)) {
 			gl2 = gl instanceof GL2DrawContext && (this.torso != null || this.shadow != null);
 			if(gl2) generateUData();
 		}
@@ -72,7 +73,7 @@ public class SettlerImage extends SingleImage {
 		try {
 			checkHandles(gl);
 			if(!gl2) return false;
-			((GL2DrawContext)gl).drawUnified2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, settler, shadow, x, y, z, 1, 1, 1, torsoColor, fow);
+			((GL2DrawContext)gl).drawUnified2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, settler, shadow, x, y, z, 1, 1, 1, torsoColor, fow);
 		} catch(IllegalBufferException e) {
 			e.printStackTrace();
 		}
@@ -92,11 +93,11 @@ public class SettlerImage extends SingleImage {
 		if(gl2Draw(gl, x, y, z, torsoColor, fow, true, false)) return;
 		try {
 			checkHandles(gl);
-			gl.draw2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, fow);
+			gl.draw2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, fow);
 
 			if(torso != null && torsoColor != null) {
 				torso.checkHandles(gl);
-				gl.draw2D(torso.geometryIndex.geometry, torso.texture, EGeometryType.Quad, torso.geometryIndex.index, 4, x, y, z, 1, 1, 1, torsoColor, fow);
+				gl.draw2D(torso.geometryIndex.geometry, torso.texture.texture, EGeometryType.Quad, torso.geometryIndex.index, 4, x, y, z, 1, 1, 1, torsoColor, fow);
 			}
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
@@ -109,7 +110,7 @@ public class SettlerImage extends SingleImage {
 		if(shadow != null) {
 			try {
 				shadow.checkHandles(gl);
-				gl.draw2D(shadow.geometryIndex.geometry, shadow.texture, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
+				gl.draw2D(shadow.geometryIndex.geometry, shadow.texture.texture, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
 			} catch (IllegalBufferException e) {
 				handleIllegalBufferException(e);
 			}
