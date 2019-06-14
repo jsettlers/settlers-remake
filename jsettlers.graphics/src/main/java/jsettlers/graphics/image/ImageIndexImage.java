@@ -14,12 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedGeometry;
 import jsettlers.common.Color;

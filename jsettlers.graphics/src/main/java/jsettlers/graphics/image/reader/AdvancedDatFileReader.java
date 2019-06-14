@@ -23,8 +23,6 @@ import java8.util.stream.Collectors;
 import java8.util.stream.IntStreams;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.image.MultiImageMap;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.reader.bytereader.ByteReader;
@@ -717,17 +715,6 @@ public class AdvancedDatFileReader implements DatFileReader {
 		initializeIfNeeded();
 		reader.skipTo(pointer);
 		return reader;
-	}
-
-	@Override
-	public void generateImageMap(int width, int height, int[] sequences, String id, String name) throws IOException {
-		initializeIfNeeded();
-
-		MultiImageMap map = new MultiImageMap(width, height, id, name);
-		if (!map.hasCache()) {
-			map.addSequences(this, sequences);
-			map.writeCache();
-		}
 	}
 
 	public DatBitmapTranslator<SettlerImage> getSettlerTranslator() {
