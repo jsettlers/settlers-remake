@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
@@ -175,8 +176,8 @@ public class MapObjectDrawer {
 	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
 	private static final float FLAG_ROOF_Z                 = 0.89f;
 	private static final float SMOKE_Z                     = 0.9f;
-	private static final float WAVES_Z                     = -0.1f;
-	private static final float BORDER_STONE_Z              = -0.1f;
+	private static final float BACKGROUND_Z                = -0.1f;
+	private final float z_per_y;
 
 	private static final int SHIP_IMAGE_FILE          = 36;
 	private static final int FERRY_BASE_SEQUENCE      = 4;
@@ -211,6 +212,8 @@ public class MapObjectDrawer {
 	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
 		this.context = context;
 		this.sound = sound;
+
+		z_per_y = 1f/(context.getMap().getHeight()*100);
 	}
 
 	public void setVisibleGrid(byte[][] visibleGrid) {
@@ -322,16 +325,14 @@ public class MapObjectDrawer {
 		float viewX = 0;
 		float viewY = 0;
 		if (ship.getAction() == EMovableAction.WALKING) {
-			int originX = x - direction.getGridDeltaX();
-			int originY = y - direction.getGridDeltaY();
-			viewX += betweenTilesX(originX, originY, x, y, ship.getMoveProgress());
+			viewX += betweenTilesX(x, y, direction.getInverseDirection(), 1-ship.getMoveProgress());
 			viewY += betweenTilesY;
 		} else {
 			viewX += mapCoordinateConverter.getViewX(x, y, height);
 			viewY += mapCoordinateConverter.getViewY(x, y, height);
 		}
 		// draw ship body
-		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
+		drawShipLink(baseSequence, shipImageDirection, glDrawContext, viewX, viewY, y, color, shade);
 		// prepare freight drawing
 		List<? extends IMovable> passengerList = ship.getPassengers();
 
@@ -384,7 +385,7 @@ public class MapObjectDrawer {
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
 						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
 					);
-					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, 0, color, shade);
+					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, getZ(0, y), color, shade);
 				}
 			}
 		} else {
@@ -399,13 +400,13 @@ public class MapObjectDrawer {
 					if (material != null && count > 0) {
 						Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, material.getStackIndex());
 						Image image = seq.getImageSafe(count - 1, () -> Labels.getName(material, false));
-						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, 0, color, shade);
+						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, getZ(0, y), color, shade);
 					}
 				}
 			}
 		}
 		// draw sail
-		drawShipLink(SHIP_IMAGE_FILE, sailSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
+		drawShipLink(sailSequence, shipImageDirection, glDrawContext, viewX, viewY, y, color, shade);
 		if (shipType == EMovableType.FERRY) {
 			// draw passengers in front of the sail
 			for (int i = 0; i < numberOfFreight; i++) {
@@ -417,7 +418,7 @@ public class MapObjectDrawer {
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
 						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
 					);
-					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, 0, color, shade);
+					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, getZ(0, y), color, shade);
 				}
 			}
 		} else {
@@ -432,13 +433,13 @@ public class MapObjectDrawer {
 					if (material != null && count > 0) {
 						Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, material.getStackIndex());
 						Image image = seq.getImageSafe(count - 1, () -> Labels.getName(material, false));
-						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, 0, color, shade);
+						image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + CARGO_DECK_HEIGHT, getZ(0, y), color, shade);
 					}
 				}
 			}
 		}
 		// draw ship front
-		drawShipLink(SHIP_IMAGE_FILE, baseSequence + 2, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
+		drawShipLink(baseSequence + 2, shipImageDirection, glDrawContext, viewX, viewY, y, color, shade);
 		if (ship.isSelected()) {
 			drawSelectionMark(viewX, viewY, ship.getHealth() / shipType.getHealth());
 		}
@@ -451,10 +452,10 @@ public class MapObjectDrawer {
 		return shipDirection.getNeighbor(((x + seatIndex + slowerAnimationStep) / 8 + (y + seatIndex + slowerAnimationStep) / 11 + seatIndex) % 3 - 1);
 	}
 
-	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, float viewX, float viewY, Color color, float shade) {
-		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
+	private void drawShipLink(int sequence, EDirection direction, GLDrawContext gl, float viewX, float viewY, float y, Color color, float shade) {
+		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, MapObjectDrawer.SHIP_IMAGE_FILE, sequence, direction.ordinal);
 		Image image = imageProvider.getImage(shipLink);
-		image.drawAt(gl, viewX, viewY, 0, color, shade);
+		image.drawAt(gl, viewX, viewY, getZ(0, y), color, shade);
 	}
 
 	private void drawObject(int x, int y, IMapObject object, float color) {
@@ -692,8 +693,8 @@ public class MapObjectDrawer {
 			imageProvider = ImageProvider.getInstance();
 			imageMap = SettlerImageMap.getInstance();
 
+			if(context.getGl() instanceof GL2DrawContext) ((GL2DrawContext) context.getGl()).setShadowDepthOffset(10*z_per_y);
 			playerBorderObjectImage = imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator");
-
 		}
 	}
 
@@ -881,7 +882,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
 			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 43, (int) (moveProgress * 40));
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), viewX, viewY, 0, color, shade);
+			image.drawAt(context.getGl(), viewX, viewY, getZ(0, smokeY), color, shade);
 		}
 
 		// melter action
@@ -895,7 +896,7 @@ public class MapObjectDrawer {
 			int metal = (movable.getGarrisonedBuildingType() == EBuildingType.IRONMELT) ? 37 : 36;
 			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, metal, number > 24 ? 24 : number);
 			image = imageProvider.getImage(link);
-			image.drawAt(context.getGl(), viewX, viewY, 0, color, shade);
+			image.drawAt(context.getGl(), viewX, viewY, getZ(0, metalY), color, shade);
 			// draw smoke
 			int smokeX = x - 9;
 			int smokeY = y - 14;
@@ -907,30 +908,26 @@ public class MapObjectDrawer {
 		}
 
 		if (movable.getAction() == EMovableAction.WALKING) {
-			int originX = x - movable.getDirection().getGridDeltaX();
-			int originY = y - movable.getDirection().getGridDeltaY();
-			viewX = betweenTilesX(originX, originY, x, y, moveProgress);
+			viewX = betweenTilesX(x, y, movable.getDirection().getInverseDirection(), 1-moveProgress);
 			viewY = betweenTilesY;
 		} else {
 			viewX = context.getConverter().getViewX(x, y, height);
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
 		image = this.imageMap.getImageForSettler(movable, moveProgress);
-		image.drawAt(context.getGl(), viewX, viewY, y/1000.0f, color, shade);
+		image.drawAt(context.getGl(), viewX, viewY, getZ(z_per_y/2, y), color, shade);
 
 		if (movable.isSelected()) {
 			drawSelectionMark(viewX, viewY, movable.getHealth() / movableType.getHealth());
 		}
 	}
 
-	private float betweenTilesX(int startX, int startY, int destinationX, int destinationY, float progress) {
+	private float betweenTilesX(int startX, int startY, EDirection direction, float progress) {
 		float theight = context.getHeight(startX, startY);
-		float dheight = context.getHeight(destinationX, destinationY);
+		float dheight = context.getHeight(startX+direction.gridDeltaX, startY+direction.gridDeltaY);
 		MapCoordinateConverter converter = context.getConverter();
-		float x = (1 - progress) * converter.getViewX(startX, startY, theight)
-			+ progress * converter.getViewX(destinationX, destinationY, dheight);
-		betweenTilesY = (1 - progress) * converter.getViewY(startX, startY, theight)
-			+ progress * converter.getViewY(destinationX, destinationY, dheight);
+		float x = converter.getViewX(startX+progress*direction.gridDeltaX, startY+progress*direction.gridDeltaY, theight+progress*(dheight-theight));
+		betweenTilesY = converter.getViewY(startX+progress*direction.gridDeltaX, startY+progress*direction.gridDeltaY, theight+progress*(dheight-theight));
 		return x;
 	}
 
@@ -990,10 +987,25 @@ public class MapObjectDrawer {
 
 
 		boolean onGround = progress >= 1;
-		float x = betweenTilesX(object.getSourceX(), object.getSourceY(), object.getTargetX(), object.getTargetY(), progress);
 
-		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index, () -> "arrow-" + object.getDirection() + "-" + progress);
-		image.drawAt(context.getGl(), x, betweenTilesY + 20 * progress * (1 - progress) + 20, onGround?-.1f:0, null, color);
+		int startX = object.getSourceX();
+		int startY = object.getSourceY();
+		int destinationX = object.getTargetX();
+		int destinationY = object.getTargetY();
+		float theight = this.context.getHeight(startX, startY);
+		float dheight = this.context.getHeight(destinationX, destinationY);
+
+		float x = startX+progress*(destinationX-startX);
+		float y = startY+progress*(destinationY-startY);
+		float h = theight+progress*(dheight-theight);
+
+
+		MapCoordinateConverter converter = this.context.getConverter();
+		float viewX = converter.getViewX(x, y, h);
+		float viewY = converter.getViewY(x, y, h);
+
+		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index, () -> "arrow-" + object.getDirection() + "-" + index);
+		image.drawAt(context.getGl(), viewX, viewY + 20 * progress * (1 - progress) + 20, getZ(onGround?BACKGROUND_Z:0, y), null, color);
 	}
 
 	private void drawStones(int x, int y, int availableStones, float color) {
@@ -1007,7 +1019,7 @@ public class MapObjectDrawer {
 		int len = seq.length();
 		int step = (animationStep / 2 + x / 2 + y / 2) % len;
 		if (step < len) {
-			draw(seq.getImageSafe(step, () -> "wave"), x, y, WAVES_Z, color); // waves must not be drawn on top of other things than water
+			draw(seq.getImageSafe(step, () -> "wave"), x, y, BACKGROUND_Z, color); // waves must not be drawn on top of other things than water
 		}
 	}
 
@@ -1120,7 +1132,7 @@ public class MapObjectDrawer {
 			return; // break
 		}
 		Color color = context.getPlayerColor(player);
-		draw(playerBorderObjectImage, x, y, BORDER_STONE_Z, color);
+		draw(playerBorderObjectImage, x, y, BACKGROUND_Z, color);
 	}
 
 	private static int getTreeType(int x, int y) {
@@ -1230,7 +1242,7 @@ public class MapObjectDrawer {
 				ImageLink[] images = type.getImages();
 				if (images.length > 0) {
 					Image image = imageProvider.getImage(images[0]);
-					draw(image, x, y, building.getBuildingType() == EBuildingType.MARKET_PLACE ? -.1f : 0, null, color);
+					draw(image, x, y, building.getBuildingType() == EBuildingType.MARKET_PLACE ? BACKGROUND_Z : 0, null, color);
 				}
 
 				byte fow = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
@@ -1316,7 +1328,7 @@ public class MapObjectDrawer {
 				}
 				float viewX = towerX + place.getOffsetX();
 				float viewY = towerY + place.getOffsetY();
-				image.drawAt(gl, viewX, viewY, 0, color, baseColor);
+				image.drawAt(gl, viewX, viewY, getZ(0, y), color, baseColor);
 
 				if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
 					playMovableSound(movable);
@@ -1409,7 +1421,7 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 
-		image.drawAt(context.getGl(), viewX, viewY, z+y/10000.0f, color, fowDim);
+		image.drawAt(context.getGl(), viewX, viewY, getZ(z, y), color, fowDim);
 	}
 
 	private void draw(Image image, int x, int y, float z, float fowDim) {
@@ -1420,14 +1432,14 @@ public class MapObjectDrawer {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-		image.drawOnlyImageAt(context.getGl(), viewX, viewY, z+y/10000.0f, torsoColor, color);
+		image.drawOnlyImageAt(context.getGl(), viewX, viewY, getZ(z, y), torsoColor, color);
 	}
 
 	private void drawOnlyShadow(Image image, int x, int y) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
-		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, 0+y/10000.0f);
+		image.drawOnlyShadowAt(context.getGl(), viewX, viewY, getZ(0, y));
 	}
 
 	private void drawWithHeight(Image image, int x, int y, int height, float color) {
@@ -1435,7 +1447,7 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, baseHeight + height);
 		float viewY = context.getConverter().getViewY(x, y, baseHeight + height);
 
-		image.drawAt(context.getGl(), viewX, viewY, 0+y/10000.0f, null, color);
+		image.drawAt(context.getGl(), viewX, viewY, getZ(0, y), null, color);
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
@@ -1445,5 +1457,9 @@ public class MapObjectDrawer {
 
 	public void drawGotoMarker(ShortPoint2D gotoMarker, Image image) {
 		draw(image, gotoMarker.x, gotoMarker.y, FLAG_ROOF_Z,null, 1);
+	}
+
+	private float getZ(float offset, float y) {
+		return y*z_per_y+offset;
 	}
 }

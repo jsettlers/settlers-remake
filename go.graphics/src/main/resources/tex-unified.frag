@@ -5,6 +5,7 @@ precision mediump float;
 varying vec2 frag_texcoord;
 
 uniform sampler2D texHandle;
+uniform float shadow_depth;
 uniform vec3 uni_info; // x=image, y=shadow, z=intensity
 uniform vec4 color;
 
@@ -20,9 +21,11 @@ void main() {
 			gl_FragColor = tex_color;
 		}
 	}
+	gl_FragDepth = gl_FragCoord.z;
 
 	if(uni_info.y > 0.1 && tex_color.g > 0.1 && tex_color.a < 0.1) { // shadow pixel
 		gl_FragColor.rgba = tex_color.aaag;
+		gl_FragDepth += shadow_depth;
 	}
 
 	gl_FragColor.rgb *= uni_info.z;

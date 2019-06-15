@@ -32,7 +32,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 	@Override
 	public void init() {
-		uniform_names = new String[] {"projection", "globalTransform", "transform", "texHandle", "color", "height", "uni_info"};
+		uniform_names = new String[] {"projection", "globalTransform", "transform", "texHandle", "color", "height", "uni_info", "shadow_depth"};
 		shaders = new ArrayList<>();
 
 		prog_background = new ShaderProgram("background");
@@ -222,6 +222,12 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	}
 
 	@Override
+	public void setShadowDepthOffset(float depth) {
+		useProgram(prog_unified);
+		GLES20.glUniform1f(prog_unified.ufs[SHADOW_DEPTH], depth);
+	}
+
+	@Override
 	public void setHeightMatrix(float[] matrix) {
 		useProgram(prog_background);
 		GLES20.glUniformMatrix4fv(prog_background.ufs[HEIGHT], 1, false, matrix, 0);
@@ -265,11 +271,12 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private static final int COLOR = 4;
 	private static final int HEIGHT = 5;
 	private static final int UNI_INFO = 6;
+	private static final int SHADOW_DEPTH = 7;
 
 
 	private class ShaderProgram  {
 		public final int program;
-		public final int[] ufs = new int[7];
+		public final int[] ufs = new int[8];
 
 		private ShaderProgram(String name) {
 			int vertexShader = -1;
