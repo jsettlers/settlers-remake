@@ -24,7 +24,6 @@ public class SharedTexture {
 			// create an instance if needed
 			if(textures.size() == stextureIndex) {
 				textures.add(new SharedTexture(dc, ++maxIndex, CAPACITY));
-				System.out.println(textures.size());
 			}
 
 			SharedTexture texture = textures.get(stextureIndex);
@@ -82,7 +81,7 @@ public class SharedTexture {
 		}
 
 		if(leastRemaining != expected_least) {
-			System.out.println("texture packing algorythm faulty");
+			System.err.println("texture packing algorithm faulty");
 		}
 
 		if(leastRemaining < height) return null;
@@ -125,6 +124,7 @@ public class SharedTexture {
 	private SharedTexture(GLDrawContext dc, int index, int capacity) {
 		this.capacity = capacity;
 		this.index = index;
+		if(index > 1) System.err.println("SharedTexture count > SharedTexture.CAPACITY - try increasing CAPACITY");
 		texture = dc.generateTexture(capacity, capacity, null, "sharedtexture-" + index);
 		remaining = new int[capacity];
 		Arrays.fill(remaining, capacity);

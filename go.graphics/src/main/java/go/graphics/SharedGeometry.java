@@ -7,7 +7,7 @@ import java.util.Calendar;
 
 public class SharedGeometry {
 
-	private static final int CAPACITY = 1000;
+	private static final int CAPACITY = 2000;
 	private static final int QUAD_SIZE = 4*4*4;
 	private static int maxIndex = 0;
 
@@ -27,8 +27,6 @@ public class SharedGeometry {
 			if(geometries.size() == sgeometryIndex) geometries.add(new SharedGeometry(dc, ++maxIndex));
 
 			SharedGeometry geometry = geometries.get(sgeometryIndex);
-			// generate it
-			geometry.validate(dc);
 
 			// skip if we wont fit
 			if (geometry.size < CAPACITY) {
@@ -60,21 +58,16 @@ public class SharedGeometry {
 
 	public static boolean isInvalid(GLDrawContext dc, SharedGeometryHandle handle) {
 		if(dc != staticdc) {
+			geometries.clear();
 			staticdc = dc;
 			iteration++;
 		}
 		return handle.iteration!=iteration;
 	}
 
-	private void validate(GLDrawContext dc) {
-		if(!geometry.isValid()) {
-			geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, true, "sharedgeometry-" + index);
-			size = 0;
-		}
-	}
-
 	private SharedGeometry(GLDrawContext dc, int index) {
 		this.index = index;
+		if(index > 1) System.err.println("SharedGeometry count > SharedGeometry.CAPACITY - try increasing CAPACITY");
 		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, true, "sharedgeometry-" + index);
 	}
 
