@@ -71,5 +71,7 @@ public interface GLDrawContext {
 
 	boolean isValid();
 
+	void clearDepthBuffer();
+
 	void deleteTexture(TextureHandle texture);
 }

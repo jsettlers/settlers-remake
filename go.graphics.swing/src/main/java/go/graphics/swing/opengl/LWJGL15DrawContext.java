@@ -14,7 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.opengl;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
@@ -315,6 +314,11 @@ public class LWJGL15DrawContext implements GLDrawContext {
 	@Override
 	public void deleteTexture(TextureHandle textureHandle) {
 		GL11.glDeleteTextures(textureHandle.getInternalId());
+	}
+
+	@Override
+	public void clearDepthBuffer() {
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
 	/**

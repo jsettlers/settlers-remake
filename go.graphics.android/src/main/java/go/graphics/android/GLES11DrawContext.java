@@ -317,6 +317,11 @@ public class GLES11DrawContext implements GLDrawContext {
 		GLES11.glDeleteTextures(1, new int[] {texture.getInternalId()}, 0);
 	}
 
+	@Override
+	public void clearDepthBuffer() {
+		GLES11.glClear(GLES11.GL_DEPTH_BUFFER_BIT);
+	}
+
 	private boolean valid = true;
 
 	@Override

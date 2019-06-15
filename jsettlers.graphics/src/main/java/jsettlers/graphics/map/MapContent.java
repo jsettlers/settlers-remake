@@ -115,7 +115,6 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
 	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0, 2);
-	private static final float UI_OVERLAY_Z = .95f;
 
 	private final class ZoomEventHandler implements GOModalEventHandler {
 		float startZoom = context.getScreen().getZoom();
@@ -303,13 +302,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.objectDrawer.increaseAnimationStep();
 
 			this.context.begin(gl);
-			long start = System.currentTimeMillis();
+			long start = System.nanoTime();
 
 			FloatRectangle screen = this.context.getScreen().getPosition().bigger(SCREEN_PADDING);
 			drawBackground(screen);
-			long backgroundDuration = System.currentTimeMillis() - start;
+			long backgroundDuration = System.nanoTime() - start;
 
-			start = System.currentTimeMillis();
+			start = System.nanoTime();
 			drawMain(screen);
 
 			if (scrollMarker != null) {
@@ -320,10 +319,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 
 			this.context.end();
-			long foregroundDuration = System.currentTimeMillis() - start;
+			long foregroundDuration = System.nanoTime() - start;
 
-			start = System.currentTimeMillis();
-			gl.setGlobalAttributes(0, 0, UI_OVERLAY_Z, 1, 1, 1);
+			start = System.nanoTime();
+			gl.clearDepthBuffer();
+			gl.setGlobalAttributes(0, 0, 0, 1, 1, 1);
 			drawSelectionHint(gl);
 			controls.drawAt(gl);
 			drawMessages(gl);
@@ -334,10 +334,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				drawActionThreadSlow(gl);
 			}
 			drawTooltip(gl);
-			long uiTime = System.currentTimeMillis() - start;
+			long uiTime = System.nanoTime() - start;
 
 			if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
-				System.out.println("Background: " + backgroundDuration + "ms, Foreground: " + foregroundDuration + "ms, UI: " + uiTime + "ms");
+				System.out.println("Background: " + backgroundDuration/1000 + "µs, Foreground: " + foregroundDuration/1000 + "µs, UI: " + uiTime/1000 + "µs");
 			}
 		} catch (Throwable t) {
 			System.err.println("Main draw handler cought throwable:");
