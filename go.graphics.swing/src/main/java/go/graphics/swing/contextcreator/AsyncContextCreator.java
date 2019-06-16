@@ -109,10 +109,10 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				}
 				change_res = false;
 			}
-
 			async_refresh();
 
 			parent.draw();
+			parent.finishFrame();
 
 			if (offscreen) {
 				synchronized (wnd_lock) {

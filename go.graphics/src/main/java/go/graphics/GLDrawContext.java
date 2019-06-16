@@ -74,4 +74,6 @@ public interface GLDrawContext {
 	void clearDepthBuffer();
 
 	void deleteTexture(TextureHandle texture);
+
+	void finishFrame();
 }

@@ -61,6 +61,7 @@ public class JOGLContextCreator extends ContextCreator<GLJPanel>  implements GLE
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		parent.draw();
+		parent.finishFrame();
 		if(fpsLimit == 0) repaint();
 	}
 

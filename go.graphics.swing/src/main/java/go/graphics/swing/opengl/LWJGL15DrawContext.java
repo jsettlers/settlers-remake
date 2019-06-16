@@ -343,4 +343,9 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		GL11.glLoadIdentity();
 		GL11.glViewport(0, 0, width, height);
 	}
+
+	@Override
+	public void finishFrame() {
+		GL11.glFinish();
+	}
 }

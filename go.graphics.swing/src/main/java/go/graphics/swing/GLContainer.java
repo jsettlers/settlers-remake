@@ -44,6 +44,10 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		context.resize(width, height);
 	}
 
+	public void finishFrame() {
+		context.finishFrame();
+	}
+
 	public void wrapNewContext() {
 		if(cc instanceof JAWTContextCreator) ((JAWTContextCreator)cc).makeCurrent(true);
 		if(context != null) context.disposeAll();

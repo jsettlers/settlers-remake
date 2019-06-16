@@ -104,6 +104,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 				}
 
 				parent.draw();
+				parent.finishFrame();
 
 				swapBuffers();
 				makeCurrent(false);
