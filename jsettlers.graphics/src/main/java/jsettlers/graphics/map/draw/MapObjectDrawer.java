@@ -915,7 +915,7 @@ public class MapObjectDrawer {
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
 		image = this.imageMap.getImageForSettler(movable, moveProgress);
-		image.drawAt(context.getGl(), viewX, viewY, getZ(z_per_y/2, y), color, shade);
+		image.drawAt(context.getGl(), viewX, viewY, getZ(0, y), color, shade);
 
 		if (movable.isSelected()) {
 			drawSelectionMark(viewX, viewY, movable.getHealth() / movableType.getHealth());
