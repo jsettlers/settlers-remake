@@ -39,11 +39,6 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");
 		prog_tex = new ShaderProgram("tex");
-
-		for(ShaderProgram shader : shaders) {
-			useProgram(shader);
-			if(shader.ufs[TEX] != -1) GLES20.glUniform1i(shader.ufs[TEX], 0);
-		}
 	}
 
 	private ShaderProgram lastProgram = null;
@@ -276,7 +271,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 	private class ShaderProgram  {
 		public final int program;
-		public final int[] ufs = new int[8];
+		public final int[] ufs = new int[uniform_names.length];
 
 		private ShaderProgram(String name) {
 			int vertexShader = -1;
@@ -326,6 +321,9 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 				int uf = GLES20.glGetUniformLocation(program, uniform_names[i]);
 				ufs[i] = uf;
 			}
+
+			if(ufs[TEX] != -1) GLES20.glUniform1i(ufs[TEX], 0);
+
 			shaders.add(this);
 		}
 
