@@ -345,7 +345,5 @@ public class LWJGL15DrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void finishFrame() {
-		GL11.glFinish();
-	}
+	public void finishFrame() {}
 }

@@ -331,6 +331,5 @@ public class GLES11DrawContext implements GLDrawContext {
 
 	@Override
 	public void finishFrame() {
-		GLES11.glFinish();
 	}
 }
