@@ -3,10 +3,13 @@ package go.graphics.android;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
+import android.opengl.GLES31Ext;
+import android.opengl.GLES32;
 import android.opengl.Matrix;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -23,16 +26,14 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		Matrix.setIdentityM(global, 0);
 	}
 
-	private String[] uniform_names;
 	private ArrayList<ShaderProgram> shaders;
 
 	private final float[] global = new float[16];
 	private final float[] mat = new float[16];
-	private boolean gles3;
+	protected boolean gles3;
 
 	@Override
 	public void init() {
-		uniform_names = new String[] {"projection", "globalTransform", "transform", "texHandle", "color", "height", "uni_info", "shadow_depth"};
 		shaders = new ArrayList<>();
 
 		prog_background = new ShaderProgram("background");
@@ -42,7 +43,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	}
 
 	private ShaderProgram lastProgram = null;
-	private void useProgram(ShaderProgram id) {
+	protected void useProgram(ShaderProgram id) {
 		if(id != lastProgram) {
 			GLES20.glUseProgram(id.program);
 			lastProgram = id;
@@ -62,13 +63,12 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 		float r, g, b, a;
 		if(color != null) {
-			r = color.red*intensity;
-			g = color.green*intensity;
-			b = color.blue*intensity;
+			r = color.red;
+			g = color.green;
+			b = color.blue;
 			a = color.alpha;
 		} else {
-			r = g = b = intensity;
-			a = 1;
+			r = g = b = a = 1;
 		}
 
 		if(texture == null) {
@@ -92,10 +92,10 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 			}
 		}
 
-		GLES20.glUniform3fv(lastProgram.ufs[TRANS], 2, new float[] {x, y, z, sx, sy, sz}, 0);
+		GLES20.glUniform3fv(lastProgram.trans, 2, new float[] {x, y, z, sx, sy, sz}, 0);
 
 		if(changeColor) {
-			GLES20.glUniform4f(lastProgram.ufs[COLOR], r, g, b, a);
+			GLES20.glUniform4f(lastProgram.color, r, g, b, a);
 		}
 
 		if(gles3) {
@@ -118,13 +118,12 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		if(image) {
 			float r, g, b, a;
 			if (color != null) {
-				r = color.red * intensity;
-				g = color.green * intensity;
-				b = color.blue * intensity;
+				r = color.red;
+				g = color.green;
+				b = color.blue;
 				a = color.alpha;
 			} else {
-				r = g = b = intensity;
-				a = 1;
+				r = g = b = a = 1;
 			}
 
 			if(ulr != r || ulg != g || ulb != b || ula != a) {
@@ -132,18 +131,18 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 				ulg = g;
 				ulb = b;
 				ula = a;
-				GLES20.glUniform4f(prog_unified.ufs[COLOR], r, g, b, a);
+				GLES20.glUniform4f(prog_unified.color, r, g, b, a);
 			}
 		}
 
 		if(ulim != image || ulsh != shadow || uli != intensity) {
-			GLES20.glUniform3f(prog_unified.ufs[UNI_INFO], image?1:0, shadow?1:0, intensity);
+			GLES20.glUniform3f(prog_unified.uni_info, image?1:0, shadow?1:0, intensity);
 			ulim = image;
 			ulsh = shadow;
 			uli = intensity;
 		}
 
-		GLES20.glUniform3fv(lastProgram.ufs[TRANS], 2, new float[] {x, y, z, sx, sy, sz}, 0);
+		GLES20.glUniform3fv(lastProgram.trans, 2, new float[] {x, y, z, sx, sy, sz}, 0);
 
 		if(gles3) {
 			if(lastFormat != geometry.vao) GLES30.glBindVertexArray(lastFormat = geometry.vao);
@@ -199,7 +198,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
-			GLES20.glUniformMatrix4fv(shader.ufs[GLOBAL], 1, false, global, 0);
+			GLES20.glUniformMatrix4fv(shader.global, 1, false, global, 0);
 		}
 	}
 
@@ -212,20 +211,20 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
-			GLES20.glUniformMatrix4fv(shader.ufs[PROJ], 1, false, mat, 0);
+			GLES20.glUniformMatrix4fv(shader.proj, 1, false, mat, 0);
 		}
 	}
 
 	@Override
 	public void setShadowDepthOffset(float depth) {
 		useProgram(prog_unified);
-		GLES20.glUniform1f(prog_unified.ufs[SHADOW_DEPTH], depth);
+		GLES20.glUniform1f(prog_unified.shadow_depth, depth);
 	}
 
 	@Override
 	public void setHeightMatrix(float[] matrix) {
 		useProgram(prog_background);
-		GLES20.glUniformMatrix4fv(prog_background.ufs[HEIGHT], 1, false, matrix, 0);
+		GLES20.glUniformMatrix4fv(prog_background.height, 1, false, matrix, 0);
 	}
 
 	private int[] backgroundVAO = new int[] {-1};
@@ -259,22 +258,23 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
 		}
 	}
-	private static final int PROJ = 0;
-	private static final int GLOBAL = 1;
-	private static final int TRANS = 2;
-	private static final int TEX = 3;
-	private static final int COLOR = 4;
-	private static final int HEIGHT = 5;
-	private static final int UNI_INFO = 6;
-	private static final int SHADOW_DEPTH = 7;
 
 
-	private class ShaderProgram  {
+	protected class ShaderProgram  {
 		public final int program;
-		public final int[] ufs = new int[uniform_names.length];
 
-		private ShaderProgram(String name) {
+		public final int proj;
+		public final int global;
+		public final int trans;
+		public final int tex;
+		public final int color;
+		public final int height;
+		public final int uni_info;
+		public final int shadow_depth;
+
+		protected ShaderProgram(String name) {
 			int vertexShader = -1;
+			int geometryShader = -1;
 			int fragmentShader;
 
 			String vname = name;
@@ -282,29 +282,34 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 			try {
 				vertexShader = createShader(vname+".vert", GLES20.GL_VERTEX_SHADER);
+				geometryShader = createShader(vname+".geom", 36313 /*GL_GEOMETRY_SHADER*/);
 				fragmentShader = createShader(name+".frag", GLES20.GL_FRAGMENT_SHADER);
 			} catch (IOException e) {
 				e.printStackTrace();
 
 				if(vertexShader != -1) GLES20.glDeleteShader(vertexShader);
+				if(geometryShader != -1) GLES20.glDeleteShader(geometryShader);
 				throw new Error("could not read shader files", e);
 			}
 
 			program = GLES20.glCreateProgram();
 
 			GLES20.glAttachShader(program, vertexShader);
+			if(geometryShader != -1) GLES20.glAttachShader(program, geometryShader);
 			GLES20.glAttachShader(program, fragmentShader);
 
-			GLES20.glBindAttribLocation(program, 0, "vertex");
-			GLES20.glBindAttribLocation(program, 1, "texcoord");
-			GLES20.glBindAttribLocation(program, 2, "color");
+			for(int i = 0; i != attributes.size(); i++) {
+				GLES20.glBindAttribLocation(program, i, attributes.get(i));
+			}
 
 			GLES20.glLinkProgram(program);
 			GLES20.glValidateProgram(program);
 
-			//GLES20.glDetachShader(program, vertexShader);
-			//GLES20.glDetachShader(program, fragmentShader);
+			GLES20.glDetachShader(program, vertexShader);
+			if(geometryShader != -1) GLES20.glDetachShader(program, geometryShader);
+			GLES20.glDetachShader(program, fragmentShader);
 			GLES20.glDeleteShader(vertexShader);
+			if(geometryShader != -1) GLES20.glDeleteShader(geometryShader);
 			GLES20.glDeleteShader(fragmentShader);
 
 			String log = GLES20.glGetProgramInfoLog(program);
@@ -317,24 +322,47 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 				throw new Error("Could not link " + name);
 			}
 
-			for(int i = 0;i != ufs.length;i++) {
-				int uf = GLES20.glGetUniformLocation(program, uniform_names[i]);
-				ufs[i] = uf;
-			}
+			proj = GLES20.glGetUniformLocation(program, "projection");
+			global = GLES20.glGetUniformLocation(program, "globalTransform");
+			trans = GLES20.glGetUniformLocation(program, "transform");
+			tex = GLES20.glGetUniformLocation(program, "texHandle");
+			color = GLES20.glGetUniformLocation(program, "color");
+			height = GLES20.glGetUniformLocation(program, "height");
+			uni_info = GLES20.glGetUniformLocation(program, "uni_info");
+			shadow_depth = GLES20.glGetUniformLocation(program, "shadow_depth");
 
-			if(ufs[TEX] != -1) GLES20.glUniform1i(ufs[TEX], 0);
+			useProgram(this);
+			if(tex != -1) GLES20.glUniform1i(tex, 0);
 
 			shaders.add(this);
 		}
 
+		private ArrayList<String> attributes = new ArrayList<>();
+
+		private final String vendor_id = "//VENDOR=" +GLES20.glGetString(GLES20.GL_VENDOR) + " ";
+
 		private int createShader(String name, int type) throws IOException {
 			int shader = GLES20.glCreateShader(type);
+			if(shader == 0) return -1;
 
-			BufferedReader is = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/"+name)));
+			InputStream shaderFile = getClass().getResourceAsStream("/"+name);
+			if(shaderFile == null) return -1;
+			BufferedReader is = new BufferedReader(new InputStreamReader(shaderFile));
 			StringBuilder source = new StringBuilder();
 			String line;
 
 			while((line = is.readLine()) != null) {
+				if(line.startsWith("attribute") || line.endsWith("//attribute")) {
+					attributes.add(line.split(" ")[2].replaceAll(";", ""));
+				}
+
+				int vendor_index = line.indexOf(vendor_id);
+				if(vendor_index != -1) {
+					String remaining = line.substring(vendor_index+vendor_id.length());
+					String[] replace = remaining.split("=");
+					line = line.substring(0, vendor_index).replaceFirst(replace[0], replace[1]);
+				}
+
 				source.append(line);
 				if(line.startsWith("#version")) {
 					//source.append(" es");

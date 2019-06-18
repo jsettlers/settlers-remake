@@ -5,11 +5,13 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.KHRDebug;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -27,7 +29,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 	}
 
-	private String[] uniform_names;
 	private ArrayList<ShaderProgram> shaders;
 
 	private final Matrix4f global = new Matrix4f();
@@ -36,7 +37,6 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 	@Override
 	void init() {
-		uniform_names = new String[] {"projection", "globalTransform", "transform", "texHandle", "color", "height", "uni_info", "shadow_depth"};
 		shaders = new ArrayList<>();
 
 		prog_background = new ShaderProgram("background");
@@ -46,7 +46,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	}
 
 	private ShaderProgram lastProgram = null;
-	private void useProgram(ShaderProgram id) {
+	protected void useProgram(ShaderProgram id) {
 		if(id != lastProgram) {
 			GL20.glUseProgram(id.program);
 			lastProgram = id;
@@ -66,13 +66,12 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 		float r, g, b, a;
 		if(color != null) {
-			r = color.red*intensity;
-			g = color.green*intensity;
-			b = color.blue*intensity;
+			r = color.red;
+			g = color.green;
+			b = color.blue;
 			a = color.alpha;
 		} else {
-			r = g = b = intensity;
-			a = 1;
+			r = g = b = a = 1;
 		}
 
 		if(texture == null) {
@@ -96,10 +95,10 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			}
 		}
 
-		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
+		GL20.glUniform3fv(lastProgram.trans, new float[] {x, y, z, sx, sy, sz});
 
 		if(changeColor) {
-			GL20.glUniform4f(lastProgram.ufs[COLOR], r, g, b, a);
+			GL20.glUniform4f(lastProgram.color, r, g, b, a);
 		}
 
 		if(glcaps.GL_ARB_vertex_array_object) {
@@ -122,12 +121,12 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		if(image) {
 			float r, g, b, a;
 			if (color != null) {
-				r = color.red * intensity;
-				g = color.green * intensity;
-				b = color.blue * intensity;
+				r = color.red;// * intensity;
+				g = color.green;// * intensity;
+				b = color.blue;// * intensity;
 				a = color.alpha;
 			} else {
-				r = g = b = intensity;
+				r = g = b = 1;//intensity;
 				a = 1;
 			}
 
@@ -136,18 +135,18 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 				ulg = g;
 				ulb = b;
 				ula = a;
-				GL20.glUniform4f(prog_unified.ufs[COLOR], r, g, b, a);
+				GL20.glUniform4f(prog_unified.color, r, g, b, a);
 			}
 		}
 
 		if(ulim != image || ulsh != shadow || uli != intensity) {
-			GL20.glUniform3f(prog_unified.ufs[UNI_INFO], image?1:0, shadow?1:0, intensity);
+			GL20.glUniform3f(prog_unified.uni_info, image?1:0, shadow?1:0, intensity);
 			ulim = image;
 			ulsh = shadow;
 			uli = intensity;
 		}
 
-		GL20.glUniform3fv(lastProgram.ufs[TRANS], new float[] {x, y, z, sx, sy, sz});
+		GL20.glUniform3fv(lastProgram.trans, new float[] {x, y, z, sx, sy, sz});
 
 		if(glcaps.GL_ARB_vertex_array_object) {
 			bindFormat(geometry.vao);
@@ -206,7 +205,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
-			GL20.glUniformMatrix4fv(shader.ufs[GLOBAL], false, matBfr);
+			GL20.glUniformMatrix4fv(shader.global, false, matBfr);
 		}
 	}
 
@@ -219,20 +218,20 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
-			GL20.glUniformMatrix4fv(shader.ufs[PROJ], false, matBfr);
+			GL20.glUniformMatrix4fv(shader.proj, false, matBfr);
 		}
 	}
 
 	@Override
 	public void setShadowDepthOffset(float depth) {
 		useProgram(prog_unified);
-		GL20.glUniform1f(prog_unified.ufs[SHADOW_DEPTH], depth);
+		GL20.glUniform1f(prog_unified.shadow_depth, depth);
 	}
 
 	@Override
 	public void setHeightMatrix(float[] matrix) {
 		useProgram(prog_background);
-		GL20.glUniformMatrix4fv(prog_background.ufs[HEIGHT], false, matrix);
+		GL20.glUniformMatrix4fv(prog_background.height, false, matrix);
 	}
 
 	private int backgroundVAO = -1;
@@ -270,21 +269,23 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
 		}
 	}
-	private static final int PROJ = 0;
-	private static final int GLOBAL = 1;
-	private static final int TRANS = 2;
-	private static final int TEX = 3;
-	private static final int COLOR = 4;
-	private static final int HEIGHT = 5;
-	private static final int UNI_INFO = 6;
-	private static final int SHADOW_DEPTH = 7;
 
-	private class ShaderProgram  {
+	protected class ShaderProgram  {
 		public final int program;
-		public final int[] ufs = new int[uniform_names.length];
 
-		private ShaderProgram(String name) {
+		public final int proj;
+		public final int global;
+		public final int trans;
+		public final int tex;
+		public final int color;
+		public final int height;
+		public final int uni_info;
+		public final int shadow_depth;
+
+
+		protected ShaderProgram(String name) {
 			int vertexShader = -1;
+			int geometryShader = -1;
 			int fragmentShader;
 
 			String vname = name;
@@ -292,11 +293,13 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 			try {
 				vertexShader = createShader(vname+".vert", GL20.GL_VERTEX_SHADER);
+				geometryShader = createShader(vname+".geom", GL32.GL_GEOMETRY_SHADER);
 				fragmentShader = createShader(name+".frag", GL20.GL_FRAGMENT_SHADER);
 			} catch (IOException e) {
 				e.printStackTrace();
 
 				if(vertexShader != -1) GL20.glDeleteShader(vertexShader);
+				if(geometryShader != -1) GL20.glDeleteShader(geometryShader);
 				throw new Error("could not read shader files", e);
 			}
 
@@ -304,18 +307,21 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			setObjectLabel(KHRDebug.GL_PROGRAM, program, name);
 
 			GL20.glAttachShader(program, vertexShader);
+			if(geometryShader != -1) GL20.glAttachShader(program, geometryShader);
 			GL20.glAttachShader(program, fragmentShader);
 
-			GL20.glBindAttribLocation(program, 0, "vertex");
-			GL20.glBindAttribLocation(program, 1, "texcoord");
-			GL20.glBindAttribLocation(program, 2, "color");
+			for(int i = 0; i != attributes.size(); i++) {
+				GL20.glBindAttribLocation(program, i, attributes.get(i));
+			}
 
 			GL20.glLinkProgram(program);
 			GL20.glValidateProgram(program);
 
 			GL20.glDetachShader(program, vertexShader);
+			if(geometryShader != -1) GL20.glDetachShader(program, geometryShader);
 			GL20.glDetachShader(program, fragmentShader);
 			GL20.glDeleteShader(vertexShader);
+			if(geometryShader != -1) GL20.glDeleteShader(geometryShader);
 			GL20.glDeleteShader(fragmentShader);
 
 			String log = GL20.glGetProgramInfoLog(program);
@@ -327,25 +333,39 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 				throw new Error("Could not link " + name);
 			}
 
-			for(int i = 0;i != ufs.length;i++) {
-				int uf = GL20.glGetUniformLocation(program, uniform_names[i]);
-				ufs[i] = uf;
-			}
+			proj = GL20.glGetUniformLocation(program, "projection");
+			global = GL20.glGetUniformLocation(program, "globalTransform");
+			trans = GL20.glGetUniformLocation(program, "transform");
+			tex = GL20.glGetUniformLocation(program, "texHandle");
+			color = GL20.glGetUniformLocation(program, "color");
+			height = GL20.glGetUniformLocation(program, "height");
+			uni_info = GL20.glGetUniformLocation(program, "uni_info");
+			shadow_depth = GL20.glGetUniformLocation(program, "shadow_depth");
 
-			if(ufs[TEX] != -1) GL20.glUniform1i(ufs[TEX], 0);
+			useProgram(this);
+			if(tex != -1) GL20.glUniform1i(tex, 0);
 
 			shaders.add(this);
 		}
 
+		private ArrayList<String> attributes = new ArrayList<>();
+
 		private int createShader(String name, int type) throws IOException {
 			int shader = GL20.glCreateShader(type);
+			if(shader == 0) return -1;
 			setObjectLabel(KHRDebug.GL_SHADER, shader, name);
 
-			BufferedReader is = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/"+name)));
+			InputStream shaderFile = getClass().getResourceAsStream("/"+name);
+			if(shaderFile == null) return -1;
+			BufferedReader is = new BufferedReader(new InputStreamReader(shaderFile));
 			StringBuilder source = new StringBuilder();
 			String line;
 
 			while((line = is.readLine()) != null) {
+				if(line.startsWith("attribute") || line.endsWith("//attribute")) {
+					attributes.add(line.split(" ")[2].replaceAll(";", ""));
+				}
+
 				source.append(line).append("\n");
 			}
 

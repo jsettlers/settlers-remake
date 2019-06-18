@@ -16,12 +16,13 @@ package jsettlers.graphics.image;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 
 import go.graphics.EGeometryType;
 import go.graphics.GL2DrawContext;
+import go.graphics.GL3DrawContext;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
+import go.graphics.SharedDrawing;
 import go.graphics.SharedTexture;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
@@ -38,6 +39,7 @@ public class SettlerImage extends SingleImage {
 	private SingleImage torso = null;
 	private SingleImage shadow = null;
 	private boolean gl2 = false;
+	private boolean gl3 = false;
 
 	/**
 	 * Creates a new settler image.
@@ -54,7 +56,8 @@ public class SettlerImage extends SingleImage {
 	@Override
 	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
 		if (texture == null || SharedTexture.isInvalid(gl, texture)) {
-			gl2 = gl instanceof GL2DrawContext && (this.torso != null || this.shadow != null);
+			gl2 = gl instanceof GL2DrawContext;
+			gl3 = gl instanceof GL3DrawContext;
 			if(gl2) generateUData();
 		}
 
@@ -72,8 +75,13 @@ public class SettlerImage extends SingleImage {
 	private boolean gl2Draw(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow, boolean settler, boolean shadow) {
 		try {
 			checkHandles(gl);
-			if(!gl2) return false;
-			((GL2DrawContext)gl).drawUnified2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, settler, shadow, x, y, z, 1, 1, 1, torsoColor, fow);
+			if(gl3) {
+				SharedDrawing.schedule((GL3DrawContext)gl, texture, geometryIndex, x, y, z, torsoColor, fow, settler, shadow);
+			} else if(gl2) {
+				((GL2DrawContext) gl).drawUnified2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, settler, shadow, x, y, z, 1, 1, 1, torsoColor, fow);
+			} else {
+				return false;
+			}
 		} catch(IllegalBufferException e) {
 			e.printStackTrace();
 		}

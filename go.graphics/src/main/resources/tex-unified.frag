@@ -1,5 +1,7 @@
 #version 100
 
+#extension GL_NV_fragdepth : enable
+
 precision mediump float;
 
 varying vec2 frag_texcoord;
@@ -21,14 +23,18 @@ void main() {
 			gl_FragColor = tex_color;
 		}
 	}
-	gl_FragDepth = gl_FragCoord.z;
+	float fragDepth = gl_FragCoord.z;
 
 	if(uni_info.y > 0.1 && tex_color.g > 0.1 && tex_color.a < 0.1) { // shadow pixel
 		gl_FragColor.rgba = tex_color.aaag;
-		gl_FragDepth += shadow_depth;
+		fragDepth += shadow_depth;
 	}
 
 	gl_FragColor.rgb *= uni_info.z;
 
 	if(gl_FragColor.a < 0.5) discard;
+
+	#if 1 //VENDOR=Qualcomm 1=0
+	gl_FragDepth = fragDepth;
+	#endif
 }

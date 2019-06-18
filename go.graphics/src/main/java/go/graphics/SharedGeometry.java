@@ -7,13 +7,13 @@ import java.util.Calendar;
 
 public class SharedGeometry {
 
-	private static final int CAPACITY = 2000;
+	static final int CAPACITY = 1000;
 	private static final int QUAD_SIZE = 4*4*4;
 	private static int maxIndex = 0;
 
 	private int size = 0;
 	private int index;
-	private GeometryHandle geometry;
+	public GeometryHandle geometry;
 	private static final ByteBuffer generate_buffer = ByteBuffer.allocateDirect(QUAD_SIZE).order(ByteOrder.nativeOrder());
 
 	private static final ArrayList<SharedGeometry> geometries = new ArrayList<>();
@@ -44,12 +44,14 @@ public class SharedGeometry {
 
 	public static class SharedGeometryHandle {
 		public final GeometryHandle geometry;
+		public final SharedGeometry parent;
 		public final int index;
 		private final int iteration = SharedGeometry.iteration;
 
 		private SharedGeometryHandle(SharedGeometry shared) {
 			geometry = shared.geometry;
 			index = shared.size-1;
+			parent = shared;
 		}
 	}
 

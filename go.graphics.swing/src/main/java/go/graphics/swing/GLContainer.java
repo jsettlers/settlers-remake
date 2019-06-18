@@ -18,6 +18,7 @@ import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.JAWTContextCreator;
 import go.graphics.swing.opengl.LWJGL15DrawContext;
 import go.graphics.swing.opengl.LWJGL20DrawContext;
+import go.graphics.swing.opengl.LWJGL31DrawContext;
 
 public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
 
@@ -54,7 +55,9 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 		GLCapabilities caps = GL.createCapabilities();
 
-		if(caps.OpenGL20) {
+		if(caps.OpenGL31 && caps.GL_EXT_geometry_shader4) {
+			context = new LWJGL31DrawContext(caps, debug);
+		} else if(caps.OpenGL20) {
 			context = new LWJGL20DrawContext(caps, debug);
 		} else if(caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) {
 			context = new LWJGL15DrawContext(caps, debug);

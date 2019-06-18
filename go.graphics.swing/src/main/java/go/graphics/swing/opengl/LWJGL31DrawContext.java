@@ -1,0 +1,84 @@
+package go.graphics.swing.opengl;
+
+import org.lwjgl.opengl.ARBVertexArrayObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GLCapabilities;
+
+import go.graphics.GL3DrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.SharedDrawing;
+import go.graphics.TextureHandle;
+
+public class LWJGL31DrawContext extends LWJGL20DrawContext implements GL3DrawContext {
+	public LWJGL31DrawContext(GLCapabilities caps, boolean debug) {
+		super(caps, debug);
+		multiVAO = ARBVertexArrayObject.glGenVertexArrays();
+	}
+
+	@Override
+	void init() {
+		super.init();
+
+		prog_multi = new ShaderProgram30("multi");
+	}
+
+	private int multiVAO;
+
+	private ShaderProgram prog_multi;
+
+	@Override
+	public void drawMulti2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
+		bindTexture(texture);
+		useProgram(prog_multi);
+
+		bindFormat(multiVAO);
+		bindGeometry(drawCalls);
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
+		GL20.glEnableVertexAttribArray(3);
+
+		int call_size = drawCalls.getFormat().getBytesPerVertexSize();
+		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, call_size, 0);
+		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, call_size, 3 * 4);
+		GL20.glVertexAttribPointer(2, 1, GL11.GL_FLOAT, false, call_size, 7 * 4);
+		GL20.glVertexAttribPointer(3, 1, GL11.GL_FLOAT, false, call_size, 8 * 4);
+
+		GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, geometry.getInternalId());
+
+		GL11.glDrawArrays(GL11.GL_POINTS, 0, drawCallCount);
+		bindFormat(0);
+	}
+
+	@Override
+	public void clearDepthBuffer() {
+		finishFrame();
+		super.clearDepthBuffer();
+	}
+
+	@Override
+	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
+		finishFrame();
+		super.setGlobalAttributes(x, y, z, sx, sy, sz);
+	}
+
+	@Override
+	public void finishFrame() {
+		SharedDrawing.flush(this);
+	}
+
+	protected class ShaderProgram30 extends LWJGL20DrawContext.ShaderProgram {
+
+		public int geometryData;
+
+		protected ShaderProgram30(String name) {
+			super(name);
+
+			geometryData = GL31.glGetUniformBlockIndex(program, "geometryDataBuffer");
+			GL31.glUniformBlockBinding(program, geometryData, 0);
+		}
+	}
+}

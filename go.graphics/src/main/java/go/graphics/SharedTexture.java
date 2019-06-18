@@ -12,7 +12,7 @@ public class SharedTexture {
 
 	private int[] remaining;
 	private int index;
-	private TextureHandle texture;
+	public TextureHandle texture;
 
 	private static final ArrayList<SharedTexture> textures = new ArrayList<>();
 
@@ -97,10 +97,12 @@ public class SharedTexture {
 
 	public static class SharedTextureHandle {
 		public final TextureHandle texture;
+		public final SharedTexture parent;
 		public final float x, y, width, height;
 		private final int iteration = SharedTexture.iteration;
 
 		private SharedTextureHandle(SharedTexture shared, float x, float y, float width, float height) {
+			parent = shared;
 			texture = shared.texture;
 			this.x = x / shared.capacity;
 			this.y = y / shared.capacity;
