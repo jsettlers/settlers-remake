@@ -23,7 +23,7 @@ import go.graphics.GeometryHandle;
 import go.graphics.TextureHandle;
 
 @SuppressWarnings("WeakerAccess")
-public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawContext{
+public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawContext {
 	public LWJGL20DrawContext(GLCapabilities glcaps, boolean debug) {
 		super(glcaps, debug);
 

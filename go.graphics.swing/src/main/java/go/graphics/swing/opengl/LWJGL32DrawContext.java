@@ -7,13 +7,13 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLCapabilities;
 
-import go.graphics.GL3DrawContext;
+import go.graphics.GL32DrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
-public class LWJGL31DrawContext extends LWJGL20DrawContext implements GL3DrawContext {
-	public LWJGL31DrawContext(GLCapabilities caps, boolean debug) {
+public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawContext {
+	public LWJGL32DrawContext(GLCapabilities caps, boolean debug) {
 		super(caps, debug);
 		multiVAO = ARBVertexArrayObject.glGenVertexArrays();
 	}
@@ -30,7 +30,7 @@ public class LWJGL31DrawContext extends LWJGL20DrawContext implements GL3DrawCon
 	private ShaderProgram prog_multi;
 
 	@Override
-	public void drawMulti2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
+	public void drawMultiUnified2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
 		bindTexture(texture);
 		useProgram(prog_multi);
 

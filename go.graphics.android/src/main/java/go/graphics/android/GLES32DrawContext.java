@@ -3,13 +3,13 @@ package go.graphics.android;
 import android.content.Context;
 import android.opengl.GLES31;
 
-import go.graphics.GL3DrawContext;
+import go.graphics.GL32DrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
-public class GLES31DrawContext extends GLES20DrawContext implements GL3DrawContext {
-	public GLES31DrawContext(Context ctx) {
+public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawContext {
+	public GLES32DrawContext(Context ctx) {
 		super(ctx, true);
 	}
 
@@ -28,7 +28,7 @@ public class GLES31DrawContext extends GLES20DrawContext implements GL3DrawConte
 	private ShaderProgram prog_multi;
 
 	@Override
-	public void drawMulti2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
+	public void drawMultiUnified2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
 		bindTexture(texture);
 		useProgram(prog_multi);
 
