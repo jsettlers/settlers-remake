@@ -43,7 +43,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	void init() {
 		shaders = new ArrayList<>();
 
-		prog_unified_array = new ShaderProgram("unifiedArray");
+		if(glcaps.GL_EXT_draw_instanced) prog_unified_array = new ShaderProgram("unifiedArray");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");

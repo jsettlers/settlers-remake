@@ -42,7 +42,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	public void init() {
 		shaders = new ArrayList<>();
 
-		prog_unified_array = new ShaderProgram("unifiedArray");
+		if(gles31) prog_unified_array = new ShaderProgram("unifiedArray");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");
