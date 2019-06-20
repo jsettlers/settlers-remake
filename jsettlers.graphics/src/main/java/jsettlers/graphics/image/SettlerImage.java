@@ -224,4 +224,11 @@ public class SettlerImage extends SingleImage {
 			}
 		}
 	}
+
+	public void prepare(GLDrawContext gl, SharedDrawing playerBorderObjectUpdater) {
+		try {
+			checkHandles(gl);
+		} catch (IllegalBufferException e) {}
+		playerBorderObjectUpdater.setContent(gl, texture.texture, geometryIndex.geometry, EGeometryType.Quad, geometryIndex.index, 4);
+	}
 }

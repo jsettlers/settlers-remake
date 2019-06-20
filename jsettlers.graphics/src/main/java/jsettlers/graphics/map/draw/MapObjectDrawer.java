@@ -20,7 +20,9 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import go.graphics.GL2DrawContext;
+import go.graphics.GL32DrawContext;
 import go.graphics.GLDrawContext;
+import go.graphics.SharedDrawing;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -201,6 +203,7 @@ public class MapObjectDrawer {
 	private SettlerImageMap imageMap;
 	private float           betweenTilesY;
 	private Image playerBorderObjectImage;
+	private SharedDrawing playerBorderObjectUpdater = null;
 
 	/**
 	 * Creates a new {@link MapObjectDrawer}.
@@ -693,10 +696,22 @@ public class MapObjectDrawer {
 			imageProvider = ImageProvider.getInstance();
 			imageMap = SettlerImageMap.getInstance();
 
-			if(context.getGl() instanceof GL2DrawContext) ((GL2DrawContext) context.getGl()).setShadowDepthOffset(10*z_per_y);
 			playerBorderObjectImage = imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator");
+			if(playerBorderObjectImage instanceof SettlerImage && !(context.getGl() instanceof GL32DrawContext)) {
+				playerBorderObjectUpdater = new SharedDrawing(true, true);
+			}
+		}
+
+		if(context.getGl() != lastDC) {
+			lastDC = context.getGl();
+
+			if(playerBorderObjectUpdater != null) ((SettlerImage)playerBorderObjectImage).prepare(context.getGl(), playerBorderObjectUpdater);
+			if (context.getGl() instanceof GL2DrawContext) ((GL2DrawContext) context.getGl()).setShadowDepthOffset(10 * z_per_y);
+
 		}
 	}
+
+	private GLDrawContext lastDC = null;
 
 	/**
 	 * Draws any type of movable.
@@ -1132,7 +1147,17 @@ public class MapObjectDrawer {
 			return; // break
 		}
 		Color color = context.getPlayerColor(player);
-		draw(playerBorderObjectImage, x, y, BACKGROUND_Z, color);
+
+
+		if(playerBorderObjectUpdater != null) {
+			int height = context.getHeight(x, y);
+			float viewX = context.getConverter().getViewX(x, y, height);
+			float viewY = context.getConverter().getViewY(x, y, height);
+
+			playerBorderObjectUpdater.add(viewX, viewY, getZ(BACKGROUND_Z, y), color, 1);
+		} else {
+			draw(playerBorderObjectImage, x, y, BACKGROUND_Z, color);
+		}
 	}
 
 	private static int getTreeType(int x, int y) {

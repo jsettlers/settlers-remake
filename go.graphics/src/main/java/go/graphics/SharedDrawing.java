@@ -2,6 +2,8 @@ package go.graphics;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SharedDrawing {
 
@@ -9,30 +11,27 @@ public class SharedDrawing {
 	private static final AbstractColor WHITE = new AbstractColor(0, 1, 1, 1, 1) {};
 	private static final int CAPACITY = 1000;
 
-	private static GL32DrawContext staticdc = null;
+	private static GLDrawContext staticdc = null;
 	private static GeometryHandle drawCallBufferHandle;
 
-	private static SharedTexture texture;
-	private static SharedGeometry geometry;
+	private static SharedTexture static_texture;
+	private static SharedGeometry static_geometry;
 	private static int drawCallCount = 0;
 
 	private static final ByteBuffer drawCalls = ByteBuffer.allocateDirect(BYTES_PER_DRAW_CALL*CAPACITY).order(ByteOrder.nativeOrder());
 
 
 	public static void schedule(GL32DrawContext dc, SharedTexture.SharedTextureHandle texture, SharedGeometry.SharedGeometryHandle geometry, float x, float y, float z, AbstractColor color, float intensity, boolean settler, boolean shadow) {
-		if(staticdc != dc) {
-			staticdc = dc;
-			drawCallBufferHandle = staticdc.generateGeometry(CAPACITY, EGeometryFormatType.UnifiedDrawInfo, true, "shared-unified");
-		}
+		setup(dc);
 
-		if(SharedDrawing.geometry != geometry.parent || SharedDrawing.texture != texture.parent) {
-			flush(dc);
-			SharedDrawing.geometry = geometry.parent;
-			SharedDrawing.texture = texture.parent;
+		if(static_geometry != geometry.parent || static_texture != texture.parent) {
+			flushStatic();
+			static_geometry = geometry.parent;
+			static_texture = texture.parent;
 		}
 
 		if(drawCallCount == CAPACITY) {
-			flush(dc);
+			flushStatic();
 		}
 
 		drawCalls.putFloat(x);
@@ -51,18 +50,86 @@ public class SharedDrawing {
 		drawCallCount++;
 	}
 
-	public static void flush(GL32DrawContext dc) {
-		if(staticdc != dc || texture == null || geometry == null) return;
-		drawCalls.rewind();
+	private static void setup(GLDrawContext dc) {
+		if(staticdc != dc) {
+			staticdc = dc;
+			if(staticdc instanceof GL32DrawContext) drawCallBufferHandle = staticdc.generateGeometry(CAPACITY, EGeometryFormatType.UnifiedDrawInfo, true, "shared-unified");
+		}
+	}
+
+	public static void flush(GLDrawContext dc) {
+		if(staticdc != dc) return;
+
+		flushStatic();
+		for(SharedDrawing drawing : localBuffers) drawing.flush();
+	}
+
+	private static void flushStatic() {
+		if(static_texture == null || static_geometry == null || drawCallCount == 0) return;
 
 		try {
+			drawCalls.rewind();
 			staticdc.updateGeometryAt(drawCallBufferHandle, 0, drawCalls);
 
-			staticdc.drawMultiUnified2D(texture.texture, geometry.geometry, drawCallBufferHandle, drawCallCount);
+			((GL32DrawContext)staticdc).drawMultiUnified2D(static_texture.texture, static_geometry.geometry, drawCallBufferHandle, drawCallCount);
 			drawCallCount = 0;
 
 		} catch (IllegalBufferException e) {}
+	}
 
 
+	private static List<SharedDrawing> localBuffers = new ArrayList<>();
+
+
+	private static final int OBJ_CAPACITY = 100;
+
+	private final boolean image;
+	private final boolean shadow;
+	private TextureHandle texture;
+	private GeometryHandle geometry;
+	private int primitive_type;
+	private int vertex_offset;
+	private int vertex_count;
+	private int count = 0;
+
+	private float[] x = new float[OBJ_CAPACITY];
+	private float[] y = new float[OBJ_CAPACITY];
+	private float[] z = new float[OBJ_CAPACITY];
+	private AbstractColor[] color = new AbstractColor[OBJ_CAPACITY];
+	private float[] intensity = new float[OBJ_CAPACITY];
+
+	public SharedDrawing(boolean image, boolean shadow) {
+		localBuffers.add(this);
+		this.image = image;
+		this.shadow = shadow;
+	}
+
+	public void setContent(GLDrawContext dc, TextureHandle texture, GeometryHandle geometry, int primitive, int offset, int count) {
+		setup(dc);
+
+		this.texture = texture;
+		this.geometry = geometry;
+		primitive_type = primitive;
+		vertex_offset = offset;
+		vertex_count = count;
+	}
+
+	public void add(float x, float y, float z, AbstractColor color, float intensity) {
+		if(count == OBJ_CAPACITY) flush();
+
+		this.x[count] = x;
+		this.y[count] = y;
+		this.z[count] = z;
+		this.color[count] = color;
+		this.intensity[count] = intensity;
+		count++;
+	}
+
+	public void flush() {
+		if(count == 0) return;
+		try {
+			((GL2DrawContext)staticdc).drawUnified2DArray(geometry, texture, primitive_type, vertex_offset, vertex_count, image, shadow, x, y, z, color, intensity, count);
+			count = 0;
+		} catch (IllegalBufferException e) {}
 	}
 }

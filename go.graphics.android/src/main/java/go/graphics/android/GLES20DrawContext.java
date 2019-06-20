@@ -3,26 +3,31 @@ package go.graphics.android;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
-import android.opengl.GLES31Ext;
-import android.opengl.GLES32;
+import android.opengl.GLES31;
 import android.opengl.Matrix;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
+import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
 public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawContext {
-	public GLES20DrawContext(Context ctx, boolean gles3) {
+	public GLES20DrawContext(Context ctx, boolean gles3, boolean gles31) {
 		super(ctx);
 		this.gles3 = gles3;
+		this.gles31 = gles31;
 		Matrix.setIdentityM(global, 0);
 	}
 
@@ -31,11 +36,13 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private final float[] global = new float[16];
 	private final float[] mat = new float[16];
 	protected boolean gles3;
+	protected boolean gles31;
 
 	@Override
 	public void init() {
 		shaders = new ArrayList<>();
 
+		prog_unified_array = new ShaderProgram("unifiedArray");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");
@@ -50,6 +57,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		}
 	}
 
+	private ShaderProgram prog_unified_array;
 	private ShaderProgram prog_background;
 	private ShaderProgram prog_unified;
 	private ShaderProgram prog_color;
@@ -153,6 +161,42 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		GLES20.glDrawArrays(primitive, offset*vertices, vertices);
 	}
 
+
+	private static final FloatBuffer floats400 = ByteBuffer.allocateDirect(400*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+	@Override
+	public void drawUnified2DArray(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
+		if(gles31) {
+			useProgram(prog_unified_array);
+			bindTexture(texture);
+
+			GLES20.glUniform2f(prog_unified_array.uni_info, image ? 1 : 0, shadow ? 1 : 0);
+			for (int i = 0; i != count; i++) {
+				floats400.put(x[i]);
+				floats400.put(y[i]);
+				floats400.put(z[i]);
+				floats400.put(intensity[i]);
+			}
+			floats400.rewind();
+			GLES20.glUniform4fv(prog_unified_array.trans, count, floats400);
+
+			for (int i = 0; i != count; i++) {
+				floats400.put(color[i].red);
+				floats400.put(color[i].green);
+				floats400.put(color[i].blue);
+				floats400.put(color[i].alpha);
+			}
+			floats400.rewind();
+			GLES20.glUniform4fv(prog_unified_array.color, count, floats400);
+
+			bindFormat(geometry.vao);
+			GLES31.glDrawArraysInstanced(primitive, offset, vertices, count);
+		} else {
+			for (int i = 0; i != count; i++) {
+				drawUnified2D(geometry, texture, primitive, offset, vertices, image, shadow, x[i], y[i], z[i], 1, 1, 1, color[i], intensity[i]);
+			}
+		}
+	}
+
 	private int lastFormat = 0;
 	protected void bindFormat(int format) {
 		if(format != lastFormat) {
@@ -192,6 +236,8 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 	@Override
 	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
+		finishFrame();
+
 		Matrix.setIdentityM(global, 0);
 		Matrix.scaleM(global, 0, sx, sy, sz);
 		Matrix.translateM(global, 0, x, y, z);
@@ -218,6 +264,8 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	@Override
 	public void setShadowDepthOffset(float depth) {
 		useProgram(prog_unified);
+		GLES20.glUniform1f(prog_unified.shadow_depth, depth);
+		useProgram(prog_unified_array);
 		GLES20.glUniform1f(prog_unified.shadow_depth, depth);
 	}
 
@@ -386,5 +434,17 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 			return shader;
 		}
+	}
+
+	@Override
+	public void clearDepthBuffer() {
+		finishFrame();
+
+		super.clearDepthBuffer();
+	}
+
+	@Override
+	public void finishFrame() {
+		SharedDrawing.flush(this);
 	}
 }

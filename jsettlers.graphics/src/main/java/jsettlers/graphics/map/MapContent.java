@@ -160,6 +160,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private final IMapObject[] objectsGrid;
 	private final IMovable[] movableGrid;
 	private final BitSet borderGrid;
+	private final byte[] heightGrid;
 	private final short width, height;
 	private final boolean isVisibleGridAvailable;
 
@@ -237,11 +238,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			objectsGrid = dgp.getObjectArray();
 			movableGrid = dgp.getMovableArray();
 			borderGrid = dgp.getBorderArray();
+			heightGrid = dgp.getHeightArray();
 			isVisibleGridAvailable = true;
 		} else {
 			objectsGrid = null;
 			movableGrid = null;
 			borderGrid = null;
+			heightGrid = null;
 			isVisibleGridAvailable = false;
 		}
 		width = map.getWidth();
@@ -531,7 +534,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
 
 		boolean linePartiallyVisible = true;
-		for (int line = 0; line < area.getHeight() + 50 && linePartiallyVisible; line++) {
+		//for (int line = 0; line < area.getHeight() + 50 && linePartiallyVisible; line++) {
+
+		int firstLine = area.getHeight() + 49;
+		if(firstLine + area.getMinY() >= height) firstLine = height - area.getMinY() - 1;
+
+		for(int line = firstLine; line  >= 0; line--) {
 			int y = area.getLineY(line);
 			if (y < 0) {
 				continue;
@@ -543,10 +551,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			for (int x = startX; x <= endX; x++) {
+			//for (int x = startX; x <= endX; x++) {
+			for (int x = endX; x >= startX; x--) {
 				drawTile(x, y);
 				if (!linePartiallyVisible) {
-					double drawSpaceY = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
+					double drawSpaceY = this.context.getConverter().getViewY(x, y, heightGrid == null ? this.context.getHeight(x, y) : heightGrid[y*width+x]);
 					if (drawSpaceY > bottomDrawY) {
 						linePartiallyVisible = true;
 					}

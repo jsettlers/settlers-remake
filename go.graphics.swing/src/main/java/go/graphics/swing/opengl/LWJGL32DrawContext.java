@@ -53,23 +53,6 @@ public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawCo
 		bindFormat(0);
 	}
 
-	@Override
-	public void clearDepthBuffer() {
-		finishFrame();
-		super.clearDepthBuffer();
-	}
-
-	@Override
-	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
-		finishFrame();
-		super.setGlobalAttributes(x, y, z, sx, sy, sz);
-	}
-
-	@Override
-	public void finishFrame() {
-		SharedDrawing.flush(this);
-	}
-
 	protected class ShaderProgram30 extends LWJGL20DrawContext.ShaderProgram {
 
 		public int geometryData;

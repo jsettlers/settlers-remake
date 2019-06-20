@@ -5,12 +5,11 @@ import android.opengl.GLES31;
 
 import go.graphics.GL32DrawContext;
 import go.graphics.GeometryHandle;
-import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
 public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawContext {
 	public GLES32DrawContext(Context ctx) {
-		super(ctx, true);
+		super(ctx, true, true);
 	}
 
 	@Override
@@ -50,23 +49,6 @@ public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawCont
 		bindFormat(0);
 	}
 
-	@Override
-	public void clearDepthBuffer() {
-		finishFrame();
-		super.clearDepthBuffer();
-	}
-
-	@Override
-	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
-		finishFrame();
-		super.setGlobalAttributes(x, y, z, sx, sy, sz);
-	}
-
-	@Override
-	public void finishFrame() {
-		SharedDrawing.flush(this);
-	}
-
 	protected class ShaderProgram30 extends GLES20DrawContext.ShaderProgram {
 
 		public int geometryData;
@@ -77,4 +59,5 @@ public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawCont
 			geometryData = GLES31.glGetUniformBlockIndex(program, "geometryDataBuffer");
 			GLES31.glUniformBlockBinding(program, geometryData, 0);
 		}
-	}}
+	}
+}

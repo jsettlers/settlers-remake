@@ -2,12 +2,14 @@ package go.graphics.swing.opengl;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBDrawInstanced;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.KHRDebug;
+import org.lwjgl.system.MemoryStack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
+import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
 @SuppressWarnings("WeakerAccess")
@@ -39,6 +43,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	void init() {
 		shaders = new ArrayList<>();
 
+		prog_unified_array = new ShaderProgram("unifiedArray");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");
@@ -53,6 +58,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		}
 	}
 
+	private ShaderProgram prog_unified_array;
 	private ShaderProgram prog_background;
 	private ShaderProgram prog_unified;
 	private ShaderProgram prog_color;
@@ -158,6 +164,48 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	}
 
 	@Override
+	public void drawUnified2DArray(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
+		if(glcaps.GL_ARB_draw_instanced) {
+			useProgram(prog_unified_array);
+			bindTexture(texture);
+
+			GL20.glUniform2f(prog_unified_array.uni_info, image ? 1 : 0, shadow ? 1 : 0);
+			try (MemoryStack stack = MemoryStack.stackPush()) {
+				FloatBuffer locations = stack.callocFloat(count * 4);
+				for (int i = 0; i != count; i++) {
+					locations.put(x[i]);
+					locations.put(y[i]);
+					locations.put(z[i]);
+					locations.put(intensity[i]);
+				}
+				locations.rewind();
+				GL20.glUniform4fv(prog_unified_array.trans, locations);
+
+				FloatBuffer colors = stack.callocFloat(count * 4);
+				for (int i = 0; i != count; i++) {
+					colors.put(color[i].red);
+					colors.put(color[i].green);
+					colors.put(color[i].blue);
+					colors.put(color[i].alpha);
+				}
+				colors.rewind();
+				GL20.glUniform4fv(prog_unified_array.color, colors);
+			}
+			if (glcaps.GL_ARB_vertex_array_object) {
+				bindFormat(geometry.vao);
+			} else {
+				bindGeometry(geometry);
+				specifyFormat(geometry.getFormat());
+			}
+			ARBDrawInstanced.glDrawArraysInstancedARB(primitive, offset, vertices, count);
+		} else {
+			for(int i = 0;i != count; i++) {
+				drawUnified2D(geometry, texture, primitive, offset, vertices, image, shadow, x[i], y[i], z[i], 1, 1, 1, color[i], intensity[i]);
+			}
+		}
+	}
+
+	@Override
 	protected void specifyFormat(EGeometryFormatType format) {
 		GL20.glEnableVertexAttribArray(0);
 
@@ -198,6 +246,8 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 	@Override
 	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
+		finishFrame();
+
 		global.identity();
 		global.scale(sx, sy, sz);
 		global.translate(x, y, z);
@@ -226,6 +276,8 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	public void setShadowDepthOffset(float depth) {
 		useProgram(prog_unified);
 		GL20.glUniform1f(prog_unified.shadow_depth, depth);
+		useProgram(prog_unified_array);
+		GL20.glUniform1f(prog_unified_array.shadow_depth, depth);
 	}
 
 	@Override
@@ -384,5 +436,16 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 			return shader;
 		}
+	}
+
+	@Override
+	public void clearDepthBuffer() {
+		finishFrame();
+		super.clearDepthBuffer();
+	}
+
+	@Override
+	public void finishFrame() {
+		SharedDrawing.flush(this);
 	}
 }
