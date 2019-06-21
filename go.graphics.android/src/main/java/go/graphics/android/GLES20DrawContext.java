@@ -3,7 +3,6 @@ package go.graphics.android;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
-import android.opengl.GLES31;
 import android.opengl.Matrix;
 
 import java.io.BufferedReader;
@@ -24,11 +23,12 @@ import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
 public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawContext {
-	public GLES20DrawContext(Context ctx, boolean gles3, boolean gles31) {
+	public GLES20DrawContext(Context ctx, boolean gles3) {
 		super(ctx);
 		this.gles3 = gles3;
-		this.gles31 = gles31;
 		Matrix.setIdentityM(global, 0);
+
+		if(gles3) prog_unified_array = new ShaderProgram("unifiedArray");
 	}
 
 	private ArrayList<ShaderProgram> shaders;
@@ -36,13 +36,11 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private final float[] global = new float[16];
 	private final float[] mat = new float[16];
 	protected boolean gles3;
-	protected boolean gles31;
 
 	@Override
 	public void init() {
 		shaders = new ArrayList<>();
 
-		if(gles31) prog_unified_array = new ShaderProgram("unifiedArray");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("tex-unified");
 		prog_color = new ShaderProgram("color");
@@ -165,7 +163,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private static final FloatBuffer floats400 = ByteBuffer.allocateDirect(400*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 	@Override
 	public void drawUnified2DArray(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
-		if(gles31) {
+		if(gles3) {
 			useProgram(prog_unified_array);
 			bindTexture(texture);
 
@@ -189,7 +187,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 			GLES20.glUniform4fv(prog_unified_array.color, count, floats400);
 
 			bindFormat(geometry.vao);
-			GLES31.glDrawArraysInstanced(primitive, offset, vertices, count);
+			GLES30.glDrawArraysInstanced(primitive, offset, vertices, count);
 		} else {
 			for (int i = 0; i != count; i++) {
 				drawUnified2D(geometry, texture, primitive, offset, vertices, image, shadow, x[i], y[i], z[i], 1, 1, 1, color[i], intensity[i]);
