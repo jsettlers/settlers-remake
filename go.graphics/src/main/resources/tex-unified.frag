@@ -11,6 +11,8 @@ uniform float shadow_depth;
 uniform vec3 uni_info; // x=image, y=shadow, z=intensity
 uniform vec4 color;
 
+float gl_FragDepth;
+
 void main() {
 	vec4 tex_color = texture2D(texHandle, frag_texcoord);
 	gl_FragColor = vec4(0,0,0,0);
@@ -34,7 +36,5 @@ void main() {
 
 	if(gl_FragColor.a < 0.5) discard;
 
-	#if 1 //VENDOR=Qualcomm 1=0
 	gl_FragDepth = fragDepth;
-	#endif
 }

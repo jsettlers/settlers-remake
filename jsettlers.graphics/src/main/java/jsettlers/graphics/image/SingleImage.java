@@ -168,10 +168,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return SharedGeometry.createQuadGeometry(toffsetX, -toffsetY, toffsetX + twidth, -toffsetY - theight, texture.x, texture.y, texture.x+texture.width, texture.y+texture.height);
 	}
 
-	protected void setGeometry(SharedGeometry.SharedGeometryHandle geometry) {
-		geometryIndex = geometry;
-	}
-
 	private static GeometryHandle buildHandle = null;
 	private SharedGeometry.SharedGeometryHandle rectHandle = null;
 	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());

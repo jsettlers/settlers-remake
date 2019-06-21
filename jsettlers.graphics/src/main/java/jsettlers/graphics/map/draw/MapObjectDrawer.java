@@ -180,6 +180,7 @@ public class MapObjectDrawer {
 	private static final float SMOKE_Z                     = 0.9f;
 	private static final float BACKGROUND_Z                = -0.1f;
 	private final float z_per_y;
+	private final float shadow_offset;
 
 	private static final int SHIP_IMAGE_FILE          = 36;
 	private static final int FERRY_BASE_SEQUENCE      = 4;
@@ -217,6 +218,7 @@ public class MapObjectDrawer {
 		this.sound = sound;
 
 		z_per_y = 1f/(context.getMap().getHeight()*100);
+		shadow_offset = 10 * z_per_y;
 	}
 
 	public void setVisibleGrid(byte[][] visibleGrid) {
@@ -697,7 +699,7 @@ public class MapObjectDrawer {
 			imageMap = SettlerImageMap.getInstance();
 
 			playerBorderObjectImage = imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator");
-			if(playerBorderObjectImage instanceof SettlerImage && !(context.getGl() instanceof GL32DrawContext)) {
+			if(playerBorderObjectImage instanceof SettlerImage && !(context.getGl() instanceof GL32DrawContext) && context.getGl() instanceof GL2DrawContext) {
 				playerBorderObjectUpdater = new SharedDrawing(true, true);
 			}
 		}
@@ -706,7 +708,8 @@ public class MapObjectDrawer {
 			lastDC = context.getGl();
 
 			if(playerBorderObjectUpdater != null) ((SettlerImage)playerBorderObjectImage).prepare(context.getGl(), playerBorderObjectUpdater);
-			if (context.getGl() instanceof GL2DrawContext) ((GL2DrawContext) context.getGl()).setShadowDepthOffset(10 * z_per_y);
+			if (context.getGl() instanceof GL2DrawContext) ((GL2DrawContext) context.getGl()).setShadowDepthOffset(shadow_offset);
+			SettlerImage.shadow_offset = shadow_offset;
 
 		}
 	}

@@ -36,6 +36,7 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  */
 public class SettlerImage extends SingleImage {
 
+	public static float shadow_offset = 0;
 	private SingleImage torso = null;
 	private SingleImage shadow = null;
 	private boolean gl2 = false;
@@ -62,14 +63,6 @@ public class SettlerImage extends SingleImage {
 		}
 
 		super.checkHandles(gl);
-		if(!gl2) {
-			if (torso != null && torso.getWidth() == getWidth()
-					&& torso.getHeight() == getHeight()
-					&& torso.getOffsetX() == getOffsetX()
-					&& torso.getOffsetY() == getOffsetY()) {
-				torso.setGeometry(geometryIndex);
-			}
-		}
 	}
 
 	private boolean gl2Draw(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow, boolean settler, boolean shadow) {
@@ -118,7 +111,7 @@ public class SettlerImage extends SingleImage {
 		if(shadow != null) {
 			try {
 				shadow.checkHandles(gl);
-				gl.draw2D(shadow.geometryIndex.geometry, shadow.texture.texture, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
+				gl.draw2D(shadow.geometryIndex.geometry, shadow.texture.texture, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z-shadow_offset, 1, 1, 1, null, 1);
 			} catch (IllegalBufferException e) {
 				handleIllegalBufferException(e);
 			}
