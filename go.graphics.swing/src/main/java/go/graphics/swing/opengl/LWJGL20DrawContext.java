@@ -274,10 +274,13 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 
 	@Override
 	public void setShadowDepthOffset(float depth) {
-		useProgram(prog_unified);
-		GL20.glUniform1f(prog_unified.shadow_depth, depth);
-		useProgram(prog_unified_array);
-		GL20.glUniform1f(prog_unified_array.shadow_depth, depth);
+		for(ShaderProgram shader : shaders) {
+			if(shader.shadow_depth != -1) {
+				useProgram(shader);
+				GL20.glUniform1f(shader.shadow_depth, depth);
+
+			}
+		}
 	}
 
 	@Override

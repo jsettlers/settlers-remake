@@ -261,10 +261,13 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 	@Override
 	public void setShadowDepthOffset(float depth) {
-		useProgram(prog_unified);
-		GLES20.glUniform1f(prog_unified.shadow_depth, depth);
-		useProgram(prog_unified_array);
-		GLES20.glUniform1f(prog_unified.shadow_depth, depth);
+		for(ShaderProgram shader : shaders) {
+			if(shader.shadow_depth != -1) {
+				useProgram(shader);
+				GLES20.glUniform1f(shader.shadow_depth, depth);
+
+			}
+		}
 	}
 
 	@Override
