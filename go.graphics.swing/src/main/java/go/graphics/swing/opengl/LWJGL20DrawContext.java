@@ -127,12 +127,12 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		if(image) {
 			float r, g, b, a;
 			if (color != null) {
-				r = color.red;// * intensity;
-				g = color.green;// * intensity;
-				b = color.blue;// * intensity;
+				r = color.red;
+				g = color.green;
+				b = color.blue;
 				a = color.alpha;
 			} else {
-				r = g = b = 1;//intensity;
+				r = g = b = 1;
 				a = 1;
 			}
 
