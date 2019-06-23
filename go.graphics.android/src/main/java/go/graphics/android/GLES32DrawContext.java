@@ -9,7 +9,7 @@ import go.graphics.TextureHandle;
 
 public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawContext {
 	public GLES32DrawContext(Context ctx) {
-		super(ctx, true);
+		super(ctx);
 	}
 
 	@Override

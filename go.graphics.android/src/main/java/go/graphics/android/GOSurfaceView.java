@@ -18,6 +18,7 @@ import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
 import android.opengl.GLES10;
+import android.opengl.GLES11;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
 import android.util.Log;
@@ -40,6 +41,8 @@ import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
+import java8.util.function.Function;
+import java8.util.function.Supplier;
 
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEventHandlerProvider {
 
@@ -238,18 +241,35 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 			drawcontext.reinit(width, height);
 		}
 
-		@Override
-		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		private GLES11DrawContext createContext(GL10 gl) {
 			String version = gl.glGetString(GL10.GL_VERSION).split(" ")[2];
 			int major = version.charAt(0)-'0';
 			int minor = version.charAt(2)-'0';
+
 			if(major == 3 && minor >= 1 && gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_EXT_geometry_shader")) {
-				drawcontext = new GLES32DrawContext(ctx);
-			} else if(major >= 2) {
-				drawcontext = new GLES20DrawContext(ctx, major == 3);
-			} else {
-				drawcontext = new GLES11DrawContext(ctx);
+				try {
+					return new GLES32DrawContext(ctx);
+				} catch(Throwable thrown) {thrown.printStackTrace();};
 			}
+
+			if(major == 3) {
+				try {
+					return new GLES30DrawContext(ctx);
+				} catch(Throwable thrown) {thrown.printStackTrace();};
+			}
+
+			if(major >= 2) {
+				try {
+					return new GLES20DrawContext(ctx);
+				} catch(Throwable thrown) {thrown.printStackTrace();};
+			}
+
+			return new GLES11DrawContext(ctx);
+		}
+
+		@Override
+		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+			drawcontext = createContext(gl);
 		}
 	}
 
