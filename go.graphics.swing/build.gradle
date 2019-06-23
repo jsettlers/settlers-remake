@@ -10,7 +10,7 @@ dependencies {
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version
     compile "org.lwjgl:lwjgl-egl:"+lwjgl_version
     compile "org.lwjgl:lwjgl-jawt:"+lwjgl_version
-    compile 'org.joml:joml:1.9.11'
+    compile "org.joml:joml:1.9.15"
 
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-linux"
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-macos"

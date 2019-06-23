@@ -117,6 +117,7 @@ public class SharedTexture {
 	public static boolean isInvalid(GLDrawContext dc, SharedTextureHandle handle) {
 		if(dc != staticdc) {
 			textures.clear();
+			maxIndex = 0;
 			staticdc = dc;
 			iteration++;
 		}

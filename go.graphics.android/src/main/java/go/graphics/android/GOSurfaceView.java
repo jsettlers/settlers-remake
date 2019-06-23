@@ -18,7 +18,6 @@ import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
 import android.opengl.GLES10;
-import android.opengl.GLES11;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
 import android.util.Log;
@@ -41,8 +40,6 @@ import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
-import java8.util.function.Function;
-import java8.util.function.Supplier;
 
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEventHandlerProvider {
 

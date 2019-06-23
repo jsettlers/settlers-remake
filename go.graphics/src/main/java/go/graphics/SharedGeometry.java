@@ -61,6 +61,7 @@ public class SharedGeometry {
 	public static boolean isInvalid(GLDrawContext dc, SharedGeometryHandle handle) {
 		if(dc != staticdc) {
 			geometries.clear();
+			maxIndex = 0;
 			staticdc = dc;
 			iteration++;
 		}
