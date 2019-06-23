@@ -15,7 +15,6 @@
 package go.graphics.swing.contextcreator;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLXARBCreateContext;
 import org.lwjgl.opengl.WGL;
 import org.lwjgl.opengl.WGLARBCreateContext;
 import org.lwjgl.opengl.WGLARBCreateContextProfile;
@@ -35,38 +34,31 @@ public class WGLContextCreator extends JAWTContextCreator {
 	}
 
 
-	private static final int[][] ctx_attrs = new int[][] {
-			{ // GL2.0 with debugging
-					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
-					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+	private static final int[][][] ctx_attrs = new int[][][]{
+		{
+			{ // GL3.2+ with debugging
+					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 2,
 					WGLARBCreateContextProfile.WGL_CONTEXT_PROFILE_MASK_ARB, WGLARBCreateContextProfile.WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
 					0
 			},
-			{// GL1.5 with debugging
-					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 1,
-					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 5,
-					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
-					0
-			},
-			{// GL1.1+ with debugging
-					WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
-					0
-			},
+			{ // GL3.2+
+					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+					WGLARBCreateContextProfile.WGL_CONTEXT_PROFILE_MASK_ARB, WGLARBCreateContextProfile.WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			}
+		},
 
-			{ // GL2.0
-					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
-					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 0,
-					WGLARBCreateContextProfile.WGL_CONTEXT_PROFILE_MASK_ARB, WGLARBCreateContextProfile.WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-			},
-			{// GL1.5
-					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 1,
-					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 5,
-					0
+		{
+			{// GL1.1+ with debugging
+				WGLARBCreateContext.WGL_CONTEXT_FLAGS_ARB, WGLARBCreateContext.WGL_CONTEXT_DEBUG_BIT_ARB,
+				0
 			},
 			{// GL1.1+
-					0
-			},
+				0
+			}
+		},
 	};
 
 	@Override
@@ -99,7 +91,7 @@ public class WGLContextCreator extends JAWTContextCreator {
 		pfd.cDepthBits((byte) 24);
 
 		int pixel_format = GDI32.ChoosePixelFormat(windowDrawable, pfd);
-		if(pixel_format == 0) throw new Error("Could not find pixel format!");
+		if(pixel_format == 0) error("Could not find pixel format!");
 		GDI32.SetPixelFormat(windowDrawable, pixel_format, pfd);
 
 		pfd.free();
@@ -112,16 +104,16 @@ public class WGLContextCreator extends JAWTContextCreator {
 			WGL.wglDeleteContext(context);
 			context = 0;
 
-			int i = debug ? 0 : 3;
+			int i = 0;
 			while(context == 0 && ctx_attrs.length > i) {
-				context = WGLARBCreateContext.wglCreateContextAttribsARB(windowDrawable, 0, ctx_attrs[i]);
+				context = WGLARBCreateContext.wglCreateContextAttribsARB(windowDrawable, 0, ctx_attrs[i++][debug?0:1]);
 			}
 		} else if(debug) {
 			WGL.wglDeleteContext(context);
-			throw new Error("WGL could not create a debug context!");
+			error("WGL could not create a debug context!");
 		}
 
-		if(context == 0) throw new Error("Could not create WGL context!");
+		if(context == 0) error("Could not create WGL context!");
 		parent.wrapNewContext();
 	}
 }

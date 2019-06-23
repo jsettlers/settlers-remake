@@ -36,9 +36,15 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 			cc.init();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Could not create opengl context through " + backend.cc_name + "\nPress ok to exit");
-			System.exit(1);
+			fatal("Could not create opengl context through " + backend.cc_name);
 		}
+	}
+
+	public void fatal(String message) {
+		SwingUtilities.invokeLater(() -> {
+			JOptionPane.showMessageDialog(null, message+ "\nPress ok to exit", "Error", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		});
 	}
 
 	public void resizeContext(int width, int height) {
@@ -55,23 +61,25 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 		GLCapabilities caps = GL.createCapabilities();
 
-		if(caps.OpenGL31 && caps.GL_EXT_geometry_shader4) {
-			context = new LWJGL32DrawContext(caps, debug);
-		} else if(caps.OpenGL20) {
-			context = new LWJGL20DrawContext(caps, debug);
-		} else if(caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) {
-			context = new LWJGL15DrawContext(caps, debug);
-		} else {
-			context = null;
-			errorGLVersion();
+		try {
+			if (caps.OpenGL31 && caps.GL_EXT_geometry_shader4) {
+				context = new LWJGL32DrawContext(caps, debug);
+			} else if (caps.OpenGL20) {
+				context = new LWJGL20DrawContext(caps, debug);
+			} else if (caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) {
+				context = new LWJGL15DrawContext(caps, debug);
+			} else {
+				context = null;
+			}
+		} catch(Throwable thrown) {
+			fatal(thrown.getLocalizedMessage());
 		}
+
+		if(context == null)	errorGLVersion();
 	}
 
 	private void errorGLVersion() {
-		SwingUtilities.invokeLater(() -> {
-			JOptionPane.showMessageDialog(null, "JSettlers needs at least OpenGL 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
-			System.exit(1);
-		});
+		fatal("JSettlers needs at least OpenGL 1.5 with GL_ARB_texture_non_power_of_two");
 	}
 
 	/**

@@ -50,6 +50,10 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 	}
 
 
+	protected void error(String message) {
+		parent.fatal(message);
+	}
+
 	public void init() {
 		initSpecific();
 

@@ -49,38 +49,31 @@ public class EGLContextCreator extends JAWTContextCreator {
 		}
 	}
 
-	private static final int[][] ctx_attrs = new int[][] {
-		{ // GL2.0 with debugging
-			EGL15.EGL_CONTEXT_MAJOR_VERSION, 2,
-			EGL15.EGL_CONTEXT_MINOR_VERSION, 0,
-			EGL15.EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL15.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
-				KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
-			EGL10.EGL_NONE
-		},
-		{// GL1.5 with debugging
-			EGL15.EGL_CONTEXT_MAJOR_VERSION, 1,
-			EGL15.EGL_CONTEXT_MINOR_VERSION, 5,
-			KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
-			EGL10.EGL_NONE
-		},
-		{// GL1.1+ with debugging
-			KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
-			EGL10.EGL_NONE
+	private static final int[][][] ctx_attrs = new int[][][] {
+		{
+			{// GL3.2+ with debugging
+				EGL15.EGL_CONTEXT_MAJOR_VERSION, 3,
+				EGL15.EGL_CONTEXT_MINOR_VERSION, 2,
+				EGL15.EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL15.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+					KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+				EGL10.EGL_NONE
+			},
+			{// GL3.2+
+				EGL15.EGL_CONTEXT_MAJOR_VERSION, 3,
+				EGL15.EGL_CONTEXT_MINOR_VERSION, 2,
+				EGL15.EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL15.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+				EGL10.EGL_NONE
+			}
 		},
 
-		{ // GL2.0
-			EGL15.EGL_CONTEXT_MAJOR_VERSION, 2,
-			EGL15.EGL_CONTEXT_MINOR_VERSION, 0,
-			EGL15.EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL15.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
-			EGL10.EGL_NONE
-		},
-		{// GL1.5
-			EGL15.EGL_CONTEXT_MAJOR_VERSION, 1,
-			EGL15.EGL_CONTEXT_MINOR_VERSION, 5,
-			EGL10.EGL_NONE
-		},
-		{// GL1.1+
-			EGL10.EGL_NONE
+		{
+			{// GL1.1+ with debugging
+				KHRCreateContext.EGL_CONTEXT_FLAGS_KHR, KHRCreateContext.EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+				EGL10.EGL_NONE
+			},
+			{// GL1.1+
+				EGL10.EGL_NONE
+			}
 		},
 	};
 
@@ -111,7 +104,6 @@ public class EGLContextCreator extends JAWTContextCreator {
 					}, bfr);
 
 		}
-		System.out.println("egl error: " + EGL10.eglGetError());
 	}
 
 	protected void initStatic() {
@@ -123,7 +115,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 
 		if(debug && caps.EGL_KHR_debug) setEGLDebugFunction(true, true, true, true);
 
-		if(!caps.EGL14 || !EGL12.eglBindAPI(EGL14.EGL_OPENGL_API)) throw new Error("could not bind OpenGL");
+		if(!caps.EGL14 || !EGL12.eglBindAPI(EGL14.EGL_OPENGL_API)) error("could not bind OpenGL");
 
 		int[] attrs = {EGL13.EGL_CONFORMANT, EGL14.EGL_OPENGL_BIT,
 				EGL10.EGL_STENCIL_SIZE, 1,
@@ -132,15 +124,12 @@ public class EGLContextCreator extends JAWTContextCreator {
 		int[] num_config = new int[1];
 
 		EGL10.eglChooseConfig(egl_display, attrs, cfgs, num_config);
-		if(num_config[0] == 0) throw new Error("could not found egl configs!");
+		if(num_config[0] == 0) error("could not found egl configs!");
 		egl_config = cfgs.get(0);
 
-		int i = debug ? 0 : 4;
+		int i = 0;
 		while(egl_context == 0 && ctx_attrs.length > i) {
-			int[] current_ctx_attrs = ctx_attrs[i];
-
-			egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, current_ctx_attrs);
-			i++;
+			egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, ctx_attrs[i++][debug?0:1]);
 			if(egl_context != 0 && EGL10.eglGetError() != EGL10.EGL_SUCCESS) {
 				EGL10.eglDestroyContext(egl_display, egl_context);
 				egl_context = 0;

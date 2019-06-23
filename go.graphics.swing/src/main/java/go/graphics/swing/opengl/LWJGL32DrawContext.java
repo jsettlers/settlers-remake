@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GLCapabilities;
 
 import go.graphics.GL32DrawContext;
 import go.graphics.GeometryHandle;
-import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
 
 public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawContext {
