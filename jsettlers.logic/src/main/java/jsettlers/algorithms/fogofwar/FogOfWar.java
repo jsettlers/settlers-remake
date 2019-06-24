@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.algorithms.fogofwar;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
@@ -54,10 +53,10 @@ public final class FogOfWar implements Serializable {
 	public transient FowDimThread dimThread;
 	public transient FoWRefThread refThread;
 
-	public transient CircleDrawer circleDrawer = new CircleDrawer();
-	private transient IGraphicsBackgroundListener backgroundListener = new MainGrid.NullBackgroundListener();
-	public transient boolean enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
-	public transient boolean canceled = false;
+	public transient CircleDrawer circleDrawer;
+	private transient IGraphicsBackgroundListener backgroundListener;
+	public transient boolean enabled;
+	public transient boolean canceled;
 
 	public FogOfWar(short width, short height, IPlayer player) {
 		this.width = width;
@@ -65,8 +64,8 @@ public final class FogOfWar implements Serializable {
 		this.team = player.getTeamId();
 		this.sight = new byte[width][height];
 		this.visibleRefs = new short[width][height][0];
-		refThread = new FoWRefThread();
-		dimThread = new FowDimThread();
+
+		readObject(null);
 	}
 
 	public void start() {
@@ -95,12 +94,19 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
+	private void readObject(ObjectInputStream ois) {
+		if(ois != null) {
+			try {
+				ois.defaultReadObject();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		refThread = new FoWRefThread();
 		dimThread = new FowDimThread();
 		circleDrawer = new CircleDrawer();
 		enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
+		canceled = false;
 		backgroundListener = new MainGrid.NullBackgroundListener();
 	}
 
@@ -147,6 +153,12 @@ public final class FogOfWar implements Serializable {
 
 		FoWRefThread() {
 			super("FOW-reference-updater", CommonConstants.FOG_OF_WAR_REF_UPDATE_FRAMERATE);
+		}
+
+		@Override
+		public void init() {
+			Movable.initFow(team);
+			Building.initFow(team);
 		}
 
 		@Override
@@ -284,14 +296,15 @@ public final class FogOfWar implements Serializable {
 
 		@Override
 		public final void run() {
-			Movable.initFow(team);
-			Building.initFow(team);
+			init();
 
 			while (!canceled) {
 				if(!MatchConstants.clock().isPausing()) taskProcessor();
 				fc.nextFrame(framerate);
 			}
 		}
+
+		public void init() {}
 
 		public abstract void taskProcessor();
 

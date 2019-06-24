@@ -270,8 +270,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
-
-		map.setBackgroundListener(background);
 	}
 
 	private void resizeTo(int newWindowWidth, int newWindowHeight) {

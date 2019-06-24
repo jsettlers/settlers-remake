@@ -1261,6 +1261,7 @@ public class Background implements IGraphicsBackgroundListener {
 		if (!asyncBufferBuilding) {
 			color_cache = new UpdateGeometryCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
 		}
+		context.getMap().setBackgroundListener(this);
 	}
 
 	private AdvancedUpdateGeometryCache color_cache2;
