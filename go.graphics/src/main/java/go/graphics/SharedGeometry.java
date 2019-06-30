@@ -50,7 +50,7 @@ public class SharedGeometry {
 
 		private SharedGeometryHandle(SharedGeometry shared) {
 			geometry = shared.geometry;
-			index = shared.size-1;
+			index = (shared.size-1)*4;
 			parent = shared;
 		}
 	}

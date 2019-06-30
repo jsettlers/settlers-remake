@@ -103,7 +103,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
 		}
-		GLES20.glDrawArrays(primitive, offset*vertices, vertices);
+		GLES20.glDrawArrays(primitive, offset, vertices);
 	}
 
 	private float ulr, ulg, ulb, ula, uli;
@@ -149,7 +149,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
 		}
-		GLES20.glDrawArrays(primitive, offset*vertices, vertices);
+		GLES20.glDrawArrays(primitive, offset, vertices);
 	}
 
 	@Override

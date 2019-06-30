@@ -1248,8 +1248,8 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 		fowEnabled = hasdgp && dgp.isFoWEnabled();
 
-		for (int y = 0; y != bufferHeight; y++) {
-			for (int x = 0; x != bufferWidth; x++) {
+		for(int y = 0; y != bufferHeight; y++) {
+			for(int x = 0; x != bufferWidth; x++) {
 				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
 			color_bfr.rewind();

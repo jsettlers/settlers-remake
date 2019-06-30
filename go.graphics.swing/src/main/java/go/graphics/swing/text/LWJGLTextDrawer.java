@@ -210,7 +210,7 @@ public final class LWJGLTextDrawer {
 		}
 
 		private void drawChar(float x, float y, char c) {
-			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c, 4, x, y, 0, line_height, line_height, 0, color, 1);
+			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c*4, 4, x, y, 0, line_height, line_height, 0, color, 1);
 		}
 
 		/*

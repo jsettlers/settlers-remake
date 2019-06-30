@@ -24,7 +24,7 @@ import com.jogamp.opengl.awt.GLJPanel;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
-public class JOGLContextCreator extends ContextCreator<GLJPanel>  implements GLEventListener{
+public class JOGLContextCreator extends ContextCreator<GLJPanel> implements GLEventListener {
 
 	public JOGLContextCreator(GLContainer container, boolean debug) {
 		super(container, debug);

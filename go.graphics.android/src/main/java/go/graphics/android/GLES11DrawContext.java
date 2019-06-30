@@ -85,7 +85,7 @@ public class GLES11DrawContext implements GLDrawContext {
 		if(format.getTexCoordPos() == -1) GLES11.glDisableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 
 		specifyFormat(format);
-		GLES11.glDrawArrays(primitive, offset * vertices, vertices);
+		GLES11.glDrawArrays(primitive, offset, vertices);
 
 		if(format.getTexCoordPos() == -1) GLES11.glEnableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 	}

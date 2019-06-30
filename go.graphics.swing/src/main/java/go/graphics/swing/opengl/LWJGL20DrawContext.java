@@ -113,7 +113,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
 		}
-		GL11.glDrawArrays(primitive, offset*vertices, vertices);
+		GL11.glDrawArrays(primitive, offset, vertices);
 	}
 
 	private float ulr, ulg, ulb, ula, uli;
@@ -160,7 +160,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			bindGeometry(geometry);
 			specifyFormat(geometry.getFormat());
 		}
-		GL11.glDrawArrays(primitive, offset*vertices, vertices);
+		GL11.glDrawArrays(primitive, offset, vertices);
 	}
 
 	@Override

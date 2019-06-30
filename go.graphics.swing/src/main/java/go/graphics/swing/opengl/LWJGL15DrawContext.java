@@ -111,7 +111,7 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		if(format.getTexCoordPos() == -1) GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
 		specifyFormat(format);
-		GL11.glDrawArrays(primitive, offset * vertices, vertices);
+		GL11.glDrawArrays(primitive, offset, vertices);
 
 		if(format.getTexCoordPos() == -1) GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}

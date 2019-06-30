@@ -123,7 +123,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			// dark magic
 			float sx = width/(float)twidth;
 			float sy = height/(float)theight;
-			float tx = x-offsetX*sx;
+			float tx = x - offsetX*sx;
 			float ty = y + height + offsetY*sy;
 			gl.draw2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, tx, ty, 0, sx, sy, 0, null, 1);
 		} catch (IllegalBufferException e) {
@@ -148,7 +148,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
 		if(texture == null || SharedTexture.isInvalid(gl, texture)) {
-			//texture = gl.generateTexture(twidth, theight, tdata, name);
 			texture = SharedTexture.addTexture(gl, tdata, twidth, theight);
 		}
 
@@ -169,7 +168,6 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	private static GeometryHandle buildHandle = null;
-	private SharedGeometry.SharedGeometryHandle rectHandle = null;
 	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
 
 	/**
