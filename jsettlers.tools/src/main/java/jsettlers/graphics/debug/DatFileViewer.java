@@ -440,7 +440,6 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 				int maxHeight = drawSingleSequence(gl2, y, 20, seq);
 
-				drawer.setColor(Color.WHITE);
 				drawer.drawString(-20, y + 20, seqIndex + ":");
 
 				seqIndex++;

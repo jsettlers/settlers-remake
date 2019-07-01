@@ -34,8 +34,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
@@ -179,7 +177,6 @@ public final class LWJGLTextDrawer {
 		private final float widthFactor;
 		private final float line_height;
 		private final Font sizedFont;
-		private AbstractColor color = null;
 
 		private SizedLWJGLTextDrawer(EFontSize size) {
 			sizedFont = font.deriveFont(size.getSize());
@@ -192,24 +189,7 @@ public final class LWJGLTextDrawer {
 			widthFactor = line_height/gentex_line_height;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see go.graphics.swing.text.TextDrawer#renderCentered(int, int, java.lang.String)
-		 */
-		@Override
-		public void renderCentered(float cx, float cy, String text) {
-			drawString(cx-(getWidth(text)/2), cy-(getHeight(text)/2), text);
-		}
-
-		/**
-		 * TODO: we should remove this.
-		 */
-		public void setColor(AbstractColor color) {
-			this.color = color;
-		}
-
-		private void drawChar(float x, float y, char c) {
+		private void drawChar(float x, float y, AbstractColor color, char c) {
 			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c*4, 4, x, y, 0, line_height, line_height, 0, color, 1);
 		}
 
@@ -219,7 +199,7 @@ public final class LWJGLTextDrawer {
 		 * @see go.graphics.swing.text.TextDrawer#drawString(int, int, java.lang.String)
 		 */
 		@Override
-		public void drawString(float x, float y, String string) {
+		public void drawString(float x, float y, AbstractColor color, String string) {
 			float x_offset = 0;
 			float y_offset = 0;
 
@@ -227,7 +207,7 @@ public final class LWJGLTextDrawer {
 				if(string.charAt(i) == '\n') {
 					y_offset += line_height;
 				} else {
-					drawChar(x+x_offset, y+y_offset, string.charAt(i));
+					drawChar(x+x_offset, y+y_offset, color, string.charAt(i));
 					x_offset += char_widths[string.charAt(i)]*widthFactor;
 				}
 			}

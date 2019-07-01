@@ -168,7 +168,6 @@ public class DatFileTester {
 
 				maxheight = drawSequence(gl2, width, height, y, seq);
 
-				drawer.setColor(Color.WHITE);
 				drawer.drawString(offsetX+20, offsetY+y+20, seqIndex + ":");
 
 				seqIndex++;

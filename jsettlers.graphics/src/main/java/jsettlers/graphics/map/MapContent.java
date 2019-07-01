@@ -384,24 +384,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				String name = getPlayername(m.getSender()) + ":";
 				Color color = context.getPlayerColor(m.getSender());
 				float width = drawer.getWidth(name);
-				float bright = color.getRed() + color.getGreen() + color.getBlue();
-				if (bright < .9f) {
-					// black
-					drawer.setColor(new Color(1, 1, 1, a/2));
-				} else if (bright < 2f) {
-					// bad visibility
-					drawer.setColor(new Color(1, 1, 1, a/2));
-				}
 				for (int i = -1; i < 3; i++) {
-					drawer.drawString(x + i, y - 1, name);
+					drawer.drawString(x + i, y - 1, new Color(1, 1, 1, a/2), name);
 				}
-				drawer.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), a));
-				drawer.drawString(x, y, name);
+				drawer.drawString(x, y, new Color(color.getRed(), color.getGreen(), color.getBlue(), a), name);
 				x += width + 10;
 			}
 
-			drawer.setColor(new Color(1, 1, 1, a));
-			drawer.drawString(x, y, Labels.getString(m.getMessageLabel()));
+			drawer.drawString(x, y, new Color(1, 1, 1, a), Labels.getString(m.getMessageLabel()));
 
 			messageIndex++;
 		}

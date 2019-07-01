@@ -22,7 +22,6 @@ import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GeometryHandle;
-import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -135,13 +134,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	}
 
 	@Override
-	public void renderCentered(float cx, float cy, String text) {
-		// TODO: we may want to optimize this.
-		drawString(cx - getWidth(text) / 2, cy - getHeight(text) / 2, text);
-	}
-
-	@Override
-	public void drawString(float x, float y, String string) {
+	public void drawString(float x, float y, AbstractColor color, String string) {
 		initialize();
 
 		int line = findLineFor(string);
@@ -304,13 +297,6 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private float getScaledSize() {
 		return size.getSize() * pixelScale;
-	}
-
-	private AbstractColor color;
-
-	@Override
-	public void setColor(AbstractColor color) {
-		this.color = color;
 	}
 
 	public static TextDrawer getInstance(EFontSize size, GLES11DrawContext context) {
