@@ -1390,12 +1390,12 @@ public class MapObjectDrawer {
 		float topLineBottom = 1 - maskState;
 		float topLineTop = Math.max(0, topLineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0, topLineBottom, color);
-		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0, topLineBottom, color);
+		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0,  topLineBottom, getZ(shadow_offset, y),color);
+		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0,  topLineBottom, getZ(shadow_offset, y),color);
 
 		for (int i = 0; i < tiles; i++) {
 			image.drawTriangle(context.getGl(), viewX, viewY, 1.0f / tiles * i,
-				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f), topLineTop, color
+				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f),  topLineTop, getZ(shadow_offset, y),color
 			);
 		}
 	}
