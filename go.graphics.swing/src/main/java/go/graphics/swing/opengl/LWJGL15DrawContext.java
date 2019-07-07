@@ -256,9 +256,16 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 0, 0);
 
 		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-		for (int i = starti; i != lines; i++) {
-			GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
+		int draw_lines = lines-starti;
+
+		int[] firsts = new int[draw_lines];
+		int[] counts = new int[draw_lines];
+		for (int i = 0; i != draw_lines; i++) {
+			firsts[i] = (offset + stride * (i+starti)) * 3;
 		}
+		Arrays.fill(counts, width*3);
+
+		GL14.glMultiDrawArrays(GL11.GL_TRIANGLES, firsts, counts);
 		GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
 
 		GL11.glPopMatrix();
@@ -304,9 +311,7 @@ public class LWJGL15DrawContext implements GLDrawContext {
 	}
 
 	protected void setObjectLabel(int type, int id, String name) {
-		if(debugOutput == null) return;
-
-		if(glcaps.GL_KHR_debug) {
+		if(debugOutput != null && glcaps.GL_KHR_debug) {
 			KHRDebug.glObjectLabel(type, id, name);
 		}
 	}

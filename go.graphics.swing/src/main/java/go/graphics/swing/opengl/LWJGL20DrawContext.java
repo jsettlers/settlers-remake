@@ -5,6 +5,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBDrawInstanced;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import go.graphics.AbstractColor;
 import go.graphics.EGeometryFormatType;
@@ -315,14 +317,20 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			setObjectLabel(KHRDebug.GL_BUFFER, shapeHandle.getInternalId(), "background-shape");
 			setObjectLabel(KHRDebug.GL_BUFFER, colorHandle.getInternalId(), "background-color");
 		}
-		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
-
 		useProgram(prog_background);
-
 		bindFormat(backgroundVAO);
-		for (int i = starti; i != lines; i++) {
-			GL11.glDrawArrays(GL11.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
+
+		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
+		int draw_lines = lines-starti;
+
+		int[] firsts = new int[draw_lines];
+		int[] counts = new int[draw_lines];
+		for (int i = 0; i != draw_lines; i++) {
+			firsts[i] = (offset + stride * (i+starti)) * 3;
 		}
+		Arrays.fill(counts, width*3);
+
+		GL14.glMultiDrawArrays(GL11.GL_TRIANGLES, firsts, counts);
 	}
 
 	protected class ShaderProgram  {
