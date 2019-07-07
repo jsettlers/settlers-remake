@@ -181,6 +181,7 @@ public class MapObjectDrawer {
 	private static final float BACKGROUND_Z                = -0.1f;
 	private final float z_per_y;
 	private final float shadow_offset;
+	private final float construction_offset;
 
 	private static final int SHIP_IMAGE_FILE          = 36;
 	private static final int FERRY_BASE_SEQUENCE      = 4;
@@ -219,6 +220,7 @@ public class MapObjectDrawer {
 
 		z_per_y = 1f/(context.getMap().getHeight()*100);
 		shadow_offset = 10 * z_per_y;
+		construction_offset = z_per_y;
 	}
 
 	public void setVisibleGrid(byte[][] visibleGrid) {
@@ -1390,12 +1392,12 @@ public class MapObjectDrawer {
 		float topLineBottom = 1 - maskState;
 		float topLineTop = Math.max(0, topLineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0,  topLineBottom, getZ(shadow_offset, y),color);
-		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0,  topLineBottom, getZ(shadow_offset, y),color);
+		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0,  topLineBottom, getZ(construction_offset, y),color);
+		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0,  topLineBottom, getZ(construction_offset, y),color);
 
 		for (int i = 0; i < tiles; i++) {
 			image.drawTriangle(context.getGl(), viewX, viewY, 1.0f / tiles * i,
-				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f),  topLineTop, getZ(shadow_offset, y),color
+				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f),  topLineTop, getZ(construction_offset, y),color
 			);
 		}
 	}
