@@ -82,7 +82,7 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 			arrows = new CountArrows(() -> new SetMaterialProductionAction(position, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE, 0),
 									() -> new SetMaterialProductionAction(position, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE, 0));
 
-			barFill = new ActionProvidedBarFill(fillForClick -> new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick), Labels.getName(materialType, false) + "-production-barfill");
+			barFill = new ActionProvidedBarFill(fillForClick -> new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick));
 
 			float left = 0;
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);

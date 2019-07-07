@@ -49,16 +49,11 @@ public class BarFill extends UIPanel {
 	private float barFillPercentage = 0;
 	private float descriptionPercentage = 0;
 
-	public BarFill(String name) {
+	public BarFill() {
 		setBackground(barImageLink);
-		this.name = name;
 	}
 
-	private GeometryHandle geometry = null;
-	private static ByteBuffer geometryBfr = ByteBuffer.allocateDirect(4*4*2).order(ByteOrder.nativeOrder());
-	private FloatRectangle writtenPosition = null;
-	private float writtenMaxX = -1;
-	private String name;
+	private static GeometryHandle geometry = null;
 
 	private static final Color barColor = new Color(0, .78f, .78f, 1);
 
@@ -66,19 +61,10 @@ public class BarFill extends UIPanel {
 	public void drawAt(GLDrawContext gl) {
 		FloatRectangle position = getPosition();
 		float fillX = barFillPercentage < .01f ? 0 : barFillPercentage > .99f ? 1 : EMPTY_X * (1 - barFillPercentage) + FULL_X * barFillPercentage;
-		float maxX = position.getMinX() * (1 - fillX) + position.getMaxX() * fillX;
 
 		try {
-			if (geometry == null || !geometry.isValid()) geometry = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, false, name);
-			if (!position.equals(writtenPosition) || writtenMaxX != maxX) {
-				writtenPosition = position;
-				writtenMaxX = maxX;
-				geometryBfr.asFloatBuffer().put(new float[]{
-						maxX, position.getMinY(), position.getMinX(), position.getMinY(),
-						position.getMinX(), position.getMaxY(), maxX, position.getMaxY()});
-				gl.updateGeometryAt(geometry, 0, geometryBfr);
-			}
-			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4, 0, 0, 0, 1, 1, 1, barColor, 1);
+			if (geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1, 1, 1, 1, 0}, EGeometryFormatType.VertexOnly2D, false, "barfill");
+			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4, position.getMinX(), position.getMinY(), 0, position.getWidth()*fillX, position.getHeight(), 1, barColor, 1);
 		} catch(IllegalBufferException ex) {
 			ex.printStackTrace();
 		}

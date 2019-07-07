@@ -99,7 +99,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 				} else {
 					return null;
 				}
-			}, Labels.getName(buildingType) + "-distribution-barfill");
+			});
 			Label rowTitle = new Label(Labels.getName(buildingType), EFontSize.SMALL, EHorizontalAlignment.LEFT);
 
 			addChild(rowTitle, 0f, 1f - textHeight, 1f, 1f);
