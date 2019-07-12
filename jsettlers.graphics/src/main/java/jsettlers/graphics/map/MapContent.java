@@ -18,10 +18,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
@@ -410,7 +410,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		oldScreen = newScreen;
 	}
 
-	private GeometryHandle selectionArea = null;
+	private BufferHandle selectionArea = null;
 	private boolean updateSelectionArea = true;
 	private ByteBuffer selectionAreaBuffer = ByteBuffer.allocateDirect(4*2*4).order(ByteOrder.nativeOrder());
 
@@ -438,13 +438,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
 
 			if(selectionArea == null || !selectionArea.isValid()) {
-				selectionArea = gl.generateGeometry(4, EGeometryFormatType.VertexOnly2D, true, "selection-area");
+				selectionArea = gl.generateBuffer(4, EBufferFormatType.VertexOnly2D, true, "selection-area");
 			}
 
 			if(updateSelectionArea) {
 				updateSelectionArea();
 				try {
-					gl.updateGeometryAt(selectionArea, 0, selectionAreaBuffer);
+					gl.updateBufferAt(selectionArea, 0, selectionAreaBuffer);
 				} catch (IllegalBufferException e) {
 					e.printStackTrace();
 				}
@@ -617,12 +617,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	};
 	// @formatter:on
 
-	private GeometryHandle shapeHandle = null;
+	private BufferHandle shapeHandle = null;
 
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeGeometry(shape, EGeometryFormatType.VertexOnly2D, false, "debugshape");
+		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeBuffer(shape, EBufferFormatType.VertexOnly2D, false, "debugshape");
 
 		context.getScreenArea().stream().filterBounds(width, height).forEach((x, y) -> {
 			try {

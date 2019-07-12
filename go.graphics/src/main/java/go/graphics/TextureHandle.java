@@ -19,9 +19,13 @@ package go.graphics;
  * 
  * @author Michael Zangl
  */
-public class TextureHandle extends GLBufferHandle {
+public class TextureHandle extends GLResourceIndex {
 
 	public TextureHandle(GLDrawContext dc, int texture) {
 		super(dc, texture);
+	}
+
+	public int getTextureId() {
+		return id;
 	}
 }

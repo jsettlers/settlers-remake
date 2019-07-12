@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.ui;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
@@ -63,7 +63,7 @@ public class UIInput extends UIPanel implements GOEventHandler {
 	@Override
 	public void aborted(GOEvent event) {}
 
-	private static GeometryHandle geometry = null;
+	private static BufferHandle geometry = null;
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
@@ -75,7 +75,7 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		float x = getPosition().getMinX() + 2;
 		drawer.drawString(x, y, inputString.toString());
 
-		if(geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1}, EGeometryFormatType.VertexOnly2D, false, "uiinput-line");
+		if(geometry == null || !geometry.isValid()) geometry = gl.storeBuffer(new float[] {0, 0, 0, 1}, EBufferFormatType.VertexOnly2D, false, "uiinput-line");
 
 		float carretX = x + drawer.getWidth(inputString.substring(0, carret) + "X") - drawer.getWidth("X");
 

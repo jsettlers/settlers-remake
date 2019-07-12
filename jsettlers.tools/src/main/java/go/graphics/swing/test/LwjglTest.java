@@ -14,10 +14,10 @@
  *******************************************************************************/
 package go.graphics.swing.test;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.area.Area;
@@ -115,7 +115,7 @@ public class LwjglTest {
 
 		private final Object pointLock = new Object();
 
-		private GeometryHandle pointGeometry = null;
+		private BufferHandle pointGeometry = null;
 		private ByteBuffer bfr = ByteBuffer.allocateDirect(4*2*2).order(ByteOrder.nativeOrder());
 
 		@Override
@@ -123,13 +123,13 @@ public class LwjglTest {
 
 			if(point_index < 2) return;
 
-			if(pointGeometry == null) pointGeometry = gl2.generateGeometry(2, EGeometryFormatType.VertexOnly2D, true, null);
+			if(pointGeometry == null) pointGeometry = gl2.generateBuffer(2, EBufferFormatType.VertexOnly2D, true, null);
 
 			synchronized (pointLock) {
 				try {
 					for (int i = 1; i != point_index; i++) {
 						bfr.asFloatBuffer().put(new float[]{pointx[i - 1], pointy[i - 1], pointx[i], pointy[i]});
-						gl2.updateGeometryAt(pointGeometry, 0, bfr);
+						gl2.updateBufferAt(pointGeometry, 0, bfr);
 						gl2.draw2D(pointGeometry, null, EGeometryType.LineStrip, 0, 2, 0, 0, 0, 1, 1, 1, null, 1);
 					}
 				} catch (IllegalBufferException ex) {

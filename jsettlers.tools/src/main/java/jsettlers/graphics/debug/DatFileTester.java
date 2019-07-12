@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -34,7 +34,6 @@ import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
 import jsettlers.graphics.image.reader.DatFileReader;
@@ -190,17 +189,17 @@ public class DatFileTester {
 			return maxheight;
 		}
 
-		private GeometryHandle lineGeometry = null;
+		private BufferHandle lineGeometry = null;
 		private ByteBuffer lineBfr = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder());
 
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D, true, null);
+			if(lineGeometry == null) lineGeometry = gl2.generateBuffer(3, EBufferFormatType.VertexOnly2D, true, null);
 
 			try {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), - image.getOffsetX(), image.getHeight() + image.getOffsetY() }, 0, 3);
-				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
+				gl2.updateBufferAt(lineGeometry, 3*4, lineBfr);
 
 				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, Color.RED, 1);
 			} catch (IllegalBufferException e) {

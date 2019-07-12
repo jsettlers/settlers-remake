@@ -23,9 +23,9 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import go.graphics.AbstractColor;
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.TextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -34,7 +34,7 @@ public class GLES11DrawContext implements GLDrawContext {
 
 	private final Context context;
 
-	private GeometryHandle lastGeometry = null;
+	private BufferHandle lastGeometry = null;
 	private TextureHandle lastTexture = null;
 	private boolean tex_coord_on = false;
 
@@ -55,7 +55,7 @@ public class GLES11DrawContext implements GLDrawContext {
 	private float lx, ly, lz = -2;
 	private float lsx, lsy, lsz = -1;
 
-	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
+	public void draw2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
 		if(lx != x || ly != y || lz != z || lsx != sx || lsy != sy || lsz != sz) {
 			if(lsz != -1) GLES11.glPopMatrix();
 			GLES11.glPushMatrix();
@@ -80,7 +80,7 @@ public class GLES11DrawContext implements GLDrawContext {
 
 		bindTexture(texture);
 		bindGeometry(geometry);
-		EGeometryFormatType format = geometry.getFormat();
+		EBufferFormatType format = geometry.getFormat();
 
 		if(format.getTexCoordPos() == -1) GLES11.glDisableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 
@@ -90,7 +90,7 @@ public class GLES11DrawContext implements GLDrawContext {
 		if(format.getTexCoordPos() == -1) GLES11.glEnableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 	}
 
-	protected void specifyFormat(EGeometryFormatType format) {
+	protected void specifyFormat(EBufferFormatType format) {
 		if (format.getTexCoordPos() == -1) {
 			if(tex_coord_on) GLES11.glDisableClientState(GLES11.GL_TEXTURE_COORD_ARRAY);
 			GLES11.glVertexPointer(2, GLES11.GL_FLOAT, 0, 0);
@@ -108,7 +108,7 @@ public class GLES11DrawContext implements GLDrawContext {
 		if (texture != lastTexture) {
 			int id = 0;
 			if (texture != null) {
-				id = texture.getInternalId();
+				id = texture.getTextureId();
 			}
 			GLES11.glBindTexture(GLES11.GL_TEXTURE_2D, id);
 			lastTexture = texture;
@@ -125,11 +125,11 @@ public class GLES11DrawContext implements GLDrawContext {
 		GLES11.glTranslatef(x, y, z);
 	}
 
-	protected void bindGeometry(GeometryHandle geometry) {
+	protected void bindGeometry(BufferHandle geometry) {
 		if(geometry != lastGeometry) {
 			int id = 0;
 			if(geometry != null) {
-				id = geometry.getInternalId();
+				id = geometry.getBufferId();
 			}
 			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, id);
 			lastGeometry = geometry;
@@ -240,8 +240,8 @@ public class GLES11DrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle generateGeometry(int vertices, EGeometryFormatType format, boolean writable, String name) {
-		GeometryHandle geometry = allocateVBO(format);
+	public BufferHandle generateBuffer(int vertices, EBufferFormatType format, boolean writable, String name) {
+		BufferHandle geometry = allocateVBO(format);
 
 		bindGeometry(geometry);
 		GLES11.glBufferData(GLES11.GL_ARRAY_BUFFER, vertices*format.getBytesPerVertexSize(), null,
@@ -249,7 +249,7 @@ public class GLES11DrawContext implements GLDrawContext {
 		return geometry;
 	}
 
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, BufferHandle vertexHandle, BufferHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
@@ -282,8 +282,8 @@ public class GLES11DrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType format, boolean writable, String name) {
-		GeometryHandle vertexBufferId = allocateVBO(format);
+	public BufferHandle storeBuffer(float[] geometry, EBufferFormatType format, boolean writable, String name) {
+		BufferHandle vertexBufferId = allocateVBO(format);
 		ByteBuffer bfr = ByteBuffer.allocateDirect(4*geometry.length).order(ByteOrder.nativeOrder());
 		bfr.asFloatBuffer().put(geometry);
 		GLES11.glBufferData(GLES11.GL_ARRAY_BUFFER, 4*geometry.length, bfr, writable ? GLES11.GL_DYNAMIC_DRAW : GLES11.GL_STATIC_DRAW);
@@ -291,15 +291,15 @@ public class GLES11DrawContext implements GLDrawContext {
 		return vertexBufferId;
 	}
 
-	GeometryHandle allocateVBO(EGeometryFormatType type) {
+	BufferHandle allocateVBO(EBufferFormatType type) {
 		int[] vbos = new int[] {0};
 		GLES11.glGenBuffers(1, vbos, 0);
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, vbos[0]);
-		return lastGeometry = new GeometryHandle(this, vbos[0], 0, type);
+		return lastGeometry = new BufferHandle(this, vbos[0], 0, type);
 	}
 
 	@Override
-	public void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) {
+	public void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) {
 		bindGeometry(handle);
 		GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, pos, data.remaining(), data);
 	}
@@ -314,7 +314,7 @@ public class GLES11DrawContext implements GLDrawContext {
 
 	@Override
 	public void deleteTexture(TextureHandle texture) {
-		GLES11.glDeleteTextures(1, new int[] {texture.getInternalId()}, 0);
+		GLES11.glDeleteTextures(1, new int[] {texture.getTextureId()}, 0);
 	}
 
 	@Override

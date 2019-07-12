@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import go.graphics.AbstractColor;
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.GL2DrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
@@ -69,8 +69,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	private float clr, clg, clb, cla, tlr, tlg, tlb, tla;
 
 	@Override
-	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity){
-		boolean changeColor = false;
+	public void draw2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
 
 		float r, g, b, a;
 		if(color != null) {
@@ -122,7 +121,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	private boolean ulim, ulsh;
 
 	@Override
-	public void drawUnified2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
+	public void drawUnified2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
 		useProgram(prog_unified);
 		bindTexture(texture);
 
@@ -166,7 +165,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	}
 
 	@Override
-	public void drawUnified2DArray(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
+	public void drawUnified2DArray(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
 		if(glcaps.GL_ARB_draw_instanced) {
 			useProgram(prog_unified_array);
 			bindTexture(texture);
@@ -208,7 +207,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	}
 
 	@Override
-	protected void specifyFormat(EGeometryFormatType format) {
+	protected void specifyFormat(EBufferFormatType format) {
 		GL20.glEnableVertexAttribArray(0);
 
 		if (format.getTexCoordPos() == -1) {
@@ -230,8 +229,8 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	}
 
 	@Override
-	GeometryHandle allocateVBO(EGeometryFormatType type, String name) {
-		GeometryHandle geometry =  super.allocateVBO(type, name);
+	BufferHandle allocateVBO(EBufferFormatType type, String name) {
+		BufferHandle geometry =  super.allocateVBO(type, name);
 		if (glcaps.GL_ARB_vertex_array_object && type.isSingleBuffer()) {
 			geometry.setInternalFormatId(ARBVertexArrayObject.glGenVertexArrays());
 			bindFormat(geometry.getInternalFormatId());
@@ -294,7 +293,7 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 	private int backgroundVAO = -1;
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, BufferHandle shapeHandle, BufferHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 
 		if(backgroundVAO == -1) {
@@ -314,8 +313,8 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			GL20.glVertexAttribPointer(2, 1, GL11.GL_FLOAT, false, 0, 0);
 
 			setObjectLabel(GL11.GL_VERTEX_ARRAY, backgroundVAO, "background-vao");
-			setObjectLabel(KHRDebug.GL_BUFFER, shapeHandle.getInternalId(), "background-shape");
-			setObjectLabel(KHRDebug.GL_BUFFER, colorHandle.getInternalId(), "background-color");
+			setObjectLabel(KHRDebug.GL_BUFFER, shapeHandle.getBufferId(), "background-shape");
+			setObjectLabel(KHRDebug.GL_BUFFER, colorHandle.getBufferId(), "background-color");
 		}
 		useProgram(prog_background);
 		bindFormat(backgroundVAO);

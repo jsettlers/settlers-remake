@@ -106,7 +106,7 @@ public class LWJGL15DrawContext implements GLDrawContext {
 
 		bindTexture(texture);
 		bindGeometry(geometry);
-		EGeometryFormatType format = geometry.getFormat();
+		EBufferFormatType format = geometry.getFormat();
 
 		if(format.getTexCoordPos() == -1) GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 

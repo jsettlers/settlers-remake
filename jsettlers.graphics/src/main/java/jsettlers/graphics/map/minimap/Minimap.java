@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import java.nio.ByteBuffer;
@@ -91,34 +91,34 @@ public final class Minimap implements IMinimapData {
 	}
 
 	private boolean updateGeometry = true;
-	private GeometryHandle geometry = null;
-	private GeometryHandle lineGeometry = null;
+	private BufferHandle geometry = null;
+	private BufferHandle lineGeometry = null;
 	private static final ByteBuffer lineBfr = ByteBuffer.allocateDirect(12*4).order(ByteOrder.nativeOrder());
 
 	private ByteBuffer bfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
 
-	private void replaceGeometryValue(GLDrawContext context, int pos, float value) throws IllegalBufferException {
+	private void replaceBufferValue(GLDrawContext context, int pos, float value) throws IllegalBufferException {
 		bfr.putFloat(0, value);
-		context.updateGeometryAt(geometry, pos*4, bfr);
+		context.updateBufferAt(geometry, pos*4, bfr);
 	}
 
 	public void draw(GLDrawContext context, float x, float y) {
 		boolean imageWasCreatedJustNow = false;
 		try {
 			if(geometry == null || !geometry.isValid()) {
-				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,}, EGeometryFormatType.Texture2D, false, "minimap");
-				lineGeometry = context.generateGeometry(6, EGeometryFormatType.VertexOnly2D, true, "minimap-frame");
+				geometry = context.storeBuffer( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,}, EBufferFormatType.Texture2D, false, "minimap");
+				lineGeometry = context.generateBuffer(6, EBufferFormatType.VertexOnly2D, true, "minimap-frame");
 			}
 
 			if(updateGeometry) {
 				lineBfr.asFloatBuffer().put(miniMapShapeCalculator.getMiniMapShapeNodes(), 0, 12);
-				context.updateGeometryAt(lineGeometry, 0, lineBfr);
+				context.updateBufferAt(lineGeometry, 0, lineBfr);
 
-				replaceGeometryValue(context, 4, width);
-				replaceGeometryValue(context, 8, (stride + 1) * width);
-				replaceGeometryValue(context, 9, height);
-				replaceGeometryValue(context, 12, stride * width);
-				replaceGeometryValue(context, 13, height);
+				replaceBufferValue(context, 4, width);
+				replaceBufferValue(context, 8, (stride + 1) * width);
+				replaceBufferValue(context, 9, height);
+				replaceBufferValue(context, 12, stride * width);
+				replaceBufferValue(context, 13, height);
 				updateGeometry = false;
 			}
 

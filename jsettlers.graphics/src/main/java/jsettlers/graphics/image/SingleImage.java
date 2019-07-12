@@ -18,14 +18,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedGeometry;
 import go.graphics.SharedTexture;
-import go.graphics.TextureHandle;
 
 import java.awt.image.BufferedImage;
 
@@ -159,7 +158,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	private void checkStaticHandles(GLDrawContext gl) throws IllegalBufferException {
 		checkHandles(gl);
 		if(buildHandle == null || !buildHandle.isValid()) {
-			buildHandle = gl.generateGeometry(3, EGeometryFormatType.Texture2D, true, "building-progress");
+			buildHandle = gl.generateBuffer(3, EBufferFormatType.Texture2D, true, "building-progress");
 		}
 	}
 
@@ -167,7 +166,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return SharedGeometry.createQuadGeometry(toffsetX, -toffsetY, toffsetX + twidth, -toffsetY - theight, texture.x, texture.y, texture.x+texture.width, texture.y+texture.height);
 	}
 
-	private static GeometryHandle buildHandle = null;
+	private static BufferHandle buildHandle = null;
 	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
 
 	/**
@@ -188,7 +187,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * @param color
 	 */
 	public void drawTriangle(GLDrawContext gl, float viewX,
-			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, float color) {
+			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, float z, float color) {
 		try {
 			checkStaticHandles(gl);
 			float left = toffsetX + viewX;
@@ -222,8 +221,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 					texture.y+v3*texture.height,
 
 			});
-			gl.updateGeometryAt(buildHandle, 0, buildBfr);
-			gl.draw2D(buildHandle, texture.texture, EGeometryType.Triangle, 0, 3, left, top, 0, 1, 1, 1, null, color);
+			gl.updateBufferAt(buildHandle, 0, buildBfr);
+			gl.draw2D(buildHandle, texture.texture, EGeometryType.Triangle, 0, 3, left, top, z, 1, 1, 1, null, color);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

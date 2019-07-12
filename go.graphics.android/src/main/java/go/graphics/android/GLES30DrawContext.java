@@ -9,7 +9,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import go.graphics.AbstractColor;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
@@ -32,7 +32,7 @@ public class GLES30DrawContext extends GLES20DrawContext {
 	private static final FloatBuffer floats400 = ByteBuffer.allocateDirect(400*4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
 	@Override
-	public void drawUnified2DArray(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
+	public void drawUnified2DArray(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
 		useProgram(prog_unified_array);
 		bindTexture(texture);
 

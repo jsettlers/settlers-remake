@@ -12,9 +12,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import go.graphics.AbstractColor;
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.GL2DrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.SharedDrawing;
 import go.graphics.TextureHandle;
@@ -57,7 +57,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private float clr, clg, clb, cla, tlr, tlg, tlb, tla;
 
 	@Override
-	public void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
+	public void draw2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
 		boolean changeColor = false;
 
 		float r, g, b, a;
@@ -110,7 +110,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private boolean ulim, ulsh;
 
 	@Override
-	public void drawUnified2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
+	public void drawUnified2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
 		useProgram(prog_unified);
 		bindTexture(texture);
 
@@ -153,7 +153,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	}
 
 	@Override
-	public void drawUnified2DArray(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
+	public void drawUnified2DArray(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
 		for (int i = 0; i != count; i++) {
 			drawUnified2D(geometry, texture, primitive, offset, vertices, image, shadow, x[i], y[i], z[i], 1, 1, 1, color[i], intensity[i]);
 		}
@@ -168,7 +168,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	}
 
 	@Override
-	protected void specifyFormat(EGeometryFormatType format) {
+	protected void specifyFormat(EBufferFormatType format) {
 		GLES20.glEnableVertexAttribArray(0);
 
 		if (format.getTexCoordPos() == -1) {
@@ -182,8 +182,8 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	}
 
 	@Override
-	GeometryHandle allocateVBO(EGeometryFormatType type) {
-		GeometryHandle geometry =  super.allocateVBO(type);
+	BufferHandle allocateVBO(EBufferFormatType type) {
+		BufferHandle geometry =  super.allocateVBO(type);
 		if (gles3 && type.isSingleBuffer()) {
 			int[] vaos = new int[] {0};
 			GLES30.glGenVertexArrays(1, vaos, 0);
@@ -243,7 +243,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 	private int[] backgroundVAO = new int[] {-1};
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle shapeHandle, GeometryHandle colorHandle, int offset, int lines, int width, int stride) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, BufferHandle shapeHandle, BufferHandle colorHandle, int offset, int lines, int width, int stride) {
 		bindTexture(textureid);
 
 		if(backgroundVAO[0] == -1) {

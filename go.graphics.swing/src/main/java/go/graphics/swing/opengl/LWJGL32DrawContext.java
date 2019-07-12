@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GLCapabilities;
 
 import go.graphics.GL32DrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.TextureHandle;
 
 public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawContext {
@@ -29,7 +29,7 @@ public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawCo
 	private ShaderProgram prog_multi;
 
 	@Override
-	public void drawMultiUnified2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
+	public void drawMultiUnified2D(TextureHandle texture, BufferHandle geometry, BufferHandle drawCalls, int drawCallCount) {
 		bindTexture(texture);
 		useProgram(prog_multi);
 
@@ -46,7 +46,7 @@ public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawCo
 		GL20.glVertexAttribPointer(2, 1, GL11.GL_FLOAT, false, call_size, 7 * 4);
 		GL20.glVertexAttribPointer(3, 1, GL11.GL_FLOAT, false, call_size, 8 * 4);
 
-		GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, geometry.getInternalId());
+		GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, geometry.getBufferId());
 
 		GL11.glDrawArrays(GL11.GL_POINTS, 0, drawCallCount);
 		bindFormat(0);

@@ -19,11 +19,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 
-import go.graphics.AdvancedUpdateGeometryCache;
-import go.graphics.EGeometryFormatType;
+import go.graphics.AdvancedUpdateBufferCache;
+import go.graphics.EBufferFormatType;
 import go.graphics.GL2DrawContext;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
@@ -38,7 +38,7 @@ import jsettlers.graphics.image.reader.DatBitmapReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.ImageArrayProvider;
 import jsettlers.graphics.image.reader.ImageMetadata;
-import go.graphics.UpdateGeometryCache;
+import go.graphics.UpdateBufferCache;
 
 /**
  * The map background.
@@ -850,8 +850,8 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private static TextureHandle texture = null;
 
-	private GeometryHandle shapeHandle = null;
-	private GeometryHandle colorHandle = null;
+	private BufferHandle shapeHandle = null;
+	private BufferHandle colorHandle = null;
 
 	private boolean hasdgp;
 	private IDirectGridProvider dgp;
@@ -1188,7 +1188,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 		if(asyncBufferBuilding) {
 			color_bfr2 = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferHeight*bufferWidth).order(ByteOrder.nativeOrder());
-			color_cache2 = new AdvancedUpdateGeometryCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle, bufferWidth);
+			color_cache2 = new AdvancedUpdateBufferCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle, bufferWidth);
 			asyncAccessContext = context;
 		} else {
 			color_bfr2 = null;
@@ -1233,8 +1233,8 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
 		int vertices = bufferWidth*bufferHeight*3*2;
-		shapeHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Texture3D, false, "background-shape");
-		colorHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.ColorOnly, true, "background-color");
+		shapeHandle = context.getGl().generateBuffer(vertices, EBufferFormatType.Texture3D, false, "background-shape");
+		colorHandle = context.getGl().generateBuffer(vertices, EBufferFormatType.ColorOnly, true, "background-color");
 
 		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
 		color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
@@ -1244,7 +1244,7 @@ public class Background implements IGraphicsBackgroundListener {
 				addTrianglesToGeometry(context, shape_bfr, x, y);
 			}
 			shape_bfr.rewind();
-			context.getGl().updateGeometryAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
+			context.getGl().updateBufferAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 		}
 		fowEnabled = hasdgp && dgp.isFoWEnabled();
 
@@ -1253,20 +1253,20 @@ public class Background implements IGraphicsBackgroundListener {
 				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
 			color_bfr.rewind();
-			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR * bufferWidth * y, color_bfr);
+			context.getGl().updateBufferAt(colorHandle, BYTES_PER_FIELD_COLOR * bufferWidth * y, color_bfr);
 		}
 
 		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
 
 		if (!asyncBufferBuilding) {
-			color_cache = new UpdateGeometryCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
+			color_cache = new UpdateBufferCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
 		}
 		context.getMap().setBackgroundListener(this);
 	}
 
-	private AdvancedUpdateGeometryCache color_cache2;
+	private AdvancedUpdateBufferCache color_cache2;
 	private final ByteBuffer color_bfr2;
-	private UpdateGeometryCache color_cache;
+	private UpdateBufferCache color_cache;
 	private ByteBuffer shape_bfr;
 	private ByteBuffer color_bfr;
 
@@ -1324,7 +1324,7 @@ public class Background implements IGraphicsBackgroundListener {
 							shape_bfr.rewind();
 							addTrianglesToGeometry(context, shape_bfr, x, y);
 							shape_bfr.rewind();
-							context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
+							context.getGl().updateBufferAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
 						}
 						bfr_pos++;
 					}

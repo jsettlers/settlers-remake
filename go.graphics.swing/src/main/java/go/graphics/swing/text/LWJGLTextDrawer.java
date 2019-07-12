@@ -18,9 +18,9 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import go.graphics.AbstractColor;
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.SharedGeometry;
 import go.graphics.TextureHandle;
 import go.graphics.swing.opengl.LWJGL15DrawContext;
@@ -50,7 +50,7 @@ public final class LWJGLTextDrawer {
 	private static final int    DEFAULT_DPI = 96;
 	private static final float  SCALING_FACTOR = calculateScalingFactor();
 
-	private GeometryHandle geometry;
+	private BufferHandle geometry;
 	private TextureHandle font_tex;
 	private final int gentex_line_height;
 	private int tex_height;
@@ -164,7 +164,7 @@ public final class LWJGLTextDrawer {
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
-		geometry = drawContext.storeGeometry(geodata, EGeometryFormatType.Texture2D, false, font.getName());
+		geometry = drawContext.storeBuffer(geodata, EBufferFormatType.Texture2D, false, font.getName());
 	}
 
 	public TextDrawer derive(EFontSize size) {

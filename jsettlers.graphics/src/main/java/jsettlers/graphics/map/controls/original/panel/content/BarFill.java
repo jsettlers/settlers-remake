@@ -14,13 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
 import jsettlers.common.images.EImageLinkType;
@@ -53,7 +50,7 @@ public class BarFill extends UIPanel {
 		setBackground(barImageLink);
 	}
 
-	private static GeometryHandle geometry = null;
+	private static BufferHandle geometry = null;
 
 	private static final Color barColor = new Color(0, .78f, .78f, 1);
 
@@ -63,7 +60,7 @@ public class BarFill extends UIPanel {
 		float fillX = barFillPercentage < .01f ? 0 : barFillPercentage > .99f ? 1 : EMPTY_X * (1 - barFillPercentage) + FULL_X * barFillPercentage;
 
 		try {
-			if (geometry == null || !geometry.isValid()) geometry = gl.storeGeometry(new float[] {0, 0, 0, 1, 1, 1, 1, 0}, EGeometryFormatType.VertexOnly2D, false, "barfill");
+			if (geometry == null || !geometry.isValid()) geometry = gl.storeBuffer(new float[] {0, 0, 0, 1, 1, 1, 1, 0}, EBufferFormatType.VertexOnly2D, false, "barfill");
 			gl.draw2D(geometry, null, EGeometryType.Quad, 0, 4, position.getMinX(), position.getMinY(), 0, position.getWidth()*fillX, position.getHeight(), 1, barColor, 1);
 		} catch(IllegalBufferException ex) {
 			ex.printStackTrace();

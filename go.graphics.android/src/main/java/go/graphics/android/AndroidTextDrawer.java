@@ -19,9 +19,9 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import go.graphics.AbstractColor;
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.TextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -73,7 +73,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private TextView renderer;
 	private float pixelScale;
-	private GeometryHandle texturepos;
+	private BufferHandle texturepos;
 
 	private static final float[] textureposarray = {
 			// top left
@@ -148,7 +148,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			updateBfr.putFloat(7*4, bottom);
 			updateBfr.putFloat(11*4, bottom);
 			updateBfr.putFloat(15*4, top);
-			context.updateGeometryAt(texturepos, 0, updateBfr);
+			context.updateBufferAt(texturepos, 0, updateBfr);
 
 			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4, x, y, 0f, 1f, 1f, 1f, color, 1);
 		}
@@ -251,7 +251,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private void initGeometry() {
 		if(texturepos == null || !texturepos.isValid()) {
-			texturepos = context.storeGeometry(textureposarray, EGeometryFormatType.Texture2D, true, "android-textdrawer" + size.getSize());
+			texturepos = context.storeBuffer(textureposarray, EBufferFormatType.Texture2D, true, "android-textdrawer" + size.getSize());
 			updateBfr.asFloatBuffer().put(textureposarray);
 		}
 	}
@@ -269,7 +269,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 			updateBfr.putFloat(1*4, lineheight);
 			updateBfr.putFloat(13*4, lineheight);
-			context.updateGeometryAt(texturepos, 0, updateBfr);
+			context.updateBufferAt(texturepos, 0, updateBfr);
 		}
 		initGeometry();
 	}

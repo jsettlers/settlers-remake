@@ -26,7 +26,7 @@ import java.nio.ShortBuffer;
  * @author michael
  */
 public interface GLDrawContext {
-	void draw2D(GeometryHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) throws IllegalBufferException;
+	void draw2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) throws IllegalBufferException;
 
 	/**
 	 * Returns a texture id which is positive or 0. It returns a negative number on error.
@@ -41,7 +41,7 @@ public interface GLDrawContext {
 	 */
 	TextureHandle generateTexture(int width, int height, ShortBuffer data, String name);
 
-	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle vertexHandle, GeometryHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, BufferHandle vertexHandle, BufferHandle paintHandle, int offset, int lines, int width, int stride) throws IllegalBufferException;
 
 	void setHeightMatrix(float[] matrix);
 
@@ -63,11 +63,11 @@ public interface GLDrawContext {
 
 	TextDrawer getTextDrawer(EFontSize size);
 
-	GeometryHandle storeGeometry(float[] geometry, EGeometryFormatType type, boolean writable, String name);
+	BufferHandle storeBuffer(float[] buffer, EBufferFormatType type, boolean writable, String name);
 
-	void updateGeometryAt(GeometryHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
+	void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
-	GeometryHandle generateGeometry(int vertices, EGeometryFormatType type, boolean writable, String name);
+	BufferHandle generateBuffer(int vertices, EBufferFormatType type, boolean writable, String name);
 
 	boolean isValid();
 

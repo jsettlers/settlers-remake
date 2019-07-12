@@ -7,12 +7,12 @@ import java.util.List;
 
 public class SharedDrawing {
 
-	private static final int BYTES_PER_DRAW_CALL = EGeometryFormatType.UnifiedDrawInfo.getBytesPerVertexSize();
+	private static final int BYTES_PER_DRAW_CALL = EBufferFormatType.UnifiedDrawInfo.getBytesPerVertexSize();
 	private static final AbstractColor WHITE = new AbstractColor(0, 1, 1, 1, 1) {};
 	private static final int CAPACITY = 1000;
 
 	private static GLDrawContext staticdc = null;
-	private static GeometryHandle drawCallBufferHandle;
+	private static BufferHandle drawCallBufferHandle;
 
 	private static SharedTexture static_texture;
 	private static SharedGeometry static_geometry;
@@ -53,7 +53,7 @@ public class SharedDrawing {
 	private static void setup(GLDrawContext dc) {
 		if(staticdc != dc) {
 			staticdc = dc;
-			if(staticdc instanceof GL32DrawContext) drawCallBufferHandle = staticdc.generateGeometry(CAPACITY, EGeometryFormatType.UnifiedDrawInfo, true, "shared-unified");
+			if(staticdc instanceof GL32DrawContext) drawCallBufferHandle = staticdc.generateBuffer(CAPACITY, EBufferFormatType.UnifiedDrawInfo, true, "shared-unified");
 		}
 	}
 
@@ -69,7 +69,7 @@ public class SharedDrawing {
 
 		try {
 			drawCalls.rewind();
-			staticdc.updateGeometryAt(drawCallBufferHandle, 0, drawCalls);
+			staticdc.updateBufferAt(drawCallBufferHandle, 0, drawCalls);
 
 			((GL32DrawContext)staticdc).drawMultiUnified2D(static_texture.texture, static_geometry.geometry, drawCallBufferHandle, drawCallCount);
 			drawCallCount = 0;
@@ -86,7 +86,7 @@ public class SharedDrawing {
 	private final boolean image;
 	private final boolean shadow;
 	private TextureHandle texture;
-	private GeometryHandle geometry;
+	private BufferHandle geometry;
 	private int primitive_type;
 	private int vertex_offset;
 	private int vertex_count;
@@ -104,7 +104,7 @@ public class SharedDrawing {
 		this.shadow = shadow;
 	}
 
-	public void setContent(GLDrawContext dc, TextureHandle texture, GeometryHandle geometry, int primitive, int offset, int count) {
+	public void setContent(GLDrawContext dc, TextureHandle texture, BufferHandle geometry, int primitive, int offset, int count) {
 		setup(dc);
 
 		this.texture = texture;

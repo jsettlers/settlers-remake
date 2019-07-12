@@ -39,16 +39,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import go.graphics.EGeometryFormatType;
+import go.graphics.EBufferFormatType;
 import go.graphics.EGeometryType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
@@ -461,17 +460,17 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 			return maxHeight;
 		}
 
-		private GeometryHandle lineGeometry = null;
+		private BufferHandle lineGeometry = null;
 		private ByteBuffer lineBfr = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder());
 
 		private void drawImage(GLDrawContext gl2, int x, int y, int index, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateGeometry(3, EGeometryFormatType.VertexOnly2D, true, null);
+			if(lineGeometry == null) lineGeometry = gl2.generateBuffer(3, EBufferFormatType.VertexOnly2D, true, null);
 
 			try {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), -image.getOffsetX(), image.getHeight() + image.getOffsetY()}, 0, 3);
-				gl2.updateGeometryAt(lineGeometry, 3*4, lineBfr);
+				gl2.updateBufferAt(lineGeometry, 3*4, lineBfr);
 
 				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, Color.RED, 1);
 			} catch (IllegalBufferException e) {

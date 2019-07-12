@@ -3,17 +3,16 @@ package go.graphics;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class SharedGeometry {
 
-	static final int CAPACITY = 1000;
+	private static final int CAPACITY = 1000;
 	private static final int QUAD_SIZE = 4*4*4;
 	private static int maxIndex = 0;
 
 	private int size = 0;
 	private int index;
-	public GeometryHandle geometry;
+	public BufferHandle geometry;
 	private static final ByteBuffer generate_buffer = ByteBuffer.allocateDirect(QUAD_SIZE).order(ByteOrder.nativeOrder());
 
 	private static final ArrayList<SharedGeometry> geometries = new ArrayList<>();
@@ -32,7 +31,7 @@ public class SharedGeometry {
 			if (geometry.size < CAPACITY) {
 				// add it to our vbo
 				generate_buffer.asFloatBuffer().put(data);
-				dc.updateGeometryAt(geometry.geometry, QUAD_SIZE*geometry.size, generate_buffer);
+				dc.updateBufferAt(geometry.geometry, QUAD_SIZE*geometry.size, generate_buffer);
 
 				geometry.size++;
 				return new SharedGeometryHandle(geometry);
@@ -43,7 +42,7 @@ public class SharedGeometry {
 	}
 
 	public static class SharedGeometryHandle {
-		public final GeometryHandle geometry;
+		public final BufferHandle geometry;
 		public final SharedGeometry parent;
 		public final int index;
 		private final int iteration = SharedGeometry.iteration;
@@ -71,7 +70,7 @@ public class SharedGeometry {
 	private SharedGeometry(GLDrawContext dc, int index) {
 		this.index = index;
 		if(index > 1) System.err.println("SharedGeometry count > SharedGeometry.CAPACITY - try increasing CAPACITY");
-		geometry = dc.generateGeometry(CAPACITY*4, EGeometryFormatType.Texture2D, true, "sharedgeometry-" + index);
+		geometry = dc.generateBuffer(CAPACITY*4, EBufferFormatType.Texture2D, true, "sharedgeometry-" + index);
 	}
 
 

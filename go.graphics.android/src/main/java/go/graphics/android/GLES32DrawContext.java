@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLES31;
 
 import go.graphics.GL32DrawContext;
-import go.graphics.GeometryHandle;
+import go.graphics.BufferHandle;
 import go.graphics.TextureHandle;
 
 public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawContext {
@@ -27,7 +27,7 @@ public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawCont
 	private ShaderProgram prog_multi;
 
 	@Override
-	public void drawMultiUnified2D(TextureHandle texture, GeometryHandle geometry, GeometryHandle drawCalls, int drawCallCount) {
+	public void drawMultiUnified2D(TextureHandle texture, BufferHandle geometry, BufferHandle drawCalls, int drawCallCount) {
 		bindTexture(texture);
 		useProgram(prog_multi);
 
@@ -44,7 +44,7 @@ public class GLES32DrawContext extends GLES20DrawContext implements GL32DrawCont
 		GLES31.glVertexAttribPointer(2, 1, GLES31.GL_FLOAT, false, call_size, 7 * 4);
 		GLES31.glVertexAttribPointer(3, 1, GLES31.GL_FLOAT, false, call_size, 8 * 4);
 
-		GLES31.glBindBufferBase(GLES31.GL_UNIFORM_BUFFER, 0, geometry.getInternalId());
+		GLES31.glBindBufferBase(GLES31.GL_UNIFORM_BUFFER, 0, geometry.getBufferId());
 		GLES31.glDrawArrays(GLES31.GL_POINTS, 0, drawCallCount);
 		bindFormat(0);
 	}
