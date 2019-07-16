@@ -47,6 +47,7 @@ public class WGLContextCreator extends JAWTContextCreator {
 					WGLARBCreateContext.WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 					WGLARBCreateContext.WGL_CONTEXT_MINOR_VERSION_ARB, 2,
 					WGLARBCreateContextProfile.WGL_CONTEXT_PROFILE_MASK_ARB, WGLARBCreateContextProfile.WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+					0
 			}
 		},
 

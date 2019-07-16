@@ -35,7 +35,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 	public void actionPerformed(ActionEvent actionEvent) {
 		super.actionPerformed(actionEvent);
 
-		if(actionEvent.getActionCommand() == "comboBoxChanged") {
+		if(actionEvent.getActionCommand().equals("comboBoxChanged")) {
 			EBackendType bi = (EBackendType) getSelectedItem();
 			if (bi.platform != null && bi.platform != Platform.get()) {
 				setSelectedItem(current_item);
@@ -61,7 +61,6 @@ public class BackendSelector extends JComboBox<EBackendType> {
 	}
 
 	public static EBackendType getBackendByName(String name) {
-		// matching and matching and suitable backends
 		return availableBackends().filter(backend -> backend.cc_name.equalsIgnoreCase(name)).findFirst().orElse(EBackendType.DEFAULT);
 	}
 
@@ -69,8 +68,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 		EBackendType real_backend = backend;
 
 		if(backend == null || backend.cc_class == null) {
-			// first of all usable and suitable backends sorted for being default
-			real_backend = availableBackends().filter(current_backend -> current_backend.cc_class != null).sorted().findFirst().orElse(FALLBACK_BACKEND);
+			real_backend = availableBackends().filter(current_backend -> current_backend.default_for == Platform.get()).sorted().findFirst().orElse(FALLBACK_BACKEND);
 		}
 
 		return real_backend.cc_class.getConstructor(GLContainer.class, Boolean.TYPE).newInstance(container, debug);
