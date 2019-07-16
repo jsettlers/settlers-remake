@@ -20,10 +20,8 @@ import java.nio.ByteOrder;
 import java.util.BitSet;
 
 import go.graphics.AdvancedUpdateBufferCache;
-import go.graphics.EBufferFormatType;
-import go.graphics.GL2DrawContext;
+import go.graphics.BackgroundDrawHandle;
 import go.graphics.GLDrawContext;
-import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
@@ -850,8 +848,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private static TextureHandle texture = null;
 
-	private BufferHandle shapeHandle = null;
-	private BufferHandle colorHandle = null;
+	private BackgroundDrawHandle backgroundHandle = null;
 
 	private boolean hasdgp;
 	private IDirectGridProvider dgp;
@@ -860,7 +857,6 @@ public class Background implements IGraphicsBackgroundListener {
 	private BitSet fowWritten;
 	private boolean fowEnabled;
 
-	private boolean useFloatColors;
 	private boolean updateGeometry = false;
 	private BitSet mapInvalid;
 	private int mapWidth, mapHeight;
@@ -1188,17 +1184,14 @@ public class Background implements IGraphicsBackgroundListener {
 
 		if(asyncBufferBuilding) {
 			color_bfr2 = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferHeight*bufferWidth).order(ByteOrder.nativeOrder());
-			color_cache2 = new AdvancedUpdateBufferCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle, bufferWidth);
+			color_cache2 = new AdvancedUpdateBufferCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> backgroundHandle.colors, bufferWidth);
 			asyncAccessContext = context;
 		} else {
 			color_bfr2 = null;
 			fowWritten = new BitSet(mapWidth*mapHeight);
 		}
 		mapInvalid = new BitSet(bufferWidth*bufferHeight);
-		draw_stride = (2*bufferWidth)+1;
 	}
-
-	private int draw_stride;
 
 	private MapDrawContext asyncAccessContext;
 
@@ -1211,30 +1204,31 @@ public class Background implements IGraphicsBackgroundListener {
 	 *            The area to draw
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
+		GLDrawContext gl = context.getGl();
 		try {
-			GLDrawContext gl = context.getGl();
-			if(shapeHandle == null || !shapeHandle.isValid()) {
-				useFloatColors = (gl instanceof GL2DrawContext);
+			if(backgroundHandle == null || !backgroundHandle.isValid()) {
 				generateGeometry(context);
 				context.getGl().setHeightMatrix(context.getConverter().getMatrixWithHeight());
 			}
-
-			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			int offset = screenArea.getMinY() * bufferWidth + screenArea.getMinX();
-
-			updateGeometry(context, screenArea);
-
-			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset * 2, screenArea.getHeight(), screenArea.getWidth() * 2, draw_stride);
 		} catch (IllegalBufferException e) {
 			// TODO: Create crash report.
 			e.printStackTrace();
 		}
+
+		MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
+
+		updateGeometry(context, screenArea);
+
+		backgroundHandle.offset = (screenArea.getMinY() * bufferWidth + screenArea.getMinX())*2;
+		backgroundHandle.lines = screenArea.getHeight();
+		backgroundHandle.width = screenArea.getWidth()*2;
+		gl.drawBackground(backgroundHandle);
 	}
 
 	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
 		int vertices = bufferWidth*bufferHeight*3*2;
-		shapeHandle = context.getGl().generateBuffer(vertices, EBufferFormatType.Texture3D, false, "background-shape");
-		colorHandle = context.getGl().generateBuffer(vertices, EBufferFormatType.ColorOnly, true, "background-color");
+		backgroundHandle = context.getGl().createBackgroundDrawCall(vertices, getTexture(context.getGl()));
+		backgroundHandle.stride = (2*bufferWidth)+1;
 
 		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
 		color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
@@ -1244,7 +1238,7 @@ public class Background implements IGraphicsBackgroundListener {
 				addTrianglesToGeometry(context, shape_bfr, x, y);
 			}
 			shape_bfr.rewind();
-			context.getGl().updateBufferAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
+			context.getGl().updateBufferAt(backgroundHandle.vertices, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 		}
 		fowEnabled = hasdgp && dgp.isFoWEnabled();
 
@@ -1253,13 +1247,13 @@ public class Background implements IGraphicsBackgroundListener {
 				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
 			color_bfr.rewind();
-			context.getGl().updateBufferAt(colorHandle, BYTES_PER_FIELD_COLOR * bufferWidth * y, color_bfr);
+			context.getGl().updateBufferAt(backgroundHandle.colors, BYTES_PER_FIELD_COLOR * bufferWidth * y, color_bfr);
 		}
 
 		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
 
 		if (!asyncBufferBuilding) {
-			color_cache = new UpdateBufferCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> colorHandle);
+			color_cache = new UpdateBufferCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> backgroundHandle.colors);
 		}
 		context.getMap().setBackgroundListener(this);
 	}
@@ -1324,7 +1318,7 @@ public class Background implements IGraphicsBackgroundListener {
 							shape_bfr.rewind();
 							addTrianglesToGeometry(context, shape_bfr, x, y);
 							shape_bfr.rewind();
-							context.getGl().updateBufferAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
+							context.getGl().updateBufferAt(backgroundHandle.vertices, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
 						}
 						bfr_pos++;
 					}
@@ -1452,17 +1446,7 @@ public class Background implements IGraphicsBackgroundListener {
 			if(fowEnabled) fColor *= dgpVisibleStatus[x][y] / (float)CommonConstants.FOG_OF_WAR_VISIBLE;
 		}
 
-		if(useFloatColors) {
-			buffer.putFloat(fColor);
-		} else {
-			byte color;
-			fColor *= 255f;
-			color = (byte) (int) fColor;
-			buffer.put(color);
-			buffer.put(color);
-			buffer.put(color);
-			buffer.put((byte) 255);
-		}
+		buffer.putFloat(fColor);
 	}
 
 	private static int realModulo(int number, int modulo) {

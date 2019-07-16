@@ -40,11 +40,10 @@ public class LWJGL32DrawContext extends LWJGL20DrawContext implements GL32DrawCo
 		GL20.glEnableVertexAttribArray(2);
 		GL20.glEnableVertexAttribArray(3);
 
-		int call_size = drawCalls.getFormat().getBytesPerVertexSize();
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, call_size, 0);
-		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, call_size, 3 * 4);
-		GL20.glVertexAttribPointer(2, 1, GL11.GL_FLOAT, false, call_size, 7 * 4);
-		GL20.glVertexAttribPointer(3, 1, GL11.GL_FLOAT, false, call_size, 8 * 4);
+		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 9*4, 0);
+		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, 9*4, 3 * 4);
+		GL20.glVertexAttribPointer(2, 1, GL11.GL_FLOAT, false, 9*4, 7 * 4);
+		GL20.glVertexAttribPointer(3, 1, GL11.GL_FLOAT, false, 9*4, 8 * 4);
 
 		GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, geometry.getBufferId());
 

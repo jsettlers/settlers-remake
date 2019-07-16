@@ -18,16 +18,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
-import go.graphics.SharedGeometry;
-import go.graphics.SharedTexture;
+import go.graphics.ManagedUnifiedDrawHandle;
 
 import java.awt.image.BufferedImage;
 
+import go.graphics.UnifiedDrawHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -48,8 +46,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected final int offsetY;
 	protected String name;
 
-	protected SharedTexture.SharedTextureHandle texture = null;
-	protected SharedGeometry.SharedGeometryHandle geometryIndex = null;
+	protected ManagedUnifiedDrawHandle geometryIndex = null;
 
 	/**
 	 * Creates a new image by the given buffer.
@@ -124,7 +121,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			float sy = height/(float)theight;
 			float tx = x - offsetX*sx;
 			float ty = y + height + offsetY*sy;
-			gl.draw2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, tx, ty, 0, sx, sy, 0, null, 1);
+			geometryIndex.drawSimple(EPrimitiveType.Quad, tx, ty, 0, sx, sy, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -139,34 +136,26 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		try {
 			checkHandles(gl);
-			gl.draw2D(geometryIndex.geometry, texture.texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
+			geometryIndex.drawSimple(EPrimitiveType.Quad, x, y, z, 1, 1, null, 1);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
 	}
 
 	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
-		if(texture == null || SharedTexture.isInvalid(gl, texture)) {
-			texture = SharedTexture.addTexture(gl, tdata, twidth, theight);
-		}
-
-		if(geometryIndex == null || SharedGeometry.isInvalid(gl, geometryIndex)) {
-			geometryIndex = SharedGeometry.addGeometry(gl, getGeometry());
+		if(geometryIndex == null || !geometryIndex.isValid()) {
+			geometryIndex = gl.createManagedUnifiedDrawCall(tdata, toffsetX, toffsetY, twidth, theight);
 		}
 	}
 
 	private void checkStaticHandles(GLDrawContext gl) throws IllegalBufferException {
 		checkHandles(gl);
 		if(buildHandle == null || !buildHandle.isValid()) {
-			buildHandle = gl.generateBuffer(3, EBufferFormatType.Texture2D, true, "building-progress");
+			buildHandle = gl.createUnifiedDrawCall(3, "building-progress", geometryIndex.texture, null);
 		}
 	}
 
-	protected float[] getGeometry() {
-		return SharedGeometry.createQuadGeometry(toffsetX, -toffsetY, toffsetX + twidth, -toffsetY - theight, texture.x, texture.y, texture.x+texture.width, texture.y+texture.height);
-	}
-
-	private static BufferHandle buildHandle = null;
+	private static UnifiedDrawHandle buildHandle = null;
 	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
 
 	/**
@@ -207,22 +196,23 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			buildBfr.asFloatBuffer().put(new float[] {
 					u1 * twidth,
 					-v1 * theight,
-					texture.x+u1*texture.width,
-					texture.y+v1*texture.height,
+					geometryIndex.texX+u1*geometryIndex.texWidth,
+					geometryIndex.texY+v1*geometryIndex.texHeight,
 
 					u2 * twidth,
 					-v2 * theight,
-					texture.x+u2*texture.width,
-					texture.y+v2*texture.height,
+					geometryIndex.texX+u2*geometryIndex.texWidth,
+					geometryIndex.texY+v2*geometryIndex.texHeight,
 
 					u3 * twidth,
 					-v3 * theight,
-					texture.x+u3*texture.width,
-					texture.y+v3*texture.height,
+					geometryIndex.texX+u3*geometryIndex.texWidth,
+					geometryIndex.texY+v3*geometryIndex.texHeight,
 
 			});
-			gl.updateBufferAt(buildHandle, 0, buildBfr);
-			gl.draw2D(buildHandle, texture.texture, EGeometryType.Triangle, 0, 3, left, top, z, 1, 1, 1, null, color);
+			buildHandle.texture = geometryIndex.texture;
+			gl.updateBufferAt(buildHandle.vertices, 0, buildBfr);
+			buildHandle.drawSimple(EPrimitiveType.Triangle, left, top, z, 1, 1, null, color);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
@@ -256,5 +246,12 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		}
 		data.rewind();
 		return hashCode;
+	}
+
+	public void enableCaching(GLDrawContext dc) {
+		try {
+			checkHandles(dc);
+		} catch (IllegalBufferException e) {}
+		geometryIndex.enableCaching();
 	}
 }

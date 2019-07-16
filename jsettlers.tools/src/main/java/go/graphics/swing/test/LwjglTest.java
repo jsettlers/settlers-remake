@@ -14,12 +14,10 @@
  *******************************************************************************/
 package go.graphics.swing.test;
 
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.BufferHandle;
-import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
+import go.graphics.UnifiedDrawHandle;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
@@ -30,9 +28,6 @@ import go.graphics.event.mouse.GOPanEvent;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import javax.swing.JFrame;
 
@@ -115,25 +110,18 @@ public class LwjglTest {
 
 		private final Object pointLock = new Object();
 
-		private BufferHandle pointGeometry = null;
-		private ByteBuffer bfr = ByteBuffer.allocateDirect(4*2*2).order(ByteOrder.nativeOrder());
+		private static UnifiedDrawHandle pointGeometry = null;
 
 		@Override
 		public void drawContent(GLDrawContext gl2, int width, int height) {
 
 			if(point_index < 2) return;
 
-			if(pointGeometry == null) pointGeometry = gl2.generateBuffer(2, EBufferFormatType.VertexOnly2D, true, null);
+			if(pointGeometry == null || !pointGeometry.isValid()) pointGeometry = gl2.createUnifiedDrawCall(2, null, null, new float[] {0, 0, 1, 1});
 
 			synchronized (pointLock) {
-				try {
-					for (int i = 1; i != point_index; i++) {
-						bfr.asFloatBuffer().put(new float[]{pointx[i - 1], pointy[i - 1], pointx[i], pointy[i]});
-						gl2.updateBufferAt(pointGeometry, 0, bfr);
-						gl2.draw2D(pointGeometry, null, EGeometryType.LineStrip, 0, 2, 0, 0, 0, 1, 1, 1, null, 1);
-					}
-				} catch (IllegalBufferException ex) {
-					ex.printStackTrace();
+				for (int i = 1; i != point_index; i++) {
+					pointGeometry.drawSimple(EPrimitiveType.LineStrip, pointx[i-1], pointy[i-1], 0, pointx[i-1]-pointx[i], pointy[i-1]-pointy[i], null, 1);
 				}
 				pointx[0] = pointx[point_index-1];
 				pointy[0] = pointy[point_index-1];

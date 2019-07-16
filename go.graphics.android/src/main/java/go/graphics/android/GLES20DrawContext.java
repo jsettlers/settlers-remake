@@ -1,6 +1,7 @@
 package go.graphics.android;
 
 import android.content.Context;
+import android.opengl.GLES11;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
@@ -9,19 +10,42 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import go.graphics.AbstractColor;
-import go.graphics.EBufferFormatType;
-import go.graphics.GL2DrawContext;
+import go.graphics.BackgroundDrawHandle;
+import go.graphics.GLDrawContext;
 import go.graphics.BufferHandle;
-import go.graphics.IllegalBufferException;
-import go.graphics.SharedDrawing;
+import go.graphics.ManagedHandle;
+import go.graphics.MultiDrawHandle;
 import go.graphics.TextureHandle;
+import go.graphics.UnifiedDrawHandle;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
-public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawContext {
-	public GLES20DrawContext(Context ctx) {
-		super(ctx);
+@SuppressWarnings("WeakerAccess")
+public class GLES20DrawContext extends GLDrawContext {
+	private final Context context;
+	private BufferHandle lastGeometry = null;
+	private TextureHandle lastTexture = null;
+
+	GLES20DrawContext(Context ctx, boolean gles3, boolean gles32) {
+		this.context = ctx;
+		this.gles32 = gles32;
+		this.gles3 = gles3;
+		GLES11.glClearColor(0, 0, 0, 1);
+		GLES11.glPixelStorei(GLES11.GL_UNPACK_ALIGNMENT, 1);
+		GLES11.glEnable(GLES11.GL_BLEND);
+		GLES11.glBlendFunc(GLES11.GL_SRC_ALPHA, GLES11.GL_ONE_MINUS_SRC_ALPHA);
+
+		GLES11.glDepthFunc(GLES11.GL_LEQUAL);
+		GLES11.glEnable(GLES11.GL_DEPTH_TEST);
+
+		init();
 		Matrix.setIdentityM(global, 0);
 	}
 
@@ -29,174 +53,111 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 
 	private final float[] global = new float[16];
 	private final float[] mat = new float[16];
-	protected boolean gles3 = false;
+	private final boolean gles3;
+	private final boolean gles32;
 
-	@Override
 	public void init() {
 		shaders = new ArrayList<>();
 
+		if(gles32 && false) prog_unified_multi = new ShaderProgram("unified-multi");
+		if(gles3) prog_unified_array = new ShaderProgram("unified-array");
 		prog_background = new ShaderProgram("background");
-		prog_unified = new ShaderProgram("tex-unified");
-		prog_color = new ShaderProgram("color");
-		prog_tex = new ShaderProgram("tex");
+		prog_unified = new ShaderProgram("unified");
 	}
 
 	private ShaderProgram lastProgram = null;
-	protected void useProgram(ShaderProgram id) {
+	void useProgram(ShaderProgram id) {
 		if(id != lastProgram) {
 			GLES20.glUseProgram(id.program);
 			lastProgram = id;
 		}
 	}
 
+	private ShaderProgram prog_unified_multi = null;
+	private ShaderProgram prog_unified_array = null;
 	private ShaderProgram prog_background;
 	private ShaderProgram prog_unified;
-	private ShaderProgram prog_color;
-	private ShaderProgram prog_tex;
-
-	private float clr, clg, clb, cla, tlr, tlg, tlb, tla;
-
-	@Override
-	public void draw2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
-		boolean changeColor = false;
-
-		float r, g, b, a;
-		if(color != null) {
-			r = color.red;
-			g = color.green;
-			b = color.blue;
-			a = color.alpha;
-		} else {
-			r = g = b = a = 1;
-		}
-
-		if(texture == null) {
-			useProgram(prog_color);
-			if(clr != r || clg != g || clb != b || cla != a) {
-				clr = r;
-				clg = g;
-				clb = b;
-				cla = a;
-				changeColor = true;
-			}
-		} else {
-			bindTexture(texture);
-			useProgram(prog_tex);
-			if(tlr != r || tlg != g || tlb != b || tla != a) {
-				tlr = r;
-				tlg = g;
-				tlb = b;
-				tla = a;
-				changeColor = true;
-			}
-		}
-
-		GLES20.glUniform3fv(lastProgram.trans, 2, new float[] {x, y, z, sx, sy, sz}, 0);
-
-		if(changeColor) {
-			GLES20.glUniform4f(lastProgram.color, r, g, b, a);
-		}
-
-		if(gles3) {
-			if(lastFormat != geometry.vao) GLES30.glBindVertexArray(lastFormat = geometry.vao);
-		} else {
-			bindGeometry(geometry);
-			specifyFormat(geometry.getFormat());
-		}
-		GLES20.glDrawArrays(primitive, offset, vertices);
-	}
 
 	private float ulr, ulg, ulb, ula, uli;
-	private boolean ulim, ulsh;
+	private int ulm;
 
-	@Override
-	public void drawUnified2D(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float x, float y, float z, float sx, float sy, float sz, AbstractColor color, float intensity) {
-		useProgram(prog_unified);
+	/**
+	 * Returns a texture id which is positive or 0. It returns a negative number on error.
+	 *
+	 * @param width
+	 * @param height
+	 *            The height of the image.
+	 * @param data
+	 *            The data as array. It needs to have a length of width * height and each element is a color with: 4 bits red, 4 bits green, 4 bits
+	 *            blue and 4 bits alpha.
+	 * @return The id of the generated texture.
+	 */
+	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
+		int[] textureIndexes = new int[1];
+		GLES11.glGenTextures(1, textureIndexes, 0);
+		TextureHandle texture = new TextureHandle(this, textureIndexes[0]);
+
 		bindTexture(texture);
+		resizeTexture(texture, width, height, data);
 
-		if(image) {
-			float r, g, b, a;
-			if (color != null) {
-				r = color.red;
-				g = color.green;
-				b = color.blue;
-				a = color.alpha;
-			} else {
-				r = g = b = a = 1;
-			}
-
-			if(ulr != r || ulg != g || ulb != b || ula != a) {
-				ulr = r;
-				ulg = g;
-				ulb = b;
-				ula = a;
-				GLES20.glUniform4f(prog_unified.color, r, g, b, a);
-			}
-		}
-
-		if(ulim != image || ulsh != shadow || uli != intensity) {
-			GLES20.glUniform3f(prog_unified.uni_info, image?1:0, shadow?1:0, intensity);
-			ulim = image;
-			ulsh = shadow;
-			uli = intensity;
-		}
-
-		GLES20.glUniform3fv(lastProgram.trans, 2, new float[] {x, y, z, sx, sy, sz}, 0);
-
-		if(gles3) {
-			if(lastFormat != geometry.vao) GLES30.glBindVertexArray(lastFormat = geometry.vao);
-		} else {
-			bindGeometry(geometry);
-			specifyFormat(geometry.getFormat());
-		}
-		GLES20.glDrawArrays(primitive, offset, vertices);
+		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_MAG_FILTER, GLES11.GL_NEAREST);
+		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_MIN_FILTER, GLES11.GL_NEAREST);
+		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_WRAP_S, GLES11.GL_REPEAT);
+		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_WRAP_T, GLES11.GL_REPEAT);
+		return texture;
 	}
 
-	@Override
-	public void drawUnified2DArray(BufferHandle geometry, TextureHandle texture, int primitive, int offset, int vertices, boolean image, boolean shadow, float[] x, float[] y, float[] z, AbstractColor[] color, float[] intensity, int count) throws IllegalBufferException {
-		for (int i = 0; i != count; i++) {
-			drawUnified2D(geometry, texture, primitive, offset, vertices, image, shadow, x[i], y[i], z[i], 1, 1, 1, color[i], intensity[i]);
+	public void resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data) {
+		bindTexture(textureIndex);
+		GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_SHORT_4_4_4_4, data);
+	}
+
+	public void updateTexture(TextureHandle textureIndex, int left, int bottom,
+							  int width, int height, ShortBuffer data) {
+		bindTexture(textureIndex);
+		GLES11.glTexSubImage2D(GLES11.GL_TEXTURE_2D, 0, left, bottom, width, height,
+				GLES11.GL_RGBA, GLES11.GL_UNSIGNED_SHORT_4_4_4_4, data);
+	}
+
+	void bindTexture(TextureHandle texture) {
+		if (texture != lastTexture) {
+			int id = 0;
+			if (texture != null) {
+				id = texture.getTextureId();
+			}
+			GLES11.glBindTexture(GLES11.GL_TEXTURE_2D, id);
+			lastTexture = texture;
 		}
+	}
+
+	void bindGeometry(BufferHandle geometry) {
+		if(geometry != lastGeometry) {
+			int id = 0;
+			if(geometry != null) {
+				id = geometry.getBufferId();
+			}
+			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, id);
+			lastGeometry = geometry;
+		}
+	}
+
+	public TextDrawer getTextDrawer(EFontSize size) {
+		return AndroidTextDrawer.getInstance(size, this);
 	}
 
 	private int lastFormat = 0;
-	protected void bindFormat(int format) {
+	void bindFormat(int format) {
 		if(format != lastFormat) {
 			GLES30.glBindVertexArray(format);
 			lastFormat = format;
 		}
 	}
 
-	@Override
-	protected void specifyFormat(EBufferFormatType format) {
-		GLES20.glEnableVertexAttribArray(0);
-
-		if (format.getTexCoordPos() == -1) {
-			GLES20.glVertexAttribPointer(0, 2, GLES20.GL_FLOAT, false, 0, 0);
-		} else {
-			GLES20.glEnableVertexAttribArray(1);
-			int stride = format.getBytesPerVertexSize();
-			GLES20.glVertexAttribPointer(0, 2, GLES20.GL_FLOAT, false, stride, 0);
-			GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, stride, format.getTexCoordPos());
-		}
+	public void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) {
+		bindGeometry(handle);
+		GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, pos, data.remaining(), data);
 	}
 
-	@Override
-	BufferHandle allocateVBO(EBufferFormatType type) {
-		BufferHandle geometry =  super.allocateVBO(type);
-		if (gles3 && type.isSingleBuffer()) {
-			int[] vaos = new int[] {0};
-			GLES30.glGenVertexArrays(1, vaos, 0);
-			geometry.setInternalFormatId(vaos[0]);
-			bindFormat(vaos[0]);
-
-			specifyFormat(type);
-		}
-
-		return geometry;
-	}
-
-	@Override
 	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
 		finishFrame();
 
@@ -210,8 +171,7 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		}
 	}
 
-	@Override
-	public void reinit(int width, int height) {
+	void resize(int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
 
 		Matrix.setIdentityM(mat, 0);
@@ -234,44 +194,273 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		}
 	}
 
-	@Override
 	public void setHeightMatrix(float[] matrix) {
 		useProgram(prog_background);
 		GLES20.glUniformMatrix4fv(prog_background.height, 1, false, matrix, 0);
 	}
 
-	private int[] backgroundVAO = new int[] {-1};
+	Context getAndroidContext() {
+		return context;
+	}
+
+	public int genBuffer() {
+		int[] buffer = new int[1];
+		GLES20.glGenBuffers(1, buffer, 0);
+		return buffer[0];
+	}
+
+	public int genVertexArray() {
+		int[] vertexArray = new int[1];
+		GLES30.glGenVertexArrays(1, vertexArray, 0);
+		return  vertexArray[0];
+	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(TextureHandle textureid, BufferHandle shapeHandle, BufferHandle colorHandle, int offset, int lines, int width, int stride) {
-		bindTexture(textureid);
+	public BackgroundDrawHandle createBackgroundDrawCall(int vertices, TextureHandle texture) {
+		int vao = -1;
 
-		if(backgroundVAO[0] == -1) {
-			if(gles3) {
-				GLES30.glGenVertexArrays(1, backgroundVAO, 0);
-				bindFormat(backgroundVAO[0]);
-			}
-			GLES20.glEnableVertexAttribArray(0);
-			GLES20.glEnableVertexAttribArray(1);
-			GLES20.glEnableVertexAttribArray(2);
+		if(gles3) vao = genVertexArray();
 
-			bindGeometry(shapeHandle);
-			GLES20.glVertexAttribPointer(0, 3, GLES20.GL_FLOAT, false, 5 * 4, 0);
-			GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, 5 * 4, 3 * 4);
+		BufferHandle vertexBuffer = new BufferHandle(this, genBuffer());
+		BufferHandle colorBuffer = new BufferHandle(this, genBuffer());
 
-			bindGeometry(colorHandle);
-			GLES20.glVertexAttribPointer(2, 1, GLES20.GL_FLOAT, false, 0, 0);
+		bindGeometry(vertexBuffer);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, (vertices*5*4), null, GLES20.GL_DYNAMIC_DRAW);
+		bindGeometry(colorBuffer);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, (vertices*4), null, GLES20.GL_DYNAMIC_DRAW);
+
+		BackgroundDrawHandle handle = new BackgroundDrawHandle(this, vao, texture, vertexBuffer, colorBuffer);
+
+		if(gles3) {
+			bindFormat(vao);
+			fillBackgroundFormat(handle);
 		}
-		int starti = offset < 0 ? (int)Math.ceil(-offset/(float)stride) : 0;
 
-		useProgram(prog_background);
+		return handle;
+	}
 
-		bindFormat(backgroundVAO[0]);
-		for (int i = starti; i != lines; i++) {
-			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, (offset + stride * i) * 3, width * 3);
+	@Override
+	public UnifiedDrawHandle createUnifiedDrawCall(int vertices, String name, TextureHandle texture, float[] data) {
+		int vao = -1;
+
+		if(gles3) vao = genVertexArray();
+
+		BufferHandle vertexBuffer = new BufferHandle(this, genBuffer());
+
+		bindGeometry(vertexBuffer);
+		if(data != null) {
+			GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, data.length*4, FloatBuffer.wrap(data), GLES20.GL_STATIC_DRAW);
+		} else {
+			GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4*4, null, GLES20.GL_DYNAMIC_DRAW);
+		}
+
+		UnifiedDrawHandle handle = new UnifiedDrawHandle(this, vao, 0, vertices, texture, vertexBuffer);
+
+		if(gles3) {
+			bindFormat(vao);
+			fillUnifiedFormat(handle);
+		}
+
+		return handle;
+	}
+
+	@Override
+	protected MultiDrawHandle createMultiDrawCall(String name, ManagedHandle source) {
+		if(prog_unified_multi == null) return null;
+		int vao = -1;
+
+		if(gles3) vao = genVertexArray();
+
+		BufferHandle drawCalls = new BufferHandle(this, genBuffer());
+
+		bindGeometry(drawCalls);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, MultiDrawHandle.MAX_CACHE_ENTRIES*12*4, null, GLES20.GL_STREAM_DRAW);
+
+		MultiDrawHandle handle = new MultiDrawHandle(this, vao, MultiDrawHandle.MAX_CACHE_ENTRIES, source, drawCalls);
+
+		if(gles3) {
+			bindFormat(vao);
+			fillMultiFormat(handle);
+		}
+
+		return handle;
+	}
+
+	private void fillBackgroundFormat(BackgroundDrawHandle dh) {
+		GLES20.glEnableVertexAttribArray(0);
+		GLES20.glEnableVertexAttribArray(1);
+		GLES20.glEnableVertexAttribArray(2);
+
+		bindGeometry(dh.vertices);
+		GLES20.glVertexAttribPointer(0, 3, GLES20.GL_FLOAT, false, 5 * 4, 0);
+		GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, 5 * 4, 3 * 4);
+
+		bindGeometry(dh.colors);
+		GLES20.glVertexAttribPointer(2, 1, GLES20.GL_FLOAT, false, 0, 0);
+	}
+
+	private void fillUnifiedFormat(UnifiedDrawHandle uh) {
+		bindGeometry(uh.vertices);
+		GLES20.glEnableVertexAttribArray(0);
+
+		if(uh.texture!=null) {
+			GLES20.glEnableVertexAttribArray(1);
+
+			GLES20.glVertexAttribPointer(0, 2, GLES20.GL_FLOAT, false, 4 * 4, 0);
+			GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, 4 * 4, 2 * 4);
+		} else {
+			GLES20.glVertexAttribPointer(0, 2, GLES20.GL_FLOAT, false, 0, 0);
 		}
 	}
 
+	private void fillMultiFormat(MultiDrawHandle mh) {
+		GLES20.glEnableVertexAttribArray(0);
+		GLES20.glEnableVertexAttribArray(1);
+		GLES20.glEnableVertexAttribArray(2);
+		GLES20.glEnableVertexAttribArray(3);
+
+		bindGeometry(mh.drawCalls);
+		GLES20.glVertexAttribPointer(0, 3, GLES20.GL_FLOAT, false, 12*4, 0);
+		GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, 12*4, 3*4);
+		GLES20.glVertexAttribPointer(2, 4, GLES20.GL_FLOAT, false, 12*4, 5*4);
+		GLES20.glVertexAttribPointer(3, 3, GLES20.GL_FLOAT, false, 12*4, 9*4);
+	}
+
+	private boolean[] vertArrays = new boolean[3];
+
+	public void enableVertArrays(boolean... vertArrays) {
+		for(int i = 0;i != vertArrays.length; i++) {
+			if(vertArrays[i] != this.vertArrays[i]) {
+				if(vertArrays[i]) {
+					GLES20.glEnableVertexAttribArray(i);
+				} else {
+					GLES20.glDisableVertexAttribArray(i);
+				}
+			}
+		}
+
+		this.vertArrays = vertArrays;
+	}
+	protected void drawMulti(MultiDrawHandle call) {
+		bindTexture(call.sourceQuads.texture);
+
+		if(call.getVertexArrayId() != -1) {
+			bindFormat(call.getVertexArrayId());
+		} else {
+			enableVertArrays(true, true, true, true);
+			fillMultiFormat(call);
+		}
+
+		useProgram(prog_unified_multi);
+
+		GLES30.glBindBufferBase(GLES30.GL_UNIFORM_BUFFER, 0, call.sourceQuads.vertices.getBufferId());
+
+		GLES30.glDrawArrays(GLES30.GL_POINTS, 0, call.used);
+	}
+
+	public void drawUnifiedArray(UnifiedDrawHandle call, int primitive, int vertexCount, float[] trans, float[] colors, int array_len) {
+		if(call.texture != null) bindTexture(call.texture);
+
+		if(call.getVertexArrayId() != -1) {
+			bindFormat(call.getVertexArrayId());
+		} else {
+			enableVertArrays(true, call.texture!=null, false);
+			fillUnifiedFormat(call);
+		}
+
+		if(prog_unified_array != null) {
+			useProgram(prog_unified_array);
+
+			GLES20.glUniform4fv(prog_unified_array.color, array_len, colors, 0);
+			GLES20.glUniform4fv(prog_unified_array.trans, array_len, trans, 0);
+
+			GLES30.glDrawArraysInstanced(primitive, call.offset, vertexCount, array_len);
+		} else {
+			useProgram(prog_unified);
+
+			for (int i = 0; i != array_len; i++) {
+
+				float int_mode = trans[i*4+3]/10;
+				int mode = (int) Math.floor(int_mode);
+				float intensity = (int_mode-mode)*10-1;
+
+				GLES20.glUniform1i(prog_unified.mode, mode);
+				GLES20.glUniform1fv(prog_unified.color, 4, new float[] {colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3], intensity}, i * 4);
+				GLES20.glUniform3fv(prog_unified.trans, 2, trans, i * 4);
+
+				GLES20.glDrawArrays(primitive, call.offset, vertexCount);
+			}
+
+			ulr = -1;
+			ulm = -1;
+		}
+	}
+
+	@Override
+	public void drawUnified(UnifiedDrawHandle call, int primitive, int count, int mode, float x, float y, float z, float sx, float sy, AbstractColor color, float intensity) {
+		if(call.texture != null) bindTexture(call.texture);
+		useProgram(prog_unified);
+
+		if(call.getVertexArrayId() != -1) {
+			bindFormat(call.getVertexArrayId());
+		} else {
+			enableVertArrays(true, call.texture!=null, false);
+			fillUnifiedFormat(call);
+		}
+
+		float r, g, b, a;
+		if (color != null) {
+			r = color.red;
+			g = color.green;
+			b = color.blue;
+			a = color.alpha;
+		} else {
+			r = g = b = a = 1;
+		}
+
+		if(ulr != r || ulg != g || ulb != b || ula != a || uli != intensity) {
+			ulr = r;
+			ulg = g;
+			ulb = b;
+			ula = a;
+			uli = intensity;
+			GLES20.glUniform1fv(prog_unified.color, 5, new float[] {r, g, b, a, intensity}, 0);
+		}
+
+		if(ulm != mode) {
+			ulm = mode;
+			GLES20.glUniform1i(prog_unified.mode, mode);
+		}
+
+		GLES20.glUniform3fv(prog_unified.trans, 2, new float[] {x, y, z, sx, sy, 0}, 0);
+
+		GLES20.glDrawArrays(primitive, call.offset, count);
+	}
+
+	public void drawBackground(BackgroundDrawHandle handle) {
+		bindTexture(handle.texture);
+		useProgram(prog_background);
+		if(handle.getVertexArrayId() != -1) {
+			bindFormat(handle.getVertexArrayId());
+		} else {
+			enableVertArrays(true, true, true);
+			fillBackgroundFormat(handle);
+		}
+
+		int starti = handle.offset < 0 ? (int)Math.ceil(-handle.offset/(float)handle.stride) : 0;
+		int draw_lines = handle.lines-starti;
+
+		int[] firsts = new int[draw_lines];
+		int[] counts = new int[draw_lines];
+		for (int i = 0; i != draw_lines; i++) {
+			firsts[i] = (handle.offset + handle.stride * (i+starti)) * 3;
+		}
+		Arrays.fill(counts, handle.width*3);
+
+		for(int i = 0; i != draw_lines; i++) {
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, firsts[i], counts[i]);
+		}
+	}
 
 	protected class ShaderProgram  {
 		public final int program;
@@ -282,20 +471,18 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		public final int tex;
 		public final int color;
 		public final int height;
-		public final int uni_info;
+		public final int mode;
 		public final int shadow_depth;
+		public final int geometry_data;
 
-		protected ShaderProgram(String name) {
+		ShaderProgram(String name) {
 			int vertexShader = -1;
 			int geometryShader = -1;
 			int fragmentShader;
 
-			String vname = name;
-			if(name.contains("-")) vname = name.split("-")[0];
-
 			try {
-				vertexShader = createShader(vname+".vert", GLES20.GL_VERTEX_SHADER);
-				geometryShader = createShader(vname+".geom", 36313 /*GL_GEOMETRY_SHADER*/);
+				vertexShader = createShader(name+".vert", GLES20.GL_VERTEX_SHADER);
+				geometryShader = createShader(name+".geom", 36313 /*GL_GEOMETRY_SHADER*/);
 				fragmentShader = createShader(name+".frag", GLES20.GL_FRAGMENT_SHADER);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -341,8 +528,15 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 			tex = GLES20.glGetUniformLocation(program, "texHandle");
 			color = GLES20.glGetUniformLocation(program, "color");
 			height = GLES20.glGetUniformLocation(program, "height");
-			uni_info = GLES20.glGetUniformLocation(program, "uni_info");
+			mode = GLES20.glGetUniformLocation(program, "mode");
 			shadow_depth = GLES20.glGetUniformLocation(program, "shadow_depth");
+
+			if(gles3) {
+				geometry_data = GLES30.glGetUniformBlockIndex(program, "geometryDataBuffer");
+				if (geometry_data != -1) GLES30.glUniformBlockBinding(program, geometry_data, 0);
+			} else {
+				geometry_data = -1;
+			}
 
 			useProgram(this);
 			if(tex != -1) GLES20.glUniform1i(tex, 0);
@@ -401,15 +595,8 @@ public class GLES20DrawContext extends GLES11DrawContext implements GL2DrawConte
 		}
 	}
 
-	@Override
 	public void clearDepthBuffer() {
 		finishFrame();
-
-		super.clearDepthBuffer();
-	}
-
-	@Override
-	public void finishFrame() {
-		SharedDrawing.flush(this);
+		GLES11.glClear(GLES11.GL_DEPTH_BUFFER_BIT);
 	}
 }

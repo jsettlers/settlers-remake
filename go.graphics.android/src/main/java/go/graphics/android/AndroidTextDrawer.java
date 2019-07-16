@@ -16,13 +16,13 @@ package go.graphics.android;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 import go.graphics.AbstractColor;
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
-import go.graphics.BufferHandle;
+import go.graphics.EPrimitiveType;
 import go.graphics.TextureHandle;
+import go.graphics.UnifiedDrawHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -41,7 +41,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
-	private final GLES11DrawContext context;
+	private final GLES20DrawContext context;
 	private TextureHandle texture = null;
 	/**
 	 * The number of lines we use on our texture.
@@ -73,7 +73,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private TextView renderer;
 	private float pixelScale;
-	private BufferHandle texturepos;
+	private UnifiedDrawHandle texturepos;
 
 	private static final float[] textureposarray = {
 			// top left
@@ -101,11 +101,11 @@ public class AndroidTextDrawer implements TextDrawer {
 			0,
 	};
 
-	private AndroidTextDrawer(EFontSize size, GLES11DrawContext context) {
+	private AndroidTextDrawer(EFontSize size, GLES20DrawContext context) {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
-		initGeometry();
+		initialize();
 	}
 
 	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(textureposarray.length*4).order(ByteOrder.nativeOrder());
@@ -148,9 +148,9 @@ public class AndroidTextDrawer implements TextDrawer {
 			updateBfr.putFloat(7*4, bottom);
 			updateBfr.putFloat(11*4, bottom);
 			updateBfr.putFloat(15*4, top);
-			context.updateBufferAt(texturepos, 0, updateBfr);
+			context.updateBufferAt(texturepos.vertices, 0, updateBfr);
 
-			context.draw2D(texturepos, texture, EGeometryType.Quad, 0, 4, x, y, 0f, 1f, 1f, 1f, color, 1);
+			texturepos.drawSimple(EPrimitiveType.Quad, x, y, 0, 1, 1, color, 1);
 		}
 	}
 
@@ -228,17 +228,11 @@ public class AndroidTextDrawer implements TextDrawer {
 			int points = lineheight * TEXTURE_WIDTH;
 			ByteBuffer alpha8 = ByteBuffer.allocateDirect(points);
 			bitmap.copyPixelsToBuffer(alpha8);
-			ByteBuffer updateBuffer;
-			if(context instanceof GLES20DrawContext) {
-				updateBuffer = ByteBuffer.allocateDirect(points*4);
-				for(int i = 0;i != points;i++) {
-					updateBuffer.putInt(0xFFFFFF00|alpha8.get(i));
-				}
-			} else {
-				updateBuffer = alpha8;
+			ShortBuffer updateBuffer = ByteBuffer.allocateDirect(points*2).order(ByteOrder.nativeOrder()).asShortBuffer();
+			for(int i = 0;i != points;i++) {
+				updateBuffer.put(i, (short) (0xFFF0 | ((short)((alpha8.get(i)&0xFF)*15.0/255))));
 			}
-			updateBuffer.rewind();
-			context.updateFontTexture(texture, 0, line*lineheight, TEXTURE_WIDTH, lineheight, updateBuffer);
+			context.updateTexture(texture, 0, line*lineheight, TEXTURE_WIDTH, lineheight, updateBuffer);
 			lastLine = line;
 		}
 		lastused[firstLine] = lastUsedCount++;
@@ -249,16 +243,11 @@ public class AndroidTextDrawer implements TextDrawer {
 		return firstLine;
 	}
 
-	private void initGeometry() {
-		if(texturepos == null || !texturepos.isValid()) {
-			texturepos = context.storeBuffer(textureposarray, EBufferFormatType.Texture2D, true, "android-textdrawer" + size.getSize());
-			updateBfr.asFloatBuffer().put(textureposarray);
-		}
-	}
-
 	private void initialize() {
 		if (texture == null || !texture.isValid()) {
-			texture = context.generateFontTexture(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+
+			//ShortBuffer data = ByteBuffer.allocateDirect(TEXTURE_WIDTH * TEXTURE_HEIGHT * 4).asShortBuffer();
+			texture = context.generateTexture(TEXTURE_WIDTH, TEXTURE_HEIGHT, null, "font");
 			lineheight = (int) (getScaledSize() * 1.3);
 			lines = TEXTURE_HEIGHT / lineheight;
 			linestrings = new String[lines];
@@ -267,11 +256,12 @@ public class AndroidTextDrawer implements TextDrawer {
 			nextTile = new int[lines];
 			Arrays.fill(nextTile, -1);
 
+			texturepos = context.createUnifiedDrawCall(4, "android-textdrawer" + size.getSize(), texture, null);
+			updateBfr.asFloatBuffer().put(textureposarray);
 			updateBfr.putFloat(1*4, lineheight);
 			updateBfr.putFloat(13*4, lineheight);
-			context.updateBufferAt(texturepos, 0, updateBfr);
+			context.updateBufferAt(texturepos.vertices, 0, updateBfr);
 		}
-		initGeometry();
 	}
 
 	@Override
@@ -299,7 +289,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		return size.getSize() * pixelScale;
 	}
 
-	public static TextDrawer getInstance(EFontSize size, GLES11DrawContext context) {
+	public static TextDrawer getInstance(EFontSize size, GLES20DrawContext context) {
 		int ordinal = size.ordinal();
 		if (instances[ordinal] == null) {
 			instances[ordinal] = new AndroidTextDrawer(size, context);

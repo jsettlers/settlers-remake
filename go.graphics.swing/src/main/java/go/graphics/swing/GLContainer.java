@@ -16,7 +16,6 @@ import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.JAWTContextCreator;
-import go.graphics.swing.opengl.LWJGL15DrawContext;
 import go.graphics.swing.opengl.LWJGL20DrawContext;
 import go.graphics.swing.opengl.LWJGL32DrawContext;
 
@@ -24,7 +23,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 
 	protected ContextCreator cc;
-	protected LWJGL15DrawContext context;
+	protected LWJGL20DrawContext context;
 	private boolean debug;
 
 	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
@@ -45,6 +44,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 			JOptionPane.showMessageDialog(null, message+ "\nPress ok to exit", "Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		});
+		System.out.println(message);
 	}
 
 	public void resizeContext(int width, int height) {
@@ -57,17 +57,15 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 	public void wrapNewContext() {
 		if(cc instanceof JAWTContextCreator) ((JAWTContextCreator)cc).makeCurrent(true);
-		if(context != null) context.disposeAll();
+		if(context != null) context.invalidate();
 
 		GLCapabilities caps = GL.createCapabilities();
 
 		try {
-			if (caps.OpenGL31 && caps.GL_EXT_geometry_shader4) {
+			if(caps.OpenGL31 && caps.GL_EXT_geometry_shader4 && false) {
 				context = new LWJGL32DrawContext(caps, debug);
-			} else if (caps.OpenGL20) {
+			} else if(caps.OpenGL20) {
 				context = new LWJGL20DrawContext(caps, debug);
-			} else if (caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) {
-				context = new LWJGL15DrawContext(caps, debug);
 			} else {
 				context = null;
 			}
@@ -88,7 +86,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	public void disposeAll() {
 		cc.stop();
 		if (context != null) {
-			context.disposeAll();
+			context.invalidate();
 		}
 		context = null;
 	}

@@ -16,11 +16,9 @@ package jsettlers.graphics.image;
 
 import java.nio.ByteBuffer;
 
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.BufferHandle;
-import go.graphics.IllegalBufferException;
+import go.graphics.UnifiedDrawHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -64,7 +62,7 @@ public final class NullImage extends SingleImage {
 	}
 
 
-	private static BufferHandle nullGeometry = null;
+	private static UnifiedDrawHandle nullGeometry = null;
 
 	private static final float[] nullData = new float[] {
 			-HALFSIZE,
@@ -79,14 +77,10 @@ public final class NullImage extends SingleImage {
 
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		try {
-			if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.storeBuffer(nullData, EBufferFormatType.VertexOnly2D, false, "placeholder/null");
+		if(nullGeometry == null || !nullGeometry.isValid()) nullGeometry = gl.createUnifiedDrawCall(4,  "placeholder/null", null, nullData);
 
-			gl.draw2D(nullGeometry, null, EGeometryType.Quad, 0, 4, x, y, z, 1, 1, 1, null, NULL_IMAGE_ALPHA);
-			gl.draw2D(nullGeometry, null, EGeometryType.LineLoop, 0, 4, x, y, z, 1, 1, 1, Color.RED, 1);
-		} catch (IllegalBufferException e) {
-			e.printStackTrace();
-		}
+		nullGeometry.drawSimple(EPrimitiveType.Quad, x, y, z, 1, 1, null, NULL_IMAGE_ALPHA);
+		nullGeometry.drawSimple(EPrimitiveType.LineLoop, x, y, z, 1, 1, Color.RED, 1);
 	}
 
 	private static SingleImage guiinstance;

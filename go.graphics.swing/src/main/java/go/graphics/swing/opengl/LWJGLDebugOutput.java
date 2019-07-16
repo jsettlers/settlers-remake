@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class LWJGLDebugOutput {
 
-	LWJGLDebugOutput(LWJGL15DrawContext dc) {
+	LWJGLDebugOutput(LWJGL20DrawContext dc) {
 		if(dc.glcaps.GL_KHR_debug) {
 			GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			KHRDebug.glDebugMessageCallback(debugCallback, 0);

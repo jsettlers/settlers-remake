@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel;
 
-import java.util.function.Supplier;
-
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import jsettlers.common.action.Action;
@@ -30,14 +28,11 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.ContentType;

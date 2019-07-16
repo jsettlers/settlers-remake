@@ -14,16 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.BitSet;
 
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.BufferHandle;
-import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
+import go.graphics.UnifiedDrawHandle;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOKeyEvent;
@@ -410,52 +406,18 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		oldScreen = newScreen;
 	}
 
-	private BufferHandle selectionArea = null;
-	private boolean updateSelectionArea = true;
-	private ByteBuffer selectionAreaBuffer = ByteBuffer.allocateDirect(4*2*4).order(ByteOrder.nativeOrder());
-
-	private void updateSelectionArea() {
-		float x1 = (float) this.currentSelectionAreaStart.getX();
-		float y1 = (float) this.currentSelectionAreaStart.getY();
-		float x2 = (float) this.currentSelectionAreaEnd.getX();
-		float y2 = (float) this.currentSelectionAreaEnd.getY();
-
-		selectionAreaBuffer.putFloat(x1);
-		selectionAreaBuffer.putFloat(y1);
-
-		selectionAreaBuffer.putFloat(x2);
-		selectionAreaBuffer.putFloat(y1);
-
-		selectionAreaBuffer.putFloat(x2);
-		selectionAreaBuffer.putFloat(y2);
-
-		selectionAreaBuffer.putFloat(x1);
-		selectionAreaBuffer.putFloat(y2);
-		selectionAreaBuffer.rewind();
-	}
+	private UnifiedDrawHandle selectionArea = null;
 
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
 
 			if(selectionArea == null || !selectionArea.isValid()) {
-				selectionArea = gl.generateBuffer(4, EBufferFormatType.VertexOnly2D, true, "selection-area");
+				selectionArea = gl.createUnifiedDrawCall(4, "selection-area", null, new float[] {0, 0, 1, 0, 1, 1, 0, 1});
 			}
 
-			if(updateSelectionArea) {
-				updateSelectionArea();
-				try {
-					gl.updateBufferAt(selectionArea, 0, selectionAreaBuffer);
-				} catch (IllegalBufferException e) {
-					e.printStackTrace();
-				}
-				updateSelectionArea = false;
-			}
-
-			try {
-				gl.draw2D(selectionArea, null, EGeometryType.LineLoop, 0, 4, 0, 0, 0, 1, 1, 1, null, 1);
-			} catch (IllegalBufferException e) {
-				e.printStackTrace();
-			}
+			float width = (float)(currentSelectionAreaEnd.getX() - currentSelectionAreaStart.getX());
+			float height = (float)(currentSelectionAreaEnd.getY() - currentSelectionAreaStart.getY());
+			selectionArea.drawSimple(EPrimitiveType.LineLoop, (float)currentSelectionAreaStart.getX(), (float)currentSelectionAreaStart.getY(), 0, width, height, null, 1);
 		}
 	}
 
@@ -617,25 +579,20 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	};
 	// @formatter:on
 
-	private BufferHandle shapeHandle = null;
+	private UnifiedDrawHandle shapeHandle = null;
 
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.storeBuffer(shape, EBufferFormatType.VertexOnly2D, false, "debugshape");
+		if(shapeHandle == null || !shapeHandle.isValid()) shapeHandle = gl.createUnifiedDrawCall(4, "debugshape", null, shape);
 
 		context.getScreenArea().stream().filterBounds(width, height).forEach((x, y) -> {
-			try {
-				int argb = map.getDebugColorAt(x, y, debugColorMode);
-				if (argb != 0) {
-					int height = context.getHeight(x, y);
-					float dx = context.getConverter().getViewX(x, y, height);
-					float dy = context.getConverter().getViewY(x, y, height);
-					gl.draw2D(shapeHandle, null, EGeometryType.Quad, 0, 4, dx, dy, .5f, 1, 1, 1, Color.fromShort((short) argb), 1);
-				}
-			} catch (IllegalBufferException e) {
-				// TODO: Create a crash report
-				// This should never happen since we only use texture 0 (no texture)
+			int argb = map.getDebugColorAt(x, y, debugColorMode);
+			if (argb != 0) {
+				int height = context.getHeight(x, y);
+				float dx = context.getConverter().getViewX(x, y, height);
+				float dy = context.getConverter().getViewY(x, y, height);
+				shapeHandle.drawSimple(EPrimitiveType.Quad, dx, dy, .5f, 1, 1, Color.fromShort((short) argb), 1);
 			}
 		});
 	}
@@ -835,7 +792,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private void handleDrawOnMap(GODrawEvent drawEvent) {
 		this.currentSelectionAreaStart = drawEvent.getDrawPosition();
-		updateSelectionArea = true;
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
@@ -918,7 +874,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.currentSelectionAreaEnd = null;
 		} else {
 			this.currentSelectionAreaEnd = mousePosition;
-			updateSelectionArea = true;
 		}
 	}
 

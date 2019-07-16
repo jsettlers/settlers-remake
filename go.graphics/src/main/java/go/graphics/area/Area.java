@@ -14,8 +14,6 @@
  *******************************************************************************/
 package go.graphics.area;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import go.graphics.DrawmodeListener;
@@ -25,19 +23,14 @@ import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
-import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.command.GOCommandEvent;
-import go.graphics.event.command.GOCommandEventProxy;
 import go.graphics.event.interpreter.AbstractMouseEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GODrawEventProxy;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
-import go.graphics.event.mouse.GOPanEventProxy;
 import go.graphics.event.mouse.GOZoomEvent;
-import go.graphics.region.PositionedRegion;
 import go.graphics.region.Region;
-import go.graphics.region.RegionContent;
 
 /**
  * This class represents an area. This is a rectangular part of the screen that consists of multiple regions.

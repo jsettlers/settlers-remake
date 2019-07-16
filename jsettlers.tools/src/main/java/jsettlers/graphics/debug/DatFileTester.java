@@ -14,11 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.BufferHandle;
 import go.graphics.IllegalBufferException;
+import go.graphics.UnifiedDrawHandle;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOKeyEvent;
@@ -189,19 +188,19 @@ public class DatFileTester {
 			return maxheight;
 		}
 
-		private BufferHandle lineGeometry = null;
+		private UnifiedDrawHandle lineGeometry = null;
 		private ByteBuffer lineBfr = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder());
 
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.generateBuffer(3, EBufferFormatType.VertexOnly2D, true, null);
+			if(lineGeometry == null) lineGeometry = gl2.createUnifiedDrawCall(3, null, null, null);
 
 			try {
 				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), - image.getOffsetX(), image.getHeight() + image.getOffsetY() }, 0, 3);
-				gl2.updateBufferAt(lineGeometry, 3*4, lineBfr);
+				gl2.updateBufferAt(lineGeometry.vertices, 3*4, lineBfr);
 
-				gl2.draw2D(lineGeometry, null, EGeometryType.LineStrip, 0, 3, x, y, 0, 1, 1, 1, Color.RED, 1);
+				lineGeometry.drawSimple(EPrimitiveType.LineStrip, x, y, 0, 1, 1, Color.RED, 1);
 			} catch (IllegalBufferException e) {
 				e.printStackTrace();
 			}

@@ -14,10 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.IllegalBufferException;
-import go.graphics.SharedGeometry;
+import go.graphics.UnifiedDrawHandle;
 import jsettlers.common.Color;
 
 /**
@@ -31,7 +30,7 @@ public class ImageIndexImage extends Image {
 	private final short width;
 	private final short height;
 	private final float[] geometry;
-	private SharedGeometry.SharedGeometryHandle geometryIndex = null;
+	private UnifiedDrawHandle geometryIndex = null;
 	private final ImageIndexTexture texture;
 	private final int offsetX;
 	private final int offsetY;
@@ -77,7 +76,9 @@ public class ImageIndexImage extends Image {
 		this.vmax = vmax;
 		this.isTorso = isTorso;
 
-		geometry = createGeometry();
+		geometry = GLDrawContext.createQuadGeometry(-offsetX + IMAGE_DRAW_OFFSET, -offsetY + height + IMAGE_DRAW_OFFSET,
+				-offsetX + width + IMAGE_DRAW_OFFSET,-offsetY + IMAGE_DRAW_OFFSET,
+				umin, vmin, umax, vmax);
 	}
 
 	@Override
@@ -101,39 +102,19 @@ public class ImageIndexImage extends Image {
 		}
 	}
 
-	private void draw(GLDrawContext gl, SharedGeometry.SharedGeometryHandle handle, float x, float y, float z, float sx, float sy, float sz, Color color, float fow) {
-		try {
-			if(handle == null) geometryIndex = handle = SharedGeometry.addGeometry(gl, geometry);
+	private void draw(GLDrawContext gl, UnifiedDrawHandle handle, float x, float y, float z, float sx, float sy, float sz, Color color, float fow) {
+		if(handle == null || !handle.isValid()) geometryIndex = handle = gl.createUnifiedDrawCall(4, "image-index", texture.getTextureIndex(gl), geometry);
 
-			gl.draw2D(handle.geometry, texture.getTextureIndex(gl), EGeometryType.Quad, handle.index, 4, x, y, z, sx, sy, sz, color, fow);
-		} catch (IllegalBufferException e) {
-			try {
-				texture.recreateTexture();
-				gl.draw2D(handle.geometry, texture.getTextureIndex(gl), EGeometryType.Quad, handle.index, 4, x, y, z, sx, sy, sz, color, fow);
-			} catch (IllegalBufferException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+		handle.drawSimple(EPrimitiveType.Quad, x, y, z, sx, sy, color, fow);
 	}
 
-	private float[] createGeometry() {
-		return SharedGeometry.createQuadGeometry(-offsetX + IMAGE_DRAW_OFFSET, -offsetY + IMAGE_DRAW_OFFSET,
-				-offsetX + width + IMAGE_DRAW_OFFSET,-offsetY + height + IMAGE_DRAW_OFFSET,
-				umin, vmax, umax, vmin);
-	}
-
-	private SharedGeometry.SharedGeometryHandle imageRectHandle = null;
+	private UnifiedDrawHandle imageRectHandle = null;
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
 
-		try {
-			if(imageRectHandle == null) imageRectHandle = SharedGeometry.addGeometry(gl, SharedGeometry.createQuadGeometry(0,1, 1, 0, umin, vmin, umax, vmax));
-			draw(gl, imageRectHandle, x, y, 0, width, height, 0, null, 1);
-		} catch (IllegalBufferException e) {
-			e.printStackTrace();
-		}
+		if(imageRectHandle == null || !imageRectHandle.isValid()) imageRectHandle = gl.createUnifiedDrawCall(4, "image-index", texture.getTextureIndex(gl), GLDrawContext.createQuadGeometry(0,1, 1, 0, umin, vmin, umax, vmax));
+		draw(gl, imageRectHandle, x, y, 0, width, height, 0, null, 1);
 
 		if (torso != null) {
 			torso.drawImageAtRect(gl, x, y, width, height);

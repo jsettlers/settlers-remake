@@ -18,12 +18,11 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import go.graphics.AbstractColor;
-import go.graphics.EBufferFormatType;
-import go.graphics.EGeometryType;
-import go.graphics.BufferHandle;
-import go.graphics.SharedGeometry;
+import go.graphics.EUnifiedMode;
+import go.graphics.GLDrawContext;
 import go.graphics.TextureHandle;
-import go.graphics.swing.opengl.LWJGL15DrawContext;
+import go.graphics.UnifiedDrawHandle;
+import go.graphics.swing.opengl.LWJGL20DrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -50,7 +49,7 @@ public final class LWJGLTextDrawer {
 	private static final int    DEFAULT_DPI = 96;
 	private static final float  SCALING_FACTOR = calculateScalingFactor();
 
-	private BufferHandle geometry;
+	private UnifiedDrawHandle geometry;
 	private TextureHandle font_tex;
 	private final int gentex_line_height;
 	private int tex_height;
@@ -59,7 +58,7 @@ public final class LWJGLTextDrawer {
 
 	private final static int char_spacing = 2; // spacing between two characters (otherwise j and f would overlap with the next character)
 
-	private final LWJGL15DrawContext drawContext;
+	private final LWJGL20DrawContext drawContext;
 
 	private static float calculateScalingFactor() {
 		int screenDPI = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -72,7 +71,7 @@ public final class LWJGLTextDrawer {
 	 * Creates a new text drawer.
 	 *
 	 */
-	public LWJGLTextDrawer(LWJGL15DrawContext drawContext) {
+	public LWJGLTextDrawer(LWJGL20DrawContext drawContext) {
 		this.drawContext = drawContext;
 		font = new Font(FONTNAME, Font.PLAIN, TEXTURE_GENERATION_SIZE);
 
@@ -158,13 +157,13 @@ public final class LWJGLTextDrawer {
 				float dw = char_widths[l*16+c];
 				float dh = gentex_line_height;
 
-				float[] data = SharedGeometry.createQuadGeometry(0, 0,dw/(float)gentex_line_height, 1, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
+				float[] data = GLDrawContext.createQuadGeometry(0, 0,dw/(float)gentex_line_height, 1, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
 				System.arraycopy(data, 0, geodata, (l*16+c)*4*4, 4*4);
 
 				line_offset += char_widths[l*16+c]+char_spacing;
 			}
 		}
-		geometry = drawContext.storeBuffer(geodata, EBufferFormatType.Texture2D, false, font.getName());
+		geometry = drawContext.createUnifiedDrawCall(256*4, font.getName(), font_tex, geodata);
 	}
 
 	public TextDrawer derive(EFontSize size) {
@@ -190,7 +189,8 @@ public final class LWJGLTextDrawer {
 		}
 
 		private void drawChar(float x, float y, AbstractColor color, char c) {
-			drawContext.draw2D(geometry, font_tex, EGeometryType.Quad, c*4, 4, x, y, 0, line_height, line_height, 0, color, 1);
+			geometry.offset = c*4;
+			geometry.drawComplexQuad(EUnifiedMode.TEXTURE, x, y, 0, line_height, line_height, color, 1);
 		}
 
 		/*
