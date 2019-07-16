@@ -47,7 +47,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 	private final ActionAdapter actionAdapter = new ActionAdapter(getContext(), this);
 
-	private GLES20DrawContext drawcontext;
+	private GLESDrawContext drawcontext;
 
 	private IContextDestroyedListener contextDestroyedListener = null;
 
@@ -238,7 +238,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 			drawcontext.resize(width, height);
 		}
 
-		private GLES20DrawContext createContext(GL10 gl) {
+		private GLESDrawContext createContext(GL10 gl) {
 			String version = gl.glGetString(GL10.GL_VERSION).split(" ")[2];
 			int major = version.charAt(0)-'0';
 			int minor = version.charAt(2)-'0';
@@ -246,7 +246,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 			if(major >= 2) {
 				try {
 					boolean gles32 = major == 3 && minor >= 1 && gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_EXT_geometry_shader");
-					return new GLES20DrawContext(ctx, major == 3, gles32);
+					return new GLESDrawContext(ctx, major == 3, gles32);
 				} catch(Throwable thrown) {thrown.printStackTrace();};
 			}
 

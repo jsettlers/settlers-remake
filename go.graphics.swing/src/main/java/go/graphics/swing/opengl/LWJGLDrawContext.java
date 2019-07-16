@@ -38,8 +38,8 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 @SuppressWarnings("WeakerAccess")
-public class LWJGL20DrawContext extends GLDrawContext {
-	public LWJGL20DrawContext(GLCapabilities glcaps, boolean debug) {
+public class LWJGLDrawContext extends GLDrawContext {
+	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug) {
 		this.glcaps = glcaps;
 
 		if(debug) debugOutput = new LWJGLDebugOutput(this);
@@ -74,7 +74,7 @@ public class LWJGL20DrawContext extends GLDrawContext {
 	void init() {
 		shaders = new ArrayList<>();
 
-		if(glcaps.GL_EXT_geometry_shader4 && glcaps.GL_ARB_uniform_buffer_object && false) prog_unified_multi = new ShaderProgram("unified-multi");
+		if(glcaps.GL_EXT_geometry_shader4 && glcaps.GL_ARB_uniform_buffer_object) prog_unified_multi = new ShaderProgram("unified-multi");
 		if(glcaps.GL_EXT_draw_instanced) prog_unified_array = new ShaderProgram("unified-array");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("unified");

@@ -22,7 +22,7 @@ import go.graphics.EUnifiedMode;
 import go.graphics.GLDrawContext;
 import go.graphics.TextureHandle;
 import go.graphics.UnifiedDrawHandle;
-import go.graphics.swing.opengl.LWJGL20DrawContext;
+import go.graphics.swing.opengl.LWJGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -58,7 +58,7 @@ public final class LWJGLTextDrawer {
 
 	private final static int char_spacing = 2; // spacing between two characters (otherwise j and f would overlap with the next character)
 
-	private final LWJGL20DrawContext drawContext;
+	private final LWJGLDrawContext drawContext;
 
 	private static float calculateScalingFactor() {
 		int screenDPI = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -71,7 +71,7 @@ public final class LWJGLTextDrawer {
 	 * Creates a new text drawer.
 	 *
 	 */
-	public LWJGLTextDrawer(LWJGL20DrawContext drawContext) {
+	public LWJGLTextDrawer(LWJGLDrawContext drawContext) {
 		this.drawContext = drawContext;
 		font = new Font(FONTNAME, Font.PLAIN, TEXTURE_GENERATION_SIZE);
 

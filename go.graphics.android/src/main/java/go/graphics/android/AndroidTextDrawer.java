@@ -41,7 +41,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
-	private final GLES20DrawContext context;
+	private final GLESDrawContext context;
 	private TextureHandle texture = null;
 	/**
 	 * The number of lines we use on our texture.
@@ -101,7 +101,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			0,
 	};
 
-	private AndroidTextDrawer(EFontSize size, GLES20DrawContext context) {
+	private AndroidTextDrawer(EFontSize size, GLESDrawContext context) {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
@@ -289,7 +289,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		return size.getSize() * pixelScale;
 	}
 
-	public static TextDrawer getInstance(EFontSize size, GLES20DrawContext context) {
+	public static TextDrawer getInstance(EFontSize size, GLESDrawContext context) {
 		int ordinal = size.ordinal();
 		if (instances[ordinal] == null) {
 			instances[ordinal] = new AndroidTextDrawer(size, context);

@@ -16,14 +16,13 @@ import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.JAWTContextCreator;
-import go.graphics.swing.opengl.LWJGL20DrawContext;
-import go.graphics.swing.opengl.LWJGL32DrawContext;
+import go.graphics.swing.opengl.LWJGLDrawContext;
 
 public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
 
 
 	protected ContextCreator cc;
-	protected LWJGL20DrawContext context;
+	protected LWJGLDrawContext context;
 	private boolean debug;
 
 	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
@@ -62,10 +61,8 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		GLCapabilities caps = GL.createCapabilities();
 
 		try {
-			if(caps.OpenGL31 && caps.GL_EXT_geometry_shader4 && false) {
-				context = new LWJGL32DrawContext(caps, debug);
-			} else if(caps.OpenGL20) {
-				context = new LWJGL20DrawContext(caps, debug);
+			if(caps.OpenGL20) {
+				context = new LWJGLDrawContext(caps, debug);
 			} else {
 				context = null;
 			}

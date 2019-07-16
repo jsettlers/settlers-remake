@@ -1,7 +1,6 @@
 package go.graphics.android;
 
 import android.content.Context;
-import android.opengl.GLES11;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
@@ -28,22 +27,22 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 @SuppressWarnings("WeakerAccess")
-public class GLES20DrawContext extends GLDrawContext {
+public class GLESDrawContext extends GLDrawContext {
 	private final Context context;
 	private BufferHandle lastGeometry = null;
 	private TextureHandle lastTexture = null;
 
-	GLES20DrawContext(Context ctx, boolean gles3, boolean gles32) {
+	GLESDrawContext(Context ctx, boolean gles3, boolean gles32) {
 		this.context = ctx;
 		this.gles32 = gles32;
 		this.gles3 = gles3;
-		GLES11.glClearColor(0, 0, 0, 1);
-		GLES11.glPixelStorei(GLES11.GL_UNPACK_ALIGNMENT, 1);
-		GLES11.glEnable(GLES11.GL_BLEND);
-		GLES11.glBlendFunc(GLES11.GL_SRC_ALPHA, GLES11.GL_ONE_MINUS_SRC_ALPHA);
+		GLES20.glClearColor(0, 0, 0, 1);
+		GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 1);
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-		GLES11.glDepthFunc(GLES11.GL_LEQUAL);
-		GLES11.glEnable(GLES11.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
 		init();
 		Matrix.setIdentityM(global, 0);
@@ -59,7 +58,7 @@ public class GLES20DrawContext extends GLDrawContext {
 	public void init() {
 		shaders = new ArrayList<>();
 
-		if(gles32 && false) prog_unified_multi = new ShaderProgram("unified-multi");
+		if(gles32) prog_unified_multi = new ShaderProgram("unified-multi");
 		if(gles3) prog_unified_array = new ShaderProgram("unified-array");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("unified");
@@ -94,16 +93,16 @@ public class GLES20DrawContext extends GLDrawContext {
 	 */
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
 		int[] textureIndexes = new int[1];
-		GLES11.glGenTextures(1, textureIndexes, 0);
+		GLES20.glGenTextures(1, textureIndexes, 0);
 		TextureHandle texture = new TextureHandle(this, textureIndexes[0]);
 
 		bindTexture(texture);
 		resizeTexture(texture, width, height, data);
 
-		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_MAG_FILTER, GLES11.GL_NEAREST);
-		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_MIN_FILTER, GLES11.GL_NEAREST);
-		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_WRAP_S, GLES11.GL_REPEAT);
-		GLES11.glTexParameteri(GLES11.GL_TEXTURE_2D, GLES11.GL_TEXTURE_WRAP_T, GLES11.GL_REPEAT);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 		return texture;
 	}
 
@@ -115,8 +114,8 @@ public class GLES20DrawContext extends GLDrawContext {
 	public void updateTexture(TextureHandle textureIndex, int left, int bottom,
 							  int width, int height, ShortBuffer data) {
 		bindTexture(textureIndex);
-		GLES11.glTexSubImage2D(GLES11.GL_TEXTURE_2D, 0, left, bottom, width, height,
-				GLES11.GL_RGBA, GLES11.GL_UNSIGNED_SHORT_4_4_4_4, data);
+		GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, left, bottom, width, height,
+				GLES20.GL_RGBA, GLES20.GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
 	void bindTexture(TextureHandle texture) {
@@ -125,7 +124,7 @@ public class GLES20DrawContext extends GLDrawContext {
 			if (texture != null) {
 				id = texture.getTextureId();
 			}
-			GLES11.glBindTexture(GLES11.GL_TEXTURE_2D, id);
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, id);
 			lastTexture = texture;
 		}
 	}
@@ -136,7 +135,7 @@ public class GLES20DrawContext extends GLDrawContext {
 			if(geometry != null) {
 				id = geometry.getBufferId();
 			}
-			GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, id);
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id);
 			lastGeometry = geometry;
 		}
 	}
@@ -155,7 +154,7 @@ public class GLES20DrawContext extends GLDrawContext {
 
 	public void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) {
 		bindGeometry(handle);
-		GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, pos, data.remaining(), data);
+		GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, pos, data.remaining(), data);
 	}
 
 	public void setGlobalAttributes(float x, float y, float z, float sx, float sy, float sz) {
@@ -597,6 +596,6 @@ public class GLES20DrawContext extends GLDrawContext {
 
 	public void clearDepthBuffer() {
 		finishFrame();
-		GLES11.glClear(GLES11.GL_DEPTH_BUFFER_BIT);
+		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
 	}
 }
