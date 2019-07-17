@@ -125,11 +125,13 @@ public final class LWJGLTextDrawer {
 
 		ShortBuffer bfr = BufferUtils.createShortBuffer(tex_width*tex_height);
 
+		int[] pixels = pre_render.getRGB(0, 0, tex_width, tex_height, null, 0, tex_width);
+
 		final short alpha_channel = 0b1111;
 		final short alpha_white = ~alpha_channel;
 		for (int y = 0; y != tex_height; y++) {
 			for(int x = 0;x != tex_width;x++) {
-				int pixel = pre_render.getRGB(x, tex_height-y-1);
+				int pixel = pixels[(tex_height-y-1)*tex_width+x];
 
 				short a = ((pixel >> 24) != 0 ? alpha_channel : 0);
 				bfr.put((short) (a | alpha_white));
@@ -139,10 +141,8 @@ public final class LWJGLTextDrawer {
 		bfr.rewind();
 		font_tex = drawContext.generateTexture(max_len, tex_height, bfr, font.getName());
 
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
-				GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
-				GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 	}
 
 	private void generateGeometry(int descent) {

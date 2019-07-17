@@ -140,8 +140,16 @@ public class GLESDrawContext extends GLDrawContext {
 		}
 	}
 
+	private AndroidTextDrawer textDrawer;
+	private TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
+
 	public TextDrawer getTextDrawer(EFontSize size) {
-		return AndroidTextDrawer.getInstance(size, this);
+		if(textDrawer == null) textDrawer = new AndroidTextDrawer(this);
+
+		if (sizedTextDrawers[size.ordinal()] == null) {
+			sizedTextDrawers[size.ordinal()] = textDrawer.derive(size);
+		}
+		return sizedTextDrawers[size.ordinal()];
 	}
 
 	private int lastFormat = 0;

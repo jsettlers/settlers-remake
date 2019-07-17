@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,293 +14,217 @@
  *******************************************************************************/
 package go.graphics.android;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.opengl.GLES20;
 
 import go.graphics.AbstractColor;
-import go.graphics.EPrimitiveType;
+import go.graphics.EUnifiedMode;
+import go.graphics.GLDrawContext;
 import go.graphics.TextureHandle;
 import go.graphics.UnifiedDrawHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.util.TypedValue;
-import android.widget.TextView;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 
-public class AndroidTextDrawer implements TextDrawer {
+/**
+ * This class is a text drawer used to wrap the text renderer.
+ *
+ * @author michael
+ * @author paul
+ */
+public final class AndroidTextDrawer {
 
-	private static final int TEXTURE_HEIGHT = 512;
-	private static final int TEXTURE_WIDTH = 512;
+	private static final int TEXTURE_GENERATION_SIZE = 30;
 
-	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
+	private final float scaling_factor;
 
-	private final EFontSize size;
-	private final GLESDrawContext context;
-	private TextureHandle texture = null;
-	/**
-	 * The number of lines we use on our texture.
-	 */
-	private int lines;
-	/**
-	 * The current string starting in line i.
-	 * <p>
-	 */
-	private String[] linestrings;
+	private UnifiedDrawHandle geometry;
+	private TextureHandle font_tex;
+	private final int gentex_line_height;
+	private int tex_height;
+	private int tex_width;
+	private final float[] char_widths;
 
-	/**
-	 * The width of line i. This width can be higher than TEXTURE_WIDTH. Then the string is split to multiple lines.
-	 */
-	private int[] linewidths;
+	private final static int char_spacing = 2; // spacing between two characters (otherwise j and f would overlap with the next character)
+
+	private final GLESDrawContext drawContext;
+
+	private final Paint paint;
 
 	/**
-	 * An index of the next tile if the width of the current line is bigger than TEXTURE_WIDTH. This forms an linked list. -1 means no next tile.
+	 * Creates a new text drawer.
+	 *
 	 */
-	private int[] nextTile;
+	public AndroidTextDrawer(GLESDrawContext drawContext) {
+		this.drawContext = drawContext;
+		scaling_factor = drawContext.getAndroidContext().getResources().getDisplayMetrics().density;
 
-	private int lineheight;
+		paint = new Paint();
+		paint.setTextSize(TEXTURE_GENERATION_SIZE);
 
-	/**
-	 * Data to do LRU
-	 */
-	private int lastUsedCount = 0;
-	private int[] lastused;
+		char_widths = new float[256];
+		StringBuilder triggerString = new StringBuilder();
+		for(char i = 0;i != 256; i++) {
+			triggerString.append(i);
+		}
+		paint.getTextWidths(triggerString.toString(), char_widths);
 
-	private TextView renderer;
-	private float pixelScale;
-	private UnifiedDrawHandle texturepos;
+		Paint.FontMetricsInt fm = paint.getFontMetricsInt();
+		gentex_line_height = fm.leading-fm.ascent+fm.descent;
 
-	private static final float[] textureposarray = {
-			// top left
-			0,
-			0,
-			0,
-			0,
-
-			// bottom left
-			0,
-			0,
-			0,
-			0,
-
-			// bottom right
-			TEXTURE_WIDTH,
-			0,
-			1,
-			0,
-
-			// top right
-			TEXTURE_WIDTH,
-			0,
-			1,
-			0,
-	};
-
-	private AndroidTextDrawer(EFontSize size, GLESDrawContext context) {
-		this.size = size;
-		this.context = context;
-		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
-		initialize();
+		generateTexture();
+		generateGeometry(fm.descent);
 	}
 
-	private final ByteBuffer updateBfr = ByteBuffer.allocateDirect(textureposarray.length*4).order(ByteOrder.nativeOrder());
+	private int getMaxLen() {
+		int max_len = 0;
+		for(int l = 0;l != 16;l++) {
+			int current_len = 0;
+			for(int c = 0;c != 16;c++) {
+				current_len += char_widths[l*16+c]+char_spacing;
+				max_len = Math.max(max_len, current_len);
+			}
+		}
+		return max_len;
+	}
 
-	private void checkInvariants() {
-		boolean[] isNextTile = new boolean[lines];
-		for (int i = 0; i < lines; i++) {
-			int next = nextTile[i];
-			if (next >= 0) {
-				if (isNextTile[next]) {
-					System.err.println("WARNING: The line " + next + " is linked multiple times as next line.");
+	private void generateTexture() {
+		int max_len = getMaxLen();
+
+		tex_width = max_len;
+		tex_height = gentex_line_height*16;
+
+		Bitmap pre_render = Bitmap.createBitmap(tex_width, tex_height, Bitmap.Config.ALPHA_8);
+		Canvas canvas = new Canvas(pre_render);
+		paint.setColor(0);
+		canvas.drawPaint(paint);
+		paint.setColor(0xFFFFFFFF);
+
+		for(int l = 0;l != 16;l++) {
+			int line_offset = 0;
+			for (int c = 0; c != 16; c++) {
+				canvas.drawText(new char[]{(char) (l * 16 + c)}, 0, 1, line_offset, l * gentex_line_height, paint);
+				line_offset += char_widths[l*16+c]+char_spacing;
+			}
+		}
+
+		ShortBuffer bfr = ByteBuffer.allocateDirect(tex_width*tex_height*2).order(ByteOrder.nativeOrder()).asShortBuffer();
+
+		int[] pixels = new int[tex_width*tex_height];
+		pre_render.getPixels(pixels, 0, tex_width, 0, 0, tex_width, tex_height);
+
+		final short alpha_channel = 0b1111;
+		final short alpha_white = ~alpha_channel;
+		for (int y = 0; y != tex_height; y++) {
+			for(int x = 0;x != tex_width;x++) {
+				int pixel = pixels[(tex_height-y-1)*tex_width+x];
+
+				short a = ((pixel >> 24) != 0 ? alpha_channel : 0);
+				bfr.put((short) (a | alpha_white));
+			}
+		}
+		bfr.rewind();
+		font_tex = drawContext.generateTexture(max_len, tex_height, bfr, "");
+
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,
+				GLES20.GL_LINEAR);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,
+				GLES20.GL_LINEAR);
+	}
+
+	private void generateGeometry(int descent) {
+		float[] geodata = new float[256*4*4];
+		for(int l = 0;l != 16;l++) {
+			int line_offset = 0;
+			for (int c = 0; c != 16; c++) {
+
+				float dx = line_offset;
+				float dy = tex_height-(l*gentex_line_height+descent);
+
+				float dw = char_widths[l*16+c];
+				float dh = gentex_line_height;
+
+				float[] data = GLDrawContext.createQuadGeometry(0, 0,dw/(float)gentex_line_height, 1, dx/tex_width, dy/tex_height, (dx+dw)/tex_width, (dy+dh)/tex_height);
+				System.arraycopy(data, 0, geodata, (l*16+c)*4*4, 4*4);
+
+				line_offset += char_widths[l*16+c]+char_spacing;
+			}
+		}
+		geometry = drawContext.createUnifiedDrawCall(256*4, "android-font", font_tex, geodata);
+	}
+
+	public TextDrawer derive(EFontSize size) {
+		return new SizedAndroidTextDrawer(size);
+	}
+
+
+	private class SizedAndroidTextDrawer implements TextDrawer {
+
+		private final float widthFactor;
+		private final float line_height;
+		private final Paint sizedFont;
+
+		private SizedAndroidTextDrawer(EFontSize size) {
+			sizedFont = new Paint(paint);
+			sizedFont.setTextSize(size.getSize());
+
+			Paint.FontMetricsInt fm = sizedFont.getFontMetricsInt();
+
+			line_height = (fm.leading-fm.ascent+fm.descent)* scaling_factor;
+			widthFactor = line_height/gentex_line_height;
+		}
+
+		private void drawChar(float x, float y, AbstractColor color, char c) {
+			geometry.offset = c*4;
+			geometry.drawComplexQuad(EUnifiedMode.TEXTURE, x, y, 0, line_height, line_height, color, 1);
+			geometry.flush();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see go.graphics.swing.text.TextDrawer#drawString(int, int, java.lang.String)
+		 */
+		@Override
+		public void drawString(float x, float y, AbstractColor color, String string) {
+			float x_offset = 0;
+			float y_offset = 0;
+
+			for(int i = 0;i != string.length();i++) {
+				if(string.charAt(i) == '\n') {
+					y_offset += line_height;
+				} else {
+					drawChar(x+x_offset, y+y_offset, color, string.charAt(i));
+					x_offset += char_widths[string.charAt(i)]*widthFactor;
 				}
-				isNextTile[next] = true;
 			}
 		}
-		for (int i = 0; i < lines; i++) {
-			if (isNextTile[i]) {
-				if (linestrings[i] != null) {
-					System.out.println("Linestring should be null for line " + i);
+
+		@Override
+		public float getWidth(String string) {
+			float tmp_width = 0;
+			for(int i = 0;i != string.length();i++) {
+				if(string.charAt(i) != '\n') {
+					tmp_width += char_widths[string.charAt(i)]*widthFactor;
 				}
-				if (lastused[i] != Integer.MAX_VALUE) {
-					System.out.println("Last used should not be set for line " + i);
+			}
+			return tmp_width;
+		}
+
+		@Override
+		public float getHeight(String string) {
+			float tmp_height = line_height;
+			for(int i = 0;i != string.length();i++) {
+				if(string.charAt(i) == '\n') {
+					tmp_height += line_height;
 				}
 			}
+			return tmp_height;
 		}
 	}
-
-	@Override
-	public void drawString(float x, float y, AbstractColor color, String string) {
-		initialize();
-
-		int line = findLineFor(string);
-
-		for (; line >= 0; line = nextTile[line], x += TEXTURE_WIDTH) {
-			// texture mirrored
-			float bottom = (float) ((line + 1) * lineheight) / TEXTURE_HEIGHT;
-			float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
-
-			updateBfr.putFloat(3*4, top);
-			updateBfr.putFloat(7*4, bottom);
-			updateBfr.putFloat(11*4, bottom);
-			updateBfr.putFloat(15*4, top);
-			context.updateBufferAt(texturepos.vertices, 0, updateBfr);
-
-			texturepos.drawSimple(EPrimitiveType.Quad, x, y, 0, 1, 1, color, 1);
-		}
-	}
-
-	private int findExistingString(String string) {
-		int length = lines;
-		for (int i = 0; i < length; i++) {
-			if (string.equals(linestrings[i])) {
-				lastused[i] = lastUsedCount++;
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	private int findLineToUse() {
-		int unnededline = 0;
-		int unnededrating = Integer.MAX_VALUE;
-
-		for (int i = 0; i < lines; i++) {
-			if (lastused[i] < unnededrating) {
-				unnededline = i;
-				unnededrating = lastused[i];
-			}
-		}
-
-		// now free the next lines
-		for (int next = unnededline; next > -1; next = nextTile[next]) {
-			nextTile[next] = -1;
-			lastused[next] = 0;
-			linestrings[next] = null;
-		}
-
-		return unnededline;
-	}
-
-	private int findLineFor(String string) {
-		int line = findExistingString(string);
-		if (line >= 0) {
-			return line;
-		}
-
-		int width = (int) Math.ceil(computeWidth(string) + 25);
-		renderer = new TextView(context.getAndroidContext());
-		renderer.setTextColor(Color.WHITE);
-		renderer.setSingleLine(true);
-		renderer.setTextSize(TypedValue.COMPLEX_UNIT_PX, getScaledSize());
-		renderer.setText(string);
-
-		int firstLine = findLineToUse();
-		// System.out.println("string cache miss for " + string +
-		// ", allocating new line: " + firstLine);
-		int lastLine = firstLine;
-
-		for (int x = 0; x < width; x += TEXTURE_WIDTH) {
-			if (x == 0) {
-				line = firstLine;
-			} else {
-				line = findLineToUse();
-				nextTile[lastLine] = line;
-				linestrings[line] = null;
-				linewidths[line] = -1;
-			}
-			// important to not allow cycles.
-			lastused[line] = Integer.MAX_VALUE;
-			// just to be sure.
-			nextTile[line] = -1;
-
-			// render the new text to that line.
-			Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, lineheight, Bitmap.Config.ALPHA_8);
-			Canvas canvas = new Canvas(bitmap);
-			renderer.layout(0, 0, width, lineheight);
-			canvas.translate(-x, 0);
-			renderer.draw(canvas);
-			// canvas.translate(50, .8f * lineheight);
-			int points = lineheight * TEXTURE_WIDTH;
-			ByteBuffer alpha8 = ByteBuffer.allocateDirect(points);
-			bitmap.copyPixelsToBuffer(alpha8);
-			ShortBuffer updateBuffer = ByteBuffer.allocateDirect(points*2).order(ByteOrder.nativeOrder()).asShortBuffer();
-			for(int i = 0;i != points;i++) {
-				updateBuffer.put(i, (short) (0xFFF0 | ((short)((alpha8.get(i)&0xFF)*15.0/255))));
-			}
-			context.updateTexture(texture, 0, line*lineheight, TEXTURE_WIDTH, lineheight, updateBuffer);
-			lastLine = line;
-		}
-		lastused[firstLine] = lastUsedCount++;
-		linestrings[firstLine] = string;
-		linewidths[firstLine] = width;
-
-		checkInvariants();
-		return firstLine;
-	}
-
-	private void initialize() {
-		if (texture == null || !texture.isValid()) {
-
-			//ShortBuffer data = ByteBuffer.allocateDirect(TEXTURE_WIDTH * TEXTURE_HEIGHT * 4).asShortBuffer();
-			texture = context.generateTexture(TEXTURE_WIDTH, TEXTURE_HEIGHT, null, "font");
-			lineheight = (int) (getScaledSize() * 1.3);
-			lines = TEXTURE_HEIGHT / lineheight;
-			linestrings = new String[lines];
-			linewidths = new int[lines];
-			lastused = new int[lines];
-			nextTile = new int[lines];
-			Arrays.fill(nextTile, -1);
-
-			texturepos = context.createUnifiedDrawCall(4, "android-textdrawer" + size.getSize(), texture, null);
-			updateBfr.asFloatBuffer().put(textureposarray);
-			updateBfr.putFloat(1*4, lineheight);
-			updateBfr.putFloat(13*4, lineheight);
-			context.updateBufferAt(texturepos.vertices, 0, updateBfr);
-		}
-	}
-
-	@Override
-	public float getWidth(String string) {
-		int index = findExistingString(string);
-		if (index < 0) {
-			return computeWidth(string);
-		} else {
-			return linewidths[index];
-		}
-	}
-
-	private float computeWidth(String string) {
-		Paint paint = new Paint();
-		paint.setTextSize(getScaledSize());
-		return paint.measureText(string);
-	}
-
-	@Override
-	public float getHeight(String string) {
-		return getScaledSize();
-	}
-
-	private float getScaledSize() {
-		return size.getSize() * pixelScale;
-	}
-
-	public static TextDrawer getInstance(EFontSize size, GLESDrawContext context) {
-		int ordinal = size.ordinal();
-		if (instances[ordinal] == null) {
-			instances[ordinal] = new AndroidTextDrawer(size, context);
-		}
-		return instances[ordinal];
-	}
-
-	public static void invalidateTextures() {
-		for (int i = 0; i < instances.length; i++) {
-			instances[i] = null;
-		}
-	}
-
 }

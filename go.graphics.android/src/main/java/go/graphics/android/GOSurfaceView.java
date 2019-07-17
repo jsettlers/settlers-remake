@@ -287,7 +287,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		public void destroyContext(EGL10 arg0, EGLDisplay arg1, EGLContext arg2) {
 			Log.w("gl", "Invalidating texture context");
 			if(drawcontext != null) drawcontext.invalidate();
-			AndroidTextDrawer.invalidateTextures();
 			IContextDestroyedListener listener = contextDestroyedListener;
 			if (listener != null) {
 				listener.glContextDestroyed();
