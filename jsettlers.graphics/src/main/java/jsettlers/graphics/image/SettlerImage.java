@@ -68,13 +68,13 @@ public class SettlerImage extends SingleImage {
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		checkHandles(gl);
-		geometryIndex.drawComplexQuad(EUnifiedMode.SETTLER_SHADOW, x, y, z, 1, 1, torsoColor, fow);
+		geometryIndex.drawComplexQuad(EUnifiedMode.SETTLER, x, y, z, 1, 1, torsoColor, fow);
 	}
 
 	@Override
 	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z) {
 		checkHandles(gl);
-		geometryIndex.drawComplexQuad(EUnifiedMode.SHADOW_ONLY, x, y, z, 1, 1, null, 0);
+		geometryIndex.drawComplexQuad(EUnifiedMode.SHADOW_ONLY, x, y, z, 1, 1, Color.TRANSPARENT, 1);
 	}
 
 	/**
