@@ -164,6 +164,7 @@ public final class LWJGLTextDrawer {
 			}
 		}
 		geometry = drawContext.createUnifiedDrawCall(256*4, font.getName(), font_tex, geodata);
+		geometry.forceNoCache();
 	}
 
 	public TextDrawer derive(EFontSize size) {

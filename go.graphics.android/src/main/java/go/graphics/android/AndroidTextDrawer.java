@@ -156,6 +156,7 @@ public final class AndroidTextDrawer {
 			}
 		}
 		geometry = drawContext.createUnifiedDrawCall(256*4, "android-font", font_tex, geodata);
+		geometry.forceNoCache();
 	}
 
 	public TextDrawer derive(EFontSize size) {

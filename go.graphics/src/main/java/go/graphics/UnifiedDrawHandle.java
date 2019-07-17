@@ -22,11 +22,18 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 	private int cache_start_bias = 0;
 	private int frame_drawcalls = 0;
 	private long frameIndex = -1;
+	private boolean forceNoCache = false;
 
 	public static final int CACHE_START_AT_BIAS = 1000;
 	public static final int MAX_CACHE_ENTRIES = 100;
 
+	public void forceNoCache() {
+		forceNoCache = true;
+	}
+
 	private void enableCaching() {
+		if(forceNoCache) return;
+
 		trans = new float[MAX_CACHE_ENTRIES*4];
 		colors = new float[MAX_CACHE_ENTRIES*4];
 
