@@ -252,6 +252,5 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			checkHandles(dc);
 		} catch (IllegalBufferException e) {}
-		geometryIndex.enableCaching();
 	}
 }

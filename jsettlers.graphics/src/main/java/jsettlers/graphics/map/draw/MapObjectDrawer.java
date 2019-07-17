@@ -699,7 +699,6 @@ public class MapObjectDrawer {
 			imageMap = SettlerImageMap.getInstance();
 
 			playerBorderObjectImage = imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator");
-			if(playerBorderObjectImage instanceof SingleImage) ((SingleImage) playerBorderObjectImage).enableCaching(context.getGl());
 		}
 
 		if(context.getGl() != lastDC) {

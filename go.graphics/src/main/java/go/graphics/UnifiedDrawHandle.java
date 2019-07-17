@@ -19,22 +19,57 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 	private float[] colors;
 	private int cache_index = 0;
 
+	private int cache_start_bias = 0;
+	private int frame_drawcalls = 0;
+	private long frameIndex = -1;
+
+	public static final int CACHE_START_AT_BIAS = 1000;
 	public static final int MAX_CACHE_ENTRIES = 100;
 
-	public void enableCaching() {
-		if(trans != null) return;
-
+	private void enableCaching() {
 		trans = new float[MAX_CACHE_ENTRIES*4];
 		colors = new float[MAX_CACHE_ENTRIES*4];
 
 		dc.add(this);
 	}
 
-	protected void flush() {
-		if(cache_index == 0) return;
+	private void disableCaching() {
+		trans = null;
+		colors = null;
+		dc.remove(this);
+	}
+
+	private boolean nextFrame() {
+		frameIndex = dc.frameIndex;
+
+		boolean modified = false;
+		if(trans == null && frame_drawcalls >= MAX_CACHE_ENTRIES) {
+			cache_start_bias++;
+			if(cache_start_bias == CACHE_START_AT_BIAS) {
+				enableCaching();
+				modified = true;
+			}
+		} else if(trans != null && frame_drawcalls < MAX_CACHE_ENTRIES){
+			cache_start_bias--;
+
+			if(cache_start_bias == -CACHE_START_AT_BIAS) {
+				disableCaching();
+				modified = true;
+			}
+		}
+
+		frame_drawcalls = 0;
+		return modified;
+	}
+
+	public boolean flush() {
+		boolean mod = (frameIndex != dc.frameIndex) && nextFrame();
+		if(cache_index == 0) return mod;
 
 		dc.drawUnifiedArray(this, EPrimitiveType.Quad, 4, trans, colors, cache_index);
 		cache_index = 0;
+
+		return mod;
 	}
 
 	public void drawSimple(int primitive, float x, float y, float z, float sx, float sy, AbstractColor color, float intensity) {
@@ -42,6 +77,8 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 	}
 
 	public void drawComplexQuad(int mode, float x, float y, float z, float sx, float sy, AbstractColor color, float intensity) {
+		if(frameIndex != dc.frameIndex) nextFrame();
+
 		if(trans != null) {
 			if(cache_index == MAX_CACHE_ENTRIES) flush();
 
@@ -50,14 +87,15 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 			trans[cache_index*4+2] = z;
 			trans[cache_index*4+3] = (mode*10)+intensity+1;
 
-			colors[cache_index*4] = color.red;
-			colors[cache_index*4+1] = color.green;
-			colors[cache_index*4+2] = color.blue;
-			colors[cache_index*4+3] = color.alpha;
+			colors[cache_index*4] = color!=null?color.red:1;
+			colors[cache_index*4+1] = color!=null?color.green:1;
+			colors[cache_index*4+2] = color!=null?color.blue:1;
+			colors[cache_index*4+3] = color!=null?color.alpha:1;
 			cache_index++;
 		} else {
 			dc.drawUnified(this, EPrimitiveType.Quad, 4, mode, x, y, z, sx, sy, color, intensity);
 		}
+		frame_drawcalls++;
 	}
 
 	public int getVertexArrayId() {

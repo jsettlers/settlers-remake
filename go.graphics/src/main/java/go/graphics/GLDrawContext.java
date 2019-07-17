@@ -140,13 +140,25 @@ public abstract class GLDrawContext {
 		caches.add(cache);
 	}
 
+	protected void remove(UnifiedDrawHandle cache) {
+		caches.remove(cache);
+	}
+
 	private List<UnifiedDrawHandle> caches = new ArrayList<>();
 
 	public void finishFrame() {
-		for(UnifiedDrawHandle dh : caches) dh.flush();
+		for(int i = 0;i != caches.size(); i++) {
+			if(caches.get(i).flush()) i--;
+		}
 
 		for(ManagedHandle mh : managedHandles) {
 			if(mh.multiCache != null) mh.multiCache.flush();
 		}
+	}
+
+	protected long frameIndex = 0;
+
+	public void startFrame() {
+		frameIndex++;
 	}
 }

@@ -15,11 +15,6 @@ public class ManagedUnifiedDrawHandle extends UnifiedDrawHandle {
 	}
 
 	@Override
-	public void enableCaching() {
-		if(parent.multiCache == null) super.enableCaching();
-	}
-
-	@Override
 	public void drawComplexQuad(int mode, float x, float y, float z, float sx, float sy, AbstractColor color, float intensity) {
 		if(parent.multiCache != null) {
 			parent.multiCache.schedule(this, mode, x, y, z, sx, sy, color, intensity);

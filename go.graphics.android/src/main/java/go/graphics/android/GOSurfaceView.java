@@ -226,7 +226,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		@Override
 		public void onDrawFrame(GL10 gl) {
-			GLES10.glClear(GLES10.GL_DEPTH_BUFFER_BIT | GLES10.GL_COLOR_BUFFER_BIT);
+			drawcontext.startFrame();
 			area.drawArea(drawcontext);
 			drawcontext.finishFrame();
 		}

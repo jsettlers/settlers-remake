@@ -598,4 +598,10 @@ public class GLESDrawContext extends GLDrawContext {
 		finishFrame();
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
 	}
+
+	@Override
+	public void startFrame() {
+		super.startFrame();
+		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+	}
 }

@@ -191,6 +191,7 @@ public final class LWJGLTextDrawer {
 		private void drawChar(float x, float y, AbstractColor color, char c) {
 			geometry.offset = c*4;
 			geometry.drawComplexQuad(EUnifiedMode.TEXTURE, x, y, 0, line_height, line_height, color, 1);
+			geometry.flush();
 		}
 
 		/*
