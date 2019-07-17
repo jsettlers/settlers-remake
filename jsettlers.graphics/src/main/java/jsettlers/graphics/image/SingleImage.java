@@ -196,18 +196,18 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			buildBfr.asFloatBuffer().put(new float[] {
 					u1 * twidth,
 					-v1 * theight,
-					geometryIndex.texX+u1*geometryIndex.texWidth,
-					geometryIndex.texY+v1*geometryIndex.texHeight,
+					geometryIndex.texX+u1*(geometryIndex.texWidth-geometryIndex.texX),
+					geometryIndex.texY+v1*(geometryIndex.texHeight-geometryIndex.texY),
 
 					u2 * twidth,
 					-v2 * theight,
-					geometryIndex.texX+u2*geometryIndex.texWidth,
-					geometryIndex.texY+v2*geometryIndex.texHeight,
+					geometryIndex.texX+u2*(geometryIndex.texWidth-geometryIndex.texX),
+					geometryIndex.texY+v2*(geometryIndex.texHeight-geometryIndex.texY),
 
 					u3 * twidth,
 					-v3 * theight,
-					geometryIndex.texX+u3*geometryIndex.texWidth,
-					geometryIndex.texY+v3*geometryIndex.texHeight,
+					geometryIndex.texX+u3*(geometryIndex.texWidth-geometryIndex.texX),
+					geometryIndex.texY+v3*(geometryIndex.texHeight-geometryIndex.texY),
 
 			});
 			buildHandle.texture = geometryIndex.texture;
