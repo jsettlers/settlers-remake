@@ -259,7 +259,7 @@ public class MapObjectDrawer {
 		}
 		float color = getColor(fogStatus);
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 1, 112, 0));
-		draw(image, x, y, 0, getColor(object), color);
+		draw(image, x, y,  BACKGROUND_Z, getColor(object), color);
 	}
 
 	public void drawStockBack(int x, int y, IBuilding stock) {
