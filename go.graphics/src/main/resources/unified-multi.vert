@@ -14,11 +14,11 @@ out float geom_index;
 out float geom_mode;
 
 void main() {
-    gl_Position = vec4(position, 1);
-    geom_scale = scale;
+	gl_Position = vec4(position, 1);
+	geom_scale = scale;
 
-    geom_color = color;
-    geom_mode = additional.z;
-    geom_index = additional.y;
-    geom_intensity = additional.x;
+	geom_color = color;
+	geom_mode = additional.z;
+	geom_index = additional.y;
+	geom_intensity = additional.x;
 }
