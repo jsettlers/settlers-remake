@@ -113,18 +113,14 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float x, float y, float width, float height) {
-		try {
-			checkStaticHandles(gl);
+		checkStaticHandles(gl);
 
-			// dark magic
-			float sx = width/(float)twidth;
-			float sy = height/(float)theight;
-			float tx = x - offsetX*sx;
-			float ty = y + height + offsetY*sy;
-			geometryIndex.drawSimple(EPrimitiveType.Quad, tx, ty, 0, sx, sy, null, 1);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+		// dark magic
+		float sx = width/(float)twidth;
+		float sy = height/(float)theight;
+		float tx = x - offsetX*sx;
+		float ty = y + height + offsetY*sy;
+		geometryIndex.drawSimple(EPrimitiveType.Quad, tx, ty, 0, sx, sy, null, 1);
 	}
 
 	@Override
@@ -134,21 +130,17 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		try {
-			checkHandles(gl);
-			geometryIndex.drawSimple(EPrimitiveType.Quad, x, y, z, 1, 1, null, 1);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+		checkHandles(gl);
+		geometryIndex.drawSimple(EPrimitiveType.Quad, x, y, z, 1, 1, null, 1);
 	}
 
-	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
+	protected void checkHandles(GLDrawContext gl) {
 		if(geometryIndex == null || !geometryIndex.isValid()) {
 			geometryIndex = gl.createManagedUnifiedDrawCall(tdata, toffsetX, toffsetY, twidth, theight);
 		}
 	}
 
-	private void checkStaticHandles(GLDrawContext gl) throws IllegalBufferException {
+	private void checkStaticHandles(GLDrawContext gl) {
 		checkHandles(gl);
 		if(buildHandle == null || !buildHandle.isValid()) {
 			buildHandle = gl.createUnifiedDrawCall(3, "building-progress", geometryIndex.texture, null);
@@ -246,11 +238,5 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		}
 		data.rewind();
 		return hashCode;
-	}
-
-	public void enableCaching(GLDrawContext dc) {
-		try {
-			checkHandles(dc);
-		} catch (IllegalBufferException e) {}
 	}
 }

@@ -53,10 +53,7 @@ public class SettlerImage extends SingleImage {
 		if (geometryIndex == null || !geometryIndex.isValid()) {
 			generateUData();
 		}
-
-		try {
-			super.checkHandles(gl);
-		} catch(IllegalBufferException ex) {}
+		super.checkHandles(gl);
 	}
 
 	@Override
