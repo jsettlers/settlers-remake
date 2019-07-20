@@ -23,6 +23,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.common.player.EWinState;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.IPlayer;
@@ -46,6 +47,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private final MaterialCounts materialCounts = new MaterialCounts();
 	private final EndgameStatistic endgameStatistic = new EndgameStatistic(mannaInformation);
 
+	private transient EWinState winState;
 	private transient EPlayerType playerType;
 	private transient ECivilisation civilisation;
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
@@ -57,6 +59,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		this.numberOfPlayers = numberOfPlayers;
 		this.playerType = playerType;
 		this.civilisation = civilisation;
+		this.winState = EWinState.UNDECIDED;
 		team.registerPlayer(this);
 		updateCombatStrengths();
 	}
@@ -124,6 +127,11 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		}
 	}
 
+	@Override
+	public EWinState getWinState() {
+		return winState;
+	}
+
 	private void updateCombatStrengths() {
 		int amountOfGold = getAmountOf(EMaterialType.GOLD);
 		this.combatStrengthInfo.updateGoldCombatStrength(numberOfPlayers, amountOfGold);
@@ -147,6 +155,10 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	public void setCivilisation(ECivilisation civilisation) {
 		this.civilisation = civilisation;
+	}
+
+	public void setWinState(EWinState newState) {
+		winState = newState;
 	}
 
 	public boolean hasSameTeam(Player player) {

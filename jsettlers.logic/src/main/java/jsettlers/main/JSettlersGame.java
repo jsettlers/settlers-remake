@@ -198,6 +198,7 @@ public class JSettlersGame {
 		private IGameExitListener exitListener;
 		private boolean gameRunning;
 		private AiExecutor aiExecutor;
+		private WinLoseTracker winLoseTracker;
 
 		@Override
 		public void run() {
@@ -250,6 +251,9 @@ public class JSettlersGame {
 
 				aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
+
+				winLoseTracker = new WinLoseTracker(mainGrid);
+				networkConnector.getGameClock().schedule(winLoseTracker, (short) 5000);
 
 				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED!
 				// NO CONFIGURATION AFTER THIS POINT! =================================
