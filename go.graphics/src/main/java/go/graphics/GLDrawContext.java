@@ -5,6 +5,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import go.graphics.text.AbstractTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -57,11 +58,26 @@ public abstract class GLDrawContext {
 
 	public abstract void resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data);
 
-	public abstract TextDrawer getTextDrawer(EFontSize size);
-
 	public abstract void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
 	public abstract BackgroundDrawHandle createBackgroundDrawCall(int vertices, TextureHandle texture);
+
+	protected AbstractTextDrawer textDrawer;
+	private final TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
+
+	/**
+	 * Gets a text drawer for the given text size.
+	 *
+	 * @param size
+	 *            The size for the drawer.
+	 * @return An instance of a drawer for that size.
+	 */
+	public TextDrawer getTextDrawer(EFontSize size) {
+		if (sizedTextDrawers[size.ordinal()] == null) {
+			sizedTextDrawers[size.ordinal()] = textDrawer.derive(size);
+		}
+		return sizedTextDrawers[size.ordinal()];
+	}
 
 	/**
 	 *

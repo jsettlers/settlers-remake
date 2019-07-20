@@ -23,8 +23,6 @@ import go.graphics.ManagedHandle;
 import go.graphics.MultiDrawHandle;
 import go.graphics.TextureHandle;
 import go.graphics.UnifiedDrawHandle;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
 
 @SuppressWarnings("WeakerAccess")
 public class GLESDrawContext extends GLDrawContext {
@@ -46,6 +44,8 @@ public class GLESDrawContext extends GLDrawContext {
 
 		init();
 		Matrix.setIdentityM(global, 0);
+
+		textDrawer = new AndroidTextDrawer(this);
 	}
 
 	private ArrayList<ShaderProgram> shaders;
@@ -138,18 +138,6 @@ public class GLESDrawContext extends GLDrawContext {
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, id);
 			lastGeometry = geometry;
 		}
-	}
-
-	private AndroidTextDrawer textDrawer;
-	private TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
-
-	public TextDrawer getTextDrawer(EFontSize size) {
-		if(textDrawer == null) textDrawer = new AndroidTextDrawer(this);
-
-		if (sizedTextDrawers[size.ordinal()] == null) {
-			sizedTextDrawers[size.ordinal()] = textDrawer.derive(size);
-		}
-		return sizedTextDrawers[size.ordinal()];
 	}
 
 	private int lastFormat = 0;

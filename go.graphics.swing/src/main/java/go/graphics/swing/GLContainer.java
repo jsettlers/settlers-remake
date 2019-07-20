@@ -64,13 +64,11 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 			if(caps.OpenGL20) {
 				context = new LWJGLDrawContext(caps, debug);
 			} else {
-				context = null;
+				errorGLVersion();
 			}
 		} catch(Throwable thrown) {
 			fatal(thrown.getLocalizedMessage());
 		}
-
-		if(context == null)	errorGLVersion();
 	}
 
 	private void errorGLVersion() {

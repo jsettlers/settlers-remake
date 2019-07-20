@@ -34,8 +34,6 @@ import go.graphics.MultiDrawHandle;
 import go.graphics.TextureHandle;
 import go.graphics.UnifiedDrawHandle;
 import go.graphics.swing.text.LWJGLTextDrawer;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
 
 @SuppressWarnings("WeakerAccess")
 public class LWJGLDrawContext extends GLDrawContext {
@@ -54,10 +52,8 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		init();
 
+		textDrawer = new LWJGLTextDrawer(this);
 	}
-
-	private TextDrawer[] sizedTextDrawers = new TextDrawer[EFontSize.values().length];
-	private LWJGLTextDrawer textDrawer = null;
 
 	private ArrayList<ShaderProgram> shaders;
 
@@ -148,23 +144,6 @@ public class LWJGLDrawContext extends GLDrawContext {
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
 			lastGeometry = geometry;
 		}
-	}
-
-	/**
-	 * Gets a text drawer for the given text size.
-	 *
-	 * @param size
-	 *            The size for the drawer.
-	 * @return An instance of a drawer for that size.
-	 */
-	
-	public TextDrawer getTextDrawer(EFontSize size) {
-		if(textDrawer == null) textDrawer = new LWJGLTextDrawer(this);
-
-		if (sizedTextDrawers[size.ordinal()] == null) {
-			sizedTextDrawers[size.ordinal()] = textDrawer.derive(size);
-		}
-		return sizedTextDrawers[size.ordinal()];
 	}
 
 	private int lastFormat = 0;
