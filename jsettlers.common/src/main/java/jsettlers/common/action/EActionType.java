@@ -169,9 +169,14 @@ public enum EActionType {
 	PAN_TO,
 
 	/**
-	 * Toggles fog of war.
+	 * Toggles fog of war if allowed by game rules.
 	 */
 	TOGGLE_FOG_OF_WAR,
+
+	/**
+	 * Disables for of war, when player have lost/won match.
+	 */
+	DISABLE_FOG_OF_WAR,
 
 	/**
 	 * Zoom in.

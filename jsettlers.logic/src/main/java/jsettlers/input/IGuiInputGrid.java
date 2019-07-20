@@ -72,6 +72,8 @@ public interface IGuiInputGrid {
 
 	void toggleFogOfWar();
 
+	void disableFogOfWar();
+
 	AbstractConstructionMarkableMap getConstructionMarksGrid();
 
 	/**

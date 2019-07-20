@@ -1974,6 +1974,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public final void disableFogOfWar() {
+			fogOfWar.setEnabled(false);
+		}
+
+		@Override
 		public AbstractConstructionMarkableMap getConstructionMarksGrid() {
 			return constructionMarksGrid;
 		}
