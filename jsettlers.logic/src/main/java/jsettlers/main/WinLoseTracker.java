@@ -25,9 +25,11 @@ import jsettlers.common.buildings.EBuildingType;
 class WinLoseTracker implements INetworkTimerable {
 
 	private MainGrid mainGrid;
+	private byte localPlayerId;
 
-	public WinLoseTracker(MainGrid grid) {
-		mainGrid = grid;
+	public WinLoseTracker(MainGrid mainGrid, byte localPlayerId) {
+		this.mainGrid = mainGrid;
+		this.localPlayerId = localPlayerId;
 	}
 
 	public void timerEvent() {
@@ -67,6 +69,11 @@ class WinLoseTracker implements INetworkTimerable {
 			if(allEnemiesDefeated) {
 				player.setWinState(EWinState.WON);
 				System.out.println(player + " has won the game");
+			}
+
+			// Disale fog of war if local player has won/lost game
+			if(player.getPlayerId() == localPlayerId && player.getWinState() != EWinState.UNDECIDED) {
+				mainGrid.disableFogOfWar();
 			}
 		}
 	}

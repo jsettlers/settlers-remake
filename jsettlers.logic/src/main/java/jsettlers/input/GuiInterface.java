@@ -286,10 +286,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				}
 				break;
 
-			case DISABLE_FOG_OF_WAR:
-				grid.disableFogOfWar();
-				break;
-
 			case SAVE:
 				taskScheduler.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE, playerId));
 				break;

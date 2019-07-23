@@ -252,7 +252,7 @@ public class JSettlersGame {
 				aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
-				winLoseTracker = new WinLoseTracker(mainGrid);
+				winLoseTracker = new WinLoseTracker(mainGrid, playerId);
 				networkConnector.getGameClock().schedule(winLoseTracker, (short) 5000);
 
 				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED!

@@ -384,7 +384,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return;
 		}
 		Color color = (localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED);
-		fireAction(new Action(EActionType.DISABLE_FOG_OF_WAR));
 		final String msg = Labels.getString("winstate_" + localPlayer.getWinState());
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
 		drawer.setColor(color);

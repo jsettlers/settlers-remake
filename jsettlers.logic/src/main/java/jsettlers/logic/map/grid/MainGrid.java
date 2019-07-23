@@ -517,6 +517,10 @@ public final class MainGrid implements Serializable {
 		partitionsGrid.initWithPlayerSettings(playerSettings);
 	}
 
+	public final void disableFogOfWar() {
+		fogOfWar.setEnabled(false);
+	}
+
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
@@ -1971,11 +1975,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final void toggleFogOfWar() {
 			fogOfWar.toggleEnabled();
-		}
-
-		@Override
-		public final void disableFogOfWar() {
-			fogOfWar.setEnabled(false);
 		}
 
 		@Override
