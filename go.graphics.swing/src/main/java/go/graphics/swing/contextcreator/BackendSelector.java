@@ -68,6 +68,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 		EBackendType real_backend = backend;
 
 		if(backend == null || backend.cc_class == null) {
+			// first of all usable and suitable backends sorted for being default
 			real_backend = availableBackends().filter(current_backend -> current_backend.default_for == Platform.get()).sorted().findFirst().orElse(FALLBACK_BACKEND);
 		}
 
