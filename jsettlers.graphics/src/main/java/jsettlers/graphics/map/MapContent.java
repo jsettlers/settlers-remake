@@ -484,12 +484,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
 
 		boolean linePartiallyVisible = true;
-		//for (int line = 0; line < area.getHeight() + 50 && linePartiallyVisible; line++) {
-
-		int firstLine = area.getHeight() + 49;
-		if(firstLine + area.getMinY() >= height) firstLine = height - area.getMinY() - 1;
-
-		for(int line = firstLine; line  >= 0; line--) {
+		for(int line = 0; line < area.getHeight() + 50 && linePartiallyVisible; line++) {
 			int y = area.getLineY(line);
 			if (y < 0) {
 				continue;
@@ -501,10 +496,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			//for (int x = startX; x <= endX; x++) {
-			for (int x = endX; x >= startX; x--) {
+			for(int x = startX; x <= endX; x++) {
 				drawTile(x, y);
-				if (!linePartiallyVisible) {
+				if(!linePartiallyVisible) {
 					double drawSpaceY = this.context.getConverter().getViewY(x, y, heightGrid == null ? this.context.getHeight(x, y) : heightGrid[y*width+x]);
 					if (drawSpaceY > bottomDrawY) {
 						linePartiallyVisible = true;
@@ -513,9 +507,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 		}
 
-		if (placementBuilding != null) {
+		if(placementBuilding != null) {
 			ShortPoint2D underMouse = this.context.getPositionOnScreen((float) mousePosition.getX(), (float) mousePosition.getY());
-			if (0 <= underMouse.x && underMouse.x < width && 0 <= underMouse.y && underMouse.y < height) {
+			if(0 <= underMouse.x && underMouse.x < width && 0 <= underMouse.y && underMouse.y < height) {
 				IMapObject mapObject = map.getMapObjectsAt(underMouse.x, underMouse.y);
 
 				if (mapObject != null && mapObject.getMapObject(EMapObjectType.CONSTRUCTION_MARK) != null) { // if there is a construction mark
@@ -524,7 +518,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 		}
 
-		if (debugColorMode != EDebugColorModes.NONE) {
+		if(debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
 		}
 	}
@@ -533,34 +527,26 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		int tileIndex = x+y*width;
 
 		IMapObject object = objectsGrid != null ? objectsGrid[tileIndex] : map.getMapObjectsAt(x, y);
-		if (object != null) {
+		if(object != null) {
 			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
-		if (y > 3) {
-			object = objectsGrid != null ? objectsGrid[tileIndex-3*width] :map.getMapObjectsAt(x, y - 3);
-			if (object != null && object.getObjectType() == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
-				this.objectDrawer.drawStockFront(x, y - 3, (IBuilding) object);
-			}
-		}
-		if (y < height - 3) {
+		if(y < height - 3) {
 			object = objectsGrid != null ? objectsGrid[tileIndex+3*width] : map.getMapObjectsAt(x, y + 3);
-			if (object != null) {
+			if(object != null) {
 				EMapObjectType type = object.getObjectType();
-				if (type == EMapObjectType.BUILDING && ((IBuilding) object).getBuildingType() == EBuildingType.STOCK) {
-					this.objectDrawer.drawStockBack(x, y + 3, (IBuilding) object);
-				} else if (type == EMapObjectType.DOCK) {
+				if(type == EMapObjectType.DOCK) {
 					this.objectDrawer.drawDock(x, y + 3, object);
 				}
 			}
 		}
 
 		IMovable movable = movableGrid != null ? movableGrid[tileIndex] : map.getMovableAt(x, y);
-		if (movable != null) {
+		if(movable != null) {
 			this.objectDrawer.draw(movable);
 		}
 
-		if (borderGrid != null ? borderGrid.get(tileIndex) : map.isBorder(x, y)) {
+		if(borderGrid != null ? borderGrid.get(tileIndex) : map.isBorder(x, y)) {
 			byte player = map.getPlayerIdAt(x, y);
 			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}

@@ -262,38 +262,6 @@ public class MapObjectDrawer {
 		draw(image, x, y,  BACKGROUND_Z, getColor(object), color);
 	}
 
-	public void drawStockBack(int x, int y, IBuilding stock) {
-		forceSetup();
-		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
-		if (fogStatus == 0) {
-			return;
-		}
-		float color = getColor(fogStatus);
-		float state = stock.getStateProgress();
-		if (state >= 0.99) {
-			ImageLink[] images = EBuildingType.STOCK.getImages();
-			draw(imageProvider.getImage(images[0]), x, y, 0, color);
-			draw(imageProvider.getImage(images[1]), x, y, 0, color);
-			draw(imageProvider.getImage(images[5]), x, y, 0, color);
-		}
-	}
-
-	public void drawStockFront(int x, int y, IBuilding stock) {
-		forceSetup();
-		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
-		if (fogStatus == 0) {
-			return;
-		}
-		float color = getColor(fogStatus);
-		float state = stock.getStateProgress();
-		if (state >= 0.99) {
-			ImageLink[] images = EBuildingType.STOCK.getImages();
-			for (int i = 2; i < 5; i++) {
-				draw(imageProvider.getImage(images[i]), x, y, 0, color);
-			}
-		}
-	}
-
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
 		byte fogOfWarVisibleStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		EDirection direction = ship.getDirection();
@@ -579,11 +547,7 @@ public class MapObjectDrawer {
 				break;
 
 			case BUILDING:
-				IBuilding building = (IBuilding) object;
-				if (building.getBuildingType() == EBuildingType.STOCK && building.getStateProgress() >= 0.99) {
-					return;
-				}
-				drawBuilding(x, y, building, color);
+				drawBuilding(x, y, (IBuilding) object, color);
 				break;
 
 			case PLACEMENT_BUILDING:
@@ -1252,6 +1216,12 @@ public class MapObjectDrawer {
 				}
 				playSound(building, SOUND_MILL, x, y);
 
+			} else if(type == EBuildingType.STOCK) {
+				float[] zvalues = new float[] {-4*z_per_y, -2*z_per_y, 2*z_per_y, 3*z_per_y, 2*z_per_y, -2*z_per_y};
+				ImageLink[] images = EBuildingType.STOCK.getImages();
+				for (int i = 0; i != 6; i++) {
+					draw(imageProvider.getImage(images[i]), x, y, zvalues[i], color);
+				}
 			} else {
 				ImageLink[] images = type.getImages();
 				if (images.length > 0) {
