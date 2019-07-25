@@ -50,7 +50,7 @@ public class DistancesCalculationAlgorithm {
 
 					if(dx >= 0 && dy >= 0 && dx < width && dy < height) {
 						// set neighbors for next run
-						neighbors.set(width * dy + dy);
+						neighbors.set(width * dy + dx);
 					}
 				}
 			}
