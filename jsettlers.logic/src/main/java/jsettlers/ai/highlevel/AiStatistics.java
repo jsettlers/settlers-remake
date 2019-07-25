@@ -38,7 +38,6 @@ import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -295,7 +294,7 @@ public class AiStatistics {
 			int dx = direction.gridDeltaX + x;
 			int dy = direction.gridDeltaY + y;
 
-			if(dx > 0 && dy > 0 && dx < width && dy < height && isIngestibleByPioneersOf(dx, dy, player)) {
+			if(dx >= 0 && dy >= 0 && dx < width && dy < height && isIngestibleByPioneersOf(dx, dy, player)) {
 				return true;
 			}
 		}

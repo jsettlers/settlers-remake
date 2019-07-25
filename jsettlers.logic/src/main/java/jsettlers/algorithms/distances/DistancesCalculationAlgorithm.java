@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.algorithms.distances;
 
-import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 
@@ -49,7 +48,7 @@ public class DistancesCalculationAlgorithm {
 					int dx = direction.gridDeltaX + x;
 					int dy = direction.gridDeltaY + y;
 
-					if(dx > 0 && dy > 0 && dx < width && dy < height) {
+					if(dx >= 0 && dy >= 0 && dx < width && dy < height) {
 						// set neighbors for next run
 						neighbors.set(width * dy + dy);
 					}
@@ -74,7 +73,7 @@ public class DistancesCalculationAlgorithm {
 						int dx = direction.gridDeltaX + x;
 						int dy = direction.gridDeltaY + y;
 
-						if(dx > 0 && dy > 0 && dx < width && dy < height) {
+						if(dx >= 0 && dy >= 0 && dx < width && dy < height) {
 							// set neighbors for next run
 							next.set(width * dy + dx);
 						}
