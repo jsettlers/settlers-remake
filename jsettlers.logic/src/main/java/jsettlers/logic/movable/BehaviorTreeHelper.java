@@ -203,7 +203,7 @@ public final class BehaviorTreeHelper {
 	}
 
 	public static void convertTo(Entity entity, EMovableType type) {
-		Entity blueprint = EntityFactory.createEntity(entity.gameFieldComponent().movableGrid, type, entity.movableComponent().getPos(), entity.movableComponent().getPlayer());
+		Entity blueprint = EntityFactory.createEntity(entity.gameFieldComponent().movableGrid, type, entity.movableComponent().getPosition(), entity.movableComponent().getPlayer());
 		entity.convertTo(blueprint);
 	}
 

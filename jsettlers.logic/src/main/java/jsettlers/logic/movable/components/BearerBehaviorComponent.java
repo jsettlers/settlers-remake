@@ -68,7 +68,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 							selector(
 								memSequence(
 									action("go to the tool", c -> {
-										c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPos());
+										c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPosition());
 									}),
 									waitForTargetReachedAndFailIfNotReachable(),
 									condition("can we pick it up?", BearerBehaviorComponent::canTakeMaterial),
@@ -98,7 +98,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 					selector(
 						memSequence("go to materialOffer and take material",
 							action(c -> {
-								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPos());
+								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPosition());
 							}),
 							waitForTargetReachedAndFailIfNotReachable(),
 							condition(BearerBehaviorComponent::canTakeMaterial),
@@ -118,7 +118,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 					selector(
 						memSequence("go to request & drop material",
 							action(c -> {
-								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().deliveryRequest.getPos());
+								c.entity.steeringComponent().setTarget(c.entity.bearerComponent().deliveryRequest.getPosition());
 							}),
 							waitForTargetReachedAndFailIfNotReachable(),
 							condition(c -> c.entity.bearerComponent().materialType.isDroppable()),
@@ -183,7 +183,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 	private static Action<Context> tryTakeMaterialFromMap() {
 		return new Action<>(c -> {
 			EMaterialType materialToTake = c.entity.bearerComponent().materialType;
-			if (c.entity.gameFieldComponent().movableGrid.takeMaterial(c.entity.movableComponent().getPos(), materialToTake)) {
+			if (c.entity.gameFieldComponent().movableGrid.takeMaterial(c.entity.movableComponent().getPosition(), materialToTake)) {
 				c.entity.materialComponent().setMaterial(materialToTake);
 				c.entity.bearerComponent().materialOffer.offerTaken();
 				return NodeStatus.SUCCESS;
@@ -208,8 +208,8 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> tryFulfillRequest() {
 		return new Action<>(c -> {
-			if (c.entity.bearerComponent().deliveryRequest.isActive() && c.entity.bearerComponent().deliveryRequest.getPos().equals(c.entity.movableComponent().getPos())) {
-				c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPos(), c.entity.bearerComponent().materialType, false, false);
+			if (c.entity.bearerComponent().deliveryRequest.isActive() && c.entity.bearerComponent().deliveryRequest.getPosition().equals(c.entity.movableComponent().getPosition())) {
+				c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPosition(), c.entity.bearerComponent().materialType, false, false);
 				c.entity.bearerComponent().deliveryRequest.deliveryFulfilled();
 				c.entity.materialComponent().setMaterial(EMaterialType.NO_MATERIAL);
 				return NodeStatus.SUCCESS;
@@ -220,7 +220,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> dropMaterial() {
 		return new Action<>(c -> {
-			c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPos(), c.entity.bearerComponent().materialType, true, false);
+			c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPosition(), c.entity.bearerComponent().materialType, true, false);
 			c.entity.bearerComponent().deliveryRequest.deliveryFulfilled();
 			c.entity.materialComponent().setMaterial(EMaterialType.NO_MATERIAL);
 		});
@@ -228,7 +228,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 
 	private static boolean canTakeMaterial(Context c) {
 		EMaterialType materialToTake = c.entity.bearerComponent().materialType;
-		return c.entity.gameFieldComponent().movableGrid.canTakeMaterial(c.entity.movableComponent().getPos(), materialToTake);
+		return c.entity.gameFieldComponent().movableGrid.canTakeMaterial(c.entity.movableComponent().getPosition(), materialToTake);
 	}
 
 	private static void resetJob(Context c) {

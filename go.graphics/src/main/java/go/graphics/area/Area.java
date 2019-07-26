@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import go.graphics.DrawmodeListener;
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
@@ -60,6 +61,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	private Region activeRegion = null;
 
+	private DrawmodeListener drawmodeListener;
+
 	/**
 	 * Creates a new area.
 	 */
@@ -100,6 +103,10 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 		regions.add(region);
 		regionPositions = null;
 		region.addRedrawListener(this);
+	}
+
+	public void setDrawmodeListener(DrawmodeListener drawmodeListener) {
+		this.drawmodeListener = drawmodeListener;
 	}
 
 	/**
@@ -374,6 +381,12 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	 */
 	@Override
 	public void handleEvent(GOEvent event) {
+
+		if(event instanceof GOKeyEvent) {
+			if ("m".equalsIgnoreCase(((GOKeyEvent) event).getKeyCode())) {
+				if(drawmodeListener != null) drawmodeListener.changeDrawMode();
+			}
+		}
 
 		if (event instanceof GOCommandEvent) {
 			handleCommandEvent((GOCommandEvent) event);

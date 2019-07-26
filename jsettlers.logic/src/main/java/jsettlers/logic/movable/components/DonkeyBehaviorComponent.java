@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.components;
 
+import java8.util.Optional;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.movable.Context;
 import jsettlers.logic.movable.Requires;
@@ -8,7 +9,7 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 import jsettlers.logic.movable.simplebehaviortree.nodes.MemSelector;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Repeat;
-import jsettlers.logic.movable.strategies.trading.IDonkeyMarket;
+import jsettlers.logic.movable.strategies.trading.ITradeBuilding;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.alwaysSucceed;
@@ -61,10 +62,10 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
 						selector(
 							debug("fulfill request", memSequence(
 								debug("go to market", action(c -> {
-									c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().getMarket().getDoor());
+									c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().getMarket().getPickUpPosition());
 								})),
 								debug("wait for target reached", waitForTargetReachedAndFailIfNotReachable()),
-								debug("check for pending transport jobs", condition(c -> c.entity.donkeyComponent().getMarket().needsDonkey())),
+								debug("check for pending transport jobs", condition(c -> c.entity.donkeyComponent().getMarket().needsTrader())),
 								debug("take material", tryTakeMaterialFromMarket()),
 								debug("optionally take a second material", alwaysSucceed(tryTakeMaterialFromMarket())),
 								setAttackableWhile(true,
@@ -86,7 +87,7 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
 									debug("try find new market", tryFindNewMarket()),
 									debug("go back to market", memSequence(
 										action(c -> {
-											c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().getMarket().getDoor());
+											c.entity.steeringComponent().setTarget(c.entity.donkeyComponent().getMarket().getPickUpPosition());
 										}),
 										alwaysSucceed(debug("wait", waitForTargetReachedAndFailIfNotReachable())),
 										action(c -> {
@@ -121,23 +122,23 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
 		return new Action<>(c -> {
 			EMaterialType material = c.entity.multiMaterialComponent().removeMaterial();
 			if (material == EMaterialType.NO_MATERIAL) { return NodeStatus.FAILURE; }
-			c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPos(), material, true, true);
+			c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPosition(), material, true, true);
 			return NodeStatus.SUCCESS;
 		});
 	}
 
 	private static Action<Context> tryTakeMaterialFromMarket() {
 		return new Action<>(c -> {
-			EMaterialType material = c.entity.donkeyComponent().getMarket().tryToTakeDonkeyMaterial();
-			if (material == null || material == EMaterialType.NO_MATERIAL) { return NodeStatus.FAILURE; }
-			c.entity.multiMaterialComponent().addMaterial(material);
+			Optional<ITradeBuilding.MaterialTypeWithCount> material = c.entity.donkeyComponent().getMarket().tryToTakeMaterial(1);
+			if (!material.isPresent()) { return NodeStatus.FAILURE; }
+			c.entity.multiMaterialComponent().addMaterial(material.get().materialType);
 			return NodeStatus.SUCCESS;
 		});
 	}
 
 	private static Action<Context> tryFindNewMarket() {
 		return new Action<>(c -> {
-			IDonkeyMarket market = c.entity.donkeyComponent().findNextMarketNeedingDonkey();
+			ITradeBuilding market = c.entity.donkeyComponent().findTradeBuildingWithWork();
 			if (market == null) { return NodeStatus.FAILURE; }
 			c.entity.donkeyComponent().setMarket(market);
 			return NodeStatus.SUCCESS;

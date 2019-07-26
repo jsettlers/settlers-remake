@@ -72,7 +72,7 @@ public class SteeringComponent extends Component {
 	}
 
 	public boolean setTarget(ShortPoint2D targetPos) {
-		if (movableComponent.getPos().equals(targetPos)) {
+		if (movableComponent.getPosition().equals(targetPos)) {
 			entity.raiseNotification(new TargetReachedNotification());
 			return true;
 		}
@@ -104,7 +104,7 @@ public class SteeringComponent extends Component {
 					followPath();
 				})
 			),
-			guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPos().x, movableComponent.getPos().y), true,
+			guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPosition().x, movableComponent.getPosition().y), true,
 				action(c -> {
 					goToNonBlockedOrProtectedPosition();
 				})
@@ -144,7 +144,7 @@ public class SteeringComponent extends Component {
 
 	private boolean goToRandomDirection(ILocatable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-		EDirection pushedFromDir = EDirection.getDirection(movableComponent.getPos(), pushingMovable.getPos());
+		EDirection pushedFromDir = EDirection.getDirection(movableComponent.getPosition(), pushingMovable.getPosition());
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
@@ -166,12 +166,12 @@ public class SteeringComponent extends Component {
 
 		ILogicMovable blockingMovable = gameFieldComponent.movableGrid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
-			if (gameFieldComponent.movableGrid.isValidNextPathPosition(movableComponent, path.getNextPos(), path.getTargetPos())) { // next position is valid
+			if (gameFieldComponent.movableGrid.isValidNextPathPosition(movableComponent, path.getNextPos(), path.getTargetPosition())) { // next position is valid
 				goSingleStep(path.getNextPos());
 				path.goToNextStep();
 			} else { // next position is invalid
 
-				Path newPath = gameFieldComponent.movableGrid.calculatePathTo(movableComponent, path.getTargetPos()); // try to find a new path
+				Path newPath = gameFieldComponent.movableGrid.calculatePathTo(movableComponent, path.getTargetPosition()); // try to find a new path
 
 				if (newPath == null) { // no path found
 					path = null;
@@ -190,7 +190,7 @@ public class SteeringComponent extends Component {
 	}
 
 	private void goToNonBlockedOrProtectedPosition() {
-		Path newPath = gameFieldComponent.movableGrid.searchDijkstra(movableComponent, movableComponent.getPos().x, movableComponent.getPos().y, (short) 50, ESearchType
+		Path newPath = gameFieldComponent.movableGrid.searchDijkstra(movableComponent, movableComponent.getPosition().x, movableComponent.getPosition().y, (short) 50, ESearchType
 			.NON_BLOCKED_OR_PROTECTED);
 		if (newPath == null) {
 			entity.kill();
@@ -207,7 +207,7 @@ public class SteeringComponent extends Component {
 	}
 
 	private void goSingleStep(ShortPoint2D targetPosition) {
-		movableComponent.setViewDirection(EDirection.getDirection(movableComponent.getPos(), targetPosition));
+		movableComponent.setViewDirection(EDirection.getDirection(movableComponent.getPosition(), targetPosition));
 		movableComponent.setPos(targetPosition);
 		animationComponent.startAnimation(EMovableAction.WALKING, movableComponent.getMovableType().getStepDurationMs());
 		animationComponent.switchStep();
@@ -219,7 +219,7 @@ public class SteeringComponent extends Component {
 	 * @return true if the movable moves to flock, false if no flocking is required.
 	 */
 	private boolean flockToDecentralize() {
-		ShortPoint2D decentVector = gameFieldComponent.movableGrid.calcDecentralizeVector(movableComponent.getPos().x, movableComponent.getPos().y);
+		ShortPoint2D decentVector = gameFieldComponent.movableGrid.calcDecentralizeVector(movableComponent.getPosition().x, movableComponent.getPosition().y);
 
 		EDirection randomDirection = movableComponent.getViewDirection().getNeighbor(MatchConstants.random().nextInt(-1, 1));
 		int dx = randomDirection.gridDeltaX + decentVector.x;
@@ -243,7 +243,7 @@ public class SteeringComponent extends Component {
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
 	final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
-		ShortPoint2D targetPosition = direction.getNextHexPoint(movableComponent.getPos());
+		ShortPoint2D targetPosition = direction.getNextHexPoint(movableComponent.getPosition());
 
 		switch (mode) {
 			case GO_IF_ALLOWED_WAIT_TILL_FREE: {
@@ -260,7 +260,7 @@ public class SteeringComponent extends Component {
 					break;
 				}
 			case GO_IF_FREE:
-				if (gameFieldComponent.movableGrid.isFreePosition(targetPosition)) {
+				if (gameFieldComponent.movableGrid.isFreePosition(targetPosition.x, targetPosition.y)) {
 					goSingleStep(targetPosition);
 					return true;
 				} else {

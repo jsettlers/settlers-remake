@@ -14,19 +14,16 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
-
-import java.awt.image.BufferedImage;
-import java.nio.ShortBuffer;
-
 import jsettlers.common.Color;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.image.reader.ImageMetadata;
+import jsettlers.graphics.map.draw.DrawBuffer;
 
 /**
  * This is the base for all images that are directly loaded from the image file.
@@ -332,6 +329,16 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
+	}
+
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
+		drawAt(gl, buffer, viewX, viewY, iColor);
+	}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
+		drawAt(gl, buffer, viewX, viewY, iColor);
 	}
 
 	protected float convertU(float relativeU) {

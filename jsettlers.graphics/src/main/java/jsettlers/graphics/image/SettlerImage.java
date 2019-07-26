@@ -30,6 +30,7 @@ import jsettlers.graphics.image.reader.ImageMetadata;
 public class SettlerImage extends SingleImage {
 
 	private SingleImage torso = null;
+	private SingleImage shadow = null;
 
 	/**
 	 * Creates a new settler image.
@@ -71,6 +72,10 @@ public class SettlerImage extends SingleImage {
 		this.torso = torso;
 	}
 
+	public void setShadow(SingleImage shadow) {
+		this.shadow = shadow;
+	}
+
 	/**
 	 * Gets the torso for this image.
 	 * 
@@ -94,19 +99,39 @@ public class SettlerImage extends SingleImage {
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, int iColor) {
+					   float viewY, int iColor) {
 		super.drawAt(gl, buffer, viewX, viewY, iColor);
 		if (this.torso != null) {
-			torso.drawAt(gl, buffer, viewX, viewY, iColor);
+			this.torso.drawAt(gl, buffer, viewX, viewY, iColor);
+		}
+		if (this.shadow != null) {
+			this.shadow.drawAt(gl, buffer, viewX, viewY, -1);
+		}
+	}
+
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+					   float viewY, int iColor) {
+		super.drawAt(gl, buffer, viewX, viewY, iColor);
+	}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+					   float viewY, int iColor) {
+		if (this.shadow != null) {
+			this.shadow.drawAt(gl, buffer, viewX, viewY, -1);
 		}
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, Color color, float multiply) {
-		super.drawAt(gl, buffer, viewX, viewY, Color.WHITE, multiply);
+		super.drawAt(gl, buffer, viewX, viewY, dimColor(Color.WHITE, multiply));
+		if (this.shadow != null) {
+			this.shadow.drawAt(gl, buffer, viewX, viewY, -1);
+		}
 		if (this.torso != null) {
-			torso.drawAt(gl, buffer, viewX, viewY, dimColor(color, multiply));
+			this.torso.drawAt(gl, buffer, viewX, viewY, dimColor(color, multiply));
 		}
 	}
 }

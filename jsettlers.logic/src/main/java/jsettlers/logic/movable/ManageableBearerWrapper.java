@@ -23,8 +23,8 @@ public final class ManageableBearerWrapper implements IManageableBearer {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
-		return entity.getComponent(MovableComponent.class).getPos();
+	public ShortPoint2D getPosition() {
+		return entity.getComponent(MovableComponent.class).getPosition();
 	}
 
 	@Override

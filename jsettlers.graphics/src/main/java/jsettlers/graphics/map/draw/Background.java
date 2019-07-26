@@ -1187,7 +1187,7 @@ public class Background implements IGraphicsBackgroundListener {
 		try {
 			GLDrawContext gl = context.getGl();
 			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			mapViewResized = geometryhandle == null || !geometryhandle.isValid() || screenArea.getLineLength() + 1 != bufferWidth || screenArea.getLines() != bufferHeight;
+			mapViewResized = geometryhandle == null || !geometryhandle.isValid() || screenArea.getWidth() + 1 != bufferWidth || screenArea.getHeight() != bufferHeight;
 			if (mapViewResized) {
 				regenerateGeometry(gl, screenArea);
 			}
@@ -1199,7 +1199,7 @@ public class Background implements IGraphicsBackgroundListener {
 			try {
 				gl.glTranslatef(0, 0, -.1f);
 				gl.glScalef(1, 1, 0);
-				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
+				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight());
 				gl.color(1, 1, 1, 1);
 				gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), geometryhandle, geometrytirs);
 			} finally {
@@ -1221,8 +1221,8 @@ public class Background implements IGraphicsBackgroundListener {
 		if (geometryhandle != null && geometryhandle.isValid()) {
 			geometryhandle.delete();
 		}
-		bufferWidth = niceRoundUp(screenArea.getLineLength() + 1);
-		bufferHeight = niceRoundUp(screenArea.getLines());
+		bufferWidth = niceRoundUp(screenArea.getWidth() + 1);
+		bufferHeight = niceRoundUp(screenArea.getHeight());
 		int count = bufferHeight * bufferWidth;
 		fogOfWarStatus = new byte[count * 4];
 		geometryInvalid = new BitSet(count);

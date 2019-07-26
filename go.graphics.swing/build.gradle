@@ -1,32 +1,32 @@
 apply plugin: 'java'
 
+def lwjgl_version="3.1.6"
+
 dependencies {
     implementation project(':go.graphics')
 
-    implementation "org.jogamp.gluegen:gluegen-rt:2.3.2"
-    implementation "org.jogamp.jogl:jogl-all:2.3.2"
+    compile "org.lwjgl:lwjgl:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-opengl:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-egl:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-jawt:"+lwjgl_version
 
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-aarch64"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-armv6"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-amd64"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6hf"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-i586"
+    compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-linux"
+    compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-macos"
+    compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-windows"
+
+    compile "org.lwjgl:lwjgl-opengl:"+lwjgl_version+":natives-linux"
+    compile "org.lwjgl:lwjgl-opengl:"+lwjgl_version+":natives-macos"
+    compile "org.lwjgl:lwjgl-opengl:"+lwjgl_version+":natives-windows"
+
+    compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-linux"
+    compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-macos"
+    compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-windows"
+
+
+    // macos support
+    compile "org.jogamp.gluegen:gluegen-rt:2.3.2"
+    compile "org.jogamp.jogl:jogl-all:2.3.2"
     runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-amd64"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-i586"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-amd64"
-    runtime "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-i586"
-
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-android-aarch64"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-android-armv6"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-amd64"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6hf"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-i586"
     runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-amd64"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-i586"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-windows-amd64"
-    runtime "org.jogamp.jogl:jogl-all:2.3.2:natives-windows-i586"
 }

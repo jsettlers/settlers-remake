@@ -92,7 +92,7 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill, IBuilding.
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return null;
 	}
 

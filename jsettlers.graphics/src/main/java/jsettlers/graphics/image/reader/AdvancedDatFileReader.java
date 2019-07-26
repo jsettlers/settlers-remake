@@ -14,6 +14,10 @@
  */
 package jsettlers.graphics.image.reader;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 import java8.util.stream.Collectors;
 import java8.util.stream.IntStreams;
 import jsettlers.graphics.image.GuiImage;
@@ -36,11 +40,6 @@ import jsettlers.graphics.image.reader.versions.DefaultGfxFolderMapping.DefaultD
 import jsettlers.graphics.image.sequence.ArraySequence;
 import jsettlers.graphics.image.sequence.Sequence;
 import jsettlers.graphics.image.sequence.SequenceList;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.List;
 
 import static jsettlers.graphics.image.reader.versions.GfxFolderMapping.DatFileMapping;
 
@@ -118,86 +117,86 @@ public class AdvancedDatFileReader implements DatFileReader {
 	 * Every dat file seems to have to start with this sequence.
 	 */
 	private static final byte[] FILE_START1 = {
-			0x04,
-			0x13,
-			0x04,
-			0x00,
-			0x0c,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x54,
-			0x00,
-			0x00,
-			0x00,
-			0x20,
-			0x00,
-			0x00,
-			0x00,
-			0x40,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x10,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-	};
+		0x04,
+		0x13,
+		0x04,
+		0x00,
+		0x0c,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x54,
+		0x00,
+		0x00,
+		0x00,
+		0x20,
+		0x00,
+		0x00,
+		0x00,
+		0x40,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x10,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		};
 	private static final byte[] FILE_START2 = {
-			0x00,
-			0x00,
-			0x1f,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00
+		0x00,
+		0x00,
+		0x1f,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00
 	};
 
 	private static final byte[] FILE_HEADER_END = {
-			0x04,
-			0x19,
-			0x00,
-			0x00,
-			0x0c,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00
+		0x04,
+		0x19,
+		0x00,
+		0x00,
+		0x0c,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+		0x00
 	};
 
 	private static final int SEQUENCE_TYPE_COUNT = 6;
-	private static final int ID_SETTLERS = 0x106;
-	private static final int ID_TORSOS = 0x3112;
-	private static final int ID_LANDSCAPE = 0x2412;
-	private static final int ID_SHADOWS = 0x5982;
+	private static final int ID_SETTLERS         = 0x106;
+	private static final int ID_TORSOS           = 0x3112;
+	private static final int ID_LANDSCAPE        = 0x2412;
+	private static final int ID_SHADOWS          = 0x5982;
 	// fullscreen images
-	private static final int ID_GUIS = 0x11306;
+	private static final int ID_GUIS             = 0x11306;
 
-	private final DatBitmapTranslator<SettlerImage> settlerTranslator;
-	private final DatBitmapTranslator<TorsoImage> torsoTranslator;
+	private final DatBitmapTranslator<SettlerImage>   settlerTranslator;
+	private final DatBitmapTranslator<TorsoImage>     torsoTranslator;
 	private final DatBitmapTranslator<LandscapeImage> landscapeTranslator;
-	private final DatBitmapTranslator<ShadowImage> shadowTranslator;
-	private final DatBitmapTranslator<GuiImage> guiTranslator;
+	private final DatBitmapTranslator<ShadowImage>    shadowTranslator;
+	private final DatBitmapTranslator<GuiImage>       guiTranslator;
 
 	private final DatFileMapping mapping;
 
-	private ByteReader reader = null;
-	private final File file;
+	private       ByteReader reader = null;
+	private final File       file;
 
 	/**
 	 * This is a list of file positions where the settler sequences start.
@@ -211,27 +210,33 @@ public class AdvancedDatFileReader implements DatFileReader {
 	/**
 	 * An array with the same length as settlers.
 	 */
-	private int[] torsoStarts;
+	private int[]             torsoStarts;
 	/**
 	 * An array with the same length as settlers.
 	 */
-	private int[] shadowStarts;
+	private int[]             shadowStarts;
 
 	/**
 	 * A list of loaded landscae images.
 	 */
-	private LandscapeImage[] landscapeImages = null;
+	private       LandscapeImage[]         landscapeImages   = null;
 	private final Sequence<LandscapeImage> landscapeSequence = new LandscapeImageSequence();
-	private int[] landscapeStarts;
+	private       int[]                    landscapeStarts;
 
-	private GuiImage[] guiImages = null;
-	private int[] guiStarts;
+	private       GuiImage[]         guiImages   = null;
+	private       int[]              guiStarts;
 	private final Sequence<GuiImage> guiSequence = new GuiImageSequence();
 
 	private final SequenceList<Image> directSettlerList;
 
-	private static final byte[] START = new byte[] {
-			0x02, 0x14, 0x00, 0x00, 0x08, 0x00, 0x00
+	private static final byte[] START = new byte[]{
+		0x02,
+		0x14,
+		0x00,
+		0x00,
+		0x08,
+		0x00,
+		0x00
 	};
 
 	private final DatFileType type;
@@ -253,25 +258,25 @@ public class AdvancedDatFileReader implements DatFileReader {
 		guiTranslator = new GuiTranslator(type);
 	}
 
-	public List<Long> getSettlersHashes() {
+	public Hashes getSettlersHashes() {
 		SequenceList<Image> settlers = getSettlers();
 
-		return IntStreams.range(0, settlers.size())
+		return new Hashes(IntStreams.range(0, settlers.size())
 				.mapToObj(settlers::get)
 				.map(sequence -> sequence.getImage(0))
 				.filter(image -> image instanceof SingleImage)
 				.map(image -> (SingleImage) image)
 				.map(SingleImage::hash)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 	}
 
-	public List<Long> getGuiHashes() {
+	public Hashes getGuiHashes() {
 		Sequence<GuiImage> sequence = getGuis();
 
-		return IntStreams.range(0, sequence.length())
+		return new Hashes(IntStreams.range(0, sequence.length())
 				.mapToObj(sequence::getImage)
 				.map(SingleImage::hash)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()));
 	}
 
 	/**
@@ -300,7 +305,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 		settlerSequences = new Sequence[settlerStarts.length];
 
 		int torsoDifference = settlerStarts.length - torsoStarts.length;
-		if (torsoDifference != 0) {
+		if (torsoDifference > 0) {
 			int[] oldTorsos = torsoStarts;
 			torsoStarts = new int[settlerStarts.length];
 			System.arraycopy(oldTorsos, 0, torsoStarts, torsoDifference, oldTorsos.length);
@@ -310,12 +315,64 @@ public class AdvancedDatFileReader implements DatFileReader {
 		}
 
 		int shadowDifference = settlerStarts.length - shadowStarts.length;
-		if (shadowStarts.length < settlerStarts.length) {
+		int i;
+		if (shadowDifference > 0) {
 			int[] oldShadows = shadowStarts;
 			shadowStarts = new int[settlerStarts.length];
-			System.arraycopy(oldShadows, 0, shadowStarts, shadowDifference, oldShadows.length);
-			for (int i = 0; i < shadowDifference; i++) {
-				torsoStarts[i] = -1;
+			if (shadowDifference == 8 || shadowDifference == 7) {
+				// push shadows to end of settler images
+				for (i = 0; i < shadowDifference; i++) {
+					shadowStarts[i] = -1;
+				}
+				for (; i < settlerStarts.length; i++) {
+					shadowStarts[i] = oldShadows[i - shadowDifference];
+				}
+			} else {
+				// push shadows to beginning of settler images
+				for (i = 0; i < oldShadows.length; i++) {
+					shadowStarts[i] = oldShadows[i];
+				}
+				for (; i < settlerStarts.length; i++) {
+					shadowStarts[i] = -1;
+				}
+			}
+			if (shadowDifference == 33) { // change shadows in file 1:
+				shadowStarts[106] = -1;
+				for (i = 105; i >= 33; i--) {
+					shadowStarts[i] = shadowStarts[i - 2]; // material...
+				}
+				shadowStarts[32] = -1;
+				for (i = 31; i >= 27; i--) {
+					shadowStarts[i] = shadowStarts[i - 1]; // decorations
+				}
+				shadowStarts[26] = -1; // wave gets no shadow
+			} else if (shadowDifference == 26) { // change shadows in file 13:
+				for (i = 0; i < 27; i++) {
+					shadowStarts[i] = shadowStarts[i + 3];
+				}
+				for (i = 27; i < 36; i++) {
+					shadowStarts[i] = shadowStarts[i + 2];
+				}
+				shadowStarts[28] = -1; // market place gets no shadow (has it already)
+				shadowStarts[44] = shadowStarts[38]; // dock
+				shadowStarts[45] = shadowStarts[39]; // harbour
+				for (i = 36; i < 44; i++) {
+					shadowStarts[i] = -1; // rest has no shadow
+				}
+				for (i = 46; i < shadowStarts.length; i++) {
+					shadowStarts[i] = -1; // rest has no shadow
+				}
+			} else if (shadowDifference == 7) { // change shadows in file 6:
+				shadowStarts[18] = shadowStarts[10]; // donkey
+				shadowStarts[17] = shadowStarts[9]; // donkey
+				shadowStarts[16] = shadowStarts[8]; // donkey
+				shadowStarts[15] = shadowStarts[7]; // donkey
+			}
+		} else if (shadowDifference == 0) {
+			if (settlerStarts.length == 239) { // change shadows in file 11:
+				for (i = 171; i >= 13; i--) {
+					shadowStarts[i] = shadowStarts[i - 13]; // several specialists
+				}
 			}
 		}
 	}
@@ -341,7 +398,7 @@ public class AdvancedDatFileReader implements DatFileReader {
 
 		if (fileSize != fileLength) {
 			throw new IOException(
-					"The length stored in the dat file is not the file length.");
+				"The length stored in the dat file is not the file length.");
 		}
 
 		// ignore unknown bytes.
@@ -477,6 +534,17 @@ public class AdvancedDatFileReader implements DatFileReader {
 				reader.skipTo(torsoPositions[i]);
 				TorsoImage torso = DatBitmapReader.getImage(torsoTranslator, reader);
 				images[i].setTorso(torso);
+			}
+		}
+
+		int shadowPosition = shadowStarts[theseGraphicsFilesIndex];
+		if (shadowPosition >= 0) {
+			long[] shadowPositions = readSequenceHeader(shadowPosition);
+			for (int i = 0; i < shadowPositions.length
+				&& i < framePositions.length; i++) {
+				reader.skipTo(shadowPositions[i]);
+				ShadowImage shadow = DatBitmapReader.getImage(shadowTranslator, reader);
+				images[i].setShadow(shadow);
 			}
 		}
 

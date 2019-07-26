@@ -14,7 +14,7 @@
  *******************************************************************************/
 package go.graphics.swing.opengl;
 
-import com.jogamp.opengl.GL2;
+import org.lwjgl.opengl.GLCapabilities;
 
 public final class TextureCalculator {
 	private TextureCalculator() {
@@ -24,14 +24,14 @@ public final class TextureCalculator {
 	/**
 	 * Makes the size a power of two, if needed.
 	 * 
-	 * @param gl
-	 *            The gl context
+	 * @param glcaps
+	 *            The opengl capabilities
 	 * @param width
 	 *            THe old size
 	 * @return The good size.
 	 */
-	public static int supportedTextureSize(GL2 gl, int width) {
-		if (gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two")) {
+	public static int supportedTextureSize(GLCapabilities glcaps, int width) {
+		if (glcaps.GL_ARB_texture_non_power_of_two) {
 			return width;
 		} else {
 			int real = 1;

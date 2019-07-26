@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
-import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * A simple slot queue that supports {@link #pushLast(int, ElementType)} and {@link #popFront(int)} on the single slots.
@@ -120,7 +120,7 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 			Iterator<ElementType> iter = slotLists[idx].iterator();
 			while (iter.hasNext()) {
 				ElementType element = iter.next();
-				if (position.equals(element.getPos())) {
+				if (position.equals(element.getPosition())) {
 					iter.remove();
 					otherSlotQueue.pushLast(idx, element);
 				}

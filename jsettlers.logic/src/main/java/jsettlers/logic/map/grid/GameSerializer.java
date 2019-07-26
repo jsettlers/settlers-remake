@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,14 +14,16 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
-import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.loading.MapLoadException;
-import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.MovableDataManager;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.trading.HarborBuilding;
+import jsettlers.logic.buildings.trading.MarketBuilding;
+import jsettlers.logic.map.loading.MapLoadException;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableDataManager;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
@@ -41,6 +43,7 @@ public class GameSerializer {
 	 * @param oos
 	 * 		The output file/stream for the game.
 	 * @throws IOException
+	 * IOException
 	 */
 	public void save(MainGrid grid, final ObjectOutputStream oos) throws IOException {
 		GameSaveTask runnable = new GameSaveTask(grid, oos);
@@ -77,7 +80,7 @@ public class GameSerializer {
 	}
 
 	private final class GameSaveTask implements Runnable {
-		private final MainGrid grid;
+		private final MainGrid           grid;
 		private final ObjectOutputStream oos;
 		Throwable exception = null;
 
@@ -90,7 +93,9 @@ public class GameSerializer {
 		public void run() {
 			try {
 				Building.writeStaticState(oos);
-				MovableDataManager.serialize(oos);
+				MarketBuilding.writeStaticState(oos);
+				HarborBuilding.writeStaticState(oos);
+				MovableDataManager.writeStaticState(oos);
 				oos.writeObject(grid);
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -101,7 +106,7 @@ public class GameSerializer {
 
 	private static final class LoadRunnable implements Runnable {
 		private final ObjectInputStream ois;
-		MainGrid grid = null;
+		MainGrid  grid      = null;
 		Throwable exception = null;
 
 		private LoadRunnable(ObjectInputStream ois) {
@@ -112,7 +117,9 @@ public class GameSerializer {
 		public void run() {
 			try {
 				Building.readStaticState(ois);
-				MovableDataManager.deserialize(ois);
+				MarketBuilding.readStaticState(ois);
+				HarborBuilding.readStaticState(ois);
+				MovableDataManager.readStaticState(ois);
 				grid = (MainGrid) ois.readObject();
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -120,5 +127,4 @@ public class GameSerializer {
 			}
 		}
 	}
-
 }

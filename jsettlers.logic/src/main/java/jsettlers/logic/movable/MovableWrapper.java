@@ -1,6 +1,7 @@
 package jsettlers.logic.movable;
 
 import java.io.Serializable;
+import java.util.List;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.EBuildingType;
@@ -8,6 +9,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
@@ -47,6 +49,11 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	}
 
 	@Override
+	public boolean isShip() {
+		return false;
+	}
+
+	@Override
 	public EDirection getDirection() {
 		return entity.getComponentOptional(MovableComponent.class).map(MovableComponent::getViewDirection).orElse(EDirection.NORTH_EAST);
 	}
@@ -77,6 +84,11 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	}
 
 	@Override
+	public boolean isAlive() {
+		return false;
+	}
+
+	@Override
 	public boolean isRightstep() {
 		return entity.getComponent(AnimationComponent.class).isRightStep();
 	}
@@ -93,13 +105,28 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	}
 
 	@Override
-	public EBuildingType getGarrisonedBuildingType() {
-		return null; // TODO implement this for building workers to return the type of their building
+	public List<? extends IMovable> getPassengers() {
+		return null;
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
-		return entity.getComponent(MovableComponent.class).getPos();
+	public int getNumberOfCargoStacks() {
+		return 0;
+	}
+
+	@Override
+	public EMaterialType getCargoType(int stack) {
+		return null;
+	}
+
+	@Override
+	public int getCargoCount(int stack) {
+		return 0;
+	}
+
+	@Override
+	public EBuildingType getGarrisonedBuildingType() {
+		return null; // TODO implement this for building workers to return the type of their building
 	}
 
 	@Override
@@ -171,7 +198,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public ShortPoint2D getPosition() {
-		return entity.movableComponent().getPos();
+		return entity.movableComponent().getPosition();
 	}
 
 	@Override
@@ -225,6 +252,29 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 	@Override
 	public void moveTo(ShortPoint2D targetPosition) {
 		entity.getComponentOptional(PlayerComandComponent.class).ifPresent(component -> component.sendMoveToCommand(targetPosition));
+	}
+
+	@Override
+	public void unloadFerry() {
+		if (this.getMovableType() != EMovableType.FERRY) {
+			return;
+		}
+		//TODO call method of ferry Component
+	}
+
+	@Override
+	public boolean addPassenger(ILogicMovable movable) {
+		return false;
+	}
+
+	@Override
+	public void moveToFerry(ILogicMovable ferry, ShortPoint2D entrancePosition) {
+		assert false: "not implemented";
+	}
+
+	@Override
+	public void leaveFerryAt(ShortPoint2D position) {
+		assert false: "not implemented";
 	}
 
 	@Override

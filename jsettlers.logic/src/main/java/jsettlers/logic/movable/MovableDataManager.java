@@ -56,14 +56,14 @@ public final class MovableDataManager {
 		return nextID++;
 	}
 
-	public static void serialize(ObjectOutputStream oos) throws IOException {
+	public static void writeStaticState(ObjectOutputStream oos) throws IOException {
 		oos.writeObject(movablesByID);
 		oos.writeObject(allMovables);
 		oos.writeInt(nextID);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void deserialize(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		movablesByID.clear();
 		movablesByID.putAll((Map<? extends Integer, ? extends ILogicMovable>) ois.readObject());
 		allMovables.clear();

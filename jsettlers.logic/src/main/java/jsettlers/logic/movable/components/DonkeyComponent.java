@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java8.util.stream.Collectors;
+import java8.util.stream.Stream;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Requires;
-import jsettlers.logic.movable.strategies.trading.IDonkeyMarket;
+import jsettlers.logic.movable.strategies.trading.ITradeBuilding;
 
 /**
  * @author homoroselaps
@@ -18,15 +20,15 @@ import jsettlers.logic.movable.strategies.trading.IDonkeyMarket;
 public class DonkeyComponent extends Component {
 	private static final long serialVersionUID = -4747039405397703303L;
 
-	private IDonkeyMarket          market;
+	private ITradeBuilding          market;
 	private Iterator<ShortPoint2D> waypoints;
 	private ShortPoint2D           nextWaypoint;
 
-	public IDonkeyMarket getMarket() {
+	public ITradeBuilding getMarket() {
 		return market;
 	}
 
-	public void setMarket(IDonkeyMarket market) {
+	public void setMarket(ITradeBuilding market) {
 		assert market != null : "market should not be null, use reset() instead";
 		this.market = market;
 		this.waypoints = market.getWaypointsIterator();
@@ -52,25 +54,17 @@ public class DonkeyComponent extends Component {
 		return nextWaypoint;
 	}
 
-	public IDonkeyMarket findNextMarketNeedingDonkey() {
-		if (this.market != null && this.market.needsDonkey()) {
-			return this.market;
-		}
+	public ITradeBuilding findTradeBuildingWithWork() {
+		List<? extends ITradeBuilding> tradeBuilding = getTradersWithWork().filter(ITradeBuilding::needsTrader).collect(Collectors.toList());
 
-		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(entity.movableComponent().getPlayer());
-		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<>();
-
-		for (IDonkeyMarket currMarket : markets) {
-			if (currMarket.needsDonkey()) {
-				marketsNeedingDonkeys.add(currMarket);
-			}
-		}
-
-		if (!marketsNeedingDonkeys.isEmpty()) {
-			// randomly distribute the donkeys onto the markets needing them
-			return marketsNeedingDonkeys.get(MatchConstants.random().nextInt(marketsNeedingDonkeys.size()));
+		if (!tradeBuilding.isEmpty()) { // randomly distribute the donkeys onto the markets needing them
+			return tradeBuilding.get(MatchConstants.random().nextInt(tradeBuilding.size()));
 		} else {
 			return null;
 		}
+	}
+
+	protected Stream<MarketBuilding> getTradersWithWork() {
+		return MarketBuilding.getAllMarkets(entity.movableComponent().getPlayer());
 	}
 }

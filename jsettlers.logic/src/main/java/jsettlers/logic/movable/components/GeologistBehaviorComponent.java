@@ -103,7 +103,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 
 	private Node<Context> placeSign() {
 		return new Action<>(c -> {
-			ShortPoint2D position = c.entity.movableComponent().getPos();
+			ShortPoint2D position = c.entity.movableComponent().getPosition();
 
 			c.entity.gameFieldComponent().movableGrid.setMarked(position, false);
 			c.entity.gameFieldComponent().movableGrid.executeSearchType(c.entity.movableComponent(), position, ESearchType.RESOURCE_SIGNABLE);
@@ -112,7 +112,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 
 	private static Action<Context> markOnCurrentPositionIfWorkingIsPossible() {
 		return new Action<>(c -> {
-			ShortPoint2D position = c.entity.movableComponent().getPos();
+			ShortPoint2D position = c.entity.movableComponent().getPosition();
 
 			if (c.entity.specialistComponent().getCenterOfWork() == null) {
 				c.entity.specialistComponent().setCenterOfWork(position);
@@ -144,7 +144,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 			SteeringComponent steeringComponent = c.entity.steeringComponent();
 
 			if (specialistComponent.getCenterOfWork() == null) {
-				specialistComponent.setCenterOfWork(movableComponent.getPos());
+				specialistComponent.setCenterOfWork(movableComponent.getPosition());
 			}
 
 			ShortPoint2D closeWorkablePos = getCloseWorkablePos(c);
@@ -155,7 +155,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 			}
 			specialistComponent.setCenterOfWork(null);
 
-			ShortPoint2D pos = movableComponent.getPos();
+			ShortPoint2D pos = movableComponent.getPosition();
 			Path path = steeringComponent.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE);
 			if (path != null) {
 				steeringComponent.setPath(path);
@@ -173,7 +173,7 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 			MutablePoint2D bestNeighbourPos = new MutablePoint2D(-1, -1);
 			MutableDouble bestNeighbourDistance = new MutableDouble(Double.MAX_VALUE); // distance from start point
 
-			HexGridArea.streamBorder(movableComponent.getPos(), 2).filter((x, y) ->
+			HexGridArea.streamBorder(movableComponent.getPosition(), 2).filter((x, y) ->
 				gameFieldComponent.movableGrid.isValidPosition(movableComponent, x, y)
 					&& gameFieldComponent.movableGrid.fitsSearchType(movableComponent, x, y, ESearchType.RESOURCE_SIGNABLE)
 			).forEach((x, y) -> {

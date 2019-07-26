@@ -86,7 +86,12 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public boolean isShip() {
+		return this.getMovableType() == EMovableType.FERRY;
+	}
+
+	@Override
+	public ShortPoint2D getPosition() {
 		return position;
 	}
 

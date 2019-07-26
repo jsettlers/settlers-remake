@@ -14,6 +14,41 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import java8.util.stream.Collectors;
+import jsettlers.ai.army.ArmyGeneral;
+import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
+import jsettlers.ai.economy.EconomyMinister;
+import jsettlers.ai.highlevel.pioneers.PioneerAi;
+import jsettlers.ai.highlevel.pioneers.PioneerGroup;
+import jsettlers.ai.highlevel.pioneers.target.SameBlockedPartitionLikePlayerFilter;
+import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.SimpleBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
+import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.movable.MovableGrid;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.network.client.interfaces.ITaskScheduler;
+
 import static java8.util.stream.StreamSupport.stream;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRON_MINE_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
@@ -53,43 +88,8 @@ import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
-import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import jsettlers.ai.army.ArmyGeneral;
-import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
-import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.highlevel.pioneers.PioneerAi;
-import jsettlers.ai.highlevel.pioneers.PioneerGroup;
-import jsettlers.ai.highlevel.pioneers.target.SameBlockedPartitionLikePlayerFilter;
-import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
-import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.grid.movable.MovableGrid;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
-import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import java8.util.stream.Collectors;
+import static jsettlers.logic.constants.Constants.TOWER_ATTACKABLE_SEARCH_RADIUS;
+import static jsettlers.logic.constants.Constants.TOWER_SEARCH_SOLDIERS_RADIUS;
 
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes care against lack of settlers and it builds a
@@ -216,12 +216,11 @@ class WhatToDoAi implements IWhatToDoAi {
 		Set<Integer> soldiersWithOrders = new HashSet<>();
 
 		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.MILITARY_BUILDINGS, playerId)) {
-
 			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
 			if (!militaryBuilding.isOccupied()) {
 				ShortPoint2D door = militaryBuilding.getDoor();
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
-				if (soldier != null && militaryBuilding.getPos().getOnGridDistTo(soldier.getPos()) > TOWER_SEARCH_RADIUS) {
+				if (soldier != null && militaryBuilding.getPosition().getOnGridDistTo(soldier.getPosition()) > TOWER_SEARCH_SOLDIERS_RADIUS) {
 					soldiersWithOrders.add(soldier.getID());
 					sendMovableTo(soldier, door);
 				}
@@ -248,7 +247,7 @@ class WhatToDoAi implements IWhatToDoAi {
 				if (nearestStone != null && numberOfStoneCutters < economyMinister.getMidGameNumberOfStoneCutters()) {
 					taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
 				} else {
-					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
+					taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, stoneCutterPosition));
 					break; // destroy only one stone cutter
 				}
 			}
@@ -275,20 +274,20 @@ class WhatToDoAi implements IWhatToDoAi {
 			List<ShortPoint2D> foresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
 			if (foresters.size() > 1) {
 				for (int i = 1; i < foresters.size(); i++) {
-					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, foresters.get(i)));
+					taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, foresters.get(i)));
 				}
 			}
 
 			stream(aiStatistics.getBuildingPositionsOfTypeForPlayer(LUMBERJACK, playerId))
 					.filter(lumberJackPosition -> aiStatistics.getBuildingAt(lumberJackPosition).cannotWork())
-					.forEach(lumberJackPosition -> taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, lumberJackPosition)));
+					.forEach(lumberJackPosition -> taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, lumberJackPosition)));
 
 			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId)) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
+				taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
 			}
 
 			for (ShortPoint2D bigTemple : aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TEMPLE, playerId)) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, bigTemple));
+				taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, bigTemple));
 			}
 		}
 	}
@@ -296,7 +295,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private boolean destroyLivingHouse(EBuildingType livingHouseType) {
 		for (ShortPoint2D livingHousePosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(livingHouseType, playerId)) {
 			if (aiStatistics.getBuildingAt(livingHousePosition).cannotWork()) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, livingHousePosition));
+				taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, livingHousePosition));
 				return true;
 			}
 		}

@@ -55,6 +55,8 @@ public class SwingManagedJSettlers {
 	}
 
 	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption {
+  		// removes screen flickering
+		System.setProperty("sun.awt.noerasebackground", "true");
 		setupResources(true, args);
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();
@@ -69,15 +71,13 @@ public class SwingManagedJSettlers {
 		setupResourceManagers(interactive);
 	}
 
-	public static void loadCommandLineSettings() {
-		SettingsManager settingsManager = SettingsManager.getInstance();
-
-		CommonConstants.CONTROL_ALL = settingsManager.isControllAll();
-		CommonConstants.ACTIVATE_ALL_PLAYERS = settingsManager.isActivateAllPlayers();
-		CommonConstants.ENABLE_CONSOLE_LOGGING = settingsManager.useConsoleOutput();
-		CommonConstants.DISABLE_ORIGINAL_MAPS = settingsManager.areOriginalMapsDisabled();
-		CommonConstants.DEBUG_BEHAVIOR_TREES = settingsManager.debugBehaviorTrees();
-		AbstractLabels.setPreferredLocale(settingsManager.getLocale());
+	private static void loadCommandLineSettings() {
+		CommonConstants.CONTROL_ALL = SettingsManager.getInstance().isControllAll();
+		CommonConstants.ACTIVATE_ALL_PLAYERS = SettingsManager.getInstance().isActivateAllPlayers();
+		CommonConstants.ENABLE_CONSOLE_LOGGING = SettingsManager.getInstance().useConsoleOutput();
+		CommonConstants.DISABLE_ORIGINAL_MAPS = SettingsManager.getInstance().areOriginalMapsDisabled();
+		CommonConstants.DEBUG_BEHAVIOR_TREES = SettingsManager.getInstance().debugBehaviorTrees();
+		AbstractLabels.setPreferredLocale(SettingsManager.getInstance().getLocale());
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class SwingManagedJSettlers {
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 */
-	public static void setupResourceManagers(boolean interactive) {
+	private static void setupResourceManagers(boolean interactive) {
 		boolean wasSuccessful = false;
 		boolean firstRun = true;
 		while (!wasSuccessful) {
@@ -138,7 +138,7 @@ public class SwingManagedJSettlers {
 			}
 		}).orElse(null);
 
-		int targetGameTime = SettingsManager.getInstance().getTargetTime().orElse(0);
+		int targetGameTime = SettingsManager.getInstance().getTargetTimeMinutes().orElse(0);
 
 		String mapFile = SettingsManager.getInstance().getMapFile();
 		if (mapFile != null || loadableReplayFile != null) {
@@ -165,7 +165,7 @@ public class SwingManagedJSettlers {
 					} catch (InterruptedException e) {
 					}
 				}
-				MatchConstants.clock().fastForwardTo(targetGameTime);
+				MatchConstants.clock().fastForwardTo(targetGameTime * 60 * 1000);
 			}
 		}
 	}

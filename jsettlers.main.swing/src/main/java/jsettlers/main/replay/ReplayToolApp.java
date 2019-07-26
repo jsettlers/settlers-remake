@@ -17,7 +17,6 @@ package jsettlers.main.replay;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.map.loading.MapLoadException;
-import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.main.swing.resources.SwingResourceProvider;
 import jsettlers.main.swing.settings.SettingsManager;
@@ -38,7 +37,7 @@ public class ReplayToolApp {
 		SettingsManager.setup(args);
 		SwingResourceLoader.setup();
 
-		int targetGameTimeMinutes = SettingsManager.getInstance().getTargetTime().orElseThrow(() -> new IllegalArgumentException("Please specify target time"));
+		int targetGameTimeMinutes = SettingsManager.getInstance().getTargetTimeMinutes().orElseThrow(() -> new IllegalArgumentException("Please specify target time"));
 		String replayFileString = SettingsManager.getInstance().getReplayFile().orElseThrow(() -> new IllegalArgumentException("Replay file needs to be specified with --replayFile=<FILE>"));
 
 		File replayFile = new File(replayFileString);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--<ScrollView--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+<?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,7 +12,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+        <jsettlers.main.android.gameplay.customviews.InGameButton
             android:id="@+id/image_view_priority"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:gravity="center_horizontal"
             android:text="TextView" />
 
-        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+        <jsettlers.main.android.gameplay.customviews.InGameButton
             android:id="@+id/image_view_destroy"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -61,8 +61,8 @@
     <LinearLayout
         android:id="@+id/layout_materials"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/menu_button_size"
         android:orientation="horizontal"
-        android:padding="8dp" />
+        android:layout_margin="8dp" />
 
-</LinearLayout><!--</ScrollView>-->
+</LinearLayout>

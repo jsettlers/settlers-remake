@@ -42,6 +42,7 @@ import javax.swing.SwingUtilities;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
 import jsettlers.common.CommonConstants;
@@ -136,6 +137,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	 * Open GL Contents (Drawing)
 	 */
 	private MapContent mapContent;
+	private AreaContainer displayPanel;
 
 	/**
 	 * Sidebar with the tools
@@ -282,7 +284,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		Area area = new Area();
 		final Region region = new Region(Region.POSITION_CENTER);
 		area.add(region);
-		AreaContainer displayPanel = new AreaContainer(area);
+		displayPanel = new AreaContainer(area, SettingsManager.getInstance().getBackend());
 		displayPanel.setMinimumSize(new Dimension(640, 480));
 		displayPanel.setFocusable(true);
 		root.add(displayPanel, BorderLayout.CENTER);
@@ -333,6 +335,8 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	 * Quit this editor instance
 	 */
 	private void quit() {
+		displayPanel.disposeAll();
+		displayPanel = null;
 		redrawTimer.cancel();
 		validator.dispose();
 		window.dispose();
@@ -764,7 +768,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				// only getter call, no Swing calls
 				ShapeType shape = toolSidebar.getActiveShape();
 
-				tool.start(mapData, shape, lineAction.getPos());
+				tool.start(mapData, shape, lineAction.getPosition());
 
 				validator.reValidate();
 			}

@@ -18,8 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
 import jsettlers.main.swing.lookandfeel.ELFStyle;
-import jsettlers.main.swing.lookandfeel.ui.SettlersDynamicLabelUi;
-import jsettlers.main.swing.lookandfeel.ui.SettlersLabelUi;
+import jsettlers.main.swing.lookandfeel.ui.StoneBackgroundLabel;
 import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
 
 /**
@@ -37,22 +36,22 @@ public final class LabelUiFactory {
 	/**
 	 * Header Label
 	 */
-	private static final SettlersLabelUi headerLabel = new SettlersLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 27);
+	private static final StoneBackgroundLabel headerLabel = new StoneBackgroundLabel(UIDefaults.HEADER_TEXT_COLOR);
 
 	/**
 	 * Label short
 	 */
-	private static final SettlersLabelUi labelShort = new SettlersLabelUi(UIDefaults.LABEL_TEXT_COLOR, 19, 324, 122, 26);
+	private static final StoneBackgroundLabel labelShort = new StoneBackgroundLabel(UIDefaults.LABEL_TEXT_COLOR);
 
 	/**
 	 * Label long
 	 */
-	private static final SettlersLabelUi labelLong = new SettlersLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
+	private static final StoneBackgroundLabel labelLong = new StoneBackgroundLabel(UIDefaults.LABEL_TEXT_COLOR);
 
 	/**
 	 * Label long
 	 */
-	private static final SettlersDynamicLabelUi labelDynamic = new SettlersDynamicLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
+	private static final StoneBackgroundLabel labelDynamic = new StoneBackgroundLabel(UIDefaults.LABEL_TEXT_COLOR);
 
 	/**
 	 * This is only a factory so no objects need to be created.

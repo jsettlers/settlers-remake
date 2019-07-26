@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,21 +14,22 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel;
 
+import jsettlers.common.action.Action;
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.IAction;
+import jsettlers.common.action.PointAction;
+import jsettlers.common.action.SetDockAction;
+import jsettlers.common.action.SetTradingWaypointAction;
+import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.action.EActionType;
-import jsettlers.common.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.common.action.PointAction;
-import jsettlers.common.action.SetTradingWaypointAction;
-import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -290,9 +291,9 @@ public class MainPanel extends UIPanel {
 		EActionType type = action.getActionType();
 		switch (type) {
 		case MOVE_TO:
-		case SET_DOCK:
 		case SET_TRADING_WAYPOINT:
 		case SET_WORK_AREA:
+        case SET_DOCK:
 			if (activeContent instanceof SelectPointMessage) {
 				goBack();
 			}
@@ -300,10 +301,10 @@ public class MainPanel extends UIPanel {
 		case ASK_SET_DOCK:
 			goBackContent = activeContent;
 			setContent(new SelectPointMessage(
-					Labels.getString("click_set_dock")) {
+					Labels.getString("action_ASK_SET_DOCK")) {
 				@Override
 				public PointAction getSelectAction(ShortPoint2D position) {
-					return new PointAction(EActionType.SET_DOCK, position);
+					return new SetDockAction(position);
 				}
 			});
 			return null;
@@ -364,9 +365,9 @@ public class MainPanel extends UIPanel {
 
 	public void setMapViewport(MapRectangle screenArea, IGraphicsGrid grid) {
 		this.grid = grid;
-		displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
-				+ screenArea.getLineLength() / 2, screenArea
-				.getLineY(screenArea.getLines() / 2));
+		short x = (short) (screenArea.getMinX() + (screenArea.getWidth() / 2));
+		short y = (short) (screenArea.getMinY() + (screenArea.getHeight() / 2));
+		displayCenter = new ShortPoint2D(x, y);
 		sendMapPositionChange();
 	}
 

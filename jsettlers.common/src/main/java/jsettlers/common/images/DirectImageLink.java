@@ -43,4 +43,19 @@ public class DirectImageLink extends ImageLink {
 	public int getImageIndex() {
 		return 0;
 	}
+
+	@Override
+	public int getSequence() {
+		return getSequence();
+	}
+
+	@Override
+	public EImageLinkType getType() {
+		return getType();
+	}
+
+	@Override
+	public int getFile() {
+		return getFile();
+	}
 }

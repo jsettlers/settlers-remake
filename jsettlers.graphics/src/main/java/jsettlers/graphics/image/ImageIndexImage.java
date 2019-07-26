@@ -148,6 +148,12 @@ public class ImageIndexImage extends Image {
 		}
 	}
 
+	@Override
+	public void drawOnlyImageAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {}
+
+	@Override
+	public void drawOnlyShadowAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {}
+
 	private static float[] createGeometry(int offsetX, int offsetY, int width, int height, float umin, float vmin, float umax, float vmax) {
 		return new float[] {
 				// top left
