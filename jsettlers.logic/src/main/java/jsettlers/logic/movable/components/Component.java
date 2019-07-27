@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import java8.util.Optional;
 import java8.util.function.Consumer;
+import java8.util.function.Predicate;
 import java8.util.stream.Stream;
 import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.Notification;
@@ -59,7 +60,11 @@ public abstract class Component implements Serializable {
 	protected void onDestroy() {}
 
 	<T extends Notification> Optional<T> getNextNotification(Class<T> type, boolean consume) {
-		Optional<T> result = getNotificationsOfType(type).findFirst();
+		return getNextNotification(type, n -> true, consume);
+	}
+
+	<T extends Notification> Optional<T> getNextNotification(Class<T> type, Predicate<T> predicate, boolean consume) {
+		Optional<T> result = getNotificationsOfType(type).filter(predicate).findFirst();
 		if (consume) {
 			result.ifPresent(this::consumeNotification);
 		}
@@ -74,6 +79,10 @@ public abstract class Component implements Serializable {
 		return getNextNotification(type, consume).isPresent();
 	}
 
+	public <T extends Notification> boolean hasNotificationOfType(Class<T> type, Predicate<T> predicate, boolean consume) { // this implementation uses findFirst to guarantee determinism
+		return getNextNotification(type, predicate, consume).isPresent();
+	}
+
 	private <T extends Notification> Stream<T> getNotificationsOfType(Class<T> type) {
 		//noinspection unchecked
 		return stream(entity.getAllNotifications())
@@ -82,8 +91,12 @@ public abstract class Component implements Serializable {
 			.filter(type::isInstance).map(notification -> (T) notification);
 	}
 
-	<T extends Notification> void forFirstNotificationOfType(Class<T> type, Consumer<T> consumer) {
-		getNotificationsOfType(type).findFirst().ifPresent(consumer);
+	public <T extends Notification> void forFirstNotificationOfTypeC(Class<T> type, Consumer<T> consumer, boolean consume) {
+		getNextNotification(type, consume).ifPresent(consumer);
+	}
+
+	public <T extends Notification> boolean forFirstNotificationOfTypeP(Class<T> type, Predicate<T> predicate, boolean consume) {
+		return getNextNotification(type, predicate, consume).isPresent();
 	}
 
 	boolean consumeNotification(Notification notification) {

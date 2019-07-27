@@ -66,11 +66,7 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
 	@Override
 	public void actionFired(IAction action) {
 		if (action.getActionType() == EActionType.ASK_DESTROY) {
-<<<<<<< HEAD:jsettlers.main.android/src/main/java/jsettlers/main/android/gameplay/ui/fragments/menus/selection/features/DestroyFeature.java
-			Snackbar.make(getView(), "destroy this building?", Snackbar.LENGTH_SHORT)
-=======
 			Snackbar.make(getView(), R.string.ask_destroy, Snackbar.LENGTH_SHORT)
->>>>>>> original/master:jsettlers.main.android/src/main/java/jsettlers/main/android/gameplay/controlsmenu/selection/features/DestroyFeature.java
 					.setAction("Yes", view -> {
 						actionControls.fireAction(new Action(EActionType.DESTROY));
 						getMenuNavigator().dismissMenu();

@@ -137,12 +137,16 @@ public final class BehaviorTreeHelper {
 		return new Wait<>(condition);
 	}
 
-	public static NotificationCondition notificationCondition(Class<? extends Notification> type) {
+	public static <T extends Notification> NotificationCondition notificationCondition(Class<T> type) {
 		return new NotificationCondition(type);
 	}
 
-	public static NotificationCondition notificationCondition(Class<? extends Notification> type, boolean consume) {
+	public static <T extends Notification> NotificationCondition notificationCondition(Class<T> type, boolean consume) {
 		return new NotificationCondition(type, consume);
+	}
+
+	public static <T extends Notification> NotificationCondition notificationCondition(Class<T> type, IBooleanConditionFunction<T> predicate, boolean consume) {
+		return new NotificationCondition(type, predicate, consume);
 	}
 
 	public static Node<Context> waitForTargetReachedAndFailIfNotReachable() {
@@ -189,16 +193,20 @@ public final class BehaviorTreeHelper {
 		return new Guard<>(entity -> entity.component.hasNotificationOfType(type), true, child);
 	}
 
-	public static Action<Context> startAnimation(EMovableAction animation, short duration) {
+	public static Action<Context> startAnimation(EMovableAction animation, short duration, boolean isChained) {
 		return new Action<>(context -> {
-			context.entity.getAnimationComponent().startAnimation(animation, duration);
+			context.entity.getAnimationComponent().startAnimation(animation, duration, isChained);
 		});
 	}
 
 	public static Node<Context> startAndWaitForAnimation(EMovableAction animation, short duration) {
+		return startAndWaitForAnimation(animation, duration, false);
+	}
+
+	public static Node<Context> startAndWaitForAnimation(EMovableAction animation, short duration, boolean isChained) {
 		return memSequence("startAndWaitForAnimation with " + animation + " for " + duration + "ms",
-			debug("start animation", startAnimation(animation, duration)),
-			debug("wait for animation to finish", waitForNotification(AnimationComponent.AnimationFinishedNotification.class, true))
+			debug("start animation", startAnimation(animation, duration, isChained)),
+			debug("wait for animation to finish", waitForNotification(AnimationComponent.AnimationFinishedNotification.class, n -> n.type == animation, true))
 		);
 	}
 
@@ -241,6 +249,10 @@ public final class BehaviorTreeHelper {
 
 	public static Node<Context> waitForNotification(Class<? extends Notification> type, boolean consume) {
 		return wait(notificationCondition(type, consume));
+	}
+
+	public static <T extends Notification> Node<Context> waitForNotification(Class<T> type, IBooleanConditionFunction<T> predicate, boolean consume) {
+		return wait(notificationCondition(type, predicate, consume));
 	}
 
 	public static Debug debug(String msg, Node<Context> child) {

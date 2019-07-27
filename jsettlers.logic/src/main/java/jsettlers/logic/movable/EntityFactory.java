@@ -32,7 +32,7 @@ public final class EntityFactory {
 
 	public static ILogicMovable createMovable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		switch (movableType) {
-			//case BEARER:
+			case BEARER:
 			case GEOLOGIST:
 			case DONKEY:
 				return new MovableWrapper(createEntity(grid, movableType, position, player));
@@ -44,7 +44,9 @@ public final class EntityFactory {
 	static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		Entity entity = null;
 		switch (movableType) {
-			//case BEARER:
+			case BEARER:
+				entity = createBearer(grid, movableType, position, player);
+				break;
 			case GEOLOGIST:
 				entity = createGeologist(grid, movableType, position, player);
 				break;

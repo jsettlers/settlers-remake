@@ -13,6 +13,7 @@ import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 import jsettlers.logic.movable.simplebehaviortree.nodes.DynamicGuardSelector;
+import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.alwaysSucceed;
@@ -20,6 +21,7 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
+import static jsettlers.logic.movable.BehaviorTreeHelper.setIdleBehaviorActiveWhile;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAndWaitForAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForPathFinished;
@@ -48,43 +50,49 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
 
 	@Override
 	protected Node<Context> createBehaviorTree() {
-		return new DynamicGuardSelector<>(
-			triggerGuard(PlayerComandComponent.MoveToCommand.class,
-				action("MoveToCommand", c -> {
-					c.component.forFirstNotificationOfType(PlayerComandComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos));
-					goingToPlayerCommandLocation = true;
-					c.entity.specialistComponent().setIsWorking(true);
-				})
-			),
-			triggerGuard(PlayerComandComponent.StartWorkCommand.class,
-				debug("StartWorkCommand",
-					setIsWorkingAction(true)
+		return setIdleBehaviorActiveWhile(false,
+			selector(
+				triggerGuard(PlayerComandComponent.MoveToCommand.class,
+					action("MoveToCommand", c -> {
+						c.component.forFirstNotificationOfTypeC(PlayerComandComponent.MoveToCommand.class, command -> c.entity.steeringComponent().setTarget(command.pos), true);
+						goingToPlayerCommandLocation = true;
+						c.entity.specialistComponent().setIsWorking(true);
+					})
+				),
+				triggerGuard(PlayerComandComponent.StartWorkCommand.class,
+					debug("StartWorkCommand",
+						setIsWorkingAction(true)
+					)
+				),
+				triggerGuard(PlayerComandComponent.StopWorkCommand.class,
+					debug("StopWorkCommand",
+						setIsWorkingAction(false)
+					)
+				),
+				guard(c -> goingToPlayerCommandLocation, true,
+					waitForPathFinished(null, setIsWorkingAction(false), action(c -> {
+						goingToPlayerCommandLocation = false;
+					}))
+				),
+				guard(c -> c.entity.specialistComponent().isWorking(), true,
+					selector("isWorking",
+						memSequence("find a place and work there",
+							debug("FindGoToWorkablePosition", new FindGoToWorkablePosition()),
+							waitForTargetReachedAndFailIfNotReachable(),
+							debug("markOnCurrentPositionIfWorkingIsPossible", markOnCurrentPositionIfWorkingIsPossible()),
+							startAndWaitForAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
+							startAndWaitForAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
+							debug("placeSign", placeSign())
+						),
+						debug("on failure: stop working", setIsWorkingAction(false))
+					)
+				),
+				debug("idle behavior",
+					setIdleBehaviorActiveWhile(true,
+						alwaysSucceed()
+					)
 				)
-			),
-			triggerGuard(PlayerComandComponent.StopWorkCommand.class,
-				debug("StopWorkCommand",
-					setIsWorkingAction(false)
-				)
-			),
-			guard(c -> goingToPlayerCommandLocation, true,
-				waitForPathFinished(null, setIsWorkingAction(false), action(c -> {
-					goingToPlayerCommandLocation = false;
-				}))
-			),
-			guard(c -> c.entity.specialistComponent().isWorking(), true,
-				selector("isWorking",
-					memSequence("find a place and work there",
-						debug("FindGoToWorkablePosition", new FindGoToWorkablePosition()),
-						waitForTargetReachedAndFailIfNotReachable(),
-						debug("markOnCurrentPositionIfWorkingIsPossible", markOnCurrentPositionIfWorkingIsPossible()),
-						startAndWaitForAnimation(EMovableAction.ACTION1, ACTION1_DURATION),
-						startAndWaitForAnimation(EMovableAction.ACTION2, ACTION2_DURATION),
-						debug("placeSign", placeSign())
-					),
-					debug("on failure: stop working", setIsWorkingAction(false))
-				)
-			),
-			guard(c -> true, debug("no action", alwaysSucceed()))
+			)
 		);
 	}
 

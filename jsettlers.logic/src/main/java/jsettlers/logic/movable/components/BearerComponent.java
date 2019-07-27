@@ -6,13 +6,14 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrac
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
+import jsettlers.logic.movable.ManageableBearerWrapper;
 import jsettlers.logic.movable.Notification;
 
 /**
  * @author homoroselaps
  */
 
-public class BearerComponent extends MaterialComponent {
+public class BearerComponent extends Component {
 	private static final long serialVersionUID = -3315837668805312398L;
 
 	public static class DeliveryJob extends Notification {
@@ -95,6 +96,11 @@ public class BearerComponent extends MaterialComponent {
 		workerRequester = job.requester;
 		workerCreationRequest = job.workerCreationRequest;
 		hasBecomeWorkerJob = true;
+	}
+
+	@Override
+	protected void onWakeUp() {
+		this.entity.gameFieldComponent().movableGrid.addJobless(new ManageableBearerWrapper(this.entity));
 	}
 
 	public boolean hasBecomeWorkerJob() {

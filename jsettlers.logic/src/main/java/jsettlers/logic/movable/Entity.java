@@ -157,14 +157,14 @@ public class Entity implements Serializable, IScheduledTimerable {
 
 	public void add(Component c) {
 		Class cls = c.getClass();
-		assert !componentLookup.containsKey(cls) : "Component already registered";
+		assert !componentLookup.containsKey(cls) : "Component already registered" + cls.getName();
 		componentLookup.put(cls, c);
 		components.put(cls, c);
 		c.entity = this;
 		// Iterate over all super classes
 		cls = cls.getSuperclass();
 		while (cls != null && cls != Component.class) {
-			assert !componentLookup.containsKey(cls) : "Component already registered";
+			assert !componentLookup.containsKey(cls) : "Component already registered" + cls.getName();
 			componentLookup.put(cls, c);
 			cls = cls.getSuperclass();
 		}

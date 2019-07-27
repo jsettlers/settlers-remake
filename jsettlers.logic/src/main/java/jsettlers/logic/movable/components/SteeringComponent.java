@@ -100,17 +100,15 @@ public class SteeringComponent extends Component {
 	protected Node<Context> createBehaviorTree() {
 		return selector(
 			guard(c -> path != null, true,
-				action(c -> {
-					followPath();
-				})
+				debug("follow path", action(c -> { followPath(); }))
 			),
-			guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPosition().x, movableComponent.getPosition().y), true,
-				action(c -> {
-					goToNonBlockedOrProtectedPosition();
-				})
-			),
-			BehaviorTreeHelper.guard(c -> isIdleBehaviorActive,
+			BehaviorTreeHelper.guard(c -> ((SteeringComponent)c.component).isIdleBehaviorActive,
 				selector(
+					guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPosition().x, movableComponent.getPosition().y), true,
+						action(c -> {
+							goToNonBlockedOrProtectedPosition();
+						})
+					),
 					debug("if LeavePositionRequest", triggerGuard(LeavePositionRequest.class,
 						debug("try go in random direction", action(context -> {
 							Optional<LeavePositionRequest> note = context.component.getNextNotification(LeavePositionRequest.class, false);
@@ -209,7 +207,7 @@ public class SteeringComponent extends Component {
 	private void goSingleStep(ShortPoint2D targetPosition) {
 		movableComponent.setViewDirection(EDirection.getDirection(movableComponent.getPosition(), targetPosition));
 		movableComponent.setPos(targetPosition);
-		animationComponent.startAnimation(EMovableAction.WALKING, movableComponent.getMovableType().getStepDurationMs());
+		animationComponent.startAnimation(EMovableAction.WALKING, movableComponent.getMovableType().getStepDurationMs(), false);
 		animationComponent.switchStep();
 	}
 

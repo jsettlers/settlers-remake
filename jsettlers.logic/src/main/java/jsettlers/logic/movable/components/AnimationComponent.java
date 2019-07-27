@@ -15,8 +15,15 @@ public class AnimationComponent extends Component {
 	private short          animationDuration;
 	private boolean        isSoundPlayed = false;
 	private boolean        isRightStep   = false;
+	private boolean        isChained     = false;
 
-	public static class AnimationFinishedNotification extends Notification {}
+	public static class AnimationFinishedNotification<T extends EMovableAction> extends Notification {
+		public final EMovableAction type;
+
+		public AnimationFinishedNotification(EMovableAction animationType) {
+			this.type = animationType;
+		}
+	}
 
 	public AnimationComponent() { }
 
@@ -44,16 +51,17 @@ public class AnimationComponent extends Component {
 		return animationStartTime + animationDuration <= MatchConstants.clock().getTime();
 	}
 
-	public void startAnimation(EMovableAction animation, short duration) {
+	public void startAnimation(EMovableAction animation, short duration, boolean isChained) {
 		this.animationStartTime = MatchConstants.clock().getTime();
 		this.animationDuration = duration;
 		this.animation = animation;
-		isSoundPlayed = false;
+		this.isSoundPlayed = false;
+		this.isChained = isChained;
 	}
 
 	private void stopAnimation() {
-		this.animation = EMovableAction.NO_ACTION;
-		this.entity.raiseNotification(new AnimationFinishedNotification());
+		this.entity.raiseNotification(new AnimationFinishedNotification(this.animation));
+		if (!isChained) this.animation = EMovableAction.NO_ACTION;
 	}
 
 	public boolean isRightStep() {
