@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -203,21 +204,31 @@ public class Entity implements Serializable, IScheduledTimerable {
 
 	public void convertTo(Entity blueprint) {
 		// remove all unused components
-		for (Class<? extends Component> cls : components.keySet()) {
+		Iterator<Class<? extends Component>> it = components.keySet().iterator();
+		while (it.hasNext()) {
+			Class<? extends Component> cls = it.next();
 			if (!blueprint.components.containsKey(cls)) {
-				remove(cls);
+				it.remove();
 			}
 		}
+
 		// add all new components
 		List<Component> newComponents = new ArrayList<>();
-		for (Class<? extends Component> cls : blueprint.components.keySet()) {
+		Iterator<Class<? extends Component>> blueprint_it = components.keySet().iterator();
+		while (blueprint_it.hasNext()) {
+			Class<? extends Component> blueprint_cls = blueprint_it.next();
 			// ignore components we already have
-			if (components.containsKey(cls)) {
+			if (components.containsKey(blueprint_cls)) {
 				continue;
 			}
-			Component c = blueprint.remove(cls);
-			newComponents.add(c);
-			add(c);
+			Component comp = blueprint.getComponent(blueprint_cls);
+			newComponents.add(comp);
+			add(comp);
+			blueprint_it.remove();
+		}
+
+		for (Class<? extends Component> cls : blueprint.components.keySet()) {
+
 		}
 		if (state != State.UNINITALIZED) {
 			// initialize all new components

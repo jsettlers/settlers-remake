@@ -80,17 +80,17 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public float getHealth() {
-		return entity.getComponent(AttackableComponent.class).getHealth();
+		return entity.getComponentOptional(AttackableComponent.class).map(AttackableComponent::getHealth).orElse(entity.movableComponent().getMovableType().getHealth());
 	}
 
 	@Override
 	public boolean isAlive() {
-		return false;
+		return entity.getComponentOptional(AttackableComponent.class).map(c -> c.getHealth() > 0).orElse(true);
 	}
 
 	@Override
 	public boolean isRightstep() {
-		return entity.getComponent(AnimationComponent.class).isRightStep();
+		return entity.getComponentOptional(AnimationComponent.class).map(AnimationComponent::isRightStep).orElse(false);
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public boolean isSoundPlayed() {
-		return entity.getComponent(AnimationComponent.class).isSoundPlayed();
+		return entity.getComponentOptional(AnimationComponent.class).map(AnimationComponent::isSoundPlayed).orElse(false);
 	}
 
 	@Override
@@ -240,7 +240,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public void convertTo(EMovableType newMovableType) {
-		//TODO: support switching between Movable types
+		entity.movableComponent().convertTo(newMovableType);
 	}
 
 	@Override

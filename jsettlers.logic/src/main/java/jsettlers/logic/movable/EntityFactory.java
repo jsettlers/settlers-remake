@@ -41,7 +41,7 @@ public final class EntityFactory {
 		}
 	}
 
-	static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+	public static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		Entity entity = null;
 		switch (movableType) {
 			case BEARER:
@@ -86,7 +86,7 @@ public final class EntityFactory {
 		entity.add(new MovableComponent(movableType, player, position, dir));
 		entity.add(new SteeringComponent());
 		entity.add(new GameFieldComponent(grid));
-		entity.add(new SelectableComponent(ESelectionType.SPECIALISTS));
+		entity.add(new SelectableComponent(movableType.selectionType));
 		entity.add(new PlayerComandComponent());
 		return entity;
 	}
@@ -101,6 +101,7 @@ public final class EntityFactory {
 		entity.add(new MovableComponent(movableType, player, position, dir));
 		entity.add(new SteeringComponent());
 		entity.add(new GameFieldComponent(grid));
+        entity.add(new SelectableComponent(movableType.selectionType));
 		return entity;
 	}
 }

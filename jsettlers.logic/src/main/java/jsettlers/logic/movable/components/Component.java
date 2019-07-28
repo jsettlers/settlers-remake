@@ -7,6 +7,7 @@ import java8.util.Optional;
 import java8.util.function.Consumer;
 import java8.util.function.Predicate;
 import java8.util.stream.Stream;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.Notification;
 
@@ -20,6 +21,7 @@ public abstract class Component implements Serializable {
 
 	/**
 	 * Called once when the entity gets enabled for the first time
+	 * If you want to save references as shorthand to other components do so in onEnable
 	 */
 	public final void wakeUp() {
 		onWakeUp();
@@ -40,6 +42,7 @@ public abstract class Component implements Serializable {
 
 	/**
 	 *  Called when the entity is set to active
+	 *  If you want to save references as shorthand to other components do so in onEnable
 	 */
 	public final void enable() { onEnable(); }
 

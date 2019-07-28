@@ -65,10 +65,14 @@ public class SteeringComponent extends Component {
 
 	@Override
 	protected void onWakeUp() {
+		tick = new Tick<>(new Context(entity, this), new Root<>(debug("==<root: steering>== of " + entity.getID(), createBehaviorTree())));
+	}
+
+	@Override
+	protected void onEnable() {
 		gameFieldComponent = entity.getComponent(GameFieldComponent.class);
 		movableComponent = entity.getComponent(MovableComponent.class);
 		animationComponent = entity.getComponent(AnimationComponent.class);
-		tick = new Tick<>(new Context(entity, this), new Root<>(debug("==<root: steering>== of " + entity.getID(), createBehaviorTree())));
 	}
 
 	public boolean setTarget(ShortPoint2D targetPos) {

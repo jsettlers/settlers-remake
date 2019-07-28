@@ -34,6 +34,8 @@ public class AttackableComponent extends Component {
 		return health;
 	}
 
+	public void setHealth(float health) { this.health = health; }
+
 	public void informAboutAttackable(ILogicMovable other) {
 		assert false : "Not implemented";
 	}

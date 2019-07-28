@@ -9,6 +9,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.movable.EntityFactory;
 import jsettlers.logic.movable.MovableWrapper;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.player.Player;
@@ -20,10 +21,11 @@ import jsettlers.logic.player.Player;
 public class MovableComponent extends Component implements IPathCalculatable {
 	private static final long serialVersionUID = -7615132582559956988L;
 
-	private final EMovableType   movableType;
+	private       EMovableType   movableType;
 	private       Player         player;
 	private       ShortPoint2D   position;
 	private       EDirection     viewDirection;
+	private 	  boolean        visible = true;
 	//TODO: make @movableWrapper not necessary
 	private       MovableWrapper movableWrapper;
 
@@ -38,12 +40,12 @@ public class MovableComponent extends Component implements IPathCalculatable {
 
 	@Override
 	protected void onWakeUp() {
-		gameComponent = entity.getComponent(GameFieldComponent.class);
 		movableWrapper = new MovableWrapper(entity);
 	}
 
 	@Override
 	protected void onEnable() {
+		gameComponent = entity.getComponent(GameFieldComponent.class);
 		gameComponent.addNewMovable(movableWrapper);
 		gameComponent.movableGrid.enterPosition(position, movableWrapper, true);
 	}
@@ -109,5 +111,33 @@ public class MovableComponent extends Component implements IPathCalculatable {
 
 	public EMovableType getMovableType() {
 		return movableType;
+	}
+
+	final void setVisible(boolean visible) {
+		if (this.visible == visible) return; // nothing to change
+
+		if (this.visible) { // is visible and gets invisible
+			gameComponent.movableGrid.leavePosition(position, movableWrapper);
+		} else {
+			gameComponent.movableGrid.enterPosition(position, movableWrapper, true);
+		}
+
+		this.visible = visible;
+	}
+
+	public void convertTo(EMovableType newMovableType) {
+		if (newMovableType == EMovableType.BEARER && !player.equals(gameComponent.movableGrid.getPlayerAt(position))) {
+			return; // can't convert to bearer if the ground does not belong to the player
+		}
+		if (!(movableType == EMovableType.BEARER || (movableType == EMovableType.PIONEER && newMovableType == EMovableType.BEARER) || movableType == newMovableType)) {
+			System.err.println("Tried invalid conversion from " + movableType + " to " + newMovableType);
+			return; // can't convert between this types
+		}
+		entity.getComponentOptional(AttackableComponent.class).ifPresent(c ->
+			c.setHealth(c.getHealth() / movableType.getHealth() * newMovableType.getHealth())
+		);
+		movableType = newMovableType;
+		setVisible(true); // ensure the movable is visible
+		entity.convertTo(EntityFactory.createEntity(gameComponent.movableGrid, newMovableType, position, player));
 	}
 }

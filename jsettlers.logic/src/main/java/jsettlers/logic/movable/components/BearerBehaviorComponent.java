@@ -26,6 +26,7 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.notificationCondition;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
 import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.setIdleBehaviorActiveWhile;
+import static jsettlers.logic.movable.BehaviorTreeHelper.sleep;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAndWaitForAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
@@ -157,7 +158,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 				),
 				debug("idle behavior",
 					setIdleBehaviorActiveWhile(true,
-						alwaysSucceed()
+						sleep(1000)
 					)
 				)
 			)
