@@ -35,10 +35,16 @@ public final class EntityFactory {
 			case BEARER:
 			case GEOLOGIST:
 			case DONKEY:
-				return new MovableWrapper(createEntity(grid, movableType, position, player));
+				return new MovableWrapper(createActiveEntity(grid, movableType, position, player));
 			default:
 				return new Movable(grid, movableType, position, player);
 		}
+	}
+
+	private static Entity createActiveEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = createEntity(grid, movableType, position, player);
+		entity.setActive(true);
+		return entity;
 	}
 
 	public static Entity createEntity(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
@@ -56,7 +62,6 @@ public final class EntityFactory {
 		}
 		assert entity != null : "Type not found by EntityFactory";
 		assert entity.checkComponentDependencies() : "Not all Component dependencies are resolved.";
-		entity.setActive(true);
 		return entity;
 	}
 

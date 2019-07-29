@@ -203,33 +203,34 @@ public class Entity implements Serializable, IScheduledTimerable {
 	}
 
 	public void convertTo(Entity blueprint) {
+		blueprint.setActive(false);
+
 		// remove all unused components
-		Iterator<Class<? extends Component>> it = components.keySet().iterator();
-		while (it.hasNext()) {
-			Class<? extends Component> cls = it.next();
+		Iterator<Class<? extends Component>> local_component_it = components.keySet().iterator();
+		while (local_component_it.hasNext()) {
+			Class<? extends Component> cls = local_component_it.next();
 			if (!blueprint.components.containsKey(cls)) {
-				it.remove();
+				local_component_it.remove();
+				remove(cls);
 			}
 		}
 
 		// add all new components
 		List<Component> newComponents = new ArrayList<>();
-		Iterator<Class<? extends Component>> blueprint_it = components.keySet().iterator();
-		while (blueprint_it.hasNext()) {
-			Class<? extends Component> blueprint_cls = blueprint_it.next();
+		Iterator<Class<? extends Component>> blueprint_component_it = blueprint.components.keySet().iterator();
+		while (blueprint_component_it.hasNext()) {
+			Class<? extends Component> cls = blueprint_component_it.next();
 			// ignore components we already have
-			if (components.containsKey(blueprint_cls)) {
+			if (components.containsKey(cls)) {
 				continue;
 			}
-			Component comp = blueprint.getComponent(blueprint_cls);
+			Component comp = blueprint.getComponent(cls);
 			newComponents.add(comp);
 			add(comp);
-			blueprint_it.remove();
+			blueprint_component_it.remove();
+			blueprint.remove(cls);
 		}
 
-		for (Class<? extends Component> cls : blueprint.components.keySet()) {
-
-		}
 		if (state != State.UNINITALIZED) {
 			// initialize all new components
 			for (Component c : newComponents) {
