@@ -13,6 +13,7 @@ import jsettlers.logic.movable.components.DonkeyBehaviorComponent;
 import jsettlers.logic.movable.components.DonkeyComponent;
 import jsettlers.logic.movable.components.GameFieldComponent;
 import jsettlers.logic.movable.components.GeologistBehaviorComponent;
+import jsettlers.logic.movable.components.MarkedPositonComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.MultiMaterialComponent;
@@ -32,7 +33,7 @@ public final class EntityFactory {
 
 	public static ILogicMovable createMovable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		switch (movableType) {
-			case BEARER:
+			//case BEARER:
 			case GEOLOGIST:
 			case DONKEY:
 				return new MovableWrapper(createActiveEntity(grid, movableType, position, player));
@@ -87,6 +88,7 @@ public final class EntityFactory {
 		entity.add(new AnimationComponent());
 		entity.add(new AttackableComponent(movableType));
 		entity.add(new MaterialComponent());
+		entity.add(new MarkedPositonComponent());
 		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
 		entity.add(new MovableComponent(movableType, player, position, dir));
 		entity.add(new SteeringComponent());

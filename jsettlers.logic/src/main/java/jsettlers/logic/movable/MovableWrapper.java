@@ -16,6 +16,7 @@ import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
+import jsettlers.logic.movable.components.BuildingWorkerComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.PlayerComandComponent;
@@ -126,7 +127,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
 	@Override
 	public EBuildingType getGarrisonedBuildingType() {
-		return null; // TODO implement this for building workers to return the type of their building
+		return entity.getComponentOptional(BuildingWorkerComponent.class).map(BuildingWorkerComponent::getBuildingType).orElse(null);
 	}
 
 	@Override

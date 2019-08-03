@@ -1,9 +1,13 @@
 package jsettlers.logic.movable;
 
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.components.AnimationComponent;
+import jsettlers.logic.movable.components.GameFieldComponent;
+import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
 import jsettlers.logic.movable.simplebehaviortree.INodeStatusActionConsumer;
@@ -182,6 +186,14 @@ public final class BehaviorTreeHelper {
 		);
 	}
 
+	public static Node<Context> defaultIdleBehavior() {
+		return debug("idle behavior",
+			setIdleBehaviorActiveWhile(true,
+				alwaysSucceed()
+			)
+		);
+	}
+
 	public static Property<Context, Boolean> setIdleBehaviorActiveWhile(boolean value, Node<Context> child) {
 		return new Property<>(
 			(context, v) -> context.entity.steeringComponent().IsIdleBehaviorActive(v),
@@ -261,5 +273,14 @@ public final class BehaviorTreeHelper {
 
 	public static Debug debug(String msg) {
 		return new Debug(msg);
+	}
+
+	public static Action<Context> dropMaterial() {
+		return new Action<>(c -> {
+			if (c.entity.materialComponent().getMaterial().isDroppable()) {
+				c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPosition(), c.entity.materialComponent().getMaterial(), true, false);
+			}
+			c.entity.materialComponent().setMaterial(EMaterialType.NO_MATERIAL);
+		});
 	}
 }
