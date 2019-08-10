@@ -95,7 +95,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/game_menu_skip_minute"
-			android:onClick="@{() -> viewmodel.skipMinuteClicked()}"/>
+			android:onClick="@{() -> viewmodel.skipMinuteClicked()}"
+			android:visibility="@{viewmodel.getShowSkipMinute()}"/>
 
 	</LinearLayout>
 
