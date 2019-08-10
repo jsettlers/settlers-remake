@@ -986,14 +986,12 @@ public class MapObjectDrawer {
 		float progress = object.getStateProgress();
 		int index = Math.round(progress * 2);
 
-		int iColor = Color.getABGR(color, color, color, 1);
 
 		boolean onGround = progress >= 1;
-		if (onGround) {
-			iColor &= 0x7fffffff;
-		}
+		float x = betweenTilesX(object.getSourceX(), object.getSourceY(), object.getTargetX(), object.getTargetY(), progress) + context.getOffsetX();
+
 		Image image = this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence).getImageSafe(index, () -> "arrow-" + object.getDirection() + "-" + progress);
-		image.drawAt(context.getGl(), betweenTilesY + 20 * progress * (1 - progress) + 20, iColor, onGround?-.1f:0, null, 1);
+		image.drawAt(context.getGl(), x, betweenTilesY + context.getOffsetY() + 20 * progress * (1 - progress) + 20, onGround?-.1f:0, null, color);
 	}
 
 	private void drawStones(int x, int y, int availableStones, float color) {
