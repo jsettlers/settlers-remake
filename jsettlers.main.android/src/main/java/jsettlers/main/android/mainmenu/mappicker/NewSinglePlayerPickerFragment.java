@@ -15,12 +15,12 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
+import org.androidannotations.annotations.EFragment;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-
-import org.androidannotations.annotations.EFragment;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
@@ -52,7 +52,7 @@ public class NewSinglePlayerPickerFragment extends MapPickerFragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		viewModel.getMapSelectedEvent().observe(this, mapId -> {
-			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator)getActivity();
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
 			mainMenuNavigator.showNewSinglePlayerSetup(mapId);
 		});
 	}

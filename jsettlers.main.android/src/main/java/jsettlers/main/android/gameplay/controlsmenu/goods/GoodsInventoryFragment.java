@@ -15,6 +15,11 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import java.util.List;
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -27,11 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
@@ -107,7 +107,6 @@ public class GoodsInventoryFragment extends Fragment {
 			diffResult.dispatchUpdatesTo(this);
 			this.inventoryMaterialStates = inventoryMaterialStates;
 		}
-
 
 		/**
 		 * Diff callback

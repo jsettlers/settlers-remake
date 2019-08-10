@@ -19,24 +19,24 @@ import static java8.util.J8Arrays.stream;
 
 import java.util.List;
 
+import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
+
+import java8.util.stream.Collectors;
+import jsettlers.common.action.SetAcceptedStockMaterialAction;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.controlsmenu.goods.MaterialsAdapter;
 import jsettlers.main.android.gameplay.controlsmenu.goods.StockMaterialState;
-
-import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ImageView;
-import java8.util.stream.Collectors;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by Tom Pratt on 10/01/2017.
@@ -106,6 +106,5 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 				.map(eMaterialType -> new StockMaterialState(eMaterialType, stockSettings))
 				.collect(Collectors.toList());
 	}
-
 
 }

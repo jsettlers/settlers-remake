@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<data>
+
+		<variable
+			name="viewmodel"
+			type="jsettlers.main.android.mainmenu.home.MainMenuViewModel"/>
+	</data>
+
+	<android.support.v7.widget.CardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/card_view_margin_vertical"
+		android:layout_marginLeft="@dimen/card_view_margin_horizontal_full_width"
+		android:layout_marginRight="@dimen/card_view_margin_horizontal_full_width"
+		android:layout_marginTop="@dimen/card_view_margin_vertical"
+		app:contentPaddingBottom="8dp"
+		app:contentPaddingLeft="12dp"
+		app:contentPaddingRight="12dp"
+		app:contentPaddingTop="12dp">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<TextView
+				style="@style/TextAppearance.AppCompat.Title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/menu_single_player_title"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:text="@string/menu_single_player_info"/>
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/button_load_single_player_game"
+					style="?attr/buttonBarButtonStyle"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/menu_load"
+					android:enabled="@{viewmodel.getAreResourcesLoaded()}"
+					android:onClick="@{() -> viewmodel.loadSinglePlayerSelected()}"/>
+
+				<Button
+					android:id="@+id/button_new_single_player_game"
+					style="?attr/buttonBarButtonStyle"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/menu_new"
+					android:enabled="@{viewmodel.getAreResourcesLoaded()}"
+					android:onClick="@{() -> viewmodel.newSinglePlayerSelected()}"/>
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</android.support.v7.widget.CardView>
+
+</layout>

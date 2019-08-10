@@ -22,19 +22,19 @@ import jsettlers.common.material.EMaterialType;
  */
 
 public class TradeMaterialState {
-    private final EMaterialType materialType;
-    private int count;
+	private final EMaterialType materialType;
+	private int count;
 
-    public TradeMaterialState(EMaterialType materialType, int count) {
-        this.materialType = materialType;
-        this.count = count;
-    }
+	public TradeMaterialState(EMaterialType materialType, int count) {
+		this.materialType = materialType;
+		this.count = count;
+	}
 
-    public EMaterialType getMaterialType() {
-        return materialType;
-    }
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
 
-    public int getCount() {
-        return count;
-    }
+	public int getCount() {
+		return count;
+	}
 }

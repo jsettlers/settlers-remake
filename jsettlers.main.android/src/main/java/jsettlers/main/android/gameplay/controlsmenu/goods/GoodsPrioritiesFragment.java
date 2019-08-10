@@ -15,10 +15,11 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
-import jsettlers.main.android.R;
+import org.androidannotations.annotations.EFragment;
 
 import android.support.v4.app.Fragment;
-import org.androidannotations.annotations.EFragment;
+
+import jsettlers.main.android.R;
 
 /**
  * Created by tompr on 24/11/2016.

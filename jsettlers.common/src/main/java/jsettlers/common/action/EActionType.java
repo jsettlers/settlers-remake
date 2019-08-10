@@ -54,6 +54,7 @@ public enum EActionType {
 	 */
 	SELECT_POINT_TYPE,
 
+	// - - - - - - SPEED - - - - -
 	/**
 	 * Select only the wounded of the current selection.
 	 */
@@ -63,8 +64,6 @@ public enum EActionType {
 	 * Skip the next minute of gameplay.
 	 */
 	FAST_FORWARD,
-
-	// - - - - - - SPEED - - - - -
 	/**
 	 * Pauses or resumes the game.
 	 */
@@ -78,17 +77,9 @@ public enum EActionType {
 	 */
 	SPEED_SLOWER,
 	/**
-	 * Sets the game speed to slow.
+	 * Set speed
 	 */
-	SPEED_SLOW,
-	/**
-	 * Sets the game speed to the default value.
-	 */
-	SPEED_NORMAL,
-	/**
-	 * Sets the game speed to fast.
-	 */
-	SPEED_FAST,
+	SET_SPEED,
 
 	// - - - - - - SELECTION - - - - - - -
 	/**

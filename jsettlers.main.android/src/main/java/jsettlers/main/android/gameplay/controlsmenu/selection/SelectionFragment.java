@@ -15,15 +15,15 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.input.SelectionSet;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.SelectionControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 /**
  * Created by tompr on 10/01/2017.

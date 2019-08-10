@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import static java8.util.J8Arrays.stream;
+
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
@@ -28,56 +30,54 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.PositionControls;
 import jsettlers.main.android.core.events.DrawEvents;
 
-import static java8.util.J8Arrays.stream;
-
 /**
  * Created by Tom Pratt on 27/09/2017.
  */
 
 public class InventoryViewModel extends ViewModel {
-    private final EMaterialType[] inventoryMaterials = EMaterialType.STOCK_MATERIALS;
+	private final EMaterialType[] inventoryMaterials = EMaterialType.STOCK_MATERIALS;
 
-    private final PositionControls positionControls;
+	private final PositionControls positionControls;
 
-    private final LiveData<InventoryMaterialState[]> inventoryMaterialStatesData;
+	private final LiveData<InventoryMaterialState[]> inventoryMaterialStatesData;
 
-    public InventoryViewModel(DrawControls drawControls, PositionControls positionControls) {
-        this.positionControls = positionControls;
+	public InventoryViewModel(DrawControls drawControls, PositionControls positionControls) {
+		this.positionControls = positionControls;
 
-        DrawEvents drawEvents = new DrawEvents(drawControls);
-        inventoryMaterialStatesData = Transformations.map(drawEvents, x -> productionStates());
-    }
+		DrawEvents drawEvents = new DrawEvents(drawControls);
+		inventoryMaterialStatesData = Transformations.map(drawEvents, x -> productionStates());
+	}
 
-    public LiveData<InventoryMaterialState[]> getMaterialStates() {
-        return inventoryMaterialStatesData;
-    }
+	public LiveData<InventoryMaterialState[]> getMaterialStates() {
+		return inventoryMaterialStatesData;
+	}
 
-    private InventoryMaterialState[] productionStates() {
-        IPartitionData partitionData = positionControls.getCurrentPartitionData();
+	private InventoryMaterialState[] productionStates() {
+		IPartitionData partitionData = positionControls.getCurrentPartitionData();
 
-        return stream(inventoryMaterials)
-                .map(materialType -> new InventoryMaterialState(materialType, partitionData))
-                .toArray(InventoryMaterialState[]::new);
-    }
+		return stream(inventoryMaterials)
+				.map(materialType -> new InventoryMaterialState(materialType, partitionData))
+				.toArray(InventoryMaterialState[]::new);
+	}
 
-    /**
-     * ViewModel factory
-     */
-    public static class Factory implements ViewModelProvider.Factory {
-        private final ControlsResolver controlsResolver;
+	/**
+	 * ViewModel factory
+	 */
+	public static class Factory implements ViewModelProvider.Factory {
+		private final ControlsResolver controlsResolver;
 
-        public Factory(Activity activity) {
-            this.controlsResolver = new ControlsResolver(activity);
-        }
+		public Factory(Activity activity) {
+			this.controlsResolver = new ControlsResolver(activity);
+		}
 
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            if (modelClass == InventoryViewModel.class) {
-                return (T) new InventoryViewModel(
-                        controlsResolver.getDrawControls(),
-                        controlsResolver.getPositionControls());
-            }
-            throw new RuntimeException("InventoryViewModel.Factory doesn't know how to create a: " + modelClass.toString());
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			if (modelClass == InventoryViewModel.class) {
+				return (T) new InventoryViewModel(
+						controlsResolver.getDrawControls(),
+						controlsResolver.getPositionControls());
+			}
+			throw new RuntimeException("InventoryViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+		}
+	}
 }

@@ -15,16 +15,16 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.settlers;
 
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
 
 import jsettlers.common.images.ImageLink;
 import jsettlers.main.android.R;

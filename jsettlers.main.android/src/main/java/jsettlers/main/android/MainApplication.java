@@ -15,10 +15,10 @@
 
 package jsettlers.main.android;
 
+import org.androidannotations.annotations.EApplication;
+
 import android.app.Application;
 import android.arch.lifecycle.Observer;
-
-import org.androidannotations.annotations.EApplication;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -27,6 +27,7 @@ import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.android.core.AndroidPreferences;
@@ -118,7 +119,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 
 	@Override
 	public IMapInterfaceConnector gameStarted(IStartedGame game) {
-		controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
+		controlsAdapter = new ControlsAdapter(getApplicationContext(), game, MatchConstants.clock());
 		game.setGameExitListener(controlsAdapter.getGameMenu());
 		controlsAdapter.getGameMenu().getGameState().observeForever(gameStateObserver);
 
@@ -148,10 +149,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public boolean isGameInProgress() {
 		return controlsAdapter != null;
 	}
-
-
-
-
 
 	private Observer<GameMenu.GameState> gameStateObserver = gameState -> {
 		if (gameState == GameMenu.GameState.QUITTED) {

@@ -20,54 +20,54 @@ import jsettlers.main.android.core.events.SingleLiveEvent;
 
 public class LoadSinglePlayerPickerViewModel extends MapPickerViewModel {
 
-    private final GameStarter gameStarter;
-    private final SingleLiveEvent<Void> mapSelectedEvent = new SingleLiveEvent<>();
-    private final LiveData<Boolean> showNoMapsMessage;
+	private final GameStarter gameStarter;
+	private final SingleLiveEvent<Void> mapSelectedEvent = new SingleLiveEvent<>();
+	private final LiveData<Boolean> showNoMapsMessage;
 
-    public LoadSinglePlayerPickerViewModel(GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
-        super(gameStarter, changingMaps);
-        this.gameStarter = gameStarter;
+	public LoadSinglePlayerPickerViewModel(GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
+		super(gameStarter, changingMaps);
+		this.gameStarter = gameStarter;
 
-        showNoMapsMessage = Transformations.map(getMaps(), maps -> maps.length == 0);
-    }
+		showNoMapsMessage = Transformations.map(getMaps(), maps -> maps.length == 0);
+	}
 
-    @Override
-    public void selectMap(MapLoader map) {
-        MapFileHeader mapFileHeader = map.getFileHeader();
-        PlayerSetting[] playerSettings = mapFileHeader.getPlayerSettings();
-        byte playerId = mapFileHeader.getPlayerId();
-        JSettlersGame game = new JSettlersGame(map, 4711L, playerId, playerSettings);
-        gameStarter.setStartingGame(game.start());
-        mapSelectedEvent.call();
-    }
+	@Override
+	public void selectMap(MapLoader map) {
+		MapFileHeader mapFileHeader = map.getFileHeader();
+		PlayerSetting[] playerSettings = mapFileHeader.getPlayerSettings();
+		byte playerId = mapFileHeader.getPlayerId();
+		JSettlersGame game = new JSettlersGame(map, 4711L, playerId, playerSettings);
+		gameStarter.setStartingGame(game.start());
+		mapSelectedEvent.call();
+	}
 
-    public LiveData<Void> getMapSelectedEvent() {
-        return mapSelectedEvent;
-    }
+	public LiveData<Void> getMapSelectedEvent() {
+		return mapSelectedEvent;
+	}
 
-    public LiveData<Boolean> getShowNoMapsMessage() {
-        return showNoMapsMessage;
-    }
+	public LiveData<Boolean> getShowNoMapsMessage() {
+		return showNoMapsMessage;
+	}
 
-    /**
-     * ViewModel factory
-     */
-    public static class Factory implements ViewModelProvider.Factory {
+	/**
+	 * ViewModel factory
+	 */
+	public static class Factory implements ViewModelProvider.Factory {
 
-        private final Activity activity;
-        private final GameStarter gameStarter;
+		private final Activity activity;
+		private final GameStarter gameStarter;
 
-        public Factory(Activity activity) {
-            this.activity = activity;
-            gameStarter = (GameStarter) activity.getApplication();
-        }
+		public Factory(Activity activity) {
+			this.activity = activity;
+			gameStarter = (GameStarter) activity.getApplication();
+		}
 
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            if (modelClass == LoadSinglePlayerPickerViewModel.class) {
-                return (T) new LoadSinglePlayerPickerViewModel(gameStarter, gameStarter.getMapList().getSavedMaps());
-            }
-            throw new RuntimeException("NewSinglePlayerPickerViewModel.Factory doesn't know how to create a: " + modelClass.toString());
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			if (modelClass == LoadSinglePlayerPickerViewModel.class) {
+				return (T) new LoadSinglePlayerPickerViewModel(gameStarter, gameStarter.getMapList().getSavedMaps());
+			}
+			throw new RuntimeException("NewSinglePlayerPickerViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+		}
+	}
 }
