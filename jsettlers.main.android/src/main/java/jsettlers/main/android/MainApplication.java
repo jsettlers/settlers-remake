@@ -18,7 +18,10 @@ package jsettlers.main.android;
 import org.androidannotations.annotations.EApplication;
 
 import android.app.Application;
-import android.arch.lifecycle.Observer;
+import android.os.Handler;
+import android.os.Looper;
+
+import androidx.lifecycle.Observer;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -121,7 +124,8 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public IMapInterfaceConnector gameStarted(IStartedGame game) {
 		controlsAdapter = new ControlsAdapter(getApplicationContext(), game, MatchConstants.clock());
 		game.setGameExitListener(controlsAdapter.getGameMenu());
-		controlsAdapter.getGameMenu().getGameState().observeForever(gameStateObserver);
+
+		new Handler(Looper.getMainLooper()).post(() -> controlsAdapter.getGameMenu().getGameState().observeForever(gameStateObserver));
 
 		GameService_.intent(this).start();
 

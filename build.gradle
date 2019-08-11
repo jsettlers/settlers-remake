@@ -4,13 +4,12 @@ apply plugin: 'java'
 ext {
     streamSupportVersion = '1.5.4'
 
-    androidAnnotationsVersion = '4.4.0'
+    androidAnnotationsVersion = '4.6.0'
     androidSupportLibraryVersion = '27.1.0'
 
-    androidBuildToolsVersion = '27.0.3'
-    androidCompileSdkVersion = 27
+    androidCompileSdkVersion = 28
     androidMinSdkVersion = 19
-    androidTargetSdkVersion = 26
+    androidTargetSdkVersion = 28
 }
 
 buildscript {
@@ -22,7 +21,7 @@ buildscript {
     dependencies {
         classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
         if (findProject(':jsettlers.main.android')) {
-            classpath 'com.android.tools.build:gradle:3.1.3'
+            classpath 'com.android.tools.build:gradle:3.4.2'
         }
     }
 }
@@ -51,17 +50,17 @@ subprojects {
             targetCompatibility = JavaVersion.VERSION_1_8
         }
 
-        task copyMainResources(type: Copy) {
-            from sourceSets.main.resources
-            into sourceSets.main.output.classesDir
-        }
-        processResources.dependsOn copyMainResources
-
-        task copyTestResources(type: Copy) {
-            from sourceSets.test.resources
-            into sourceSets.test.output.classesDir
-        }
-        processTestResources.dependsOn copyTestResources
+//        task copyMainResources(type: Copy) {
+//            from sourceSets.main.resources
+//            into sourceSets.main.output.classesDir
+//        }
+//        processResources.dependsOn copyMainResources
+//
+//        task copyTestResources(type: Copy) {
+//            from sourceSets.test.resources
+//            into sourceSets.test.output.classesDir
+//        }
+//        processTestResources.dependsOn copyTestResources
     }
     plugins.withType(ApplicationPlugin).whenPluginAdded {
         startScripts {
@@ -105,11 +104,13 @@ subprojects {
 }
 
 // This is a hack to make ./gradlew run only run the swing version.
-task run(dependsOn: ':jsettlers.main.swing:run') << {
-    // We do not need any more tasks.
-    tasks.getAsMap().values().each { Task task ->
-        if (!task.state.executed && task != tasks.getByPath(":run")) task.onlyIf {
-            false
+task run(dependsOn: ':jsettlers.main.swing:run') {
+    doLast {
+        // We do not need any more tasks.
+        tasks.getAsMap().values().each { Task task ->
+            if (!task.state.executed && task != tasks.getByPath(":run")) task.onlyIf {
+                false
+            }
         }
     }
 }
@@ -120,25 +121,27 @@ task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
 if (findProject(':jsettlers.main.android')) {
     // Android is present.
-    task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
-        def androidHome = System.env.ANDROID_HOME;
-        if (!androidHome) {
-            Properties local = new Properties()
-            local.load(new FileInputStream("local.properties"))
-            androidHome = local.getProperty('sdk.dir');
+    task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') {
+        doLast {
+            def androidHome = System.env.ANDROID_HOME
+            if (!androidHome) {
+                Properties local = new Properties()
+                local.load(new FileInputStream("local.properties"))
+                androidHome = local.getProperty('sdk.dir')
+            }
+            def adb = androidHome + '/platform-tools/adb'
+            println 'Copy files to your device...'
+            exec {
+                commandLine adb, 'uninstall', 'jsettlers.main.android'
+            }
+            exec {
+                commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
+            }
+            exec {
+                commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
+            }
+            println 'The application should have started now.'
         }
-        def adb = androidHome + '/platform-tools/adb'
-        println 'Copy files to your device...'
-        exec {
-            commandLine adb, 'uninstall', 'jsettlers.main.android'
-        }
-        exec {
-            commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
-        }
-        exec {
-            commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
-        }
-        println 'The application should have started now.'
     }
 }
 

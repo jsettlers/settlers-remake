@@ -15,7 +15,7 @@
 
 package jsettlers.main.android.core.ui;
 
-import android.support.v7.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 
 /**
  * Created by Tom on 20/01/2016.

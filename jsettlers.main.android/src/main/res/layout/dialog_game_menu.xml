@@ -52,7 +52,7 @@
 			android:layout_height="2dp"
 			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
 
-		<android.support.v7.widget.AppCompatSeekBar
+		<androidx.appcompat.widget.AppCompatSeekBar
 			android:id="@+id/seekBar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

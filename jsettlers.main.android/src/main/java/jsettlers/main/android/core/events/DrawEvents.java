@@ -4,7 +4,7 @@ package jsettlers.main.android.core.events;
  * Created by Tom Pratt on 30/09/2017.
  */
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;

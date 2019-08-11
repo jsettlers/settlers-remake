@@ -18,8 +18,8 @@ package jsettlers.main.android.core.controls;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.widget.Toast;
 

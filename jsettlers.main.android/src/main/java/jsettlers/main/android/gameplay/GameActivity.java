@@ -20,7 +20,7 @@ import java.util.List;
 import org.androidannotations.annotations.EActivity;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;

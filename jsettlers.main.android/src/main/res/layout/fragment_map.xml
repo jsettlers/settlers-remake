@@ -8,13 +8,13 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
-	<android.support.v7.widget.Toolbar
+	<androidx.appcompat.widget.Toolbar
 		android:id="@+id/toolbar"
 		android:layout_width="match_parent"
 		android:layout_height="56dp"
 		android:background="@android:color/transparent"/>
 
-	<android.support.design.widget.CoordinatorLayout
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:layout_gravity="center_horizontal"
 		android:layout_width="@dimen/menu_bar_width"
 		android:layout_height="match_parent">
@@ -64,6 +64,6 @@
 				android:layout_weight="1"/>
 
 		</LinearLayout>
-	</android.support.design.widget.CoordinatorLayout>
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </FrameLayout>

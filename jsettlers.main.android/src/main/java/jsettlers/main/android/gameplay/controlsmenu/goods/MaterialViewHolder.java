@@ -19,7 +19,7 @@ package jsettlers.main.android.gameplay.controlsmenu.goods;
  * Created by Tom Pratt on 12/07/2017.
  */
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 

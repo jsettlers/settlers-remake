@@ -1,8 +1,8 @@
 package jsettlers.main.android.mainmenu.home;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import jsettlers.main.android.databinding.VhSinglePlayerBinding;

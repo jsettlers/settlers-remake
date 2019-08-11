@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import org.androidannotations.annotations.EFragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

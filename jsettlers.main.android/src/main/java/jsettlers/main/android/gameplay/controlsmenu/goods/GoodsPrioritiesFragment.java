@@ -17,7 +17,7 @@ package jsettlers.main.android.gameplay.controlsmenu.goods;
 
 import org.androidannotations.annotations.EFragment;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import jsettlers.main.android.R;
 

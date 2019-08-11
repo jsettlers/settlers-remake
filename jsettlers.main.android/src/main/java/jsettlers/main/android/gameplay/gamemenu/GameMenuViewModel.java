@@ -16,10 +16,10 @@
 package jsettlers.main.android.gameplay.gamemenu;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
+import androidx.annotation.NonNull;
 import android.view.View;
 
 import jsettlers.main.android.R;

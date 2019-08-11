@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import java8.util.Optional;
 import jsettlers.common.ai.EPlayerType;

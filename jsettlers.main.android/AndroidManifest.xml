@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-		  package="jsettlers.main.android"
+	xmlns:tools="http://schemas.android.com/tools"
+	package="jsettlers.main.android"
 		  android:installLocation="auto">
 
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -10,6 +11,7 @@
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.VIBRATE"/>
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
 	<application
 		android:name=".MainApplication_"
@@ -17,7 +19,8 @@
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
 		android:largeHeap="true"
-		android:theme="@style/SettlersTheme">
+		android:theme="@style/SettlersTheme"
+		tools:ignore="GoogleAppIndexingWarning">
 
 		<activity android:name=".mainmenu.MainActivity_">
 			<intent-filter>

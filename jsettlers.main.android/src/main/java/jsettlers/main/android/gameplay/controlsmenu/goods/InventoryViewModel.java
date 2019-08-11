@@ -18,10 +18,10 @@ package jsettlers.main.android.gameplay.controlsmenu.goods;
 import static java8.util.J8Arrays.stream;
 
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
