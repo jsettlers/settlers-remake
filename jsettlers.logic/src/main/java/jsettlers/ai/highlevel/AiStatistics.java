@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2015 - 2019
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,6 +29,7 @@ import java8.util.Comparators;
 import java8.util.J8Arrays;
 import java8.util.Maps;
 import java8.util.Objects;
+import java8.util.Optional;
 import java8.util.stream.Collectors;
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -45,6 +46,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.EWinState;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -184,9 +186,7 @@ public class AiStatistics {
 				playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
 			}
 		} else if (building.getBuildingType().isMilitaryBuilding()) {
-			if (building.isOccupied()) {
-				playerStatistic.isAlive = true;
-			} else {
+			if (!building.isOccupied()) {
 				playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
 			}
 		}
@@ -652,12 +652,16 @@ public class AiStatistics {
 		return playerStatistics[playerId].otherPartitionBorder;
 	}
 
-	private boolean isAlive(IPlayer player) {
-		return isAlive(player.getPlayerId());
+	public boolean isAlive(IPlayer player) {
+		return player.getWinState() == EWinState.UNDECIDED;
 	}
 
 	public boolean isAlive(byte playerId) {
-		return playerStatistics[playerId].isAlive;
+		return getPlayerById(playerId).map(this::isAlive).orElse(false);
+	}
+
+	private Optional<Player> getPlayerById(byte playerId) {
+		return stream(players).filter(player -> player.playerId == playerId).findFirst();
 	}
 
 	public AiMapInformation getAiMapInformation() {
