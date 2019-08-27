@@ -15,6 +15,8 @@
 package jsettlers.main;
 
 
+import java8.util.Objects;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.player.EWinState;
 import jsettlers.logic.map.grid.MainGrid;
@@ -37,8 +39,9 @@ class WinLoseTracker implements INetworkTimerable {
 	public void timerEvent() {
 		// Update defeated status
 		Player[] players = mainGrid.getPartitionsGrid().getPlayers();
+
 		for (Player player : players) {
-			if (player.getWinState() != EWinState.UNDECIDED) {
+			if (player == null || player.getWinState() != EWinState.UNDECIDED) {
 				continue;
 			}
 
@@ -55,11 +58,11 @@ class WinLoseTracker implements INetworkTimerable {
 
 		// Check if any player won by defeating other players
 		for (Player player : players) {
-			if (player.getWinState() != EWinState.UNDECIDED) {
+			if (player == null || player.getWinState() != EWinState.UNDECIDED) {
 				continue;
 			}
 
-			boolean allEnemiesDefeated =	stream(players).filter(otherPlayer -> !otherPlayer.hasSameTeam(player)).noneMatch(enemy -> enemy.getWinState() != EWinState.LOST);
+			boolean allEnemiesDefeated = stream(players).filter(Objects::nonNull).filter(otherPlayer -> !otherPlayer.hasSameTeam(player)).noneMatch(enemy -> enemy.getWinState() != EWinState.LOST);
 
 			if (allEnemiesDefeated) {
 				player.setWinState(EWinState.WON);

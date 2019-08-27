@@ -653,7 +653,7 @@ public class AiStatistics {
 	}
 
 	public boolean isAlive(IPlayer player) {
-		return player.getWinState() == EWinState.UNDECIDED;
+		return player.getWinState() != EWinState.LOST;
 	}
 
 	public boolean isAlive(byte playerId) {
