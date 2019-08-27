@@ -657,11 +657,8 @@ public class AiStatistics {
 	}
 
 	public boolean isAlive(byte playerId) {
-		return getPlayerById(playerId).map(this::isAlive).orElse(false);
-	}
-
-	private Optional<Player> getPlayerById(byte playerId) {
-		return stream(players).filter(player -> player.playerId == playerId).findFirst();
+		IPlayer player = partitionsGrid.getPlayer(playerId);
+		return isAlive(player);
 	}
 
 	public AiMapInformation getAiMapInformation() {

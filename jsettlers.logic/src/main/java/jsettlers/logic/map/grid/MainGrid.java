@@ -66,6 +66,7 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.EWinState;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
@@ -1952,6 +1953,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isNavigable(int x, int y) {
 			return MainGrid.this.isNavigable(x, y);
+		}
+
+		@Override
+		public boolean hasLost(byte playerId) {
+			return partitionsGrid.getPlayer(playerId).getWinState() == EWinState.LOST;
 		}
 
 		@Override
