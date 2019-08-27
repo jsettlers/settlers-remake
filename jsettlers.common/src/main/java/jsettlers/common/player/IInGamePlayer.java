@@ -43,4 +43,10 @@ public interface IInGamePlayer extends IPlayer {
 	 * @return The civilisation the player has
 	 */
 	ECivilisation getCivilisation();
+
+	/**
+	 * Get win/lose state for the player
+	 * @return The win/lose state the player is in
+	 */
+	public EWinState getWinState();
 }

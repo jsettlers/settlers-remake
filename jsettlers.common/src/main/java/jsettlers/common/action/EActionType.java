@@ -160,7 +160,7 @@ public enum EActionType {
 	PAN_TO,
 
 	/**
-	 * Toggles fog of war.
+	 * Toggles fog of war if allowed by game rules.
 	 */
 	TOGGLE_FOG_OF_WAR,
 
