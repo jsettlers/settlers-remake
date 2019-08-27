@@ -383,7 +383,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if(localPlayer.getWinState() == EWinState.UNDECIDED) {
 			return;
 		}
-		Color color = (localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED);
+		Color color = localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED;
 		final String msg = Labels.getString("winstate_" + localPlayer.getWinState());
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
 		drawer.setColor(color);
