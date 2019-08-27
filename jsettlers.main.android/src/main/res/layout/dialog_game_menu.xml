@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<data>
+
+		<variable
+			name="viewmodel"
+			type="jsettlers.main.android.gameplay.gamemenu.GameMenuViewModel"/>
+	</data>
+
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="12dp">
+
+		<Space
+			android:layout_width="0dp"
+			android:layout_height="12dp"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
+
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+				android:text="@string/game_menu_speed_normal"/>
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="center_horizontal"
+				android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+				android:text="@{viewmodel.getGameSpeedText()}"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+				android:text="@string/game_menu_speed_fast"/>
+
+		</LinearLayout>
+
+		<Space
+			android:layout_width="0dp"
+			android:layout_height="2dp"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
+
+		<android.support.v7.widget.AppCompatSeekBar
+			android:id="@+id/seekBar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:max="9"
+			android:progress="@{viewmodel.getGameSpeed()}"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
+
+		<Space
+			android:layout_width="0dp"
+			android:layout_height="16dp"
+			android:visibility="@{viewmodel.getShowGameSpeedControl()}"/>
+
+		<Button
+			style="?attr/buttonBarButtonStyle"
+			android:id="@+id/button_quit"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@{viewmodel.getQuitText()}"
+			android:onClick="@{() -> viewmodel.quitClicked()}"/>
+
+		<Button
+			style="?attr/buttonBarButtonStyle"
+			android:id="@+id/button_save"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/game_menu_save"
+			android:onClick="@{() -> viewmodel.saveClicked()}"/>
+
+		<Button
+			style="?attr/buttonBarButtonStyle"
+			android:id="@+id/button_pause"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@{viewmodel.getPauseText()}"
+			android:onClick="@{() -> viewmodel.pauseClicked()}"/>
+
+		<Button
+			style="?attr/buttonBarButtonStyle"
+			android:id="@+id/button_skip_minute"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/game_menu_skip_minute"
+			android:onClick="@{() -> viewmodel.skipMinuteClicked()}"
+			android:visibility="@{viewmodel.getShowSkipMinute()}"/>
+
+	</LinearLayout>
+
+</layout>

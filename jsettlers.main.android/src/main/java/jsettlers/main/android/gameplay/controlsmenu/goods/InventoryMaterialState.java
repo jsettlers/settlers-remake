@@ -23,19 +23,19 @@ import jsettlers.common.material.EMaterialType;
  */
 
 public class InventoryMaterialState {
-    private final EMaterialType materialType;
-    private int count;
+	private final EMaterialType materialType;
+	private int count;
 
-    public InventoryMaterialState(EMaterialType materialType, IPartitionData partitionData) {
-        this.materialType = materialType;
-        this.count = partitionData.getAmountOf(materialType);
-    }
+	public InventoryMaterialState(EMaterialType materialType, IPartitionData partitionData) {
+		this.materialType = materialType;
+		this.count = partitionData.getAmountOf(materialType);
+	}
 
-    public EMaterialType getMaterialType() {
-        return materialType;
-    }
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
 
-    public int getCount() {
-        return count;
-    }
+	public int getCount() {
+		return count;
+	}
 }

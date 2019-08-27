@@ -5,19 +5,19 @@ package jsettlers.main.android.mainmenu.mappicker;
  */
 
 public class JoiningViewState {
-    private final String state;
-    private final int progress;
+	private final String state;
+	private final int progress;
 
-    public JoiningViewState(String state, int progress) {
-        this.state = state;
-        this.progress = progress;
-    }
+	public JoiningViewState(String state, int progress) {
+		this.state = state;
+		this.progress = progress;
+	}
 
-    public String getState() {
-        return state;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public int getProgress() {
-        return progress;
-    }
+	public int getProgress() {
+		return progress;
+	}
 }

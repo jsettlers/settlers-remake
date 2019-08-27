@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import static java8.util.J8Arrays.stream;
+
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
@@ -30,82 +32,80 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.PositionControls;
 import jsettlers.main.android.core.events.DrawEvents;
 
-import static java8.util.J8Arrays.stream;
-
 /**
  * Created by Tom Pratt on 25/09/2017.
  */
 
 public class ProductionViewModel extends ViewModel {
-    private final EMaterialType[] productionMaterials = {
-            EMaterialType.SWORD,
-            EMaterialType.BOW,
-            EMaterialType.SPEAR,
-            EMaterialType.HAMMER,
-            EMaterialType.BLADE,
-            EMaterialType.PICK,
-            EMaterialType.AXE,
-            EMaterialType.SAW,
-            EMaterialType.SCYTHE,
-            EMaterialType.FISHINGROD
-    };
+	private final EMaterialType[] productionMaterials = {
+			EMaterialType.SWORD,
+			EMaterialType.BOW,
+			EMaterialType.SPEAR,
+			EMaterialType.HAMMER,
+			EMaterialType.BLADE,
+			EMaterialType.PICK,
+			EMaterialType.AXE,
+			EMaterialType.SAW,
+			EMaterialType.SCYTHE,
+			EMaterialType.FISHINGROD
+	};
 
-    private final ActionControls actionControls;
-    private final PositionControls positionControls;
+	private final ActionControls actionControls;
+	private final PositionControls positionControls;
 
-    private final LiveData<ProductionState[]> productionStates;
+	private final LiveData<ProductionState[]> productionStates;
 
-    public ProductionViewModel(ActionControls actionControls, PositionControls positionControls, DrawControls drawControls) {
-        this.actionControls = actionControls;
-        this.positionControls = positionControls;
+	public ProductionViewModel(ActionControls actionControls, PositionControls positionControls, DrawControls drawControls) {
+		this.actionControls = actionControls;
+		this.positionControls = positionControls;
 
-        DrawEvents drawEvents = new DrawEvents(drawControls);
-        productionStates = Transformations.map(drawEvents, x -> productionStates());
-    }
+		DrawEvents drawEvents = new DrawEvents(drawControls);
+		productionStates = Transformations.map(drawEvents, x -> productionStates());
+	}
 
-    public LiveData<ProductionState[]> getProductionStates() {
-        return productionStates;
-    }
+	public LiveData<ProductionState[]> getProductionStates() {
+		return productionStates;
+	}
 
-    public void increment(EMaterialType materialType) {
-        actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.INCREASE, 0));
-    }
+	public void increment(EMaterialType materialType) {
+		actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.INCREASE, 0));
+	}
 
-    public void decrement(EMaterialType materialType) {
-        actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.DECREASE, 0));
-    }
+	public void decrement(EMaterialType materialType) {
+		actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.DECREASE, 0));
+	}
 
-    public void setProductionRatio(EMaterialType materialType, float ratio) {
-        actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, ratio));
-    }
+	public void setProductionRatio(EMaterialType materialType, float ratio) {
+		actionControls.fireAction(new SetMaterialProductionAction(positionControls.getCurrentPosition(), materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, ratio));
+	}
 
-    private ProductionState[] productionStates() {
-        IMaterialProductionSettings materialProductionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getMaterialProductionSettings();
+	private ProductionState[] productionStates() {
+		IMaterialProductionSettings materialProductionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getMaterialProductionSettings();
 
-        return stream(productionMaterials)
-                .map(materialType -> new ProductionState(materialType, materialProductionSettings))
-                .toArray(ProductionState[]::new);
-    }
+		return stream(productionMaterials)
+				.map(materialType -> new ProductionState(materialType, materialProductionSettings))
+				.toArray(ProductionState[]::new);
+	}
 
-    /**
-     * ViewModel factory
-     */
-    public static class Factory implements ViewModelProvider.Factory {
-        private final ControlsResolver controlsResolver;
+	/**
+	 * ViewModel factory
+	 */
+	public static class Factory implements ViewModelProvider.Factory {
+		private final ControlsResolver controlsResolver;
 
-        public Factory(Activity activity) {
-            this.controlsResolver = new ControlsResolver(activity);
-        }
+		public Factory(Activity activity) {
+			this.controlsResolver = new ControlsResolver(activity);
+		}
 
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            if (modelClass == ProductionViewModel.class) {
-                return (T) new ProductionViewModel(
-                        controlsResolver.getActionControls(),
-                        controlsResolver.getPositionControls(),
-                        controlsResolver.getDrawControls());
-            }
-            throw new RuntimeException("ProductionViewModel.Factory doesn't know how to create a: " + modelClass.toString());
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			if (modelClass == ProductionViewModel.class) {
+				return (T) new ProductionViewModel(
+						controlsResolver.getActionControls(),
+						controlsResolver.getPositionControls(),
+						controlsResolver.getDrawControls());
+			}
+			throw new RuntimeException("ProductionViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+		}
+	}
 }

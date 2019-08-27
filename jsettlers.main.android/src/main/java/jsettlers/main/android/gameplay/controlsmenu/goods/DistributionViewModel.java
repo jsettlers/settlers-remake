@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import static java8.util.J8Arrays.stream;
+
 import android.app.Activity;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
@@ -28,67 +30,65 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.PositionControls;
 
-import static java8.util.J8Arrays.stream;
-
 /**
  * Created by Tom Pratt on 29/09/2017.
  */
 
 public class DistributionViewModel extends ViewModel {
-    private static final EMaterialType[] MATERIAL_TYPES_FOR_DISTRIBUTION = new EMaterialType[] {
-            EMaterialType.COAL,
-            EMaterialType.IRON,
-            EMaterialType.PLANK,
-            EMaterialType.CROP,
-            EMaterialType.WATER,
-            EMaterialType.BREAD,
-            EMaterialType.MEAT,
-            EMaterialType.FISH
-    };
+	private static final EMaterialType[] MATERIAL_TYPES_FOR_DISTRIBUTION = new EMaterialType[] {
+			EMaterialType.COAL,
+			EMaterialType.IRON,
+			EMaterialType.PLANK,
+			EMaterialType.CROP,
+			EMaterialType.WATER,
+			EMaterialType.BREAD,
+			EMaterialType.MEAT,
+			EMaterialType.FISH
+	};
 
-    private final PositionControls positionControls;
-    private final ActionControls actionControls;
+	private final PositionControls positionControls;
+	private final ActionControls actionControls;
 
-    public DistributionViewModel(PositionControls positionControls, ActionControls actionControls) {
-        this.positionControls = positionControls;
-        this.actionControls = actionControls;
-    }
+	public DistributionViewModel(PositionControls positionControls, ActionControls actionControls) {
+		this.positionControls = positionControls;
+		this.actionControls = actionControls;
+	}
 
-    public EMaterialType[] getDistributionMaterials() {
-        return MATERIAL_TYPES_FOR_DISTRIBUTION;
-    }
+	public EMaterialType[] getDistributionMaterials() {
+		return MATERIAL_TYPES_FOR_DISTRIBUTION;
+	}
 
-    public DistributionState[] getDistributionStates(EMaterialType materialType) {
-        IMaterialDistributionSettings materialDistributionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getDistributionSettings(materialType);
-        EBuildingType[] buildingsForMaterial = MaterialsOfBuildings.getBuildingTypesRequestingMaterial(materialType);
+	public DistributionState[] getDistributionStates(EMaterialType materialType) {
+		IMaterialDistributionSettings materialDistributionSettings = positionControls.getCurrentPartitionData().getPartitionSettings().getDistributionSettings(materialType);
+		EBuildingType[] buildingsForMaterial = MaterialsOfBuildings.getBuildingTypesRequestingMaterial(materialType);
 
-        return stream(buildingsForMaterial)
-                .map(buildingType -> new DistributionState(buildingType, materialDistributionSettings))
-                .toArray(DistributionState[]::new);
-    }
+		return stream(buildingsForMaterial)
+				.map(buildingType -> new DistributionState(buildingType, materialDistributionSettings))
+				.toArray(DistributionState[]::new);
+	}
 
-    public void setDistributionRatio(EMaterialType materialType, EBuildingType buildingType, float ratio) {
-        actionControls.fireAction(new SetMaterialDistributionSettingsAction(positionControls.getCurrentPosition(), materialType, buildingType, ratio));
-    }
+	public void setDistributionRatio(EMaterialType materialType, EBuildingType buildingType, float ratio) {
+		actionControls.fireAction(new SetMaterialDistributionSettingsAction(positionControls.getCurrentPosition(), materialType, buildingType, ratio));
+	}
 
-    /**
-     * ViewModel factory
-     */
-    public static class Factory implements ViewModelProvider.Factory {
-        private final ControlsResolver controlsResolver;
+	/**
+	 * ViewModel factory
+	 */
+	public static class Factory implements ViewModelProvider.Factory {
+		private final ControlsResolver controlsResolver;
 
-        public Factory(Activity activity) {
-            this.controlsResolver = new ControlsResolver(activity);
-        }
+		public Factory(Activity activity) {
+			this.controlsResolver = new ControlsResolver(activity);
+		}
 
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            if (modelClass == DistributionViewModel.class) {
-                return (T) new DistributionViewModel(
-                        controlsResolver.getPositionControls(),
-                        controlsResolver.getActionControls());
-            }
-            throw new RuntimeException("DistributionViewModel.Factory doesn't know how to create a: " + modelClass.toString());
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			if (modelClass == DistributionViewModel.class) {
+				return (T) new DistributionViewModel(
+						controlsResolver.getPositionControls(),
+						controlsResolver.getActionControls());
+			}
+			throw new RuntimeException("DistributionViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+		}
+	}
 }

@@ -19,7 +19,6 @@ package jsettlers.main.android.gameplay.controlsmenu.goods;
  * Created by Tom Pratt on 12/07/2017.
  */
 
-
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,21 +26,20 @@ import android.widget.ImageView;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
 
-
 public class MaterialViewHolder extends RecyclerView.ViewHolder {
-    private final ImageView imageView;
+	private final ImageView imageView;
 
-    public MaterialViewHolder(View itemView) {
-        super(itemView);
-        imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
-    }
+	public MaterialViewHolder(View itemView) {
+		super(itemView);
+		imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
+	}
 
-    public void bind(StockMaterialState materialState) {
-        OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
-        itemView.setSelected(materialState.isStocked());
-    }
+	public void bind(StockMaterialState materialState) {
+		OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
+		itemView.setSelected(materialState.isStocked());
+	}
 
-    public void updateState(StockMaterialState materialState) {
-        itemView.setSelected(materialState.isStocked());
-    }
+	public void updateState(StockMaterialState materialState) {
+		itemView.setSelected(materialState.isStocked());
+	}
 }

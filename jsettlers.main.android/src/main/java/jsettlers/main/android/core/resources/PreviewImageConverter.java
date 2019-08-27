@@ -14,14 +14,13 @@
  */
 package jsettlers.main.android.core.resources;
 
-import jsettlers.common.Color;
-import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import java.util.concurrent.Semaphore;
 
 import android.graphics.Bitmap;
 
-import java.util.concurrent.Semaphore;
-
 import io.reactivex.Single;
+import jsettlers.common.Color;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 public class PreviewImageConverter {
 	public static Single<Bitmap> toBitmap(short[] data, Semaphore semaphore) {

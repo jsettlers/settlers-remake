@@ -1,10 +1,10 @@
 package jsettlers.main.android.mainmenu.gamesetup;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-
-import java.util.List;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMultiplayerListener;
@@ -24,131 +24,125 @@ import jsettlers.main.android.mainmenu.gamesetup.playeritem.ReadyListener;
 
 public class JoinMultiPlayerSetupViewModel extends MapSetupViewModel implements IMultiplayerListener, IChangingListListener<IMultiplayerPlayer>, ReadyListener {
 
-    private final GameStarter gameStarter;
-    private final AndroidPreferences androidPreferences;
-    private final IJoinPhaseMultiplayerGameConnector connector;
-    private final MapLoader mapLoader;
+	private final GameStarter gameStarter;
+	private final AndroidPreferences androidPreferences;
+	private final IJoinPhaseMultiplayerGameConnector connector;
+	private final MapLoader mapLoader;
 
-    public JoinMultiPlayerSetupViewModel(GameStarter gameStarter, AndroidPreferences androidPreferences, IJoinPhaseMultiplayerGameConnector connector, MapLoader mapLoader) {
-        super(gameStarter, mapLoader);
-        this.gameStarter = gameStarter;
-        this.androidPreferences = androidPreferences;
-        this.connector = connector;
-        this.mapLoader = mapLoader;
+	public JoinMultiPlayerSetupViewModel(GameStarter gameStarter, AndroidPreferences androidPreferences, IJoinPhaseMultiplayerGameConnector connector, MapLoader mapLoader) {
+		super(gameStarter, mapLoader);
+		this.gameStarter = gameStarter;
+		this.androidPreferences = androidPreferences;
+		this.connector = connector;
+		this.mapLoader = mapLoader;
 
-        connector.setMultiplayerListener(this);
-        connector.getPlayers().setListener(this);
+		connector.setMultiplayerListener(this);
+		connector.getPlayers().setListener(this);
 
-        updateSlots();
-    }
+		updateSlots();
+	}
 
-    @Override
-    public void startGame() {
-        connector.startGame();
-    }
+	@Override
+	public void startGame() {
+		connector.startGame();
+	}
 
-    /**
-     * IMultiplayerListener implementation
-     */
-    @Override
-    public void gameAborted() {
-        gameStarter.setJoinPhaseMultiPlayerConnector(null);
+	/**
+	 * IMultiplayerListener implementation
+	 */
+	@Override
+	public void gameAborted() {
+		gameStarter.setJoinPhaseMultiPlayerConnector(null);
 
-        // TODO pop
-    }
+		// TODO pop
+	}
 
-    @Override
-    public void gameIsStarting(IStartingGame game) {
-        gameStarter.setJoinPhaseMultiPlayerConnector(null);
-        gameStarter.setStartingGame(game);
-        showMapEvent.postValue(null);
-    }
+	@Override
+	public void gameIsStarting(IStartingGame game) {
+		gameStarter.setJoinPhaseMultiPlayerConnector(null);
+		gameStarter.setStartingGame(game);
+		showMapEvent.postValue(null);
+	}
 
-    /**
-     * ChangingListListener implementation
-     */
-    @Override
-    public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
-        updateSlots();
-        playerSlots.postValue(playerSlots.getValue());
-    //    updateViewItems(); // trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
-    }
+	/**
+	 * ChangingListListener implementation
+	 */
+	@Override
+	public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
+		updateSlots();
+		playerSlots.postValue(playerSlots.getValue());
+		// updateViewItems(); // trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
+	}
 
-    /**
-     * ReadyListener implementation
-     */
-    @Override
-    public void readyChanged(boolean ready) {
-        connector.setReady(ready);
-    }
+	/**
+	 * ReadyListener implementation
+	 */
+	@Override
+	public void readyChanged(boolean ready) {
+		connector.setReady(ready);
+	}
 
+	private void updateSlots() {
+		List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
+		int numberOfConnectedPlayers = players.size();
 
+		for (int i = 0; i < playerSlotPresenters.size(); i++) {
+			PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
 
+			if (i < numberOfConnectedPlayers) {
+				setHumanSlotPlayerTypes(playerSlotPresenter);
 
+				IMultiplayerPlayer multiplayerPlayer = players.get(i);
+				playerSlotPresenter.setName(multiplayerPlayer.getName());
+				playerSlotPresenter.setReady(multiplayerPlayer.isReady());
+				playerSlotPresenter.setShowReadyControl(true);
 
-    private void updateSlots() {
-        List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
-        int numberOfConnectedPlayers = players.size();
+				boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
 
-        for (int i = 0; i < playerSlotPresenters.size(); i++) {
-            PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
+				if (isMe) {
+					playerSlotPresenter.setControlsEnabled(true);
+					playerSlotPresenter.setReadyListener(this);
+				} else {
+					playerSlotPresenter.setControlsEnabled(false);
+					playerSlotPresenter.setReadyListener(null);
+				}
+			} else {
+				setComputerSlotPlayerTypes(playerSlotPresenter);
+				playerSlotPresenter.setName("Computer " + i);
+				playerSlotPresenter.setShowReadyControl(false);
+				playerSlotPresenter.setControlsEnabled(true);
+				playerSlotPresenter.setReadyListener(null);
+			}
+		}
+	}
 
-            if (i < numberOfConnectedPlayers) {
-                setHumanSlotPlayerTypes(playerSlotPresenter);
+	/**
+	 * ViewModel factory
+	 */
+	public static class Factory implements ViewModelProvider.Factory {
 
-                IMultiplayerPlayer multiplayerPlayer = players.get(i);
-                playerSlotPresenter.setName(multiplayerPlayer.getName());
-                playerSlotPresenter.setReady(multiplayerPlayer.isReady());
-                playerSlotPresenter.setShowReadyControl(true);
+		private final Activity activity;
+		private final String mapId;
 
-                boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
+		public Factory(Activity activity, String mapId) {
+			this.activity = activity;
+			this.mapId = mapId;
+		}
 
-                if (isMe) {
-                    playerSlotPresenter.setControlsEnabled(true);
-                    playerSlotPresenter.setReadyListener(this);
-                } else {
-                    playerSlotPresenter.setControlsEnabled(false);
-                    playerSlotPresenter.setReadyListener(null);
-                }
-            } else {
-                setComputerSlotPlayerTypes(playerSlotPresenter);
-                playerSlotPresenter.setName("Computer " + i);
-                playerSlotPresenter.setShowReadyControl(false);
-                playerSlotPresenter.setControlsEnabled(true);
-                playerSlotPresenter.setReadyListener(null);
-            }
-        }
-    }
+		@Override
+		public <T extends ViewModel> T create(Class<T> modelClass) {
+			GameStarter gameStarter = (GameStarter) activity.getApplication();
+			MapLoader mapLoader = gameStarter.getMapList().getMapById(mapId);
+			IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
 
+			if (joinPhaseMultiplayerGameConnector == null) {
+				throw new MultiPlayerConnectorUnavailableException();
+			}
 
-
-    /**
-     * ViewModel factory
-     */
-    public static class Factory implements ViewModelProvider.Factory {
-
-        private final Activity activity;
-        private final String mapId;
-
-        public Factory(Activity activity, String mapId) {
-            this.activity = activity;
-            this.mapId = mapId;
-        }
-
-        @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
-            GameStarter gameStarter = (GameStarter) activity.getApplication();
-            MapLoader mapLoader = gameStarter.getMapList().getMapById(mapId);
-            IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
-
-            if (joinPhaseMultiplayerGameConnector == null) {
-                throw new MultiPlayerConnectorUnavailableException();
-            }
-
-            if (modelClass == JoinMultiPlayerSetupViewModel.class) {
-                return (T) new JoinMultiPlayerSetupViewModel(gameStarter, new AndroidPreferences(activity), joinPhaseMultiplayerGameConnector, mapLoader);
-            }
-            throw new RuntimeException("JoinMultiPlayerSetupViewModel.Factory doesn't know how to create a: " + modelClass.toString());
-        }
-    }
+			if (modelClass == JoinMultiPlayerSetupViewModel.class) {
+				return (T) new JoinMultiPlayerSetupViewModel(gameStarter, new AndroidPreferences(activity), joinPhaseMultiplayerGameConnector, mapLoader);
+			}
+			throw new RuntimeException("JoinMultiPlayerSetupViewModel.Factory doesn't know how to create a: " + modelClass.toString());
+		}
+	}
 }

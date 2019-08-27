@@ -15,22 +15,22 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 
-import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.images.ImageLink;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+
+import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.IAction;
-import jsettlers.common.action.Action;
+import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ActionListener;
 import jsettlers.main.android.core.controls.TaskControls;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.customviews.InGameButton;
-
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
+import jsettlers.main.android.gameplay.customviews.InGameButton;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 11/01/2017.

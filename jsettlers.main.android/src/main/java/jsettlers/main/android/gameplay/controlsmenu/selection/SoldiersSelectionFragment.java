@@ -19,14 +19,6 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
-import jsettlers.common.action.EActionType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionControls;
-import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.core.resources.ImageLinkFactory;
-import jsettlers.main.android.core.resources.OriginalImageProvider;
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -36,6 +28,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import jsettlers.common.action.EActionType;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.resources.ImageLinkFactory;
+import jsettlers.main.android.core.resources.OriginalImageProvider;
 
 /**
  * Created by tompr on 13/01/2017.

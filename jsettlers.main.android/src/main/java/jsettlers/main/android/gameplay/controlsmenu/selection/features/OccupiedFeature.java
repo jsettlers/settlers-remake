@@ -17,14 +17,19 @@ package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 
 import java.util.List;
 
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+
+import jsettlers.common.action.EActionType;
+import jsettlers.common.action.SoldierAction;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.common.action.SoldierAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
@@ -32,14 +37,9 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.resources.ImageLinkFactory;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.customviews.InGameButton;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
-
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
+import jsettlers.main.android.gameplay.customviews.InGameButton;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 12/01/2017.

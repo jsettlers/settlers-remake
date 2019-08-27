@@ -15,18 +15,18 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 10/01/2017.

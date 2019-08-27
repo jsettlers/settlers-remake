@@ -20,5 +20,5 @@ package jsettlers.main.android.core.controls;
  */
 
 public interface PositionChangedListener {
-    void positionChanged();
+	void positionChanged();
 }

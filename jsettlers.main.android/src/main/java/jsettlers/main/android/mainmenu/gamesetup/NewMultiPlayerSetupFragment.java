@@ -15,11 +15,11 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.v4.app.Fragment;
-
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
+
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v4.app.Fragment;
 
 import jsettlers.main.android.R;
 

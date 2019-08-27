@@ -8,19 +8,19 @@ import jsettlers.common.map.partition.IMaterialDistributionSettings;
  */
 
 public class DistributionState {
-    private final EBuildingType buildingType;
-    private final float ratio;
+	private final EBuildingType buildingType;
+	private final float ratio;
 
-    public DistributionState(EBuildingType buildingType, IMaterialDistributionSettings materialDistributionSettings) {
-        this.buildingType = buildingType;
-        this.ratio = materialDistributionSettings.getDistributionProbability(buildingType);
-    }
+	public DistributionState(EBuildingType buildingType, IMaterialDistributionSettings materialDistributionSettings) {
+		this.buildingType = buildingType;
+		this.ratio = materialDistributionSettings.getDistributionProbability(buildingType);
+	}
 
-    public EBuildingType getBuildingType() {
-        return buildingType;
-    }
+	public EBuildingType getBuildingType() {
+		return buildingType;
+	}
 
-    public float getRatio() {
-        return ratio;
-    }
+	public float getRatio() {
+		return ratio;
+	}
 }

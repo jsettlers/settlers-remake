@@ -26,19 +26,19 @@ import jsettlers.common.material.EMaterialType;
  * Model for stock item
  */
 public class StockMaterialState {
-    private final EMaterialType materialType;
-    private final boolean stocked;
+	private final EMaterialType materialType;
+	private final boolean stocked;
 
-    public StockMaterialState(EMaterialType materialType, IStockSettings stockSettings) {
-        this.materialType = materialType;
-        this.stocked = stockSettings.isAccepted(materialType);
-    }
+	public StockMaterialState(EMaterialType materialType, IStockSettings stockSettings) {
+		this.materialType = materialType;
+		this.stocked = stockSettings.isAccepted(materialType);
+	}
 
-    public EMaterialType getMaterialType() {
-        return materialType;
-    }
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
 
-    public boolean isStocked() {
-        return stocked;
-    }
+	public boolean isStocked() {
+		return stocked;
+	}
 }
