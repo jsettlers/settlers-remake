@@ -15,17 +15,19 @@
 package jsettlers.main;
 
 
-import jsettlers.network.synchronic.timer.INetworkTimerable;
-import jsettlers.logic.player.Player;
-import jsettlers.common.player.EWinState;
-import jsettlers.logic.map.grid.partition.data.BuildingCounts;
-import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.player.EWinState;
+import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.partition.data.BuildingCounts;
+import jsettlers.logic.player.Player;
+import jsettlers.network.synchronic.timer.INetworkTimerable;
+
+import static java8.util.J8Arrays.stream;
 
 class WinLoseTracker implements INetworkTimerable {
 
 	private MainGrid mainGrid;
-	private byte localPlayerId;
+	private byte     localPlayerId;
 
 	public WinLoseTracker(MainGrid mainGrid, byte localPlayerId) {
 		this.mainGrid = mainGrid;
@@ -35,46 +37,42 @@ class WinLoseTracker implements INetworkTimerable {
 	public void timerEvent() {
 		// Update defeated status
 		Player[] players = mainGrid.getPartitionsGrid().getPlayers();
-		for(Player player: players) {
-			if(player.getWinState() != EWinState.UNDECIDED) {
+		for (Player player : players) {
+			if (player.getWinState() != EWinState.UNDECIDED) {
 				continue;
 			}
 
 			// Get all buildings in any partition and count military ones
-			BuildingCounts buildingCounts = new BuildingCounts(player.playerId, (short)0);
-			int militaryBuildingsCount = (
-				buildingCounts.buildings(EBuildingType.TOWER) +
-				buildingCounts.buildings(EBuildingType.BIG_TOWER) +
-				buildingCounts.buildings(EBuildingType.CASTLE)
-			);
+			BuildingCounts buildingCounts = new BuildingCounts(player.playerId, (short) 0);
+			int militaryBuildingsCount = buildingCounts.buildings(EBuildingType.TOWER) + buildingCounts.buildings(EBuildingType.BIG_TOWER) + buildingCounts.buildings(EBuildingType.CASTLE);
 
-			if(militaryBuildingsCount == 0) {
+			if (militaryBuildingsCount == 0) {
 				player.setWinState(EWinState.LOST);
 				System.out.println(player + " was defeated");
+				disableFogOfWarIfLocalPlayer(player);
 			}
 		}
 
 		// Check if any player won by defeating other players
-		for(Player player: players) {
-			if(player.getWinState() != EWinState.UNDECIDED) {
+		for (Player player : players) {
+			if (player.getWinState() != EWinState.UNDECIDED) {
 				continue;
 			}
-			boolean allEnemiesDefeated = true;
-			for(Player enemy: players) {
-				if(!enemy.hasSameTeam(player) && enemy.getWinState() != EWinState.LOST) {
-					allEnemiesDefeated = false;
-					break;
-				}
-			}
-			if(allEnemiesDefeated) {
+
+			boolean allEnemiesDefeated =	stream(players).filter(otherPlayer -> !otherPlayer.hasSameTeam(player)).noneMatch(enemy -> enemy.getWinState() != EWinState.LOST);
+
+			if (allEnemiesDefeated) {
 				player.setWinState(EWinState.WON);
 				System.out.println(player + " has won the game");
+				disableFogOfWarIfLocalPlayer(player);
 			}
+		}
+	}
 
-			// Disale fog of war if local player has won/lost game
-			if(player.getPlayerId() == localPlayerId && player.getWinState() != EWinState.UNDECIDED) {
-				mainGrid.disableFogOfWar();
-			}
+	private void disableFogOfWarIfLocalPlayer(Player player) {
+		// Disable fog of war if local player has won/lost game
+		if (player.playerId == localPlayerId) {
+			mainGrid.disableFogOfWar();
 		}
 	}
 }
