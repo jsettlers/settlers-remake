@@ -29,7 +29,6 @@ import java8.util.Comparators;
 import java8.util.J8Arrays;
 import java8.util.Maps;
 import java8.util.Objects;
-import java8.util.Optional;
 import java8.util.stream.Collectors;
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -84,7 +83,8 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 public class AiStatistics {
 
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = { LUMBERJACK, TOWER, BIG_TOWER, CASTLE };
-	public static final int NEAR_STONE_DISTANCE = 5;
+
+	private static final int NEAR_STONE_DISTANCE = 5;
 
 	private final MainGrid mainGrid;
 	private final Queue<Building> buildings;
@@ -702,7 +702,6 @@ public class AiStatistics {
 
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
-		boolean isAlive;
 		final int[] totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 		final int[] buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions = new HashMap<>();
@@ -734,7 +733,6 @@ public class AiStatistics {
 		}
 
 		public void clearAll() {
-			isAlive = false;
 			materials = null;
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
