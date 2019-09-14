@@ -60,4 +60,9 @@ public class FakeMapGame implements IStartedGame {
 	public boolean isShutdownFinished() {
 		return false;
 	}
+
+	@Override
+	public boolean isMultiplayerGame() {
+		return false;
+	}
 }

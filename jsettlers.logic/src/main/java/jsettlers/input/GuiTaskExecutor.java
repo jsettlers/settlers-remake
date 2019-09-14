@@ -22,6 +22,7 @@ import java8.util.Objects;
 import java8.util.Optional;
 import java8.util.function.Consumer;
 import java8.util.stream.Collectors;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.movable.EMovableType;
@@ -87,6 +88,9 @@ class GuiTaskExecutor implements ITaskExecutor {
 		}
 
 		SimpleGuiTask guiTask = (SimpleGuiTask) iTask;
+		if (grid.hasLost(guiTask.getPlayerId()) && !CommonConstants.CONTROL_ALL) { // if player lost, don't execute his tasks any more
+			return;
+		}
 
 		System.out.println("executeTask(GuiTask): " + guiTask.getGuiAction());
 		switch (guiTask.getGuiAction()) {

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    android:padding="16dp">
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			 android:background="?attr/selectableItemBackgroundBorderless"
+			 android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/imageView_material"
-        android:layout_width="@dimen/menu_button_size"
-        android:layout_height="@dimen/menu_button_size" />
+	<ImageView
+		android:id="@+id/imageView_material"
+		android:layout_width="@dimen/menu_button_size"
+		android:layout_height="@dimen/menu_button_size"/>
 </FrameLayout>

@@ -1,6 +1,6 @@
 apply plugin: 'java'
 
-def lwjgl_version="3.1.6"
+def lwjgl_version="3.2.3"
 
 dependencies {
     implementation project(':go.graphics')
@@ -10,7 +10,7 @@ dependencies {
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version
     compile "org.lwjgl:lwjgl-egl:"+lwjgl_version
     compile "org.lwjgl:lwjgl-jawt:"+lwjgl_version
-    compile "org.joml:joml:1.9.15"
+    compile "org.joml:joml:1.9.17"
 
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-linux"
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-macos"

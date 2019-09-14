@@ -272,7 +272,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		this.speedFactor = speedFactor;
 	}
 
-
+	@Override
 	public float getGameSpeed() {
 		return speedFactor;
 	}

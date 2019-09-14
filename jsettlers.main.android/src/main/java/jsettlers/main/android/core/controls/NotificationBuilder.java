@@ -19,16 +19,16 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.res.StringRes;
 
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.GameService;
-import jsettlers.main.android.gameplay.GameActivity_;
-import jsettlers.main.android.mainmenu.navigation.Actions;
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.GameService;
+import jsettlers.main.android.gameplay.GameActivity_;
+import jsettlers.main.android.mainmenu.navigation.Actions;
 
 /**
  * Created by Andreas Eberle on 13.05.2017.

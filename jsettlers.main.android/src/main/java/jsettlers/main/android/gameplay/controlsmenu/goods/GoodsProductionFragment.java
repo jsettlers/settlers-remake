@@ -15,6 +15,11 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import java.util.List;
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -29,11 +34,6 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
-
 import jsettlers.common.material.EMaterialType;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
@@ -43,163 +43,163 @@ import jsettlers.main.android.core.resources.OriginalImageProvider;
  */
 @EFragment(R.layout.menu_goods_production)
 public class GoodsProductionFragment extends Fragment {
-    public static GoodsProductionFragment newInstance() {
-        return new GoodsProductionFragment_();
-    }
+	public static GoodsProductionFragment newInstance() {
+		return new GoodsProductionFragment_();
+	}
 
-    private ProductionViewModel viewModel;
+	private ProductionViewModel viewModel;
 
-    @ViewById(R.id.recyclerView)
-    RecyclerView recyclerView;
+	@ViewById(R.id.recyclerView)
+	RecyclerView recyclerView;
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        viewModel = ViewModelProviders.of(this, new ProductionViewModel.Factory(getActivity())).get(ProductionViewModel.class);
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		viewModel = ViewModelProviders.of(this, new ProductionViewModel.Factory(getActivity())).get(ProductionViewModel.class);
 
-        ProductionAdapter productionAdapter = new ProductionAdapter(getActivity());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(productionAdapter);
+		ProductionAdapter productionAdapter = new ProductionAdapter(getActivity());
+		recyclerView.setHasFixedSize(true);
+		recyclerView.setAdapter(productionAdapter);
 
-        viewModel.getProductionStates().observe(this, productionAdapter::updateProductionStates);
-    }
+		viewModel.getProductionStates().observe(this, productionAdapter::updateProductionStates);
+	}
 
+	/**
+	 * RecyclerView adapter
+	 */
+	private class ProductionAdapter extends RecyclerView.Adapter<ProductionItemViewHolder> {
 
-    /**
-     * RecyclerView adapter
-     */
-    private class ProductionAdapter extends RecyclerView.Adapter<ProductionItemViewHolder> {
+		private final LayoutInflater layoutInflater;
 
-        private final LayoutInflater layoutInflater;
+		private ProductionState[] productionStates;
 
-        private ProductionState[] productionStates;
+		ProductionAdapter(Activity activity) {
+			this.layoutInflater = LayoutInflater.from(activity);
+			this.productionStates = new ProductionState[0];
+		}
 
-        ProductionAdapter(Activity activity) {
-            this.layoutInflater = LayoutInflater.from(activity);
-            this.productionStates = new ProductionState[0];
-        }
+		@Override
+		public int getItemCount() {
+			return productionStates.length;
+		}
 
-        @Override
-        public int getItemCount() {
-            return productionStates.length;
-        }
+		@Override
+		public ProductionItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			View view = layoutInflater.inflate(R.layout.vh_production_material, parent, false);
+			return new ProductionItemViewHolder(view);
+		}
 
-        @Override
-        public ProductionItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = layoutInflater.inflate(R.layout.vh_production_material, parent, false);
-            return new ProductionItemViewHolder(view);
-        }
+		@Override
+		public void onBindViewHolder(ProductionItemViewHolder holder, int position) {
+			ProductionState productionState = productionStates[position];
+			holder.bind(productionState);
+		}
 
-        @Override
-        public void onBindViewHolder(ProductionItemViewHolder holder, int position) {
-            ProductionState productionState = productionStates[position];
-            holder.bind(productionState);
-        }
+		@Override
+		public void onBindViewHolder(ProductionItemViewHolder holder, int position, List<Object> payloads) {
+			if (payloads == null || payloads.size() == 0) {
+				onBindViewHolder(holder, position);
+			} else {
+				holder.update(productionStates[position]);
+			}
+		}
 
-        @Override
-        public void onBindViewHolder(ProductionItemViewHolder holder, int position, List<Object> payloads) {
-            if (payloads == null || payloads.size() == 0) {
-                onBindViewHolder(holder, position);
-            } else {
-                holder.update(productionStates[position]);
-            }
-        }
+		void updateProductionStates(ProductionState[] productionStates) {
+			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.productionStates, productionStates));
+			diffResult.dispatchUpdatesTo(this);
+			this.productionStates = productionStates;
+		}
 
-        void updateProductionStates(ProductionState[] productionStates) {
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallback(this.productionStates, productionStates));
-            diffResult.dispatchUpdatesTo(this);
-            this.productionStates = productionStates;
-        }
+		/**
+		 * Diff callback
+		 */
+		private class DiffCallback extends DiffUtil.Callback {
 
-        /**
-         * Diff callback
-         */
-        private class DiffCallback extends DiffUtil.Callback {
+			private final ProductionState[] oldStates;
+			private final ProductionState[] newStates;
 
-            private final ProductionState[] oldStates;
-            private final ProductionState[] newStates;
+			DiffCallback(ProductionState[] oldStates, ProductionState[] newStates) {
+				this.oldStates = oldStates;
+				this.newStates = newStates;
+			}
 
-            DiffCallback(ProductionState[] oldStates, ProductionState[] newStates) {
-                this.oldStates = oldStates;
-                this.newStates = newStates;
-            }
+			@Override
+			public int getOldListSize() {
+				return oldStates.length;
+			}
 
-            @Override
-            public int getOldListSize() {
-                return oldStates.length;
-            }
+			@Override
+			public int getNewListSize() {
+				return newStates.length;
+			}
 
-            @Override
-            public int getNewListSize() {
-                return newStates.length;
-            }
+			@Override
+			public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+				return oldStates[oldItemPosition].getMaterialType() == newStates[newItemPosition].getMaterialType();
+			}
 
-            @Override
-            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldStates[oldItemPosition].getMaterialType() == newStates[newItemPosition].getMaterialType();
-            }
+			@Override
+			public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+				return oldStates[oldItemPosition].getQuantity() == newStates[newItemPosition].getQuantity()
+						&& oldStates[oldItemPosition].getRatio() == newStates[newItemPosition].getRatio();
+			}
 
-            @Override
-            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldStates[oldItemPosition].getQuantity() == newStates[newItemPosition].getQuantity()
-                        && oldStates[oldItemPosition].getRatio() == newStates[newItemPosition].getRatio();
-            }
+			@Nullable
+			@Override
+			public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+				return Boolean.TRUE;
+			}
+		}
+	}
 
-            @Nullable
-            @Override
-            public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-                return Boolean.TRUE;
-            }
-        }
-    }
+	/**
+	 * RecyclerView ViewHolder
+	 */
+	private class ProductionItemViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener {
 
+		private final ImageView imageView;
+		private final SeekBar seekBar;
+		private final TextView quantityTextView;
+		private final TextView incrementTextView;
+		private final TextView decrementTextView;
 
-    /**
-     * RecyclerView ViewHolder
-     */
-    private class ProductionItemViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener {
+		private EMaterialType materialType;
 
-        private final ImageView imageView;
-        private final SeekBar seekBar;
-        private final TextView quantityTextView;
-        private final TextView incrementTextView;
-        private final TextView decrementTextView;
+		ProductionItemViewHolder(View itemView) {
+			super(itemView);
+			imageView = itemView.findViewById(R.id.imageView_material);
+			seekBar = itemView.findViewById(R.id.seekBar);
+			quantityTextView = itemView.findViewById(R.id.textView_quantity);
+			incrementTextView = itemView.findViewById(R.id.textView_increment);
+			decrementTextView = itemView.findViewById(R.id.textView_decrement);
 
-        private EMaterialType materialType;
+			incrementTextView.setOnClickListener(view -> viewModel.increment(materialType));
+			decrementTextView.setOnClickListener(view -> viewModel.decrement(materialType));
+			seekBar.setOnSeekBarChangeListener(this);
+		}
 
-        ProductionItemViewHolder(View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.imageView_material);
-            seekBar = itemView.findViewById(R.id.seekBar);
-            quantityTextView = itemView.findViewById(R.id.textView_quantity);
-            incrementTextView = itemView.findViewById(R.id.textView_increment);
-            decrementTextView = itemView.findViewById(R.id.textView_decrement);
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+		}
 
-            incrementTextView.setOnClickListener(view -> viewModel.increment(materialType));
-            decrementTextView.setOnClickListener(view -> viewModel.decrement(materialType));
-            seekBar.setOnSeekBarChangeListener(this);
-        }
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
 
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {}
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			viewModel.setProductionRatio(materialType, (float) seekBar.getProgress() / seekBar.getMax());
+		}
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {}
+		void bind(ProductionState productionState) {
+			materialType = productionState.getMaterialType();
+			OriginalImageProvider.get(productionState.getMaterialType()).setAsImage(imageView);
+			update(productionState);
+		}
 
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            viewModel.setProductionRatio(materialType, (float)seekBar.getProgress() / seekBar.getMax());
-        }
-
-        void bind(ProductionState productionState) {
-            materialType = productionState.getMaterialType();
-            OriginalImageProvider.get(productionState.getMaterialType()).setAsImage(imageView);
-            update(productionState);
-        }
-
-        void update(ProductionState productionState) {
-            quantityTextView.setText(productionState.getQuantity() + "");
-            seekBar.setProgress(Math.round(productionState.getRatio() * seekBar.getMax()));
-        }
-    }
+		void update(ProductionState productionState) {
+			quantityTextView.setText(productionState.getQuantity() + "");
+			seekBar.setProgress(Math.round(productionState.getRatio() * seekBar.getMax()));
+		}
+	}
 }

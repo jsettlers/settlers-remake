@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,44 +12,31 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+package jsettlers.common.action;
 
-package jsettlers.main.android.gameplay.gamemenu;
-
-import jsettlers.main.android.R;
-
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import jsettlers.common.movable.EMovableType;
 
 /**
- * Created by tompr on 23/11/2016.
+ * This action is used to convert any movables to the given {@link EMovableType}.
+ *
+ * @author Andreas Eberle
  */
-public class PausedDialog extends DialogFragment {
-	public interface Listener {
-		void onGameUnPause();
+public class SetSpeedAction extends Action {
+
+	private final float speed;
+
+	/**
+	 * This action is used to set the game speed.
+	 *
+	 * @param speed
+	 *            new speed to be set.
+	 */
+	public SetSpeedAction(float speed) {
+		super(EActionType.SET_SPEED);
+		this.speed = speed;
 	}
 
-	public static PausedDialog newInstance() {
-		return new PausedDialog();
-	}
-
-	@NonNull
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		return new AlertDialog.Builder(getActivity())
-				.setTitle(R.string.game_menu_paused)
-				.setPositiveButton(R.string.game_menu_unpause, (dialogInterface, i) -> getDialog().cancel())
-				.setCancelable(true)
-				.create();
-	}
-
-	@Override
-	public void onCancel(DialogInterface dialog) {
-		super.onCancel(dialog);
-		Listener listener = (Listener) getParentFragment();
-		listener.onGameUnPause();
+	public float getSpeed() {
+		return speed;
 	}
 }

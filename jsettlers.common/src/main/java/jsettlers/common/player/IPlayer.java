@@ -27,25 +27,32 @@ public interface IPlayer {
 
 	byte getTeamId();
 
+	EWinState getWinState();
+
 	class DummyPlayer implements IPlayer {
-		private final byte playerAndTeamid;
+		private final byte playerAndTeamId;
 
 		public DummyPlayer() {
-			this.playerAndTeamid = 0;
+			this.playerAndTeamId = 0;
 		}
 
-		public DummyPlayer(byte playerAndTeamid) {
-			this.playerAndTeamid = playerAndTeamid;
+		public DummyPlayer(byte playerAndTeamId) {
+			this.playerAndTeamId = playerAndTeamId;
 		}
 
 		@Override
 		public byte getPlayerId() {
-			return playerAndTeamid;
+			return playerAndTeamId;
 		}
 
 		@Override
 		public byte getTeamId() {
-			return playerAndTeamid;
+			return playerAndTeamId;
+		}
+
+		@Override
+		public EWinState getWinState() {
+			return EWinState.UNDECIDED;
 		}
 	}
 }

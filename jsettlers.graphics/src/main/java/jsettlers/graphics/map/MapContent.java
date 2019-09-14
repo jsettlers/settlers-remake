@@ -67,6 +67,8 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import go.graphics.FramerateComputer;
 import jsettlers.common.statistics.IGameTimeProvider;
+import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.EWinState;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
@@ -211,6 +213,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private ShortPoint2D lastSelectPointPos = null;
 
 	private UIPoint currentSelectionAreaStart;
+	private IInGamePlayer localPlayer;
 
 	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
 		this(game, soundPlayer, textDrawPosition,null);
@@ -245,6 +248,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 		width = map.getWidth();
 		height = map.getHeight();
+		this.localPlayer = game.getInGamePlayer();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
@@ -324,6 +328,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			drawSelectionHint(gl);
 			controls.drawAt(gl);
 			drawMessages(gl);
+			drawWinStateMsg(gl);
 
 			drawFramerateTimeAndHash(gl);
 
@@ -366,6 +371,16 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		return age < 1500
 				? Math.min(1, age / 1000f)
 				: Math.max(0, 1f - (float) age / IMessage.MESSAGE_TTL);
+	}
+
+	private void drawWinStateMsg(GLDrawContext gl) {
+		if(localPlayer.getWinState() == EWinState.UNDECIDED) {
+			return;
+		}
+		Color color = localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED;
+		final String msg = Labels.getString("winstate_" + localPlayer.getWinState());
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
+		drawer.drawString(windowWidth / 2, windowHeight - 2 * EFontSize.HEADLINE.getSize(), color, msg);
 	}
 
 	private void drawMessages(GLDrawContext gl) {

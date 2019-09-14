@@ -20,15 +20,15 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
-import jsettlers.common.movable.EMovableType;
+import android.widget.ImageView;
+
 import jsettlers.common.action.ConvertAction;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.resources.ImageLinkFactory;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
-
-import android.widget.ImageView;
 
 /**
  * Created by tompr on 13/01/2017.

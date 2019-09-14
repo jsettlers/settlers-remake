@@ -79,10 +79,10 @@ public abstract class JAWTContextCreator extends ContextCreator {
 			}
 
 			public void paint(Graphics graphics) {
-				surface = JAWTFunctions.JAWT_GetDrawingSurface(jawt.GetDrawingSurface(), canvas);
+				surface = JAWTFunctions.JAWT_GetDrawingSurface(canvas, jawt.GetDrawingSurface());
 
-				JAWTFunctions.JAWT_DrawingSurface_Lock(surface.Lock(), surface);
-				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface.GetDrawingSurfaceInfo(), surface);
+				JAWTFunctions.JAWT_DrawingSurface_Lock(surface, surface.Lock());
+				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface, surface.GetDrawingSurfaceInfo());
 				regenerateWindowInfo();
 
 				if (first_draw) {
@@ -108,10 +108,10 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
 				swapBuffers();
 				makeCurrent(false);
-				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface.Unlock(), surface);
+				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface, surface.Unlock());
 
-				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surface.FreeDrawingSurfaceInfo(), surfaceinfo);
-				JAWTFunctions.JAWT_FreeDrawingSurface(jawt.FreeDrawingSurface(), surface);
+				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surfaceinfo, surface.FreeDrawingSurfaceInfo());
+				JAWTFunctions.JAWT_FreeDrawingSurface(surface, jawt.FreeDrawingSurface());
 
 				if(fpsLimit == 0) repaint();
 			}

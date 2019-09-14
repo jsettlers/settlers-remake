@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="jsettlers.main.android"
-          android:installLocation="auto">
+		  package="jsettlers.main.android"
+		  android:installLocation="auto">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.VIBRATE"/>
 
-    <application
-        android:name=".MainApplication_"
-        android:hardwareAccelerated="true"
-        android:icon="@drawable/icon"
-        android:label="@string/app_name"
-        android:largeHeap="true"
-        android:theme="@style/SettlersTheme">
+	<application
+		android:name=".MainApplication_"
+		android:hardwareAccelerated="true"
+		android:icon="@drawable/icon"
+		android:label="@string/app_name"
+		android:largeHeap="true"
+		android:theme="@style/SettlersTheme">
 
-        <activity android:name=".mainmenu.MainActivity_">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+		<activity android:name=".mainmenu.MainActivity_">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
 
-        <activity
-            android:name=".gameplay.GameActivity_"
-            android:launchMode="singleTask"
-            android:theme="@style/InGameTheme"/>
+		<activity
+			android:name=".gameplay.GameActivity_"
+			android:launchMode="singleTask"
+			android:theme="@style/InGameTheme"/>
 
-        <service
-            android:name=".core.GameService_"
-            android:enabled="true"
-            android:exported="false"
-            android:description="@string/service_description"/>
+		<service
+			android:name=".core.GameService_"
+			android:enabled="true"
+			android:exported="false"
+			android:description="@string/service_description"/>
 
-        <activity
-            android:name=".mainmenu.settings.SettingsActivity_"
-            android:label="@string/settings"/>
-    </application>
+		<activity
+			android:name=".mainmenu.settings.SettingsActivity_"
+			android:label="@string/settings"/>
+	</application>
 
 </manifest>

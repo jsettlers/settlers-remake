@@ -17,13 +17,13 @@ package jsettlers.main.android.mainmenu.mappicker;
 
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import org.androidannotations.annotations.UiThread;
 
 /**
  * Created by tompr on 22/01/2017.

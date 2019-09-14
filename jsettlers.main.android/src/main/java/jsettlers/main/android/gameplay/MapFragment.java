@@ -15,16 +15,7 @@
 
 package jsettlers.main.android.gameplay;
 
-import android.arch.lifecycle.Observer;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
+import java.util.LinkedList;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -33,20 +24,27 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.LinkedList;
+import android.arch.lifecycle.Observer;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-
-import jsettlers.common.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.controls.SelectionControls;
@@ -54,10 +52,6 @@ import jsettlers.main.android.core.controls.SelectionListener;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.core.ui.FragmentUtil;
-import jsettlers.main.android.core.ui.dialogs.ConfirmDialog;
-import jsettlers.main.android.core.ui.dialogs.ConfirmDialog_;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.gamemenu.PausedDialog;
 import jsettlers.main.android.gameplay.controlsmenu.buildings.BuildingsMenuFragment;
 import jsettlers.main.android.gameplay.controlsmenu.goods.GoodsMenuFragment;
 import jsettlers.main.android.gameplay.controlsmenu.selection.BuildingSelectionFragment;
@@ -66,20 +60,19 @@ import jsettlers.main.android.gameplay.controlsmenu.selection.ShipsSelectionFrag
 import jsettlers.main.android.gameplay.controlsmenu.selection.SoldiersSelectionFragment;
 import jsettlers.main.android.gameplay.controlsmenu.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.controlsmenu.settlers.SettlersMenuFragment;
-import jsettlers.main.android.mainmenu.MainActivity_;
+import jsettlers.main.android.gameplay.gamemenu.GameMenuDialog;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 @EFragment(R.layout.fragment_map)
 @OptionsMenu(R.menu.game)
-public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
-	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, MenuNavigator {
+	private static final String TAG_GAME_MENU_DIALOG = "com.jsettlers.gamemenufragment";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 	private static final String TAG_FRAGMENT_BUILDINGS_MENU = "com.jsettlers.buildingsmenufragment";
 	private static final String TAG_FRAGMENT_GOODS_MENU = "com.jsettlers.goodsmenufragment";
 	private static final String TAG_FRAGMENT_SETTLERS_MENU = "com.jsettlers.settlersmenufragment";
 	private static final String SAVE_BOTTOM_SHEET_STATE = "save_bottom_sheet_state";
-	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
-	private ActionControls actionControls;
 	private SelectionControls selectionControls;
 	private TaskControls taskControls;
 	private GameMenu gameMenu;
@@ -110,7 +103,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	@AfterViews
 	void setupControls() {
 		ControlsResolver controlsResolver = new ControlsResolver(getActivity());
-		actionControls = controlsResolver.getActionControls();
 		selectionControls = controlsResolver.getSelectionControls();
 		taskControls = controlsResolver.getTaskControls();
 		gameMenu = controlsResolver.getGameMenu();
@@ -222,27 +214,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	/**
-	 * ConfirmDialog.ConfirmListener implementation
-	 */
-	@Override
-	public void onConfirm(int requestCode) {
-		switch (requestCode) {
-		case REQUEST_CODE_CONFIRM_QUIT:
-			gameMenu.quitConfirm();
-			MainActivity_.intent(this).start();
-			break;
-		}
-	}
-
-	/**
-	 * PausedDialog.Listener implementation
-	 */
-	@Override
-	public void onGameUnPause() {
-		gameMenu.unPause();
-	}
-
-	/**
 	 * SelectionListener implementation
 	 */
 	@Override
@@ -289,31 +260,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		backPressedListeners.remove(backPressedListener);
 	}
 
-	private void showMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-	}
-
-	private void showPausedMenu() {
-		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU) == null) {
-			PausedDialog.newInstance().show(getChildFragmentManager(), TAG_FRAGMENT_PAUSED_MENU);
-		}
-	}
-
-	private void dismissPausedMenu() {
-		DialogFragment pausedMenuFragment = (DialogFragment) getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU);
-		if (pausedMenuFragment != null) {
-			pausedMenuFragment.dismiss();
-		}
-	}
-
-	private void addBuildingsMenuFragment() {
-		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_BUILDINGS_MENU) == null) {
-			getChildFragmentManager().beginTransaction()
-					.replace(R.id.container_menu, BuildingsMenuFragment.newInstance(), TAG_FRAGMENT_BUILDINGS_MENU)
-					.commit();
-		}
-	}
-
 	@Click(R.id.button_buildings_menu)
 	void showBuildingsMenu() {
 		showMenu();
@@ -338,6 +284,34 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_SETTLERS_MENU) == null) {
 			getChildFragmentManager().beginTransaction()
 					.replace(R.id.container_menu, SettlersMenuFragment.newInstance(), TAG_FRAGMENT_SETTLERS_MENU)
+					.commit();
+		}
+	}
+
+	@OptionsItem(R.id.menu_item_show_game_menu)
+	void showGameMenu() {
+		dismissMenu();
+
+		if (getChildFragmentManager().findFragmentByTag(TAG_GAME_MENU_DIALOG) == null) {
+			GameMenuDialog.create().show(getChildFragmentManager(), TAG_GAME_MENU_DIALOG);
+		}
+	}
+
+	private void showMenu() {
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+	}
+
+	private void dismissGameMenu() {
+		DialogFragment gameMenuDialog = (DialogFragment) getChildFragmentManager().findFragmentByTag(TAG_GAME_MENU_DIALOG);
+		if (gameMenuDialog != null) {
+			gameMenuDialog.dismiss();
+		}
+	}
+
+	private void addBuildingsMenuFragment() {
+		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_BUILDINGS_MENU) == null) {
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, BuildingsMenuFragment.newInstance(), TAG_FRAGMENT_BUILDINGS_MENU)
 					.commit();
 		}
 	}
@@ -377,58 +351,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 	}
 
-	@OptionsItem(R.id.menu_item_pause_game)
-	void pauseGameClicked() {
-		gameMenu.pause();
-	}
-
-	@OptionsItem(R.id.menu_item_save)
-	void saveClicked() {
-		gameMenu.save();
-	}
-
-	@OptionsItem(R.id.menu_item_quit)
-	void quitClicked() {
-		ConfirmDialog_.builder()
-				.requestCode(REQUEST_CODE_CONFIRM_QUIT)
-				.titleResId(R.string.game_menu_quit)
-				.confirmButtonTextResId(R.string.game_menu_quit)
-				.build()
-				.show(getChildFragmentManager(), null);
-	}
-
-	@OptionsItem(R.id.menu_item_faster)
-	void fasterClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
-	}
-
-	@OptionsItem(R.id.menu_item_slower)
-	void slowerClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
-	}
-
-	@OptionsItem(R.id.menu_item_fast_speed)
-	void fastSpeedClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_FAST));
-	}
-
-	@OptionsItem(R.id.menu_item_normal_speed)
-	void normalSpeedClicked() {
-		actionControls.fireAction(new Action(EActionType.SPEED_NORMAL));
-	}
-
-	@OptionsItem(R.id.menu_item_skip_one_minute)
-	void skipOneMinuteClicked() {
-		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
-	}
-
-
 	private Observer<Boolean> pauseObserver = paused -> {
 		if (paused) {
-			showPausedMenu();
+			showGameMenu();
+			frameLayout.setForeground(new ColorDrawable(ContextCompat.getColor(getActivity(), R.color.paused_mask)));
 		} else {
-			dismissPausedMenu();
 			gameMenu.unMute();
+			frameLayout.setForeground(null);
 		}
 	};
 

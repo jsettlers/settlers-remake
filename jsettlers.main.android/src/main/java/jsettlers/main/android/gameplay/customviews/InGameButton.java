@@ -15,14 +15,13 @@
 
 package jsettlers.main.android.gameplay.customviews;
 
-import jsettlers.main.android.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import jsettlers.main.android.R;
 
 public class InGameButton extends FrameLayout {
 	private ImageView imageView;

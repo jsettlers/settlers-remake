@@ -15,11 +15,11 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.v4.app.Fragment;
-
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
+
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v4.app.Fragment;
 
 import jsettlers.main.android.R;
 
@@ -29,24 +29,24 @@ import jsettlers.main.android.R;
 @EFragment(R.layout.fragment_new_single_player_setup)
 public class JoinMultiPlayerSetupFragment extends MapSetupFragment {
 
-    public static Fragment create(String mapId) {
-        return JoinMultiPlayerSetupFragment_.builder().mapId(mapId).build();
-    }
+	public static Fragment create(String mapId) {
+		return JoinMultiPlayerSetupFragment_.builder().mapId(mapId).build();
+	}
 
-    @Override
-    protected MapSetupViewModel createViewModel() {
-        return ViewModelProviders.of(this, new JoinMultiPlayerSetupViewModel.Factory(getActivity(), mapId)).get(JoinMultiPlayerSetupViewModel.class);
-    }
+	@Override
+	protected MapSetupViewModel createViewModel() {
+		return ViewModelProviders.of(this, new JoinMultiPlayerSetupViewModel.Factory(getActivity(), mapId)).get(JoinMultiPlayerSetupViewModel.class);
+	}
 
-    @AfterViews
-    void disableUnavailableSpinners() {
-        numberOfPlayersSpinner.setEnabled(false);
-        startResourcesSpinner.setEnabled(false);
-        peacetimeSpinner.setEnabled(false);
-    }
+	@AfterViews
+	void disableUnavailableSpinners() {
+		numberOfPlayersSpinner.setEnabled(false);
+		startResourcesSpinner.setEnabled(false);
+		peacetimeSpinner.setEnabled(false);
+	}
 
-    @Override
-    protected int getListItemLayoutId() {
-        return R.layout.item_multiplayer_playerslot;
-    }
+	@Override
+	protected int getListItemLayoutId() {
+		return R.layout.item_multiplayer_playerslot;
+	}
 }

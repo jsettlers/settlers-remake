@@ -16,11 +16,11 @@ package jsettlers.main.android.core;
 
 import java.util.UUID;
 
-import jsettlers.common.CommonConstants;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+
+import jsettlers.common.CommonConstants;
 
 public class AndroidPreferences {
 	private static final String PREFS = "prefs";

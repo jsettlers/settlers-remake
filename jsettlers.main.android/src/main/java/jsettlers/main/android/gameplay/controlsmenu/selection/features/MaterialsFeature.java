@@ -15,19 +15,19 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 
-import jsettlers.common.buildings.IBuilding;
-import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.DrawControls;
-import jsettlers.main.android.core.controls.DrawListener;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.core.resources.OriginalImageProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import jsettlers.common.buildings.IBuilding;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.controls.DrawControls;
+import jsettlers.main.android.core.controls.DrawListener;
+import jsettlers.main.android.core.resources.OriginalImageProvider;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 11/01/2017.
