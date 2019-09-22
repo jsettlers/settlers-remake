@@ -17,6 +17,8 @@ package jsettlers.main.swing.lookandfeel.ui;
 import java.awt.Color;
 import java.awt.Font;
 
+import jsettlers.main.swing.settings.SettingsManager;
+
 /**
  * Constant colors for L&F
  * 
@@ -41,7 +43,7 @@ public final class UIDefaults {
 	/**
 	 * Default font
 	 */
-	public static final Font FONT = new Font("Sans", Font.BOLD, 14);
+	public static final Font FONT = new Font("Sans", Font.BOLD, (int)(14*SettingsManager.getInstance().getGuiScale()));
 
 	/**
 	 * Default font

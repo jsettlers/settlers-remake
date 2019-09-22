@@ -29,13 +29,15 @@ public class SettingsSlider extends SettlersSlider {
 	private static final long serialVersionUID = 1L;
 
 	private String unit;
-	private String zeroString;
+	private String minString;
+	private int minValue;
 
-	public SettingsSlider(String unit, int min_value, int max_value, String zeroString) {
+	public SettingsSlider(String unit, int min_value, int max_value, String minString) {
 		setStringPainted(true);
 		this.unit = unit;
-		this.zeroString = zeroString;
+		this.minString = minString;
 
+		minValue = min_value;
 		setMinimum(min_value);
 		setMaximum(max_value);
 		setValue(50);
@@ -47,8 +49,8 @@ public class SettingsSlider extends SettlersSlider {
 	@Override
 	public void setValue(int n) {
 		super.setValue(n);
-		if(n == 0 && zeroString != null) {
-			setString(zeroString);
+		if(n == minValue && minString != null) {
+			setString(minString);
 		} else {
 			setString(n + unit);
 		}

@@ -11,7 +11,7 @@ import go.graphics.text.EFontSize;
 public class AndroidTextDrawer extends AbstractTextDrawer<GLESDrawContext> {
 
 	public AndroidTextDrawer(GLESDrawContext gl) {
-		super(gl);
+		super(gl, 0);
 	}
 
 	@Override

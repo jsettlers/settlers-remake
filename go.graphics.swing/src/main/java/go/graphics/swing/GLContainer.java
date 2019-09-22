@@ -1,7 +1,6 @@
 package go.graphics.swing;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.awt.Component;
@@ -24,6 +23,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	protected ContextCreator cc;
 	protected LWJGLDrawContext context;
 	private boolean debug;
+	protected float guiScale = 0;
 
 	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
 		setLayout(layout);
@@ -62,7 +62,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 		try {
 			if(caps.OpenGL20) {
-				context = new LWJGLDrawContext(caps, debug);
+				context = new LWJGLDrawContext(caps, debug, guiScale);
 			} else {
 				errorGLVersion();
 			}

@@ -76,9 +76,9 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 	 * Creates a new text drawer.
 	 *
 	 */
-	public AbstractTextDrawer(T drawContext) {
+	public AbstractTextDrawer(T drawContext, float guiScale) {
 		this.drawContext = drawContext;
-		scalingFactor = calculateScalingFactor();
+		scalingFactor = guiScale <= 0.51f ? calculateScalingFactor() : guiScale;
 
 		int descent = init();
 		generateTexture();

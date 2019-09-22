@@ -36,8 +36,8 @@ public final class LWJGLTextDrawer extends AbstractTextDrawer<LWJGLDrawContext> 
 	 * Creates a new text drawer.
 	 *
 	 */
-	public LWJGLTextDrawer(LWJGLDrawContext drawContext) {
-		super(drawContext);
+	public LWJGLTextDrawer(LWJGLDrawContext drawContext, float guiScale) {
+		super(drawContext, guiScale);
 	}
 
 	@Override

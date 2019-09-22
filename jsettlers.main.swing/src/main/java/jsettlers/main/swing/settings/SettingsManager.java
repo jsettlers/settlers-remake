@@ -56,6 +56,7 @@ public class SettingsManager implements ISoundSettingsProvider {
 	private static final String SETTING_FULL_SCREEN_MODE = "fullScreenMode";
 
 	private static final String SETTING_GRAPHICS_DEBUG = "debug-opengl";
+	private static final String SETTINGS_GUI_SCALE = "gui-scale";
 	private static final String SETTING_CONTROL_ALL = "control-all";
 	private static final String SETTING_ACTIVATE_ALL_PLAYERS = "activate-all-players";
 	private static final String SETTING_ENABLE_CONSOLE_LOGGING = "console-output";
@@ -204,6 +205,8 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	public void setFpsLimit(int fpsLimit) {set(SETTING_FPS_LIMIT,Integer.toString(fpsLimit));}
 
+	public void setGuiScale(float scale) {set(SETTINGS_GUI_SCALE, ""+scale);}
+
 	public void setBackend(String backend) {set(SETTING_BACKEND, backend);}
 
 	public void setFullScreenMode(boolean fullScreenMode) {
@@ -284,5 +287,14 @@ public class SettingsManager implements ISoundSettingsProvider {
 
 	public boolean isGraphicsDebug() {
 		return getOptional(SETTING_GRAPHICS_DEBUG);
+	}
+
+	public float getGuiScale() {
+		String guiScaleString = get(SETTINGS_GUI_SCALE);
+		try {
+			return Math.max(guiScaleString != null ? Float.parseFloat(guiScaleString) : 1, 0.5f);
+		} catch (NumberFormatException e) {
+		}
+		return 0.5f;
 	}
 }
