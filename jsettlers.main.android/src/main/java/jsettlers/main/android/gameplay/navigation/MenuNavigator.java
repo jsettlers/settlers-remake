@@ -27,7 +27,7 @@ public interface MenuNavigator {
 
 	boolean removeSelectionMenu();
 
-    void addBackPressedListener(BackPressedListener backPressedListener);
+	void addBackPressedListener(BackPressedListener backPressedListener);
 
 	void removeBackPressedListener(BackPressedListener backPressedListener);
 }

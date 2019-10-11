@@ -15,20 +15,9 @@
 
 package jsettlers.main.android.gameplay;
 
-import jsettlers.graphics.map.draw.ImageProvider;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
-
-import jsettlers.common.menu.EGameError;
-import jsettlers.common.menu.EProgressState;
-import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.IStartingGameListener;
-import jsettlers.graphics.localization.Labels;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.gameplay.navigation.GameNavigator;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -37,6 +26,17 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGameListener;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.gameplay.navigation.GameNavigator;
 
 @EFragment(R.layout.fragment_loading)
 public class LoadingFragment extends Fragment implements IStartingGameListener {

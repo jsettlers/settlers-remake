@@ -8,25 +8,25 @@ import jsettlers.common.material.EMaterialType;
  */
 
 public class ProductionState {
-    private final EMaterialType materialType;
-    private final int quantity;
-    private final float ratio;
+	private final EMaterialType materialType;
+	private final int quantity;
+	private final float ratio;
 
-    public ProductionState(EMaterialType materialType, IMaterialProductionSettings materialProductionSettings) {
-        this.materialType = materialType;
-        this.quantity = materialProductionSettings.getAbsoluteProductionRequest(materialType);
-        this.ratio = materialProductionSettings.getUserConfiguredRelativeRequestValue(materialType);
-    }
+	public ProductionState(EMaterialType materialType, IMaterialProductionSettings materialProductionSettings) {
+		this.materialType = materialType;
+		this.quantity = materialProductionSettings.getAbsoluteProductionRequest(materialType);
+		this.ratio = materialProductionSettings.getUserConfiguredRelativeRequestValue(materialType);
+	}
 
-    public EMaterialType getMaterialType() {
-        return materialType;
-    }
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
 
-    public int getQuantity() {
-        return quantity;
-    }
+	public int getQuantity() {
+		return quantity;
+	}
 
-    public float getRatio() {
-        return ratio;
-    }
+	public float getRatio() {
+		return ratio;
+	}
 }

@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:bottom="4dp"
-        android:left="4dp"
-        android:right="4dp"
-        android:top="4dp">
-        <selector>
-            <item>
-                <shape>
-                    <corners android:radius="16dp" />
-                    <stroke android:width="2dp" android:color="@color/accent" />
-                </shape>
-            </item>
-        </selector>
-    </item>
-    <item>
-        <ripple android:color="?android:colorControlHighlight" />
-    </item>
+	<item
+		android:bottom="4dp"
+		android:left="4dp"
+		android:right="4dp"
+		android:top="4dp">
+		<selector>
+			<item>
+				<shape>
+					<corners android:radius="16dp"/>
+					<stroke
+						android:width="2dp"
+						android:color="@color/accent"/>
+				</shape>
+			</item>
+		</selector>
+	</item>
+	<item>
+		<ripple android:color="?android:colorControlHighlight"/>
+	</item>
 </layer-list>

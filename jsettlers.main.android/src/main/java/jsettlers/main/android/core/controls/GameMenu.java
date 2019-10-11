@@ -15,20 +15,22 @@
 
 package jsettlers.main.android.core.controls;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import go.graphics.android.AndroidSoundPlayer;
 import java8.util.function.Consumer;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
+import jsettlers.common.action.SetSpeedAction;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 
 /**
  * GameMenu is a singleton within the scope of a started game
@@ -41,28 +43,41 @@ public class GameMenu implements Consumer<IStartedGame> {
 	}
 
 	private final Context context;
-	private final ActionControls actionControls;
 	private final AndroidSoundPlayer soundPlayer;
+	private final ActionControls actionControls;
+	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
+	private final GameSpeedLiveData gameSpeedLiveData;
+	private final boolean isMultiplayer;
 
 	private Timer quitConfirmTimer;
 
-	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
-	public LiveData<GameState> getGameState() {
-		return  gameState;
-	}
-
-	private final MutableLiveData<Boolean> pausedState = new MutableLiveData<>();
-	public LiveData<Boolean> isPausedState() {
-		return  pausedState;
-	}
-
-	public GameMenu(Context context, AndroidSoundPlayer soundPlayer, ActionControls actionFireable) {
+	public GameMenu(
+			Context context,
+			AndroidSoundPlayer soundPlayer,
+			ActionControls actionFireable,
+			GameSpeedLiveData gameSpeedLiveData,
+			boolean isMultiplayer) {
 		this.context = context;
 		this.soundPlayer = soundPlayer;
 		this.actionControls = actionFireable;
+		this.gameSpeedLiveData = gameSpeedLiveData;
+		this.isMultiplayer = isMultiplayer;
 
 		pausedState.postValue(false);
 		gameState.postValue(GameState.PLAYING);
+	}
+
+	public LiveData<GameState> getGameState() {
+		return gameState;
+	}
+
+	public LiveData<Boolean> isPausedState() {
+		return pausedState;
+	}
+
+	public LiveData<Float> getGameSpeed() {
+		return gameSpeedLiveData;
 	}
 
 	public void save() {
@@ -114,6 +129,19 @@ public class GameMenu implements Consumer<IStartedGame> {
 
 	public void unMute() {
 		soundPlayer.setPaused(false);
+	}
+
+	public void skipMinute() {
+		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
+	}
+
+	public void setGameSpeed(float speed) {
+		actionControls.fireAction(new SetSpeedAction(speed));
+		gameSpeedLiveData.setValue(speed);
+	}
+
+	public boolean isMultiplayer() {
+		return isMultiplayer;
 	}
 
 	/**

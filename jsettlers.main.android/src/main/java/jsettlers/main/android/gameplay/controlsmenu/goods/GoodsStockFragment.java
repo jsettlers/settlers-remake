@@ -15,6 +15,13 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import static java8.util.J8Arrays.stream;
+
+import java.util.List;
+
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,23 +29,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import java.util.List;
-
 import java8.util.stream.Collectors;
+import jsettlers.common.action.SetAcceptedStockMaterialAction;
 import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.action.SetAcceptedStockMaterialAction;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
-
-import static java8.util.J8Arrays.stream;
 
 /**
  * Created by tompr on 24/11/2016.
@@ -57,7 +57,6 @@ public class GoodsStockFragment extends Fragment implements DrawListener {
 	RecyclerView recyclerView;
 	@ViewById(R.id.textView_message)
 	TextView textViewMessage;
-
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {

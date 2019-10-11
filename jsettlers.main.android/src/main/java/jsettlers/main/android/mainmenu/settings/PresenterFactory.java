@@ -18,8 +18,6 @@ package jsettlers.main.android.mainmenu.settings;
 import android.content.Context;
 
 import jsettlers.main.android.core.AndroidPreferences;
-import jsettlers.main.android.mainmenu.settings.SettingsPresenter;
-import jsettlers.main.android.mainmenu.settings.SettingsView;
 
 /**
  * Created by tompr on 03/02/2017.

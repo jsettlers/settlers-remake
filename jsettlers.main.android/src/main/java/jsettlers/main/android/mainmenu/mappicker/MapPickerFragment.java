@@ -15,6 +15,16 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.concurrent.Semaphore;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,16 +37,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.concurrent.Semaphore;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -45,9 +45,9 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.resources.PreviewImageConverter;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
-import jsettlers.main.android.core.resources.PreviewImageConverter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,7 +63,6 @@ public abstract class MapPickerFragment extends Fragment {
 
 	private MapPickerViewModel viewModel;
 	private MapAdapter adapter;
-
 
 	protected abstract MapPickerViewModel createViewModel();
 
@@ -105,7 +104,6 @@ public abstract class MapPickerFragment extends Fragment {
 	protected boolean showMapDates() {
 		return false;
 	}
-
 
 	/**
 	 * RecyclerView Adapter for displaying list of maps

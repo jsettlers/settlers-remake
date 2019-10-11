@@ -18,6 +18,7 @@ package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.ImageView;
+
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.IAction;
@@ -32,9 +33,9 @@ import jsettlers.main.android.core.controls.ActionListener;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.TaskControls;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.customviews.InGameButton;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
+import jsettlers.main.android.gameplay.customviews.InGameButton;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by Tom Pratt on 10/01/2017.

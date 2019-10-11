@@ -15,16 +15,18 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection;
 
+import static java8.util.stream.StreamSupport.stream;
+
+import java.util.LinkedList;
+
+import org.androidannotations.annotations.EFragment;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import org.androidannotations.annotations.EFragment;
-
-import java.util.LinkedList;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -34,7 +36,6 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.TaskControls;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.DestroyFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.DockFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.MaterialsFeature;
@@ -45,8 +46,7 @@ import jsettlers.main.android.gameplay.controlsmenu.selection.features.StockFeat
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.TitleFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.TradingFeature;
 import jsettlers.main.android.gameplay.controlsmenu.selection.features.WorkAreaFeature;
-
-import static java8.util.stream.StreamSupport.stream;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance. So the buildings menu is made up of composable "features" which are a bit like mini

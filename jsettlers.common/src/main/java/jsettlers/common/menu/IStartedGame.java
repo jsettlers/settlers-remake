@@ -52,4 +52,6 @@ public interface IStartedGame {
 	void setGameExitListener(Consumer<IStartedGame> exitListener);
 
 	boolean isShutdownFinished();
+
+	boolean isMultiplayerGame();
 }
