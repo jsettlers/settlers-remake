@@ -24,10 +24,10 @@ import android.content.Context;
 import android.widget.Toast;
 
 import go.graphics.android.AndroidSoundPlayer;
+import java8.util.function.Consumer;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.SetSpeedAction;
-import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
@@ -35,7 +35,7 @@ import jsettlers.main.android.gameplay.gamemenu.GameSpeedLiveData;
 /**
  * GameMenu is a singleton within the scope of a started game
  */
-public class GameMenu implements IGameExitListener {
+public class GameMenu implements Consumer<IStartedGame> {
 	public enum GameState {
 		PLAYING,
 		CONFIRM_QUIT,
@@ -148,7 +148,7 @@ public class GameMenu implements IGameExitListener {
 	 * IGameExitedListener implementation
 	 */
 	@Override
-	public void gameExited(IStartedGame game) {
+	public void accept(IStartedGame game) {
 		gameState.postValue(GameState.QUITTED);
 	}
 }

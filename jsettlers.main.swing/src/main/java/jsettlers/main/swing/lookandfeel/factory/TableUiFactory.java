@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2019
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,19 +12,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.menu;
+package jsettlers.main.swing.lookandfeel.factory;
 
-/**
- * This listener gets notified when the game is exited.
- * 
- * @author michael
- */
-public interface IGameExitListener {
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+
+import jsettlers.main.swing.lookandfeel.ELFStyle;
+import jsettlers.main.swing.lookandfeel.components.StoneBackgroundTable;
+import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
+
+public class TableUiFactory {
+
 	/**
-	 * Called only once before the game is finally destroyed.
-	 * 
-	 * @param game
-	 *            The game that was started before. Is valid during the call, but should not be used afterwards.
+	 * Forward calls
 	 */
-	void gameExited(IStartedGame game);
+	public static final ForwardFactory FORWARD = new ForwardFactory();
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private TableUiFactory() {
+	}
+
+	private static final StoneBackgroundTable labelShort = new StoneBackgroundTable(UIDefaults.LABEL_TEXT_COLOR);
+
+	/**
+	 * Create PLAF
+	 *
+	 * @param c
+	 *            Component which need the UI
+	 * @return UI
+	 */
+	public static ComponentUI createUI(JComponent c) {
+		Object style = c.getClientProperty(ELFStyle.KEY);
+		if(ELFStyle.TABLE == style) {
+			return labelShort;
+		}
+
+		return FORWARD.create(c);
+	}
 }

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.menu;
 
+import java8.util.function.Consumer;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.statistics.IGameTimeProvider;
@@ -53,7 +54,12 @@ public class FakeMapGame implements IStartedGame {
 	}
 
 	@Override
-	public void setGameExitListener(IGameExitListener exitListener) {
+	public IInGamePlayer[] getAllInGamePlayers() {
+		return null;
+	}
+
+	@Override
+	public void setGameExitListener(Consumer<IStartedGame> exitListener) {
 	}
 
 	@Override

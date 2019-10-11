@@ -22,4 +22,8 @@ public interface IEndgameStatistic {
 	short getAmountOfProducedSoldiers();
 	short getAmountOfProducedMana();
 	short getAmountOfProducedGold();
+
+	String getName();
+
+	byte getTeam();
 }

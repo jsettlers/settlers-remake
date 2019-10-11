@@ -29,6 +29,7 @@ import jsettlers.main.swing.lookandfeel.factory.PanelUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.ProgressBarUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.ScrollPaneUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.ScrollbarUiFactory;
+import jsettlers.main.swing.lookandfeel.factory.TableUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.TextAreaUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.TextFieldUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.ToggleButtonUiFactory;
@@ -67,6 +68,7 @@ public class JSettlersLookAndFeel {
 			TextFieldUiFactory.FORWARD.loadFromType("TextFieldUI");
 			ButtonUiFactory.FORWARD.loadFromType("ButtonUI");
 			LabelUiFactory.FORWARD.loadFromType("LabelUI");
+			TableUiFactory.FORWARD.loadFromType("TableUI");
 			// Panel handles all UI types
 			// PanelUiFactory.FORWARD.loadFromType("PanelUI");
 			// ScrollPane handles all UI types
@@ -102,6 +104,7 @@ public class JSettlersLookAndFeel {
 					"ProgressBarUI", ProgressBarUiFactory.class.getName(),
 					"TextAreaUI", TextAreaUiFactory.class.getName(),
 					"ComboBoxUI", ComboboxUiFactory.class.getName(),
+					"TableUI", TableUiFactory.class.getName(),
 			};
 			UIManager.getDefaults().putDefaults(uiFactories);
 

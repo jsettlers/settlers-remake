@@ -79,7 +79,12 @@ public enum ELFStyle {
 	/**
 	 * Combobox in settler style
 	 */
-	COMBOBOX;
+	COMBOBOX,
+
+	/**
+	 * Tables in settlers label style
+	 */
+	TABLE;
 
 	/**
 	 * Key used for putClientProperty

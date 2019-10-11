@@ -25,12 +25,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
+import java8.util.function.Consumer;
+
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
-import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
@@ -165,21 +166,8 @@ public class JSettlersGame {
 
 	public void stop() {
 		synchronized (stopMutex) {
-			printEndgameStatistic();
 			stopped = true;
 			stopMutex.notifyAll();
-		}
-	}
-
-	// TODO remove me when an EndgameStatistic screen exists.
-	private void printEndgameStatistic() {
-		PartitionsGrid partitionsGrid = gameRunner.getMainGrid().getPartitionsGrid();
-		System.out.println("Endgame statistic:");
-		for (byte playerId = 0; playerId < partitionsGrid.getNumberOfPlayers(); playerId++) {
-			Player player = partitionsGrid.getPlayer(playerId);
-			if (player != null) {
-				System.out.println("Player " + playerId + ": " + player.getEndgameStatistic());
-			}
 		}
 	}
 
@@ -194,7 +182,7 @@ public class JSettlersGame {
 		private GameTimeProvider gameTimeProvider;
 		private EProgressState progressState;
 		private float progress;
-		private IGameExitListener exitListener;
+		private Consumer<IStartedGame> exitListener;
 		private boolean gameRunning;
 		private AiExecutor aiExecutor;
 		private WinLoseTracker winLoseTracker;
@@ -287,7 +275,7 @@ public class JSettlersGame {
 			} finally {
 				shutdownFinished = true;
 				if (exitListener != null) {
-					exitListener.gameExited(this);
+					exitListener.accept(this);
 				}
 			}
 		}
@@ -369,6 +357,11 @@ public class JSettlersGame {
 		}
 
 		@Override
+		public IInGamePlayer[] getAllInGamePlayers() {
+			return mainGrid.getPartitionsGrid().getPlayers();
+		}
+
+		@Override
 		public boolean isShutdownFinished() {
 			return shutdownFinished;
 		}
@@ -384,7 +377,7 @@ public class JSettlersGame {
 		}
 
 		@Override
-		public void setGameExitListener(IGameExitListener exitListener) {
+		public void setGameExitListener(Consumer<IStartedGame> exitListener) {
 			this.exitListener = exitListener;
 		}
 

@@ -14,7 +14,9 @@
  *******************************************************************************/
 package jsettlers.common.menu;
 
+import java8.util.function.Consumer;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.player.IEndgameStatistic;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.statistics.IGameTimeProvider;
 
@@ -27,21 +29,27 @@ import jsettlers.common.statistics.IGameTimeProvider;
 public interface IStartedGame {
 	/**
 	 * Gets the grid that should be displayed to the user.
-	 * 
+	 *
 	 * @return
 	 */
 	IGraphicsGrid getMap();
 
 	/**
 	 * Gets an {@link IGameTimeProvider} implementation used to supply the UI with game time information.
-	 * 
+	 *
 	 * @return
 	 */
 	IGameTimeProvider getGameTimeProvider();
 
+	/**
+	 *
+	 * @return null or all {@link IInGamePlayer}s
+	 */
+	IInGamePlayer[] getAllInGamePlayers();
+
 	IInGamePlayer getInGamePlayer();
 
-	void setGameExitListener(IGameExitListener exitListener);
+	void setGameExitListener(Consumer<IStartedGame> exitListener);
 
 	boolean isShutdownFinished();
 
