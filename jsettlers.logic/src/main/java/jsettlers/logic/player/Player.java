@@ -44,7 +44,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private final byte numberOfPlayers;
 	private final MannaInformation mannaInformation = new MannaInformation();
 	private final MaterialCounts materialCounts = new MaterialCounts();
-	private final EndgameStatistic endgameStatistic = new EndgameStatistic(mannaInformation);
+	private final EndgameStatistic endgameStatistic = new EndgameStatistic(this);
 
 	private transient EPlayerType playerType;
 	private transient ECivilisation civilisation;
