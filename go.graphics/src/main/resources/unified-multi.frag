@@ -13,7 +13,6 @@ uniform sampler2D texHandle;
 uniform float shadow_depth;
 
 out vec4 fragColor;
-out float gl_FragDepth;
 
 void main() {
 	float fragDepth = gl_FragCoord.z;

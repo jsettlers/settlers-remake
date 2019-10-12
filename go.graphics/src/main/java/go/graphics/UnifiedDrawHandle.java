@@ -86,7 +86,7 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 	public void drawComplexQuad(int mode, float x, float y, float z, float sx, float sy, AbstractColor color, float intensity) {
 		if(frameIndex != dc.frameIndex) nextFrame();
 
-		if(trans != null) {
+		if(trans != null && sx == 1 && sy == 1) {
 			if(cache_index == MAX_CACHE_ENTRIES) flush();
 
 			trans[cache_index*4] = x;

@@ -7,6 +7,7 @@ import org.lwjgl.opengl.ARBUniformBufferObject;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -70,7 +71,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 	void init() {
 		shaders = new ArrayList<>();
 
-		if(glcaps.GL_EXT_geometry_shader4 && glcaps.GL_ARB_uniform_buffer_object) prog_unified_multi = new ShaderProgram("unified-multi");
+		if((glcaps.GL_EXT_geometry_shader4 || glcaps.OpenGL32) && glcaps.GL_ARB_uniform_buffer_object) prog_unified_multi = new ShaderProgram("unified-multi");
 		if(glcaps.GL_EXT_draw_instanced) prog_unified_array = new ShaderProgram("unified-array");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("unified");
@@ -102,8 +103,8 @@ public class LWJGLDrawContext extends GLDrawContext {
 		TextureHandle textureHandle = new TextureHandle(this, texture);
 		resizeTexture(textureHandle, width, height, data);
 
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
@@ -389,12 +390,13 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 			for (int i = 0; i != array_len; i++) {
 
-				float intensity = 0;
-				int mode = 0;
+				float int_mode = trans[i*4+3]/10;
+				int mode = (int) Math.floor(int_mode);
+				float intensity = (int_mode-mode)*10-1;
 
 				GL20.glUniform1i(prog_unified.mode, mode);
-				GL20.glUniform1fv(prog_unified.color, new float[]{colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3], intensity});
-				GL20.glUniform3fv(prog_unified.trans, new float[]{trans[i*6], trans[i*6+1], trans[i*6+2], trans[i*6+3], trans[i*6+4], trans[i*6+5]});
+				GL20.glUniform1fv(prog_unified.color, new float[] {colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3], intensity});
+				GL20.glUniform3fv(prog_unified.trans, new float[] {trans[i*4], trans[i*4+1], trans[i*4+2], 1, 1, 0});
 
 				GL11.glDrawArrays(primitive, call.offset, vertexCount);
 			}
@@ -556,24 +558,24 @@ public class LWJGLDrawContext extends GLDrawContext {
 		private ArrayList<String> attributes = new ArrayList<>();
 
 		private int createShader(String name, int type) throws IOException {
-			int shader = GL20.glCreateShader(type);
-			if(shader == 0) return -1;
-			setObjectLabel(KHRDebug.GL_SHADER, shader, name);
-
-			InputStream shaderFile = getClass().getResourceAsStream("/"+name);
-			if(shaderFile == null) return -1;
-			BufferedReader is = new BufferedReader(new InputStreamReader(shaderFile));
 			StringBuilder source = new StringBuilder();
-			String line;
+			try(InputStream shaderFile = getClass().getResourceAsStream("/"+name)) {
+				if (shaderFile == null) return -1;
+				BufferedReader is = new BufferedReader(new InputStreamReader(shaderFile));
 
-			while((line = is.readLine()) != null) {
-				if(line.startsWith("attribute") || line.endsWith("//attribute")) {
-					attributes.add(line.split(" ")[2].replaceAll(";", ""));
+				String line;
+				while ((line = is.readLine()) != null) {
+					if (line.startsWith("attribute") || line.endsWith("//attribute")) {
+						attributes.add(line.split(" ")[2].replaceAll(";", ""));
+					}
+
+					source.append(line).append("\n");
 				}
-
-				source.append(line).append("\n");
 			}
 
+			int shader = GL20.glCreateShader(type);
+			if (shader == 0) return -1;
+			setObjectLabel(KHRDebug.GL_SHADER, shader, name);
 			GL20.glShaderSource(shader, source);
 			GL20.glCompileShader(shader);
 

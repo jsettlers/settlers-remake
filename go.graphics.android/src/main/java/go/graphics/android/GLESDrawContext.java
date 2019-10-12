@@ -381,7 +381,7 @@ public class GLESDrawContext extends GLDrawContext {
 
 				GLES20.glUniform1i(prog_unified.mode, mode);
 				GLES20.glUniform1fv(prog_unified.color, 4, new float[] {colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3], intensity}, i * 4);
-				GLES20.glUniform3fv(prog_unified.trans, 2, trans, i * 4);
+				GLES20.glUniform3fv(prog_unified.trans, 2, new float[] {trans[i*4], trans[i*4+1], trans[i*4+2], 1, 1, 0}, 0);
 
 				GLES20.glDrawArrays(primitive, call.offset, vertexCount);
 			}
@@ -544,34 +544,35 @@ public class GLESDrawContext extends GLDrawContext {
 		private final String vendor_id = "//VENDOR=" +GLES20.glGetString(GLES20.GL_VENDOR) + " ";
 
 		private int createShader(String name, int type) throws IOException {
-			int shader = GLES20.glCreateShader(type);
-			if(shader == 0) return -1;
-
-			InputStream shaderFile = getClass().getResourceAsStream("/"+name);
-			if(shaderFile == null) return -1;
-			BufferedReader is = new BufferedReader(new InputStreamReader(shaderFile));
 			StringBuilder source = new StringBuilder();
-			String line;
+			try(InputStream shaderFile = getClass().getResourceAsStream("/"+name)) {
+				if (shaderFile == null) return -1;
+				BufferedReader is = new BufferedReader(new InputStreamReader(shaderFile));
 
-			while((line = is.readLine()) != null) {
-				if(line.startsWith("attribute") || line.endsWith("//attribute")) {
-					attributes.add(line.split(" ")[2].replaceAll(";", ""));
-				}
+				String line;
+				while ((line = is.readLine()) != null) {
+					if (line.startsWith("attribute") || line.endsWith("//attribute")) {
+						attributes.add(line.split(" ")[2].replaceAll(";", ""));
+					}
 
-				int vendor_index = line.indexOf(vendor_id);
-				if(vendor_index != -1) {
-					String remaining = line.substring(vendor_index+vendor_id.length());
-					String[] replace = remaining.split("=");
-					line = line.substring(0, vendor_index).replaceFirst(replace[0], replace[1]);
-				}
+					int vendor_index = line.indexOf(vendor_id);
+					if (vendor_index != -1) {
+						String remaining = line.substring(vendor_index + vendor_id.length());
+						String[] replace = remaining.split("=");
+						line = line.substring(0, vendor_index).replaceFirst(replace[0], replace[1]);
+					}
 
-				source.append(line);
-				if(line.startsWith("#version")) {
-					//source.append(" es");
+					source.append(line);
+					if (line.startsWith("#version")) {
+						//source.append(" es");
+					}
+					source.append("\n");
 				}
-				source.append("\n");
 			}
 
+
+			int shader = GLES20.glCreateShader(type);
+			if (shader == 0) return -1;
 			GLES20.glShaderSource(shader, source.toString());
 			GLES20.glCompileShader(shader);
 

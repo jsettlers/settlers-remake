@@ -12,7 +12,6 @@ uniform sampler2D texHandle;
 uniform float shadow_depth;
 
 out vec4 fragColor;
-out float gl_FragDepth;
 
 void main() {
 	float fragDepth = gl_FragCoord.z;
@@ -33,11 +32,11 @@ void main() {
 			fragColor.rgba = tex_color.aaag;
 			fragDepth += shadow_depth;
 		} else if(image_fence) { // image pixel
-		if(!torso_fence && !shadow_fence) {
-			fragColor *= tex_color;
-		} else {
-			fragColor = tex_color;
-		}
+			if(!torso_fence && !shadow_fence) {
+				fragColor *= tex_color;
+			} else {
+				fragColor = tex_color;
+			}
 		}
 	}
 
