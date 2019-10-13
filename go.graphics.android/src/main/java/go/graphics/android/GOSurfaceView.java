@@ -17,7 +17,6 @@ package go.graphics.android;
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
-import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
 import android.util.Log;

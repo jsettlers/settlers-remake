@@ -3,10 +3,11 @@ package go.graphics.android;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.opengl.GLES20;
 
 import go.graphics.text.AbstractTextDrawer;
 import go.graphics.text.EFontSize;
+
+import static android.opengl.GLES20.*;
 
 public class AndroidTextDrawer extends AbstractTextDrawer<GLESDrawContext> {
 
@@ -80,7 +81,7 @@ public class AndroidTextDrawer extends AbstractTextDrawer<GLESDrawContext> {
 
 	@Override
 	protected void setTexParams() {
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }

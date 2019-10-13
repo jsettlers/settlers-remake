@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2018
+ * Copyright (c) 2015 - 2019
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,8 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
-import org.lwjgl.opengl.GL11;
-
 import go.graphics.swing.opengl.LWJGLDrawContext;
 import go.graphics.text.AbstractTextDrawer;
 import go.graphics.text.EFontSize;
@@ -27,6 +25,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+
+import static org.lwjgl.opengl.GL20C.*;
 
 public final class LWJGLTextDrawer extends AbstractTextDrawer<LWJGLDrawContext> {
 	private static final int DEFAULT_DPI = 96;
@@ -96,7 +96,7 @@ public final class LWJGLTextDrawer extends AbstractTextDrawer<LWJGLDrawContext> 
 
 	@Override
 	protected void setTexParams() {
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }

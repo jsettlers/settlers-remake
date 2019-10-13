@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018
+ * Copyright (c) 2018 - 2019
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,8 +15,6 @@
 package go.graphics.swing.contextcreator;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -30,14 +28,16 @@ import go.graphics.FramerateComputer;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
+import static org.lwjgl.opengl.GL20C.*;
+
 public abstract class AsyncContextCreator extends ContextCreator implements Runnable,DrawmodeListener {
 
 	private boolean offscreen = true;
 	private boolean clear_offscreen = true;
 	private boolean continue_run = true;
 
-	protected BufferedImage bi = null;
-	protected IntBuffer pixels;
+	private BufferedImage bi = null;
+	private IntBuffer pixels;
 
 	private Thread render_thread = new Thread(this, "AsyncRenderer");
 
@@ -116,7 +116,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 			if (offscreen) {
 				synchronized (wnd_lock) {
-					GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+					glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
 					for (int x = 0; x != width; x++) {
 						for (int y = 0; y != height; y++) {
 							bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
@@ -127,7 +127,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 			if(!offscreen || clear_offscreen) {
 				if(clear_offscreen) {
-					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+					glClear(GL_COLOR_BUFFER_BIT);
 					clear_offscreen = false;
 				}
 				async_swapbuffers();

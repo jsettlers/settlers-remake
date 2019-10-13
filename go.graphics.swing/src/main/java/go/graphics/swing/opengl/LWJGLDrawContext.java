@@ -2,16 +2,7 @@ package go.graphics.swing.opengl;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBDrawInstanced;
-import org.lwjgl.opengl.ARBUniformBufferObject;
-import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.KHRDebug;
@@ -36,22 +27,30 @@ import go.graphics.TextureHandle;
 import go.graphics.UnifiedDrawHandle;
 import go.graphics.swing.text.LWJGLTextDrawer;
 
-@SuppressWarnings("WeakerAccess")
+import static org.lwjgl.opengl.ARBDrawInstanced.*;
+import static org.lwjgl.opengl.ARBVertexArrayObject.*;
+import static org.lwjgl.opengl.ARBUniformBufferObject.*;
+import static org.lwjgl.opengl.GL20C.*;
+
 public class LWJGLDrawContext extends GLDrawContext {
 	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug, float guiScale) {
 		this.glcaps = glcaps;
+		shaders = new ArrayList<>();
 
 		if(debug) debugOutput = new LWJGLDebugOutput(this);
 
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthFunc(GL11.GL_LEQUAL);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 
-		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		init();
+		if(glcaps.OpenGL32) prog_unified_multi = new ShaderProgram("unified-multi");
+		if(glcaps.GL_EXT_draw_instanced) prog_unified_array = new ShaderProgram("unified-array");
+		prog_background = new ShaderProgram("background");
+		prog_unified = new ShaderProgram("unified");
 
 		textDrawer = new LWJGLTextDrawer(this, guiScale);
 	}
@@ -61,26 +60,17 @@ public class LWJGLDrawContext extends GLDrawContext {
 	private final Matrix4f global = new Matrix4f();
 	private final Matrix4f mat = new Matrix4f();
 	private final FloatBuffer matBfr = BufferUtils.createFloatBuffer(16);
-	protected LWJGLDebugOutput debugOutput = null;
+	private LWJGLDebugOutput debugOutput = null;
 
-	public final GLCapabilities glcaps;
+	final GLCapabilities glcaps;
 
-	protected BufferHandle lastGeometry = null;
-	protected TextureHandle lastTexture = null;
-
-	void init() {
-		shaders = new ArrayList<>();
-
-		if((glcaps.GL_EXT_geometry_shader4 || glcaps.OpenGL32) && glcaps.GL_ARB_uniform_buffer_object) prog_unified_multi = new ShaderProgram("unified-multi");
-		if(glcaps.GL_EXT_draw_instanced) prog_unified_array = new ShaderProgram("unified-array");
-		prog_background = new ShaderProgram("background");
-		prog_unified = new ShaderProgram("unified");
-	}
+	private BufferHandle lastGeometry = null;
+	private TextureHandle lastTexture = null;
 
 	private ShaderProgram lastProgram = null;
-	protected void useProgram(ShaderProgram id) {
+	private void useProgram(ShaderProgram id) {
 		if(id != lastProgram) {
-			GL20.glUseProgram(id.program);
+			glUseProgram(id.program);
 			lastProgram = id;
 		}
 	}
@@ -95,7 +85,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 	
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
-		int texture = GL11.glGenTextures();
+		int texture = glGenTextures();
 		if (texture == 0) {
 			return null;
 		}
@@ -103,10 +93,10 @@ public class LWJGLDrawContext extends GLDrawContext {
 		TextureHandle textureHandle = new TextureHandle(this, texture);
 		resizeTexture(textureHandle, width, height, data);
 
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		setObjectLabel(GL11.GL_TEXTURE, texture, name + "-tex");
 
@@ -115,52 +105,52 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 	public void resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data) {
 		bindTexture(textureIndex);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 	
 	public void updateTexture(TextureHandle texture, int left, int bottom,
 							  int width, int height, ShortBuffer data) {
 		bindTexture(texture);
-		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, left, bottom, width, height,
-				GL11.GL_RGBA, GL12.GL_UNSIGNED_SHORT_4_4_4_4, data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, left, bottom, width, height,
+				GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
-	protected void bindTexture(TextureHandle texture) {
+	private void bindTexture(TextureHandle texture) {
 		if(lastTexture != texture) {
 			int id = 0;
 			if (texture != null) {
 				id = texture.getTextureId();
 			}
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+			glBindTexture(GL_TEXTURE_2D, id);
 			lastTexture = texture;
 		}
 	}
 
-	protected void bindGeometry(BufferHandle geometry) {
+	private void bindGeometry(BufferHandle geometry) {
 		if(lastGeometry != geometry) {
 			int id = 0;
 			if (geometry != null) {
 				id = geometry.getBufferId();
 			}
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
+			glBindBuffer(GL_ARRAY_BUFFER, id);
 			lastGeometry = geometry;
 		}
 	}
 
 	private int lastFormat = 0;
-	protected void bindFormat(int format) {
+	private void bindFormat(int format) {
 		if(format != lastFormat) {
-			ARBVertexArrayObject.glBindVertexArray(format);
+			glBindVertexArray(format);
 			lastFormat = format;
 		}
 	}
 	
 	public void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) {
 		bindGeometry(handle);
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, pos, data);
+		glBufferSubData(GL_ARRAY_BUFFER, pos, data);
 	}
 
-	protected void setObjectLabel(int type, int id, String name) {
+	private void setObjectLabel(int type, int id, String name) {
 		if(debugOutput != null && glcaps.GL_KHR_debug) {
 			KHRDebug.glObjectLabel(type, id, name);
 		}
@@ -176,26 +166,26 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
-			GL20.glUniformMatrix4fv(shader.global, false, matBfr);
+			glUniformMatrix4fv(shader.global, false, matBfr);
 		}
 	}
 
-	protected float nativeScale = 0;
+	private float nativeScale = 0;
 
 	public void resize(int width, int height) {
 		if(nativeScale == 0) {
 			int[] vp = new int[4];
-			GL11.glGetIntegerv(GL11.GL_VIEWPORT, vp);
+			glGetIntegerv(GL_VIEWPORT, vp);
 			nativeScale = vp[2] / (float)width;
 		}
 
-		GL11.glViewport(0, 0, (int)(width*nativeScale), (int)(height*nativeScale));
+		glViewport(0, 0, (int)(width*nativeScale), (int)(height*nativeScale));
 		mat.setOrtho(0, width, 0, height, -1, 1);
 		mat.get(matBfr);
 
 		for(ShaderProgram shader : shaders) {
 			useProgram(shader);
-			GL20.glUniformMatrix4fv(shader.proj, false, matBfr);
+			glUniformMatrix4fv(shader.proj, false, matBfr);
 		}
 	}
 
@@ -204,7 +194,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 		for(ShaderProgram shader : shaders) {
 			if(shader.shadow_depth != -1) {
 				useProgram(shader);
-				GL20.glUniform1f(shader.shadow_depth, depth);
+				glUniform1f(shader.shadow_depth, depth);
 
 			}
 		}
@@ -213,30 +203,30 @@ public class LWJGLDrawContext extends GLDrawContext {
 	
 	public void setHeightMatrix(float[] matrix) {
 		useProgram(prog_background);
-		GL20.glUniformMatrix4fv(prog_background.height, false, matrix);
+		glUniformMatrix4fv(prog_background.height, false, matrix);
 	}
 
 	@Override
 	public BackgroundDrawHandle createBackgroundDrawCall(int vertices, TextureHandle texture) {
 		int vao = -1;
 
-		if(glcaps.GL_ARB_vertex_array_object) vao = ARBVertexArrayObject.glGenVertexArrays();
+		if(glcaps.GL_ARB_vertex_array_object) vao = glGenVertexArrays();
 
-		BufferHandle vertexBuffer = new BufferHandle(this, GL15.glGenBuffers());
-		BufferHandle colorBuffer = new BufferHandle(this, GL15.glGenBuffers());
+		BufferHandle vertexBuffer = new BufferHandle(this, glGenBuffers());
+		BufferHandle colorBuffer = new BufferHandle(this, glGenBuffers());
 
 		bindGeometry(vertexBuffer);
 		setObjectLabel(KHRDebug.GL_BUFFER, vertexBuffer.getBufferId(), "background-shape");
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*5*4, GL15.GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices*5*4, GL_DYNAMIC_DRAW);
 		bindGeometry(colorBuffer);
 		setObjectLabel(KHRDebug.GL_BUFFER, colorBuffer.getBufferId(), "background-color");
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*4, GL15.GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices*4, GL_DYNAMIC_DRAW);
 
 		BackgroundDrawHandle handle = new BackgroundDrawHandle(this, vao, texture, vertexBuffer, colorBuffer);
 
 		if(glcaps.GL_ARB_vertex_array_object) {
 			bindFormat(vao);
-			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, "background-vao");
+			setObjectLabel(GL_VERTEX_ARRAY, vao, "background-vao");
 			fillBackgroundFormat(handle);
 		}
 
@@ -247,23 +237,23 @@ public class LWJGLDrawContext extends GLDrawContext {
 	public UnifiedDrawHandle createUnifiedDrawCall(int vertices, String name, TextureHandle texture, float[] data) {
 		int vao = -1;
 
-		if(glcaps.GL_ARB_vertex_array_object) vao = ARBVertexArrayObject.glGenVertexArrays();
+		if(glcaps.GL_ARB_vertex_array_object) vao = glGenVertexArrays();
 
-		BufferHandle vertexBuffer = new BufferHandle(this, GL15.glGenBuffers());
+		BufferHandle vertexBuffer = new BufferHandle(this, glGenBuffers());
 
 		bindGeometry(vertexBuffer);
 		setObjectLabel(KHRDebug.GL_BUFFER, vertexBuffer.getBufferId(), name + "-vertices");
 		if(data != null) {
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW);
 		} else {
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4*4, GL15.GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4*4, GL_DYNAMIC_DRAW);
 		}
 
 		UnifiedDrawHandle handle = new UnifiedDrawHandle(this, vao, 0, vertices, texture, vertexBuffer);
 
 		if(glcaps.GL_ARB_vertex_array_object) {
 			bindFormat(vao);
-			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
+			setObjectLabel(GL_VERTEX_ARRAY, vao, name + "-vao");
 			fillUnifiedFormat(handle);
 		}
 
@@ -276,19 +266,19 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		int vao = -1;
 
-		if(glcaps.GL_ARB_vertex_array_object) vao = ARBVertexArrayObject.glGenVertexArrays();
+		if(glcaps.GL_ARB_vertex_array_object) vao = glGenVertexArrays();
 
-		BufferHandle drawCalls = new BufferHandle(this, GL15.glGenBuffers());
+		BufferHandle drawCalls = new BufferHandle(this, glGenBuffers());
 
 		bindGeometry(drawCalls);
 		setObjectLabel(KHRDebug.GL_BUFFER, drawCalls.getBufferId(), name + "-drawcalls");
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, MultiDrawHandle.MAX_CACHE_ENTRIES*12*4, GL15.GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, MultiDrawHandle.MAX_CACHE_ENTRIES*12*4, GL_STREAM_DRAW);
 
 		MultiDrawHandle handle = new MultiDrawHandle(this, vao, MultiDrawHandle.MAX_CACHE_ENTRIES, source, drawCalls);
 
 		if(glcaps.GL_ARB_vertex_array_object) {
 			bindFormat(vao);
-			setObjectLabel(GL11.GL_VERTEX_ARRAY, vao, name + "-vao");
+			setObjectLabel(GL_VERTEX_ARRAY, vao, name + "-vao");
 			fillMultiFormat(handle);
 		}
 
@@ -296,54 +286,54 @@ public class LWJGLDrawContext extends GLDrawContext {
 	}
 
 	private void fillBackgroundFormat(BackgroundDrawHandle dh) {
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glEnableVertexAttribArray(1);
-		GL20.glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 
 		bindGeometry(dh.vertices);
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 5 * 4, 0);
-		GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 5 * 4, 3 * 4);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * 4, 0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * 4, 3 * 4);
 
 		bindGeometry(dh.colors);
-		GL20.glVertexAttribPointer(2, 1, GL11.GL_FLOAT, false, 0, 0);
+		glVertexAttribPointer(2, 1, GL_FLOAT, false, 0, 0);
 	}
 
 	private void fillUnifiedFormat(UnifiedDrawHandle uh) {
 		bindGeometry(uh.vertices);
-		GL20.glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(0);
 
 		if(uh.texture!=null) {
-			GL20.glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(1);
 
-			GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * 4, 0);
-			GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * 4, 2 * 4);
+			glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * 4, 0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * 4, 2 * 4);
 		} else {
-			GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 0, 0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0);
 		}
 	}
 
 	private void fillMultiFormat(MultiDrawHandle mh) {
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glEnableVertexAttribArray(1);
-		GL20.glEnableVertexAttribArray(2);
-		GL20.glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
 
 		bindGeometry(mh.drawCalls);
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 12*4, 0);
-		GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 12*4, 3*4);
-		GL20.glVertexAttribPointer(2, 4, GL11.GL_FLOAT, false, 12*4, 5*4);
-		GL20.glVertexAttribPointer(3, 3, GL11.GL_FLOAT, false, 12*4, 9*4);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 12*4, 0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, false, 12*4, 3*4);
+		glVertexAttribPointer(2, 4, GL_FLOAT, false, 12*4, 5*4);
+		glVertexAttribPointer(3, 3, GL_FLOAT, false, 12*4, 9*4);
 	}
 
 	private boolean[] vertArrays = new boolean[4];
 
-	public void enableVertArrays(boolean... vertArrays) {
+	private void enableVertArrays(boolean... vertArrays) {
 		for(int i = 0;i != vertArrays.length; i++) {
 			if(vertArrays[i] != this.vertArrays[i]) {
 				if(vertArrays[i]) {
-					GL20.glEnableVertexAttribArray(i);
+					glEnableVertexAttribArray(i);
 				} else {
-					GL20.glDisableVertexAttribArray(i);
+					glDisableVertexAttribArray(i);
 				}
 			}
 		}
@@ -363,9 +353,9 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		useProgram(prog_unified_multi);
 
-		ARBUniformBufferObject.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, call.sourceQuads.vertices.getBufferId());
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, call.sourceQuads.vertices.getBufferId());
 
-		GL11.glDrawArrays(GL11.GL_POINTS, 0, call.used);
+		glDrawArrays(GL_POINTS, 0, call.used);
 	}
 
 	public void drawUnifiedArray(UnifiedDrawHandle call, int primitive, int vertexCount, float[] trans, float[] colors, int array_len) {
@@ -381,10 +371,10 @@ public class LWJGLDrawContext extends GLDrawContext {
 		if(prog_unified_array != null) {
 			useProgram(prog_unified_array);
 
-			GL20.glUniform4fv(prog_unified_array.color, colors);
-			GL20.glUniform4fv(prog_unified_array.trans, trans);
+			glUniform4fv(prog_unified_array.color, colors);
+			glUniform4fv(prog_unified_array.trans, trans);
 
-			ARBDrawInstanced.glDrawArraysInstancedARB(primitive, call.offset, vertexCount, array_len);
+			glDrawArraysInstancedARB(primitive, call.offset, vertexCount, array_len);
 		} else {
 			useProgram(prog_unified);
 
@@ -394,11 +384,11 @@ public class LWJGLDrawContext extends GLDrawContext {
 				int mode = (int) Math.floor(int_mode);
 				float intensity = (int_mode-mode)*10-1;
 
-				GL20.glUniform1i(prog_unified.mode, mode);
-				GL20.glUniform1fv(prog_unified.color, new float[] {colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3], intensity});
-				GL20.glUniform3fv(prog_unified.trans, new float[] {trans[i*4], trans[i*4+1], trans[i*4+2], 1, 1, 0});
+				glUniform1i(prog_unified.mode, mode);
+				glUniform1fv(prog_unified.color, new float[] {colors[i*4], colors[i*4+1], colors[i*4+2], colors[i*4+3], intensity});
+				glUniform3fv(prog_unified.trans, new float[] {trans[i*4], trans[i*4+1], trans[i*4+2], 1, 1, 0});
 
-				GL11.glDrawArrays(primitive, call.offset, vertexCount);
+				glDrawArrays(primitive, call.offset, vertexCount);
 			}
 
 			ulr = -1;
@@ -434,18 +424,18 @@ public class LWJGLDrawContext extends GLDrawContext {
 			ulb = b;
 			ula = a;
 			uli = intensity;
-			GL20.glUniform1fv(prog_unified.color, new float[] {r, g, b, a, intensity});
+			glUniform1fv(prog_unified.color, new float[] {r, g, b, a, intensity});
 		}
 
 
 		if(ulm != mode) {
 			ulm = mode;
-			GL20.glUniform1i(prog_unified.mode, mode);
+			glUniform1i(prog_unified.mode, mode);
 		}
 
-		GL20.glUniform3fv(prog_unified.trans, new float[] {x, y, z, sx, sy, 0});
+		glUniform3fv(prog_unified.trans, new float[] {x, y, z, sx, sy, 0});
 
-		GL11.glDrawArrays(primitive, call.offset, count);
+		glDrawArrays(primitive, call.offset, count);
 	}
 
 	public void drawBackground(BackgroundDrawHandle handle) {
@@ -468,9 +458,10 @@ public class LWJGLDrawContext extends GLDrawContext {
 		}
 		Arrays.fill(counts, handle.width*3);
 
-		GL14.glMultiDrawArrays(GL11.GL_TRIANGLES, firsts, counts);
+		glMultiDrawArrays(GL_TRIANGLES, firsts, counts);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	protected class ShaderProgram  {
 		public final int program;
 
@@ -492,65 +483,65 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 
 			try {
-				vertexShader = createShader(name+".vert", GL20.GL_VERTEX_SHADER);
+				vertexShader = createShader(name+".vert", GL_VERTEX_SHADER);
 				geometryShader = createShader(name+".geom", GL32.GL_GEOMETRY_SHADER);
-				fragmentShader = createShader(name+".frag", GL20.GL_FRAGMENT_SHADER);
+				fragmentShader = createShader(name+".frag", GL_FRAGMENT_SHADER);
 			} catch (IOException e) {
 				e.printStackTrace();
 
-				if(vertexShader != -1) GL20.glDeleteShader(vertexShader);
-				if(geometryShader != -1) GL20.glDeleteShader(geometryShader);
+				if(vertexShader != -1) glDeleteShader(vertexShader);
+				if(geometryShader != -1) glDeleteShader(geometryShader);
 				throw new Error("could not read shader files", e);
 			}
 
-			program = GL20.glCreateProgram();
+			program = glCreateProgram();
 			setObjectLabel(KHRDebug.GL_PROGRAM, program, name);
 
-			GL20.glAttachShader(program, vertexShader);
-			if(geometryShader != -1) GL20.glAttachShader(program, geometryShader);
-			GL20.glAttachShader(program, fragmentShader);
+			glAttachShader(program, vertexShader);
+			if(geometryShader != -1) glAttachShader(program, geometryShader);
+			glAttachShader(program, fragmentShader);
 
 			for(int i = 0; i != attributes.size(); i++) {
-				GL20.glBindAttribLocation(program, i, attributes.get(i));
+				glBindAttribLocation(program, i, attributes.get(i));
 			}
 
-			GL20.glLinkProgram(program);
-			GL20.glValidateProgram(program);
+			glLinkProgram(program);
+			glValidateProgram(program);
 
-			GL20.glDetachShader(program, vertexShader);
-			if(geometryShader != -1) GL20.glDetachShader(program, geometryShader);
-			GL20.glDetachShader(program, fragmentShader);
-			GL20.glDeleteShader(vertexShader);
-			if(geometryShader != -1) GL20.glDeleteShader(geometryShader);
-			GL20.glDeleteShader(fragmentShader);
+			glDetachShader(program, vertexShader);
+			if(geometryShader != -1) glDetachShader(program, geometryShader);
+			glDetachShader(program, fragmentShader);
+			glDeleteShader(vertexShader);
+			if(geometryShader != -1) glDeleteShader(geometryShader);
+			glDeleteShader(fragmentShader);
 
-			String log = GL20.glGetProgramInfoLog(program);
+			String log = glGetProgramInfoLog(program);
 			if(debugOutput != null && !log.isEmpty()) System.out.print("info log of " + name + "=====\n" + log + "==== end\n");
 
-			if(GL20.glGetProgrami(program, GL20.GL_LINK_STATUS) == 0) {
+			if(glGetProgrami(program, GL_LINK_STATUS) == 0) {
 
-				GL20.glDeleteProgram(program);
+				glDeleteProgram(program);
 				throw new Error("Could not link " + name);
 			}
 
-			proj = GL20.glGetUniformLocation(program, "projection");
-			global = GL20.glGetUniformLocation(program, "globalTransform");
-			trans = GL20.glGetUniformLocation(program, "transform");
-			tex = GL20.glGetUniformLocation(program, "texHandle");
-			color = GL20.glGetUniformLocation(program, "color");
-			height = GL20.glGetUniformLocation(program, "height");
-			mode = GL20.glGetUniformLocation(program, "mode");
-			shadow_depth = GL20.glGetUniformLocation(program, "shadow_depth");
+			proj = glGetUniformLocation(program, "projection");
+			global = glGetUniformLocation(program, "globalTransform");
+			trans = glGetUniformLocation(program, "transform");
+			tex = glGetUniformLocation(program, "texHandle");
+			color = glGetUniformLocation(program, "color");
+			height = glGetUniformLocation(program, "height");
+			mode = glGetUniformLocation(program, "mode");
+			shadow_depth = glGetUniformLocation(program, "shadow_depth");
 
 			if(glcaps.GL_ARB_uniform_buffer_object) {
-				geometry_data = ARBUniformBufferObject.glGetUniformBlockIndex(program, "geometryDataBuffer");
-				if (geometry_data != -1) ARBUniformBufferObject.glUniformBlockBinding(program, geometry_data, 0);
+				geometry_data = glGetUniformBlockIndex(program, "geometryDataBuffer");
+				if (geometry_data != -1) glUniformBlockBinding(program, geometry_data, 0);
 			} else {
 				geometry_data = -1;
 			}
 
 			useProgram(this);
-			if(tex != -1) GL20.glUniform1i(tex, 0);
+			if(tex != -1) glUniform1i(tex, 0);
 
 			shaders.add(this);
 		}
@@ -573,19 +564,19 @@ public class LWJGLDrawContext extends GLDrawContext {
 				}
 			}
 
-			int shader = GL20.glCreateShader(type);
+			int shader = glCreateShader(type);
 			if (shader == 0) return -1;
 			setObjectLabel(KHRDebug.GL_SHADER, shader, name);
-			GL20.glShaderSource(shader, source);
-			GL20.glCompileShader(shader);
+			glShaderSource(shader, source);
+			glCompileShader(shader);
 
 
-			String log = GL20.glGetShaderInfoLog(shader);
+			String log = glGetShaderInfoLog(shader);
 			if(debugOutput != null && !log.isEmpty()) System.out.print("info log of " + name + "=====\n" + log + "==== end\n");
 
-			if(GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) == 0) {
+			if(glGetShaderi(shader, GL_COMPILE_STATUS) == 0) {
 
-				GL20.glDeleteShader(shader);
+				glDeleteShader(shader);
 				throw new Error("Could not compile " + name);
 			}
 
@@ -596,12 +587,12 @@ public class LWJGLDrawContext extends GLDrawContext {
 	
 	public void clearDepthBuffer() {
 		finishFrame();
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 	@Override
 	public void startFrame() {
 		super.startFrame();
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	}
 }

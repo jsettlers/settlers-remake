@@ -1,23 +1,36 @@
+/*******************************************************************************
+ * Copyright (c) 2019
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package go.graphics.swing.opengl;
 
-import org.lwjgl.opengl.ARBDebugOutput;
-import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL20C.*;
+import static org.lwjgl.opengl.ARBDebugOutput.*;
+import static org.lwjgl.opengl.KHRDebug.*;
 import org.lwjgl.opengl.GLDebugMessageARBCallback;
 import org.lwjgl.opengl.GLDebugMessageARBCallbackI;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
-import org.lwjgl.opengl.KHRDebug;
 
 import java.util.HashMap;
 
 public class LWJGLDebugOutput {
 
 	LWJGLDebugOutput(LWJGLDrawContext dc) {
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		if(dc.glcaps.GL_KHR_debug) {
-			GL11.glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
-			KHRDebug.glDebugMessageCallback(debugCallback, 0);
+			glDebugMessageCallback(debugCallback, 0);
 		} else if(dc.glcaps.GL_ARB_debug_output) {
-			GL11.glEnable(ARBDebugOutput.GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-			ARBDebugOutput.glDebugMessageCallbackARB(debugCallbackARB, 0);
+			glDebugMessageCallbackARB(debugCallbackARB, 0);
 		}
 	}
 
@@ -44,7 +57,7 @@ public class LWJGLDebugOutput {
 
 	private static void debugMessage(int source, int type, int id, int severity, int length, long message) {
 		String msg = GLDebugMessageARBCallback.getMessage(length, message);
-		if(lastId == id && lastType == type && lastSource == source && lastSeverity == severity && lastMessageCount != Long.MAX_VALUE) {
+		if(lastId == id && lastType == type && lastSource == source && lastSeverity == severity && lastMessageCount != Long.MAX_VALUE && lastHeader!=null) {
 			if(lastMessageCount < MAX_PRINT_MESSAGES) writeMessage(msg);
 			lastMessageCount++;
 		} else {
@@ -64,20 +77,20 @@ public class LWJGLDebugOutput {
 
 	private static final HashMap<Integer, String> debugEnum = new HashMap<>();
 	static {
-		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_ERROR, "ERROR");
-		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_OTHER, "OTHER");
-		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_PERFORMANCE, "PERF ");
-		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_PORTABILITY, "PORT ");
-		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, "NDEF ");
-		debugEnum.put(KHRDebug.GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, "DEPRE");
+		debugEnum.put(GL_DEBUG_TYPE_ERROR, "ERROR");
+		debugEnum.put(GL_DEBUG_TYPE_OTHER, "OTHER");
+		debugEnum.put(GL_DEBUG_TYPE_PERFORMANCE, "PERF ");
+		debugEnum.put(GL_DEBUG_TYPE_PORTABILITY, "PORT ");
+		debugEnum.put(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, "NDEF ");
+		debugEnum.put(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, "DEPRE");
 
-		debugEnum.put(KHRDebug.GL_DEBUG_SOURCE_API, "API");
-		debugEnum.put(KHRDebug.GL_DEBUG_SOURCE_SHADER_COMPILER, "SHADER_COMPILER");
-		debugEnum.put(KHRDebug.GL_DEBUG_SOURCE_WINDOW_SYSTEM, "WINDOW_SYSTEM");
-		debugEnum.put(KHRDebug.GL_DEBUG_SEVERITY_HIGH, "HIGH");
-		debugEnum.put(KHRDebug.GL_DEBUG_SEVERITY_MEDIUM, "MEDIUM");
-		debugEnum.put(KHRDebug.GL_DEBUG_SEVERITY_LOW, "LOW");
-		debugEnum.put(KHRDebug.GL_DEBUG_SEVERITY_NOTIFICATION, "NOTIFICATION");
+		debugEnum.put(GL_DEBUG_SOURCE_API, "API");
+		debugEnum.put(GL_DEBUG_SOURCE_SHADER_COMPILER, "SHADER_COMPILER");
+		debugEnum.put(GL_DEBUG_SOURCE_WINDOW_SYSTEM, "WINDOW_SYSTEM");
+		debugEnum.put(GL_DEBUG_SEVERITY_HIGH, "HIGH");
+		debugEnum.put(GL_DEBUG_SEVERITY_MEDIUM, "MEDIUM");
+		debugEnum.put(GL_DEBUG_SEVERITY_LOW, "LOW");
+		debugEnum.put(GL_DEBUG_SEVERITY_NOTIFICATION, "NOTIFICATION");
 	}
 
 	private static String S(int type) {
