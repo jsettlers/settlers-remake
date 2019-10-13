@@ -16,10 +16,10 @@ package jsettlers.mapcreator.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Queue;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
@@ -30,6 +30,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.Parallelogram;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
@@ -62,7 +63,7 @@ import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateLandscape;
 import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition;
 
 /**
- * This is the map data of a map that is beeing created by the editor.
+ * This is the map data of a map that is being created by the editor.
  *
  * @author michael
  */
@@ -90,10 +91,8 @@ public class MapData implements IMapData {
 
 	private       byte[][]    lastPlayers;
 	private       boolean[][] lastBorders;
-	private final boolean[][] doneBuffer;
 	private       boolean[][] failpoints;
 
-	private final LandscapeFader              fader = new LandscapeFader();
 	private       IGraphicsBackgroundListener backgroundListener;
 
 	public MapData(int width, int height, int playerCount, ELandscapeType ground) {
@@ -123,14 +122,13 @@ public class MapData implements IMapData {
 		this.resources = new EResourceType[width][height];
 		this.objects = new ObjectContainer[width][height];
 		this.blockedPartitions = new short[width][height];
-		this.doneBuffer = new boolean[width][height];
 
 		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				landscapes[x][y] = ground;
-				resources[x][y] = EResourceType.FISH;
-			}
+			Arrays.fill(landscapes[x], ELandscapeType.WATER8);
+			Arrays.fill(resources[x], EResourceType.FISH);
 		}
+		resetUndoDelta();
+		fill(ground, new Parallelogram((short)0, (short)0, (short)width, (short)height));
 		resetUndoDelta();
 	}
 
@@ -175,174 +173,57 @@ public class MapData implements IMapData {
 	 * @param area
 	 */
 	public void fill(ELandscapeType type, IMapArea area) {
+		List<ShortPoint2D> points = area.stream().filterBounds(width, height).toList();
+		fill(type, null, points);
 
-		assert (isAllFalse(this.doneBuffer));
-
-		System.out.println("filling");
-		int ymin = Integer.MAX_VALUE;
-		int ymax = Integer.MIN_VALUE;
-		int xmin = Integer.MAX_VALUE;
-		int xmax = Integer.MIN_VALUE;
-		for (ShortPoint2D pos : area) {
-			short x = pos.x;
-			short y = pos.y;
-			if (contains(x, y)) {
-				if (setLandscape(x, y, type)) {
-					doneBuffer[x][y] = true;
-					if (x < xmin) {
-						xmin = x;
-					}
-					if (x > xmax) {
-						xmax = x;
-					}
-
-					if (y < ymin) {
-						ymin = y;
-					}
-					if (y > ymax) {
-						ymax = y;
-					}
-				}
-
+		if(backgroundListener != null) {
+			int size = points.size();
+			for(int i = 0; i != size; i++) {
+				ShortPoint2D pt = points.get(i);
+				backgroundListener.backgroundShapeChangedAt(pt.x, pt.y);
 			}
 		}
-		if (ymin == Integer.MAX_VALUE) {
-			return; // nothing done
-		}
-
-		if (xmin > 0) {
-			xmin -= 1;
-		}
-		if (xmax < width - 1) {
-			xmax += 1;
-		}
-		if (ymin > 0) {
-			ymin -= 1;
-		}
-		if (ymax < width - 1) {
-			ymax += 1;
-		}
-
-		System.out.println("searching border tiles...");
-		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<>();
-		for (int y = ymin; y < ymax; y++) {
-			for (int x = xmin; x < xmax; x++) {
-				// we cannot use done[x][y], because done flag is set for other tiles, too.
-				if (area.contains(new ShortPoint2D(x, y))) {
-					for (EDirection dir : EDirection.VALUES) {
-						int tx = x + dir.getGridDeltaX();
-						int ty = y + dir.getGridDeltaY();
-						if (contains(tx, ty) && !doneBuffer[tx][ty]) {
-							tasks.add(new FadeTask(tx, ty, type));
-							doneBuffer[tx][ty] = true;
-
-							if (tx < xmin) {
-								xmin = tx;
-							} else if (tx > xmax) {
-								xmax = tx;
-							}
-
-							if (ty < ymin) {
-								ymin = ty;
-							} else if (ty > ymax) {
-								ymax = ty;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		System.out.println("Found " + tasks.size() + " tiles, starting to work on them...");
-		while (!tasks.isEmpty()) {
-			FadeTask task = tasks.poll();
-			assert contains(task.x, task.y);
-
-			ELandscapeType[] fade = fader.getLandscapesBetween(task.type, landscapes[task.x][task.y]);
-
-			if (fade == null || fade.length <= 2) {
-				continue; // nothing to do
-			}
-
-			ELandscapeType newLandscape = fade[1];
-			setLandscape(task.x, task.y, newLandscape);
-			for (EDirection dir : EDirection.VALUES) {
-				int nx = task.x + dir.getGridDeltaX();
-				int ny = task.y + dir.getGridDeltaY();
-				if (contains(nx, ny) && !doneBuffer[nx][ny]) {
-					tasks.add(new FadeTask(nx, ny, newLandscape));
-					doneBuffer[nx][ny] = true;
-
-					if (nx < xmin) {
-						xmin = nx;
-					} else if (nx > xmax) {
-						xmax = nx;
-					}
-
-					if (ny < ymin) {
-						ymin = ny;
-					} else if (ny > ymax) {
-						ymax = ny;
-					}
-				}
-
-			}
-		}
-
-		// reset done buffer
-		for (int y = ymin; y <= ymax; y++) {
-			for (int x = xmin; x <= xmax; x++) {
-				doneBuffer[x][y] = false;
-			}
-		}
-		assert (isAllFalse(this.doneBuffer));
 	}
 
-	private static boolean isAllFalse(boolean[][] doneBuffer2) {
-		for (boolean[] arr : doneBuffer2) {
-			for (boolean b : arr) {
-				if (b) {
-					return false;
-				}
+	private void fill(ELandscapeType type, ELandscapeType ignore, List<ShortPoint2D> points) {
+		boolean is_root = true;
+		int size = points.size();
+		for(int i = 0; i != size; i++) {
+			ShortPoint2D pt = points.get(i);
+			if(!type.isRoot(landscapes[pt.x][pt.y])) {
+				is_root = false;
+				break;
 			}
 		}
-		return true;
+
+		if(!is_root) {
+			fill(type.getDirectRoot(), type, points);
+			replaceDirect(type.getDirectRoot(), type, points);
+		}
+
+		replaceDown(type, type, ignore, points);
+	}
+
+	private void replaceDown(ELandscapeType from, ELandscapeType to, ELandscapeType ignore, List<ShortPoint2D> points) {
+		from.getDirectChildren().stream().filter(type -> ignore==null||type!=ignore).forEach(childType -> replaceDown(childType, from, null, points));
+		replaceDirect(from, to, points);
+	}
+
+	private void replaceDirect(ELandscapeType from, ELandscapeType to, List<ShortPoint2D> points) {
+		int size = points.size();
+		for(int i = 0; i != size; i++) {
+			ShortPoint2D pt = points.get(i);
+			if(landscapes[pt.x][pt.y] == from) setLandscape(pt.x, pt.y, to);
+		}
 	}
 
 	public boolean contains(int tx, int ty) {
 		return tx >= 0 && tx < width && ty >= 0 && ty < height;
 	}
 
-	private static class FadeTask {
-
-		private final ELandscapeType type;
-		private final int            y;
-		private final int            x;
-
-		/**
-		 * A task to set the landscape at a given point to the landscpae close to type.
-		 *
-		 * @param x
-		 *            The x position where to fade
-		 * @param y
-		 *            The y position where to fade
-		 * @param type
-		 *            The type of landscape to face (almoast) to.
-		 */
-		public FadeTask(int x, int y, ELandscapeType type) {
-			this.x = x;
-			this.y = y;
-			this.type = type;
-		}
-
-		@Override
-		public String toString() {
-			return "FadeTask[" + x + ", " + y + ", " + type + "]";
-		}
-
-	}
-
 	private boolean setLandscape(int x, int y, ELandscapeType type) {
+		if(type == landscapes[x][y]) return true;
+
 		if (objects[x][y] != null) {
 			if (!landscapeAllowsObjects(type)) {
 				return false;
@@ -355,11 +236,17 @@ public class MapData implements IMapData {
 			}
 		}
 
+		if(type != ELandscapeType.WATER8 && (x == 0 || y == 0 || x == width-1 || y == height-1)) return false;
+
+		for(EDirection neighbor : EDirection.VALUES) {
+			int nx = neighbor.gridDeltaX + x;
+			int ny = neighbor.gridDeltaY + y;
+
+			if(contains(nx, ny) && !type.isAllowedNeighbor(landscapes[nx][ny])) return false;
+		}
+
 		undoDelta.addLandscapeChange(x, y, landscapes[x][y]);
 		landscapes[x][y] = type;
-		if (backgroundListener != null) {
-			backgroundListener.backgroundShapeChangedAt((short) x, (short) y);
-		}
 		return true;
 	}
 

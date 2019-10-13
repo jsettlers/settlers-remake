@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.landscape;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
+import java8.util.stream.StreamSupport;
 import jsettlers.common.Color;
 
 public enum ELandscapeType {
@@ -108,5 +112,135 @@ public enum ELandscapeType {
 
 	public final boolean isRiver() {
 		return RIVERS.contains(this);
+	}
+
+	public static final Map<ELandscapeType, Set<ELandscapeType>> neighbors = new EnumMap<>(ELandscapeType.class);
+	public static final Map<ELandscapeType, Set<ELandscapeType>> children = new EnumMap<>(ELandscapeType.class);
+	public static final Map<ELandscapeType, ELandscapeType> roots = new EnumMap<>(ELandscapeType.class);
+
+	static {
+		// water hierarchy
+		neighbors.put(WATER8, EnumSet.of(WATER8, WATER7));
+		neighbors.put(WATER7, EnumSet.of(WATER8, WATER7, WATER6));
+		neighbors.put(WATER6, EnumSet.of(WATER7, WATER6, WATER5));
+		neighbors.put(WATER5, EnumSet.of(WATER6, WATER5, WATER4));
+		neighbors.put(WATER4, EnumSet.of(WATER5, WATER4, WATER3));
+		neighbors.put(WATER3, EnumSet.of(WATER4, WATER3, WATER2));
+		neighbors.put(WATER2, EnumSet.of(WATER3, WATER2, WATER1));
+		neighbors.put(WATER1, EnumSet.of(WATER2, WATER1, SAND));
+		neighbors.put(SAND, EnumSet.of(WATER1, SAND, RIVER1, RIVER2, RIVER3, RIVER4, GRASS));
+
+		// children of sand
+		neighbors.put(RIVER1, EnumSet.of(SAND, RIVER1, GRASS));
+		neighbors.put(RIVER2, EnumSet.of(SAND, RIVER2, GRASS));
+		neighbors.put(RIVER3, EnumSet.of(SAND, RIVER3, GRASS));
+		neighbors.put(RIVER4, EnumSet.of(SAND, RIVER4, GRASS));
+		neighbors.put(GRASS, EnumSet.of(SAND, GRASS, RIVER1, RIVER2, RIVER3, RIVER4, FLATTENED, MOORBORDER, DRY_GRASS, EARTH, DESERT, MUDBORDER, MOUNTAINBORDEROUTER, DESERTBORDEROUTER));
+
+		// children of grass
+		neighbors.put(FLATTENED, EnumSet.of(GRASS, FLATTENED));
+		neighbors.put(DRY_GRASS, EnumSet.of(GRASS, DRY_GRASS, DESERT));
+		neighbors.put(EARTH, EnumSet.of(GRASS, EARTH));
+		neighbors.put(DESERT, EnumSet.of(GRASS, DESERT, DRY_GRASS, SHARP_FLATTENED_DESERT, FLATTENED_DESERT));
+		neighbors.put(MOORBORDER, EnumSet.of(GRASS, MOORBORDER, MOORINNER));
+		neighbors.put(MUDBORDER, EnumSet.of(GRASS, MUDBORDER, MUDINNER));
+		neighbors.put(MOUNTAINBORDEROUTER, EnumSet.of(GRASS, MOUNTAINBORDEROUTER, MOUNTAINBORDER));
+		neighbors.put(DESERTBORDEROUTER, EnumSet.of(DESERTBORDEROUTER, DESERTBORDER));
+
+		// mountains
+		neighbors.put(MOUNTAINBORDER, EnumSet.of(MOUNTAINBORDEROUTER, MOUNTAINBORDER, MOUNTAIN, GRAVEL));
+		neighbors.put(GRAVEL, EnumSet.of(MOUNTAINBORDER, GRAVEL));
+		neighbors.put(MOUNTAIN, EnumSet.of(MOUNTAINBORDER, MOUNTAIN, SNOW, SNOWBORDER, SNOWINNER));
+		neighbors.put(SNOW, EnumSet.of(MOUNTAIN, SNOW, SNOWBORDER));
+		neighbors.put(SNOWINNER, EnumSet.of(SNOWBORDER, SNOWINNER, SNOW));
+		neighbors.put(SNOWBORDER, EnumSet.of(MOUNTAIN, SNOWBORDER, SNOW));
+
+		// deserts
+		neighbors.put(DESERTBORDER, EnumSet.of(DESERTBORDEROUTER, DESERTBORDER, DESERT));
+		neighbors.put(SHARP_FLATTENED_DESERT, EnumSet.of(DESERT, SHARP_FLATTENED_DESERT));
+		neighbors.put(FLATTENED_DESERT, EnumSet.of(DESERT, FLATTENED_DESERT));
+
+		// moors
+		neighbors.put(MOORINNER, EnumSet.of(MOORBORDER, MOORINNER, MOOR));
+		neighbors.put(MOOR, EnumSet.of(MOORINNER, MOOR));
+
+		// muds
+		neighbors.put(MUDINNER, EnumSet.of(MUDBORDER, MUDINNER, MUD));
+		neighbors.put(MUD, EnumSet.of(MUDINNER, MUD));
+
+		// root node, should be first in neighbors set
+		roots.put(WATER8, null);
+		roots.put(WATER7, WATER8);
+		roots.put(WATER6, WATER7);
+		roots.put(WATER5, WATER6);
+		roots.put(WATER4, WATER5);
+		roots.put(WATER3, WATER4);
+		roots.put(WATER2, WATER3);
+		roots.put(WATER1, WATER2);
+		roots.put(SAND, WATER1);
+
+		roots.put(RIVER1, SAND);
+		roots.put(RIVER2, SAND);
+		roots.put(RIVER3, SAND);
+		roots.put(RIVER4, SAND);
+		roots.put(GRASS, SAND);
+
+		roots.put(FLATTENED, GRASS);
+		roots.put(DRY_GRASS, GRASS);
+		roots.put(EARTH, GRASS);
+		roots.put(DESERT, GRASS);
+		roots.put(MOORBORDER, GRASS);
+		roots.put(MUDBORDER, GRASS);
+		roots.put(MOUNTAINBORDEROUTER, GRASS);
+		roots.put(DESERTBORDEROUTER, DESERTBORDEROUTER);
+
+		roots.put(MOUNTAINBORDER, MOUNTAINBORDEROUTER);
+		roots.put(GRAVEL, MOUNTAINBORDER);
+		roots.put(MOUNTAIN, MOUNTAINBORDER);
+		roots.put(SNOW, MOUNTAIN);
+		roots.put(SNOWINNER, SNOWBORDER);
+		roots.put(SNOWBORDER, MOUNTAIN);
+
+		// deserts
+		roots.put(DESERTBORDER, DESERTBORDEROUTER);
+		roots.put(SHARP_FLATTENED_DESERT, DESERT);
+		roots.put(FLATTENED_DESERT, DESERT);
+
+		// moors
+		roots.put(MOORINNER, MOORBORDER);
+		roots.put(MOOR, MOORINNER);
+
+		// muds
+		roots.put(MUDINNER, MUDBORDER);
+		roots.put(MUD, MUDINNER);
+
+		for(ELandscapeType type : VALUES) {
+			EnumSet<ELandscapeType> empty = EnumSet.noneOf(ELandscapeType.class);
+			for(ELandscapeType type2 : VALUES) {
+				if(roots.get(type2) == type) empty.add(type2);
+			}
+			children.put(type, empty);
+		}
+	}
+
+	public boolean isRoot(ELandscapeType type) {
+		ELandscapeType temp_root = type;
+		while(temp_root != null) {
+			if(this == temp_root) return true;
+			temp_root = roots.get(temp_root);
+		}
+		return false;
+	}
+
+	public ELandscapeType getDirectRoot() {
+		return roots.get(this);
+	}
+
+	public Set<ELandscapeType> getDirectChildren() {
+		return children.get(this);
+	}
+
+	public boolean isAllowedNeighbor(ELandscapeType type) {
+		return neighbors.get(this).contains(type);
 	}
 }
