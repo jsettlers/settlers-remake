@@ -31,7 +31,7 @@ public class ValidateLandscape extends AbstractValidationTask {
 	/**
 	 * Max height diff
 	 */
-	private static final int MAX_HEIGHT_DIFF = 3;
+	public static final int MAX_HEIGHT_DIFF = 3;
 
 	/**
 	 * To check landacape pairs

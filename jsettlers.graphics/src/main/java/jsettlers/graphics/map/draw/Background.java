@@ -1248,6 +1248,10 @@ public class Background implements IGraphicsBackgroundListener {
 			shape_update_bfr.rewind();
 			addTrianglesToGeometry(context, shape_update_bfr, x, y);
 			context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_update_bfr);
+
+			color_update_bfr.rewind();
+			addColorTrianglesToGeometry(context, color_update_bfr, x, y, bfr_pos*4);
+			context.getGl().updateGeometryAt(colorHandle, bfr_pos * BYTES_PER_FIELD_COLOR, color_update_bfr);
 		}
 	}
 

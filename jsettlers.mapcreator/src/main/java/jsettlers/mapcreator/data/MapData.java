@@ -58,6 +58,7 @@ import jsettlers.mapcreator.data.objects.ProtectContainer;
 import jsettlers.mapcreator.data.objects.StackContainer;
 import jsettlers.mapcreator.data.objects.StoneObjectContainer;
 import jsettlers.mapcreator.data.objects.TreeObjectContainer;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateLandscape;
 import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition;
 
 /**
@@ -413,6 +414,23 @@ public class MapData implements IMapData {
 	}
 
 	public void setHeight(int x, int y, int height) {
+		int minNeighborH = height;
+		int maxNeighborH = height;
+		for (EDirection dir : EDirection.VALUES) {
+			int neighborH = getLandscapeHeight(dir.gridDeltaX + x, dir.gridDeltaY + y);
+
+			minNeighborH = Math.min(minNeighborH, neighborH);
+			maxNeighborH = Math.max(maxNeighborH, neighborH);
+		}
+
+		if(height > heights[x][y]) {
+			height = Math.max(maxNeighborH-ValidateLandscape.MAX_HEIGHT_DIFF, height);
+			height = Math.min(minNeighborH+ValidateLandscape.MAX_HEIGHT_DIFF, height);
+		} else {
+			height = Math.min(minNeighborH+ValidateLandscape.MAX_HEIGHT_DIFF, height);
+			height = Math.max(maxNeighborH-ValidateLandscape.MAX_HEIGHT_DIFF, height);
+		}
+
 		byte safeHeight;
 		if (height >= Byte.MAX_VALUE) {
 			safeHeight = Byte.MAX_VALUE;
@@ -421,6 +439,7 @@ public class MapData implements IMapData {
 		} else {
 			safeHeight = (byte) height;
 		}
+
 		undoDelta.addHeightChange(x, y, heights[x][y]);
 		heights[x][y] = safeHeight;
 
@@ -451,6 +470,7 @@ public class MapData implements IMapData {
 
 	@Override
 	public byte getLandscapeHeight(int x, int y) {
+		if(x < 0 || y < 0 || x > height || y > width) return 0;
 		return heights[x][y];
 	}
 
@@ -492,7 +512,7 @@ public class MapData implements IMapData {
 		HeightChange c = delta.getHeightChanges();
 		while (c != null) {
 			inverse.addHeightChange(c.x, c.y, heights[c.x][c.y]);
-			heights[c.x][c.y] = c.height;
+			setHeight(c.x, c.y, c.height);
 			backgroundListener.backgroundShapeChangedAt(c.x, c.y);
 			c = c.next;
 		}
