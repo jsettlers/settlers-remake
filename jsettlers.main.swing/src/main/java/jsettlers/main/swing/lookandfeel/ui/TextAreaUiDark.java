@@ -31,6 +31,7 @@ public class TextAreaUiDark extends BasicTextAreaUI {
 	public void installUI(JComponent c) {
 		super.installUI(c);
 		TextComponentHelper.installUi((JTextComponent) c);
+		c.setFont(UIDefaults.FONT_SMALL);
 	}
 
 	@Override

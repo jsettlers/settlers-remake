@@ -44,6 +44,7 @@ public final class UIDefaults {
 	 * Default font
 	 */
 	public static final Font FONT = new Font("Sans", Font.BOLD, (int)(14*SettingsManager.getInstance().getGuiScale()));
+	public static final Font FONT_SMALL = new Font("Sans", Font.PLAIN, (int)(10*SettingsManager.getInstance().getGuiScale()));
 
 	/**
 	 * Default font
