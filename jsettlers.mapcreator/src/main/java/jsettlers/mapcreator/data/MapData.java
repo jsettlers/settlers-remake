@@ -236,14 +236,21 @@ public class MapData implements IMapData {
 			}
 		}
 
-		if(type != ELandscapeType.WATER8 && (x == 0 || y == 0 || x == width-1 || y == height-1)) return false;
+		if(!type.isWater && (x <= 7 || y <= 7 || x >= width-8 || y >= height-8)) return false;
 
+		boolean has_hight_diff = false;
 		for(EDirection neighbor : EDirection.VALUES) {
 			int nx = neighbor.gridDeltaX + x;
 			int ny = neighbor.gridDeltaY + y;
 
-			if(contains(nx, ny) && !type.isAllowedNeighbor(landscapes[nx][ny])) return false;
+			if(contains(nx, ny)) {
+				if(!type.isAllowedNeighbor(landscapes[nx][ny])) return false;
+				if(heights[x][y] != heights[nx][ny]) has_hight_diff = true;
+			}
 		}
+
+		if(type.isFlat() && has_hight_diff) return false;
+
 		if(resourceAmount[x][y] > 0 && !type.canHoldResource(resources[x][y])) decreaseResourceTo(x, y, (byte) 0);
 
 		undoDelta.addLandscapeChange(x, y, landscapes[x][y]);
@@ -302,21 +309,34 @@ public class MapData implements IMapData {
 	}
 
 	public void setHeight(int x, int y, int height) {
+		boolean is_flat = false;
 		int minNeighborH = height;
 		int maxNeighborH = height;
 		for (EDirection dir : EDirection.VALUES) {
-			int neighborH = getLandscapeHeight(dir.gridDeltaX + x, dir.gridDeltaY + y);
+			int nx = dir.gridDeltaX + x;
+			int ny = dir.gridDeltaY + y;
+
+			if(!contains(nx, ny)) continue;
+
+			int neighborH = getLandscapeHeight(nx, ny);
 
 			minNeighborH = Math.min(minNeighborH, neighborH);
 			maxNeighborH = Math.max(maxNeighborH, neighborH);
+			if(landscapes[nx][ny].isFlat()) is_flat = true;
 		}
 
-		if(height > heights[x][y]) {
-			height = Math.max(maxNeighborH-ValidateLandscape.MAX_HEIGHT_DIFF, height);
-			height = Math.min(minNeighborH+ValidateLandscape.MAX_HEIGHT_DIFF, height);
+		if(is_flat) {
+			if(minNeighborH != maxNeighborH) return;
+			height = minNeighborH;
+
 		} else {
-			height = Math.min(minNeighborH+ValidateLandscape.MAX_HEIGHT_DIFF, height);
-			height = Math.max(maxNeighborH-ValidateLandscape.MAX_HEIGHT_DIFF, height);
+			if (height > heights[x][y]) {
+				height = Math.max(maxNeighborH - ValidateLandscape.MAX_HEIGHT_DIFF, height);
+				height = Math.min(minNeighborH + ValidateLandscape.MAX_HEIGHT_DIFF, height);
+			} else {
+				height = Math.min(minNeighborH + ValidateLandscape.MAX_HEIGHT_DIFF, height);
+				height = Math.max(maxNeighborH - ValidateLandscape.MAX_HEIGHT_DIFF, height);
+			}
 		}
 
 		byte safeHeight;
@@ -358,7 +378,7 @@ public class MapData implements IMapData {
 
 	@Override
 	public byte getLandscapeHeight(int x, int y) {
-		if(x < 0 || y < 0 || x > height || y > width) return 0;
+		if(!contains(x, y)) return 0;
 		return heights[x][y];
 	}
 

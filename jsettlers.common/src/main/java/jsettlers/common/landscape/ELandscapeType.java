@@ -67,6 +67,7 @@ public enum ELandscapeType {
 	public static final ELandscapeType[] VALUES = ELandscapeType.values();
 	private static final Set<ELandscapeType> RIVERS = EnumSet.of(RIVER1, RIVER2, RIVER3, RIVER4);
 	public static final Set<ELandscapeType> MOUNTAIN_TYPES = EnumSet.of(MOUNTAIN, MOUNTAINBORDER);
+	private static final Set<ELandscapeType> FLAT_TYPES = EnumSet.of(MOOR, MOORINNER, WATER1, WATER2, WATER3, WATER4, WATER5, WATER6, WATER7, WATER8);
 
 	public final int image;
 	public final Color color;
@@ -246,5 +247,9 @@ public enum ELandscapeType {
 
 	public boolean canHoldResource(EResourceType resource) {
 		return (resource == EResourceType.FISH && this.isWater()) || (resource != EResourceType.FISH && MOUNTAIN_TYPES.contains(this));
+	}
+
+	public boolean isFlat() {
+		return FLAT_TYPES.contains(this);
 	}
 }
