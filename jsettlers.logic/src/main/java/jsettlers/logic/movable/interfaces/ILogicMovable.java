@@ -42,6 +42,8 @@ public interface ILogicMovable extends IScheduledTimerable, IPathCalculatable, I
 
 	void leavePosition();
 
+	void leavePosition(int direction);
+
 	boolean canOccupyBuilding();
 
 	void checkPlayerOfPosition(Player playerOfPosition);

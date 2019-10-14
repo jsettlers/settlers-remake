@@ -21,6 +21,7 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EShipType;
 import jsettlers.common.position.ShortPoint2D;
@@ -30,6 +31,7 @@ import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.objects.ShipInConstructionMapObject;
 import jsettlers.logic.player.Player;
 
@@ -37,6 +39,7 @@ import jsettlers.logic.player.Player;
  * An extension to the worker building for dockyards
  */
 public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction, IDockBuilding {
+	private static final int SHIP_PUSH_DISTANCE = 10;
 	private EShipType                   orderedShipType = null;
 	private ShipInConstructionMapObject ship            = null;
 	private DockPosition                dockPosition    = null;
@@ -66,40 +69,37 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		if (orderedShipType == null || isDestroyed()) {
 			return;
 		}
-
+		pushExistingShips();
 		if (ship == null) {
-			pushShipAtShipPosition();
-
 			// make new ship
 			EDirection direction = dockPosition.getDirection().getNeighbor(-1);
 			ship = new ShipInConstructionMapObject(orderedShipType, direction);
 			grid.getMapObjectsManager().addMapObject(getShipPosition(), ship);
 		}
-
 		ship.workOnShip();
-
 		if (ship.isFinished()) { // replace ShipInConstructionMapObject with Movable
 			Movable shipMovable = new Movable(super.grid.getMovableGrid(), orderedShipType.movableType, getShipPosition(), super.getPlayer());
 			shipMovable.setDirection(ship.getDirection());
 			removeShipInConstructionMapObject();
-
-
 			ship = null;
 			orderedShipType = null;
-			pushShipAtShipPosition();
 		}
 	}
 
-	private void pushShipAtShipPosition() {
+	private void pushExistingShips() {
 		if (dockPosition == null) {
 			return;
 		}
-
-		ShortPoint2D shipPosition = getShipPosition();
-		Movable existingShip = (Movable) grid.getMovableGrid().getMovableAt(shipPosition.x, getShipPosition().y);
-		if (existingShip != null) {
-			existingShip.leavePosition();
-		}
+		int shipX = getShipPosition().x;
+		int shipY = getShipPosition().y;
+		HexGridArea.stream(shipX, shipY, 0, SHIP_PUSH_DISTANCE)
+				.filterBounds(grid		.getWidth(), grid.getHeight())
+				.forEach((x,y)->{
+					ILogicMovable existingShip = grid.getMovableGrid().getMovableAt(x, y);
+					if (existingShip != null && existingShip.isShip()) {
+						existingShip.leavePosition(dockPosition.getDirection().ordinal);
+					}
+				});
 	}
 
 	private ShortPoint2D getShipPosition() {
