@@ -66,10 +66,7 @@ public class PlaceResource extends AbstractTool implements ResourceTool {
 
 	private void placeAt(MapData map, byte[][] influence, int x, int y) {
 		if (type != null) {
-			if (ValidateResources
-					.mayHoldResource(map.getLandscape(x, y), type)) {
-				map.addResource(x, y, type, influence[x][y]);
-			}
+			map.addResource(x, y, type, influence[x][y]);
 		} else {
 			map.decreaseResourceTo(x, y,
 					(byte) (Byte.MAX_VALUE - influence[x][y]));

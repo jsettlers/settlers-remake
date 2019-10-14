@@ -243,4 +243,8 @@ public enum ELandscapeType {
 	public boolean isAllowedNeighbor(ELandscapeType type) {
 		return neighbors.get(this).contains(type);
 	}
+
+	public boolean canHoldResource(EResourceType resource) {
+		return (resource == EResourceType.FISH && this.isWater()) || (resource != EResourceType.FISH && MOUNTAIN_TYPES.contains(this));
+	}
 }

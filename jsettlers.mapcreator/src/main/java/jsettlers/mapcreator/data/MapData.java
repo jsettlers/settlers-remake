@@ -244,6 +244,7 @@ public class MapData implements IMapData {
 
 			if(contains(nx, ny) && !type.isAllowedNeighbor(landscapes[nx][ny])) return false;
 		}
+		if(resourceAmount[x][y] > 0 && !type.canHoldResource(resources[x][y])) decreaseResourceTo(x, y, (byte) 0);
 
 		undoDelta.addLandscapeChange(x, y, landscapes[x][y]);
 		landscapes[x][y] = type;
@@ -598,6 +599,8 @@ public class MapData implements IMapData {
 	}
 
 	public void addResource(int x, int y, EResourceType type, byte amount) {
+		if(!landscapes[x][y].canHoldResource(type)) return;
+
 		if (resourceAmount[x][y] <= amount) {
 			this.undoDelta.changeResource(x, y, resources[x][y], resourceAmount[x][y]);
 			resourceAmount[x][y] = amount;

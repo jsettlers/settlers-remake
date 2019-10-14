@@ -69,8 +69,8 @@ public class FixHeightsTool extends AbstractTool {
 	}
 
 	private static void fixResources(MapData map, int x, int y) {
-		if (map.getResourceAmount((short) x, (short) y) > 0) {
-			if (!ValidateResources.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
+		if(map.getResourceAmount((short) x, (short) y) > 0) {
+			if(!map.getLandscape(x, y).canHoldResource(map.getResourceType((short) x, (short) y))) {
 				map.decreaseResourceTo(x, y, (byte) 0);
 			}
 		}
