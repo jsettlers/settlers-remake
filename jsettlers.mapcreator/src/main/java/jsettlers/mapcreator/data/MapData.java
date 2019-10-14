@@ -236,7 +236,10 @@ public class MapData implements IMapData {
 			}
 		}
 
-		if(!type.isWater && (x <= 7 || y <= 7 || x >= width-8 || y >= height-8)) return false;
+		/* Only water is allowed on the map border.
+		To fix falsely set non water tiles (e.g. in the original map editor) one must be allowed
+		to reduce the current layer to its root layer (GRASS to SAND and then SAND to WATER1).*/
+		if(!type.isWater && !type.isRoot(landscapes[x][y]) && (x <= 7 || y <= 7 || x >= width-8 || y >= height-8)) return false;
 
 		boolean has_hight_diff = false;
 		for(EDirection neighbor : EDirection.VALUES) {
