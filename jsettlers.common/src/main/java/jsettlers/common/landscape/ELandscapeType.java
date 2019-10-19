@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015-2019
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -146,7 +146,7 @@ public enum ELandscapeType {
 		neighbors.put(MOORBORDER, EnumSet.of(GRASS, MOORBORDER, MOORINNER));
 		neighbors.put(MUDBORDER, EnumSet.of(GRASS, MUDBORDER, MUDINNER));
 		neighbors.put(MOUNTAINBORDEROUTER, EnumSet.of(GRASS, MOUNTAINBORDEROUTER, MOUNTAINBORDER));
-		neighbors.put(DESERTBORDEROUTER, EnumSet.of(DESERTBORDEROUTER, DESERTBORDER));
+		neighbors.put(DESERTBORDEROUTER, EnumSet.of(GRASS, DESERTBORDEROUTER, DESERTBORDER));
 
 		// mountains
 		neighbors.put(MOUNTAINBORDER, EnumSet.of(MOUNTAINBORDEROUTER, MOUNTAINBORDER, MOUNTAIN, GRAVEL));
@@ -193,7 +193,7 @@ public enum ELandscapeType {
 		roots.put(MOORBORDER, GRASS);
 		roots.put(MUDBORDER, GRASS);
 		roots.put(MOUNTAINBORDEROUTER, GRASS);
-		roots.put(DESERTBORDEROUTER, DESERTBORDEROUTER);
+		roots.put(DESERTBORDEROUTER, GRASS);
 
 		roots.put(MOUNTAINBORDER, MOUNTAINBORDEROUTER);
 		roots.put(GRAVEL, MOUNTAINBORDER);
