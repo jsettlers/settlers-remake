@@ -15,6 +15,7 @@ import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.JAWTContextCreator;
+import go.graphics.swing.contextcreator.GLContextException;
 import go.graphics.swing.opengl.LWJGLDrawContext;
 
 public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
@@ -43,10 +44,11 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 			JOptionPane.showMessageDialog(null, message+ "\nPress ok to exit", "Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		});
-		System.out.println(message);
+		System.err.println(message);
 	}
 
-	public void resizeContext(int width, int height) {
+	public void resizeContext(int width, int height) throws GLContextException {
+		if(context == null) throw new GLContextException();
 		context.resize(width, height);
 	}
 
@@ -86,12 +88,13 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		context = null;
 	}
 
-	public void draw() {
+	public void draw() throws GLContextException {
+		if(context == null) throw new GLContextException();
 		context.startFrame();
 	}
 
 	public void requestRedraw() {
-		cc.repaint();
+		if(cc != null) cc.repaint();
 	}
 
 	/**
@@ -107,6 +110,6 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	}
 
 	public void updateFPSLimit(int fpsLimit) {
-		cc.updateFPSLimit(fpsLimit);
+		if(cc != null) cc.updateFPSLimit(fpsLimit);
 	}
 }

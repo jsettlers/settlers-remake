@@ -48,7 +48,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	@Override
 	public abstract void stop();
 
-	private void regenerateWindowInfo() {
+	private void regenerateWindowInfo() throws GLContextException {
 		long oldWindowConnection = windowConnection;
 		long oldWindowDrawable = windowDrawable;
 		if(currentPlatform == Platform.LINUX) {
@@ -65,10 +65,10 @@ public abstract class JAWTContextCreator extends ContextCreator {
 		if(windowConnection != oldWindowConnection) onNewConnection();
 	}
 
-	protected void onNewConnection() {}
-	protected void onNewDrawable() {}
+	protected void onNewConnection() throws GLContextException {}
+	protected void onNewDrawable() throws GLContextException {}
 
-	protected void onInit() {}
+	protected void onInit() throws GLContextException {}
 
 	@Override
 	public void initSpecific() {
@@ -80,40 +80,44 @@ public abstract class JAWTContextCreator extends ContextCreator {
 
 			public void paint(Graphics graphics) {
 				surface = JAWTFunctions.JAWT_GetDrawingSurface(canvas, jawt.GetDrawingSurface());
-
 				JAWTFunctions.JAWT_DrawingSurface_Lock(surface, surface.Lock());
 				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface, surface.GetDrawingSurfaceInfo());
-				regenerateWindowInfo();
+				try {
+					regenerateWindowInfo();
 
-				if (first_draw) {
-					first_draw = false;
-					new GOSwingEventConverter(this, parent);
+					if (first_draw) {
+						first_draw = false;
+						new GOSwingEventConverter(this, parent);
 
-					onInit();
-				}
-				makeCurrent(true);
-
-				synchronized (wnd_lock) {
-					if (change_res) {
-						width = new_width;
-						height = new_height;
-
-						parent.resizeContext(width, height);
-						change_res = false;
+						onInit();
 					}
+					makeCurrent(true);
+
+					synchronized (wnd_lock) {
+						if (change_res) {
+							width = new_width;
+							height = new_height;
+
+							parent.resizeContext(width, height);
+							change_res = false;
+						}
+					}
+
+					parent.draw();
+					parent.finishFrame();
+
+					swapBuffers();
+					makeCurrent(false);
+				} catch(GLContextException ignored) {
+				} catch (Throwable thrown) {
+					thrown.printStackTrace();
 				}
 
-				parent.draw();
-				parent.finishFrame();
-
-				swapBuffers();
-				makeCurrent(false);
+				if (fpsLimit == 0) repaint();
 				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface, surface.Unlock());
 
 				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surfaceinfo, surface.FreeDrawingSurfaceInfo());
 				JAWTFunctions.JAWT_FreeDrawingSurface(surface, jawt.FreeDrawingSurface());
-
-				if(fpsLimit == 0) repaint();
 			}
 		};
 	}

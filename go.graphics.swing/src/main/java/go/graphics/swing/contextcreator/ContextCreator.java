@@ -50,8 +50,9 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 	}
 
 
-	protected void error(String message) {
+	protected void error(String message) throws GLContextException {
 		parent.fatal(message);
+		throw new GLContextException();
 	}
 
 	public void init() {

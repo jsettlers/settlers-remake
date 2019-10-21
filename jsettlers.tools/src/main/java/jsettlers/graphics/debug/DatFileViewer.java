@@ -57,6 +57,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.swing.GLContainer;
 import go.graphics.swing.contextcreator.EBackendType;
+import go.graphics.swing.contextcreator.GLContextException;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
@@ -380,7 +381,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		}
 
 		@Override
-		public void draw() {
+		public void draw() throws GLContextException {
 			super.draw();
 			redraw(context, getWidth(), getHeight());
 		}

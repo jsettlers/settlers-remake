@@ -82,7 +82,7 @@ public class WGLContextCreator extends JAWTContextCreator {
 	}
 
 	@Override
-	protected void onNewConnection() {
+	protected void onNewConnection() throws GLContextException {
 		PIXELFORMATDESCRIPTOR pfd = PIXELFORMATDESCRIPTOR.calloc();
 		pfd.dwFlags(GDI32.PFD_DRAW_TO_WINDOW | GDI32.PFD_SUPPORT_OPENGL | GDI32.PFD_DOUBLEBUFFER);
 		pfd.iPixelType(GDI32.PFD_TYPE_RGBA);

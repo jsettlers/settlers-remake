@@ -28,6 +28,7 @@ import org.lwjgl.egl.KHRCreateContext;
 import org.lwjgl.egl.KHRDebug;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+
 import java.nio.IntBuffer;
 
 import go.graphics.swing.GLContainer;
@@ -131,7 +132,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 		egl_display = EGL10.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
 		EGL10.eglInitialize(egl_display, new int[] {1}, new int[] {1});
 		EGLCapabilities caps = EGL.createDisplayCapabilities(egl_display);
-		if(!caps.EGL14 || !EGL12.eglBindAPI(EGL14.EGL_OPENGL_API)) error("could not bind OpenGL");
+		if(!caps.EGL14 || !EGL12.eglBindAPI(EGL14.EGL_OPENGL_API)) throw new Error("could not bind OpenGL");
 
 		int[] attrs = {EGL13.EGL_CONFORMANT, EGL14.EGL_OPENGL_BIT,
 				EGL10.EGL_STENCIL_SIZE, 1,
@@ -140,9 +141,13 @@ public class EGLContextCreator extends JAWTContextCreator {
 		int[] num_config = new int[1];
 
 		EGL10.eglChooseConfig(egl_display, attrs, cfgs, num_config);
-		if(num_config[0] == 0) error("could not found egl configs!");
+		if(num_config[0] == 0) throw new Error("could not found egl configs!");
 		egl_config = cfgs.get(0);
 
+	}
+
+	@Override
+	protected void onInit() throws GLContextException {
 		int i = 0;
 		while(egl_context == 0 && ctx_attrs.length > i) {
 			egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, ctx_attrs[i++][debug?0:1]);
@@ -151,15 +156,14 @@ public class EGLContextCreator extends JAWTContextCreator {
 				egl_context = 0;
 			}
 		}
-	}
+		if(egl_context == 0) error("could not create context");
 
-	@Override
-	protected void onInit() {
 		parent.wrapNewContext();
 	}
 
 	@Override
-	protected void onNewDrawable() {
+	protected void onNewDrawable() throws GLContextException {
 		egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, windowDrawable, (IntBuffer)null);
+		if(EGL10.eglGetError() != EGL10.EGL_SUCCESS) error("could not create new drawable");
 	}
 }

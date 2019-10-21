@@ -96,42 +96,46 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 		FramerateComputer fpsComputer = new FramerateComputer();
 
 		while(continue_run) {
-			if (change_res) {
-				synchronized (wnd_lock) {
-					width = new_width;
-					height = new_height;
-					async_set_size(width, height);
+			try {
+				if (change_res) {
+					synchronized (wnd_lock) {
+						width = new_width;
+						height = new_height;
+						async_set_size(width, height);
 
-					parent.resizeContext(width, height);
+						parent.resizeContext(width, height);
 
-					bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-					pixels = BufferUtils.createIntBuffer(width * height);
+						bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+						pixels = BufferUtils.createIntBuffer(width * height);
+					}
+					change_res = false;
 				}
-				change_res = false;
-			}
-			async_refresh();
+				async_refresh();
 
-			parent.draw();
-			parent.finishFrame();
+				parent.draw();
+				parent.finishFrame();
 
-			if (offscreen) {
-				synchronized (wnd_lock) {
-					glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-					for (int x = 0; x != width; x++) {
-						for (int y = 0; y != height; y++) {
-							bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
+				if (offscreen) {
+					synchronized (wnd_lock) {
+						glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+						for (int x = 0; x != width; x++) {
+							for (int y = 0; y != height; y++) {
+								bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
+							}
 						}
 					}
 				}
-			}
 
-			if(!offscreen || clear_offscreen) {
-				if(clear_offscreen) {
-					glClear(GL_COLOR_BUFFER_BIT);
-					clear_offscreen = false;
+				if (!offscreen || clear_offscreen) {
+					if (clear_offscreen) {
+						glClear(GL_COLOR_BUFFER_BIT);
+						clear_offscreen = false;
+					}
+					async_swapbuffers();
+					if (fpsLimit != 0) fpsComputer.nextFrame(fpsLimit);
 				}
-				async_swapbuffers();
-				if(fpsLimit != 0) fpsComputer.nextFrame(fpsLimit);
+			} catch(Throwable thrown) {
+				thrown.printStackTrace();
 			}
 		}
 

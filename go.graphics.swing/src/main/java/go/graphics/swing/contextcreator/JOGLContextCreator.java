@@ -60,13 +60,17 @@ public class JOGLContextCreator extends ContextCreator<GLJPanel> implements GLEv
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		parent.draw();
-		parent.finishFrame();
-		if(fpsLimit == 0) repaint();
+		try {
+			parent.draw();
+			parent.finishFrame();
+			if(fpsLimit == 0) repaint();
+		} catch(GLContextException ignored) {}
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		parent.resizeContext(width, height);
+		try {
+			parent.resizeContext(width, height);
+		} catch(GLContextException ignored) {}
 	}
 }

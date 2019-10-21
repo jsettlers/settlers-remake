@@ -65,7 +65,7 @@ public class GLXContextCreator extends JAWTContextCreator {
 	};
 
 	@Override
-	protected void onInit() {
+	protected void onInit() throws GLContextException {
 		int screen = X11.XDefaultScreen(windowConnection);
 
 		int[] xvi_attrs = new int[]{
@@ -89,7 +89,7 @@ public class GLXContextCreator extends JAWTContextCreator {
 			XVisualInfo xvi = GLX.glXChooseVisual(windowConnection, screen, xvi_attrs);
 			context = GLX.glXCreateContext(windowConnection, xvi, 0, true);
 		}
-		if (context == 0) error("Could not create GLX context!");
+		if (context != 0) error("Could not create GLX context!");
 		parent.wrapNewContext();
 	}
 
