@@ -340,6 +340,8 @@ public class LWJGL15DrawContext implements GLDrawContext {
 			int[] vp = new int[4];
 			GL11.glGetIntegerv(GL11.GL_VIEWPORT, vp);
 			nativeScale = vp[2] / (float)width;
+
+			if(nativeScale < 0.1f) nativeScale = 1;
 		}
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);

@@ -223,6 +223,8 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 			int[] vp = new int[4];
 			GL11.glGetIntegerv(GL11.GL_VIEWPORT, vp);
 			nativeScale = vp[2] / (float)width;
+
+			if(nativeScale < 0.1f) nativeScale = 1;
 		}
 		GL11.glViewport(0, 0, (int)(width*nativeScale), (int)(height*nativeScale));
 
