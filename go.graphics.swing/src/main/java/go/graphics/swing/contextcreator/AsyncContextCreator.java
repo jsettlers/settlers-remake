@@ -89,9 +89,11 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	@Override
 	public void run() {
+		synchronized (wnd_lock) {
+			width = new_width;
+			height = new_height;
+		}
 		async_init();
-
-		parent.wrapNewContext();
 
 		FramerateComputer fpsComputer = new FramerateComputer();
 
