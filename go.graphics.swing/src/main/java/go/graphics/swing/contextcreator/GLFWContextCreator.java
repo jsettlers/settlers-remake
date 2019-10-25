@@ -54,9 +54,15 @@ public class GLFWContextCreator extends AsyncContextCreator {
 
 		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, debug ? GLFW.GLFW_TRUE : GLFW.GLFW_DONT_CARE);
 		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 1);
-		glfw_wnd = GLFW.glfwCreateWindow(width, height, "lwjgl-offscreen", 0, 0);
-		GLFW.glfwMakeContextCurrent(glfw_wnd);
-		GLFW.glfwSwapInterval(0);
+		synchronized (wnd_lock) {
+			glfw_wnd = GLFW.glfwCreateWindow(width, height, "lwjgl-offscreen", 0, 0);
+			GLFW.glfwMakeContextCurrent(glfw_wnd);
+			GLFW.glfwSwapInterval(0);
+			parent.wrapNewContext();
+			try {
+				parent.resizeContext(width, height);
+			} catch (GLContextException ignored) {}
+		}
 
 		event_converter.registerCallbacks();
 	}
