@@ -15,7 +15,7 @@ public abstract class GLDrawContext {
 		ManagedHandle.instance_count = 0;
 	}
 
-	private List<ManagedHandle> managedHandles = new ArrayList<>();
+	protected List<ManagedHandle> managedHandles = new ArrayList<>();
 
 	public abstract void setShadowDepthOffset(float depth);
 
@@ -56,7 +56,7 @@ public abstract class GLDrawContext {
 	 */
 	public abstract void updateTexture(TextureHandle textureIndex, int left, int bottom, int width, int height, ShortBuffer data) throws IllegalBufferException;
 
-	public abstract void resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data);
+	public abstract TextureHandle resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data);
 
 	public abstract void updateBufferAt(BufferHandle handle, int pos, ByteBuffer data) throws IllegalBufferException;
 
@@ -109,7 +109,9 @@ public abstract class GLDrawContext {
 		};
 	}
 
+	public static final int MAX_CACHE_COUNT = 10;
 	private void addNewHandle() {
+		if(MAX_CACHE_COUNT == managedHandles.size()) throw new Error("ManangedHandle slots exceeded!");
 		TextureHandle tex = generateTexture(ManagedHandle.TEX_DIM, ManagedHandle.TEX_DIM, null, "managed" + ManagedHandle.instance_count);
 		UnifiedDrawHandle parent = createUnifiedDrawCall(ManagedHandle.MAX_QUADS*4, "managed" + ManagedHandle.instance_count, tex, null);
 		managedHandles.add(new ManagedHandle(parent));
@@ -177,4 +179,6 @@ public abstract class GLDrawContext {
 	public void startFrame() {
 		frameIndex++;
 	}
+
+    public abstract void resize(int width, int height);
 }

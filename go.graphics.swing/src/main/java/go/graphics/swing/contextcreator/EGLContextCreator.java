@@ -31,7 +31,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 
 public class EGLContextCreator extends JAWTContextCreator {
 
@@ -40,7 +40,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 	private long egl_surface;
 	private static long egl_context;
 
-	public EGLContextCreator(GLContainer container, boolean debug) {
+	public EGLContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
 		initStatic();
 	}
@@ -147,7 +147,7 @@ public class EGLContextCreator extends JAWTContextCreator {
 	}
 
 	@Override
-	protected void onInit() throws GLContextException {
+	protected void onInit() throws ContextException {
 		int i = 0;
 		while(egl_context == 0 && ctx_attrs.length > i) {
 			egl_context = EGL10.eglCreateContext(egl_display, egl_config, 0, ctx_attrs[i++][debug?0:1]);
@@ -158,11 +158,11 @@ public class EGLContextCreator extends JAWTContextCreator {
 		}
 		if(egl_context == 0) error("could not create context");
 
-		parent.wrapNewContext();
+		parent.wrapNewGLContext();
 	}
 
 	@Override
-	protected void onNewDrawable() throws GLContextException {
+	protected void onNewDrawable() throws ContextException {
 		egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, windowDrawable, (IntBuffer)null);
 		if(EGL10.eglGetError() != EGL10.EGL_SUCCESS) error("could not create new drawable");
 	}

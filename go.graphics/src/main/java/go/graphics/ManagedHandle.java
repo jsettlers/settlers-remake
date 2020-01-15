@@ -15,7 +15,7 @@ public class ManagedHandle {
 	protected int quad_index = 0;
 	private int[] remaining_pixels = new int[TEX_DIM];
 
-	protected UnifiedDrawHandle bufferHolder;
+	public final UnifiedDrawHandle bufferHolder;
 	protected final MultiDrawHandle multiCache;
 
 	protected ManagedHandle(UnifiedDrawHandle bufferHolder) {

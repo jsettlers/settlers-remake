@@ -21,11 +21,22 @@ package go.graphics;
  */
 public class TextureHandle extends GLResourceIndex {
 
+	private ETextureType type;
+
 	public TextureHandle(GLDrawContext dc, int texture) {
 		super(dc, texture);
+		setType(ETextureType.NEAREST_FILTER);
 	}
 
 	public int getTextureId() {
 		return id;
+	}
+
+	public void setType(ETextureType type) {
+		this.type = type;
+	}
+
+	public ETextureType getType() {
+		return type;
 	}
 }

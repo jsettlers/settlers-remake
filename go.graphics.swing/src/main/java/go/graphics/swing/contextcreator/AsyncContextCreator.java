@@ -25,15 +25,16 @@ import javax.swing.SwingUtilities;
 
 import go.graphics.DrawmodeListener;
 import go.graphics.FramerateComputer;
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 import static org.lwjgl.opengl.GL20C.*;
 
 public abstract class AsyncContextCreator extends ContextCreator implements Runnable,DrawmodeListener {
 
-	private boolean offscreen = true;
-	private boolean clear_offscreen = true;
+	protected boolean offscreen = true;
+	protected boolean async_resized = false;
+	protected boolean clear_offscreen = true;
 	private boolean continue_run = true;
 
 	private BufferedImage bi = null;
@@ -41,7 +42,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	private Thread render_thread = new Thread(this, "AsyncRenderer");
 
-	public AsyncContextCreator(GLContainer container, boolean debug)  {
+	public AsyncContextCreator(ContextContainer container, boolean debug)  {
 		super(container, debug);
 	}
 
@@ -103,8 +104,14 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 					synchronized (wnd_lock) {
 						width = new_width;
 						height = new_height;
-						async_set_size(width, height);
 
+						if (async_resized) {
+							async_resized = false;
+						} else {
+							async_set_size(width, height);
+						}
+
+						Thread.sleep(20); // we must wait a bit because X is async and our window must not be resized in time otherwise
 						parent.resizeContext(width, height);
 
 						bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
@@ -136,6 +143,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 					async_swapbuffers();
 					if (fpsLimit != 0) fpsComputer.nextFrame(fpsLimit);
 				}
+			} catch(ContextException ignored) {
 			} catch(Throwable thrown) {
 				thrown.printStackTrace();
 			}

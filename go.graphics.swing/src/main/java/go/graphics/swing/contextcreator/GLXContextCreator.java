@@ -24,13 +24,13 @@ import org.lwjgl.opengl.GLXCapabilities;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.linux.XVisualInfo;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 
 
 public class GLXContextCreator extends JAWTContextCreator {
 	private long context = 0;
 
-	public GLXContextCreator(GLContainer container, boolean debug) {
+	public GLXContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
 		// do we have xlib support ?
 		X11.getLibrary().getName();
@@ -65,7 +65,7 @@ public class GLXContextCreator extends JAWTContextCreator {
 	};
 
 	@Override
-	protected void onInit() throws GLContextException {
+	protected void onInit() throws ContextException {
 		int screen = X11.XDefaultScreen(windowConnection);
 
 		int[] xvi_attrs = new int[]{
@@ -89,8 +89,8 @@ public class GLXContextCreator extends JAWTContextCreator {
 			XVisualInfo xvi = GLX.glXChooseVisual(windowConnection, screen, xvi_attrs);
 			context = GLX.glXCreateContext(windowConnection, xvi, 0, true);
 		}
-		if (context != 0) error("Could not create GLX context!");
-		parent.wrapNewContext();
+		if (context == 0) error("Could not create GLX context!");
+		parent.wrapNewGLContext();
 	}
 
 	@Override

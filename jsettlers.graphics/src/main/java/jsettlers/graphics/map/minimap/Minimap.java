@@ -21,9 +21,12 @@ import go.graphics.TextureHandle;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import go.graphics.UnifiedDrawHandle;
+import go.graphics.VkDrawContext;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -114,7 +117,7 @@ public final class Minimap implements IMinimapData {
 					}
 					data.position(0);
 					if(texture != null && texture.isValid()) {
-						context.resizeTexture(texture, width, height, data);
+						texture = context.resizeTexture(texture, width, height, data);
 					} else {
 						texture = context.generateTexture(width, height, data, "minimap");
 					}
@@ -122,17 +125,33 @@ public final class Minimap implements IMinimapData {
 					imageIsValid = true;
 				}
 
-				if (!updatedLines.isEmpty()) {
-					ShortBuffer currData = ByteBuffer.allocateDirect(width * 2)
-													 .order(ByteOrder.nativeOrder()).asShortBuffer();
-					for (Integer currLine : updatedLines) {
-						currData.position(0);
-						currData.put(buffer[currLine]);
-						currData.position(0);
+				int updatedLineCount = updatedLines.size();
+				if (updatedLineCount > 0) {
+					if(context instanceof VkDrawContext) {
+						int padding = -(-width%2);
 
-						context.updateTexture(texture, 0, currLine, width, 1,
-							currData
-						);
+						ByteBuffer currData = ByteBuffer.allocateDirect((width+padding) * 2 * updatedLineCount)
+								.order(ByteOrder.nativeOrder());
+						ShortBuffer currShortData = currData.asShortBuffer();
+						List<int[]> updateInfo = new ArrayList<>(updatedLineCount);
+						for(int i = 0; i != updatedLineCount; i++) {
+							int currLine = updatedLines.get(i);
+							currShortData.position((width+padding)*i);
+							currShortData.put(buffer[currLine]);
+							updateInfo.add(new int[] {0, currLine, width, 1, (width+padding)*2*i});
+						}
+						((VkDrawContext)context).updateTexture(texture, updateInfo, currData);
+					} else {
+						ShortBuffer currData = ByteBuffer.allocateDirect(width * 2)
+								.order(ByteOrder.nativeOrder()).asShortBuffer();
+						for(int i = 0; i != updatedLineCount; i++) {
+							int currLine = updatedLines.get(i);
+							currData.position(0);
+							currData.put(buffer[currLine]);
+							currData.position(0);
+
+							context.updateTexture(texture, 0, currLine, width, 1, currData);
+						}
 					}
 					updatedLines.clear();
 				}

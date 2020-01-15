@@ -15,6 +15,7 @@
 package go.graphics.text;
 
 import go.graphics.AbstractColor;
+import go.graphics.ETextureType;
 import go.graphics.EUnifiedMode;
 import go.graphics.GLDrawContext;
 import go.graphics.TextureHandle;
@@ -61,7 +62,7 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 	private final float scalingFactor;
 
 	private UnifiedDrawHandle geometry;
-	private TextureHandle font_tex;
+	protected TextureHandle font_tex;
 	protected int gentex_line_height;
 	protected int tex_height;
 	protected int tex_width;
@@ -111,8 +112,6 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 
 	protected abstract void endDraw();
 
-	protected abstract void setTexParams();
-
 	private void generateTexture() {
 		int max_len = getMaxLen();
 
@@ -149,8 +148,7 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 
 		bfr.rewind();
 		font_tex = drawContext.generateTexture(max_len, tex_height, bfr, "text-drawer");
-
-		setTexParams();
+		if(font_tex != null) font_tex.setType(ETextureType.LINEAR_FILTER);
 	}
 
 	private void generateGeometry(int descent) {

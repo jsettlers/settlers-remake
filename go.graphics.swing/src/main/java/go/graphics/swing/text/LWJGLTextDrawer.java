@@ -14,7 +14,10 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
+import go.graphics.GLDrawContext;
 import go.graphics.swing.opengl.LWJGLDrawContext;
+import go.graphics.swing.vulkan.VulkanDrawContext;
+import go.graphics.swing.vulkan.VulkanTextureHandle;
 import go.graphics.text.AbstractTextDrawer;
 import go.graphics.text.EFontSize;
 
@@ -28,7 +31,7 @@ import java.awt.image.BufferedImage;
 
 import static org.lwjgl.opengl.GL20C.*;
 
-public final class LWJGLTextDrawer extends AbstractTextDrawer<LWJGLDrawContext> {
+public final class LWJGLTextDrawer extends AbstractTextDrawer<GLDrawContext> {
 	private static final int DEFAULT_DPI = 96;
 	private static final Font FONT = new Font("Arial", Font.PLAIN, TEXTURE_GENERATION_SIZE);
 
@@ -36,7 +39,7 @@ public final class LWJGLTextDrawer extends AbstractTextDrawer<LWJGLDrawContext> 
 	 * Creates a new text drawer.
 	 *
 	 */
-	public LWJGLTextDrawer(LWJGLDrawContext drawContext, float guiScale) {
+	public LWJGLTextDrawer(GLDrawContext drawContext, float guiScale) {
 		super(drawContext, guiScale);
 	}
 
@@ -92,11 +95,5 @@ public final class LWJGLTextDrawer extends AbstractTextDrawer<LWJGLDrawContext> 
 		graph.dispose();
 		graph = null;
 		pre_render = null;
-	}
-
-	@Override
-	protected void setTexParams() {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }

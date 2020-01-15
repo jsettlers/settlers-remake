@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
+import go.graphics.AbstractColor;
 import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
@@ -131,7 +132,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
 		checkHandles(gl);
-		geometryIndex.drawSimple(EPrimitiveType.Quad, x, y, z, 1, 1, null, 1);
+		geometryIndex.drawSimple(EPrimitiveType.Quad, x, y, z, 1, 1, null, fow);
 	}
 
 	protected void checkHandles(GLDrawContext gl) {
@@ -142,72 +143,34 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	private void checkStaticHandles(GLDrawContext gl) {
 		checkHandles(gl);
-		if(buildHandle == null || !buildHandle.isValid()) {
-			buildHandle = gl.createUnifiedDrawCall(3, "building-progress", geometryIndex.texture, null);
+
+		if(progressHandle == null || !progressHandle.isValid()) {
+			progressHandle = gl.createUnifiedDrawCall(4, "building-progress-quad", geometryIndex.texture, GLDrawContext.createQuadGeometry(0, 0, 1, 1, 0, 0, 1, 1));
+			progressHandle.forceNoCache();
+		}
+
+		if(triProgressHandle == null || !triProgressHandle.isValid()) {
+			triProgressHandle = gl.createUnifiedDrawCall(3, "building-progress-tri", geometryIndex.texture, new float[] {0, 0, 0, 0, 0.5f, 1, 0.5f, 1, 1, 0, 1, 0});
+			triProgressHandle.forceNoCache();
 		}
 	}
 
-	private static UnifiedDrawHandle buildHandle = null;
-	private static final ByteBuffer buildBfr = ByteBuffer.allocateDirect(4*4*3).order(ByteOrder.nativeOrder());
+	private static UnifiedDrawHandle progressHandle = null;
+	private static UnifiedDrawHandle triProgressHandle = null;
 
-	/**
-	 * Draws a triangle part of this image on the image buffer.
-	 *
-	 * @param gl
-	 * 		The context to use
-	 * @param viewX
-	 * 		Image center x coordinate
-	 * @param viewY
-	 * 		Image center y coordinate
-	 * @param u1
-	 * @param v1
-	 * @param u2
-	 * @param v2
-	 * @param u3
-	 * @param v3
-	 * @param color
-	 */
-	public void drawTriangle(GLDrawContext gl, float viewX,
-			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, float z, float color) {
-		try {
-			checkStaticHandles(gl);
-			float left = toffsetX + viewX;
-			float top = -toffsetY + viewY;
-			// In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
-			// growing
-			// image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more predictable and
-			// controlled
-			// manner.
-			u1 = (float) Math.round(u1 * twidth) / twidth;
-			u2 = (float) Math.round(u2 * twidth) / twidth;
-			u3 = (float) Math.round(u3 * twidth) / twidth;
-			v1 = (float) Math.round(v1 * theight) / theight;
-			v2 = (float) Math.round(v2 * theight) / theight;
-			v3 = (float) Math.round(v3 * theight) / theight;
 
-			buildBfr.asFloatBuffer().put(new float[] {
-					u1 * twidth,
-					-v1 * theight,
-					geometryIndex.texX+u1*(geometryIndex.texWidth-geometryIndex.texX),
-					geometryIndex.texY+v1*(geometryIndex.texHeight-geometryIndex.texY),
+	public void drawOnlyImageWithProgressAt(GLDrawContext gl, float x, float y, float z, float u1, float v1, float u2, float v2, float fow, boolean triangle) {
+		checkStaticHandles(gl);
 
-					u2 * twidth,
-					-v2 * theight,
-					geometryIndex.texX+u2*(geometryIndex.texWidth-geometryIndex.texX),
-					geometryIndex.texY+v2*(geometryIndex.texHeight-geometryIndex.texY),
+		float nu1 = geometryIndex.texX+u1*(geometryIndex.texWidth-geometryIndex.texX);
+		float nu2 = geometryIndex.texX+u2*(geometryIndex.texWidth-geometryIndex.texX);
 
-					u3 * twidth,
-					-v3 * theight,
-					geometryIndex.texX+u3*(geometryIndex.texWidth-geometryIndex.texX),
-					geometryIndex.texY+v3*(geometryIndex.texHeight-geometryIndex.texY),
+		float nv1 = geometryIndex.texY+v1*(geometryIndex.texHeight-geometryIndex.texY);
+		float nv2 = geometryIndex.texY+v2*(geometryIndex.texHeight-geometryIndex.texY);
 
-			});
-			buildHandle.texture = geometryIndex.texture;
-			gl.updateBufferAt(buildHandle.vertices, 0, buildBfr);
-			buildHandle.drawSimple(EPrimitiveType.Triangle, left, top, z, 1, 1, null, color);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+		UnifiedDrawHandle dh = triangle?triProgressHandle:progressHandle;
+		dh.texture = geometryIndex.texture;
+		dh.drawProgress(triangle?EPrimitiveType.Triangle:EPrimitiveType.Quad, x+toffsetX+twidth*u1, y-toffsetY-theight*v1, z, twidth*(u2-u1), -theight*(v2-v1), new Color(nu1, nv1, nu2, nv2), fow);
 	}
 
 	public BufferedImage convertToBufferedImage() {

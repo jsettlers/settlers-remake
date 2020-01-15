@@ -22,12 +22,12 @@ import org.lwjgl.opengl.WGLCapabilities;
 import org.lwjgl.system.windows.GDI32;
 import org.lwjgl.system.windows.PIXELFORMATDESCRIPTOR;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 
 public class WGLContextCreator extends JAWTContextCreator {
 	private long context;
 
-	public WGLContextCreator(GLContainer container, boolean debug) {
+	public WGLContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
 		// do we have gdi and wgl support ?
 		GDI32.getLibrary().getName();
@@ -82,7 +82,7 @@ public class WGLContextCreator extends JAWTContextCreator {
 	}
 
 	@Override
-	protected void onNewConnection() throws GLContextException {
+	protected void onNewConnection() throws ContextException {
 		PIXELFORMATDESCRIPTOR pfd = PIXELFORMATDESCRIPTOR.calloc();
 		pfd.dwFlags(GDI32.PFD_DRAW_TO_WINDOW | GDI32.PFD_SUPPORT_OPENGL | GDI32.PFD_DOUBLEBUFFER);
 		pfd.iPixelType(GDI32.PFD_TYPE_RGBA);
@@ -115,6 +115,6 @@ public class WGLContextCreator extends JAWTContextCreator {
 		}
 
 		if(context == 0) error("Could not create WGL context!");
-		parent.wrapNewContext();
+		parent.wrapNewGLContext();
 	}
 }

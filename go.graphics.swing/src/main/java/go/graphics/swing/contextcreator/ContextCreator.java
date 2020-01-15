@@ -18,11 +18,13 @@ import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
-import go.graphics.swing.GLContainer;
+import javax.swing.SwingUtilities;
+
+import go.graphics.swing.ContextContainer;
 
 public abstract class ContextCreator<T extends Component> implements ComponentListener{
 
-	public ContextCreator(GLContainer ac, boolean debug) {
+	public ContextCreator(ContextContainer ac, boolean debug) {
 		parent = ac;
 		this.debug = debug;
 	}
@@ -34,7 +36,7 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 	protected boolean first_draw = true;
 	protected int fpsLimit = 0;
 	protected T canvas;
-	protected GLContainer parent;
+	protected ContextContainer parent;
 	protected boolean debug;
 
 
@@ -50,9 +52,9 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 	}
 
 
-	protected void error(String message) throws GLContextException {
+	protected void error(String message) throws ContextException {
 		parent.fatal(message);
-		throw new GLContextException();
+		throw new ContextException();
 	}
 
 	public void init() {
@@ -66,6 +68,8 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 	@Override
 	public void componentResized(ComponentEvent componentEvent) {
 		Component cmp = componentEvent.getComponent();
+		if(!SwingUtilities.windowForComponent(cmp).isFocused()) return;
+
 		synchronized (wnd_lock) {
 			new_width = cmp.getWidth();
 			new_height = cmp.getHeight();

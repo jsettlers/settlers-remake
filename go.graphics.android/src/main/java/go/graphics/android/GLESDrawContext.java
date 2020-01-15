@@ -103,21 +103,20 @@ public class GLESDrawContext extends GLDrawContext {
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
 		int[] textureIndexes = new int[1];
 		glGenTextures(1, textureIndexes, 0);
-		TextureHandle texture = new TextureHandle(this, textureIndexes[0]);
+		TextureHandle texture = new GLESTextureHandle(this, textureIndexes[0]);
 
 		bindTexture(texture);
 		resizeTexture(texture, width, height, data);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		return texture;
 	}
 
-	public void resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data) {
+	public TextureHandle resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data) {
 		bindTexture(textureIndex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
+		return textureIndex;
 	}
 
 	public void updateTexture(TextureHandle textureIndex, int left, int bottom,
@@ -127,7 +126,7 @@ public class GLESDrawContext extends GLDrawContext {
 				GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
-	private void bindTexture(TextureHandle texture) {
+	protected void bindTexture(TextureHandle texture) {
 		if (texture != lastTexture) {
 			int id = 0;
 			if (texture != null) {
@@ -175,7 +174,7 @@ public class GLESDrawContext extends GLDrawContext {
 		}
 	}
 
-	void resize(int width, int height) {
+	public void resize(int width, int height) {
 		glViewport(0, 0, width, height);
 
 		Matrix.setIdentityM(mat, 0);

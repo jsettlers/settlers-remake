@@ -25,7 +25,7 @@ import org.lwjgl.system.jawt.JAWTX11DrawingSurfaceInfo;
 import java.awt.Canvas;
 import java.awt.Graphics;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public abstract class JAWTContextCreator extends ContextCreator {
@@ -37,7 +37,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	protected long windowDrawable;
 	protected Platform currentPlatform = Platform.get();
 
-	public JAWTContextCreator(GLContainer container, boolean debug) {
+	public JAWTContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
 
 		jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
@@ -48,7 +48,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	@Override
 	public abstract void stop();
 
-	private void regenerateWindowInfo() throws GLContextException {
+	private void regenerateWindowInfo() throws ContextException {
 		long oldWindowConnection = windowConnection;
 		long oldWindowDrawable = windowDrawable;
 		if(currentPlatform == Platform.LINUX) {
@@ -65,10 +65,10 @@ public abstract class JAWTContextCreator extends ContextCreator {
 		if(windowConnection != oldWindowConnection) onNewConnection();
 	}
 
-	protected void onNewConnection() throws GLContextException {}
-	protected void onNewDrawable() throws GLContextException {}
+	protected void onNewConnection() throws ContextException {}
+	protected void onNewDrawable() throws ContextException {}
 
-	protected void onInit() throws GLContextException {}
+	protected void onInit() throws ContextException {}
 
 	@Override
 	public void initSpecific() {
@@ -103,26 +103,31 @@ public abstract class JAWTContextCreator extends ContextCreator {
 						}
 					}
 
-					parent.draw();
-					parent.finishFrame();
-
-					swapBuffers();
-					makeCurrent(false);
-				} catch(GLContextException ignored) {
+					try {
+						parent.draw();
+						parent.finishFrame();
+					} finally {
+						try {
+							swapBuffers();
+						} finally {
+							makeCurrent(false);
+						}
+					}
+				} catch(ContextException ignored) {
 				} catch (Throwable thrown) {
 					thrown.printStackTrace();
 				}
 
 				if (fpsLimit == 0) repaint();
-				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface, surface.Unlock());
 
 				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surfaceinfo, surface.FreeDrawingSurfaceInfo());
+				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface, surface.Unlock());
 				JAWTFunctions.JAWT_FreeDrawingSurface(surface, jawt.FreeDrawingSurface());
 			}
 		};
 	}
 
-	protected abstract void swapBuffers();
+	protected abstract void swapBuffers() throws ContextException;
 
 	public abstract void makeCurrent(boolean draw);
 }

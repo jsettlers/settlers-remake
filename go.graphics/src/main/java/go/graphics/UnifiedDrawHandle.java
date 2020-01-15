@@ -24,7 +24,7 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 	private long frameIndex = -1;
 	private boolean forceNoCache = false;
 
-	public static final int CACHE_START_AT_BIAS = 1000;
+	public static final int CACHE_START_AT_BIAS = 100;
 	public static final int MAX_CACHE_ENTRIES = 100;
 
 	public void forceNoCache() {
@@ -77,6 +77,10 @@ public class UnifiedDrawHandle extends GLResourceIndex {
 		cache_index = 0;
 
 		return mod;
+	}
+
+	public void drawProgress(int primitive, float x, float y, float z, float sx, float sy, AbstractColor progressRange, float intensity) {
+		dc.drawUnified(this, primitive, vertexCount, EUnifiedMode.PROGRESS, x, y, z, sx, sy, progressRange, intensity);
 	}
 
 	public void drawSimple(int primitive, float x, float y, float z, float sx, float sy, AbstractColor color, float intensity) {

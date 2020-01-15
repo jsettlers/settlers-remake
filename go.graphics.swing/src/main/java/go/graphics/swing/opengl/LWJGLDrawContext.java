@@ -83,29 +83,28 @@ public class LWJGLDrawContext extends GLDrawContext {
 	private float ulr, ulg, ulb, ula, uli;
 	private float ulm;
 
-	
+
 	public TextureHandle generateTexture(int width, int height, ShortBuffer data, String name) {
 		int texture = glGenTextures();
 		if (texture == 0) {
 			return null;
 		}
 
-		TextureHandle textureHandle = new TextureHandle(this, texture);
+		TextureHandle textureHandle = new LWJGLTextureHandle(this, texture);
 		resizeTexture(textureHandle, width, height, data);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		setObjectLabel(GL11.GL_TEXTURE, texture, name + "-tex");
 
 		return textureHandle;
 	}
 
-	public void resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data) {
+	public TextureHandle resizeTexture(TextureHandle textureIndex, int width, int height, ShortBuffer data) {
 		bindTexture(textureIndex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
+		return textureIndex;
 	}
 	
 	public void updateTexture(TextureHandle texture, int left, int bottom,
@@ -115,7 +114,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 				GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
 	}
 
-	private void bindTexture(TextureHandle texture) {
+	protected void bindTexture(TextureHandle texture) {
 		if(lastTexture != texture) {
 			int id = 0;
 			if (texture != null) {

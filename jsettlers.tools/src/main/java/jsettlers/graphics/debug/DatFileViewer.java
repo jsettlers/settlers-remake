@@ -55,9 +55,9 @@ import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOZoomEvent;
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 import go.graphics.swing.contextcreator.EBackendType;
-import go.graphics.swing.contextcreator.GLContextException;
+import go.graphics.swing.contextcreator.ContextException;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
@@ -361,7 +361,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 
 	// endregion
 
-	private class Surface extends GLContainer implements GOModalEventHandler, GOEventHandlerProvider {
+	private class Surface extends ContextContainer implements GOModalEventHandler, GOEventHandlerProvider {
 		private Color[] colors = new Color[] { Color.WHITE };
 		private float zoom = 1.0f;
 		private int offsetY = 0;
@@ -381,7 +381,7 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		}
 
 		@Override
-		public void draw() throws GLContextException {
+		public void draw() throws ContextException {
 			super.draw();
 			redraw(context, getWidth(), getHeight());
 		}
@@ -461,21 +461,12 @@ public class DatFileViewer extends JFrame implements ListSelectionListener {
 		}
 
 		private UnifiedDrawHandle lineGeometry = null;
-		private ByteBuffer lineBfr = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder());
 
 		private void drawImage(GLDrawContext gl2, int x, int y, int index, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.createUnifiedDrawCall(3, null ,null, null);
-
-			try {
-				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), -image.getOffsetX(), image.getHeight() + image.getOffsetY()}, 0, 3);
-				gl2.updateBufferAt(lineGeometry.vertices, 3*4, lineBfr);
-
-				lineGeometry.drawSimple(EPrimitiveType.LineStrip, x, y, 0, 1, 1, Color.RED, 1);
-			} catch (IllegalBufferException e) {
-				e.printStackTrace();
-			}
+			if(lineGeometry == null) lineGeometry = gl2.createUnifiedDrawCall(3, null, null, new float[] {0, 0, 0, 1, 1, 1});
+			lineGeometry.drawSimple(EPrimitiveType.LineStrip, x, y, 0, -image.getOffsetX(), image.getHeight() + image.getOffsetY(), Color.RED, 1);
 		}
 
 		// endregion

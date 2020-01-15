@@ -194,16 +194,8 @@ public class DatFileTester {
 		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
 			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), 0, colors[index % colors.length], 1);
 
-			if(lineGeometry == null) lineGeometry = gl2.createUnifiedDrawCall(3, null, null, null);
-
-			try {
-				lineBfr.asFloatBuffer().put(new float[] {image.getHeight() + image.getOffsetY(), - image.getOffsetX(), image.getHeight() + image.getOffsetY() }, 0, 3);
-				gl2.updateBufferAt(lineGeometry.vertices, 3*4, lineBfr);
-
-				lineGeometry.drawSimple(EPrimitiveType.LineStrip, x, y, 0, 1, 1, Color.RED, 1);
-			} catch (IllegalBufferException e) {
-				e.printStackTrace();
-			}
+			if(lineGeometry == null) lineGeometry = gl2.createUnifiedDrawCall(3, null, null, new float[] {0, 0, 0, 1, 1, 1});
+			lineGeometry.drawSimple(EPrimitiveType.LineStrip, x, y, 0, -image.getOffsetX(), image.getHeight() + image.getOffsetY(), Color.RED, 1);
 		}
 
 		private void printHelp() {

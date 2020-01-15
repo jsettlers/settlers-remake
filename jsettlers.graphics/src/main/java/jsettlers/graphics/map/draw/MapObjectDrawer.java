@@ -20,7 +20,6 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import go.graphics.GLDrawContext;
-import go.graphics.GL32DrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -1346,13 +1345,10 @@ public class MapObjectDrawer {
 		float topLineBottom = 1 - maskState;
 		float topLineTop = Math.max(0, topLineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), viewX, viewY, 0, 1, 1, 1, 0,  topLineBottom, getZ(construction_offset, y),color);
-		image.drawTriangle(context.getGl(), viewX, viewY, 1, 1, 1, topLineBottom, 0,  topLineBottom, getZ(construction_offset, y),color);
+		image.drawOnlyImageWithProgressAt(context.getGl(), viewX, viewY, getZ(construction_offset, y), 1, 1, 0, topLineBottom, color, false);
 
 		for (int i = 0; i < tiles; i++) {
-			image.drawTriangle(context.getGl(), viewX, viewY, 1.0f / tiles * i,
-				topLineBottom, 1.0f / tiles * (i + 1), topLineBottom, 1.0f / tiles * (i + .5f),  topLineTop, getZ(construction_offset, y),color
-			);
+			image.drawOnlyImageWithProgressAt(context.getGl(), viewX, viewY, getZ(construction_offset, y), i/(float)tiles, topLineBottom, (i+1)/(float)tiles, topLineTop, color, true);
 		}
 	}
 

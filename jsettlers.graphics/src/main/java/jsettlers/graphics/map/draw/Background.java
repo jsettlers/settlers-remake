@@ -25,6 +25,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
+import go.graphics.VkDrawContext;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IDirectGridProvider;
@@ -1266,41 +1267,50 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
 		fowEnabled = hasdgp && dgp.isFoWEnabled();
+
 		try {
 			int height = screen.getHeight();
 			int width = screen.getWidth();
 			int miny = screen.getMinY();
 			int minx = screen.getMinX();
-			int maxy = miny+height;
+			int maxy = miny + height;
 
-			if(maxy > bufferHeight) maxy = bufferHeight;
-			if(miny < 0) miny = 0;
+			if (maxy > bufferHeight) maxy = bufferHeight;
+			if (miny < 0) miny = 0;
+			int linestart = minx - (miny / 2);
 
-			int linestart = minx-(miny/2);
-			for (int y = miny; y < maxy; y++) {
-				int lineStartX = linestart + (y / 2);
 
-				int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
-				int linex = lineStartX < 0 ? 0 : lineStartX;
-				int bfr_pos = y * bufferWidth + linex;
+			if(asyncBufferBuilding && context.getGl() instanceof VkDrawContext) {
+				synchronized (color_bfr2) {
+					color_cache2.clearCache();
+				}
+			} else {
 
-				if(asyncBufferBuilding) {
-					synchronized (color_bfr2) {
-						color_cache2.clearCacheRegion(y, linex, linewidth);
-					}
-				} else {
-					boolean changes = false;
+				for (int y = miny; y < maxy; y++) {
+					int lineStartX = linestart + (y / 2);
 
-					for (int x = linex; x < linewidth; x++) {
-						if (fowWritten.get(y*mapWidth+x)) {
-							fowWritten.clear(y*mapWidth+x);
-							color_cache.gotoPos(bfr_pos);
-							changes = true;
-							addColorTrianglesToGeometry(context, color_bfr, x, y);
+					int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
+					int linex = lineStartX < 0 ? 0 : lineStartX;
+					int bfr_pos = y * bufferWidth + linex;
+
+					if (asyncBufferBuilding) {
+						synchronized (color_bfr2) {
+							color_cache2.clearCacheRegion(y, linex, linewidth);
 						}
-						bfr_pos++;
+					} else {
+						boolean changes = false;
+
+						for (int x = linex; x < linewidth; x++) {
+							if (fowWritten.get(y * mapWidth + x)) {
+								fowWritten.clear(y * mapWidth + x);
+								color_cache.gotoPos(bfr_pos);
+								changes = true;
+								addColorTrianglesToGeometry(context, color_bfr, x, y);
+							}
+							bfr_pos++;
+						}
+						if (changes) color_cache.clearCache();
 					}
-					if (changes) color_cache.clearCache();
 				}
 			}
 

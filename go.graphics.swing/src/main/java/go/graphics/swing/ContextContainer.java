@@ -2,6 +2,7 @@ package go.graphics.swing;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.vulkan.VkInstance;
 
 import java.awt.Component;
 import java.awt.LayoutManager;
@@ -10,23 +11,25 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import go.graphics.GLDrawContext;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.JAWTContextCreator;
-import go.graphics.swing.contextcreator.GLContextException;
+import go.graphics.swing.contextcreator.ContextException;
 import go.graphics.swing.opengl.LWJGLDrawContext;
+import go.graphics.swing.vulkan.VulkanDrawContext;
 
-public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
+public abstract class ContextContainer extends JPanel implements GOEventHandlerProvider {
 
 
 	protected ContextCreator cc;
-	protected LWJGLDrawContext context;
+	protected GLDrawContext context;
 	private boolean debug;
 	protected float guiScale = 0;
 
-	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
+	public ContextContainer(EBackendType backend, LayoutManager layout, boolean debug) {
 		setLayout(layout);
 		this.debug = debug;
 
@@ -47,8 +50,8 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		System.err.println(message);
 	}
 
-	public void resizeContext(int width, int height) throws GLContextException {
-		if(context == null) throw new GLContextException();
+	public void resizeContext(int width, int height) throws ContextException {
+		if(context == null) throw new ContextException();
 		context.resize(width, height);
 	}
 
@@ -56,7 +59,18 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 		context.finishFrame();
 	}
 
-	public void wrapNewContext() {
+
+	public void wrapNewVkContext(VkInstance instance, long surface) {
+		if(context != null) context.invalidate();
+
+		try {
+			context = new VulkanDrawContext(instance, surface, guiScale);
+		} catch(Throwable thrown) {
+			fatal(thrown.getLocalizedMessage());
+			thrown.printStackTrace();
+		}
+	}
+	public void wrapNewGLContext() {
 		if(cc instanceof JAWTContextCreator) ((JAWTContextCreator)cc).makeCurrent(true);
 		if(context != null) context.invalidate();
 
@@ -70,6 +84,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 			}
 		} catch(Throwable thrown) {
 			fatal(thrown.getLocalizedMessage());
+			thrown.printStackTrace();
 		}
 	}
 
@@ -81,15 +96,15 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	 * Disposes all textures / buffers that were allocated by this context.
 	 */
 	public void disposeAll() {
-		cc.stop();
-		if (context != null) {
-			context.invalidate();
-		}
+		if (context != null) context.invalidate();
 		context = null;
+
+		if(cc != null) cc.stop();
+		cc = null;
 	}
 
-	public void draw() throws GLContextException {
-		if(context == null) throw new GLContextException();
+	public void draw() throws ContextException {
+		if(context == null) throw new ContextException();
 		context.startFrame();
 	}
 
@@ -111,5 +126,10 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 	public void updateFPSLimit(int fpsLimit) {
 		if(cc != null) cc.updateFPSLimit(fpsLimit);
+	}
+
+	public void swapBuffersVk() throws ContextException {
+		if(context == null) throw new ContextException();
+		((VulkanDrawContext)context).endFrame();
 	}
 }

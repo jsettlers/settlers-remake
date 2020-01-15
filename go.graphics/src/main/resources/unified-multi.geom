@@ -23,12 +23,12 @@ uniform geometryDataBuffer {
 
 out vec4 frag_color;
 flat out int frag_mode;
-out vec2 frag_texCoord;
+out vec2 frag_texcoord;
 out float frag_intensity;
 
 void setVertex(in float offset) {
 	gl_Position = projection * globalTransform * (gl_in[0].gl_Position+vec4(geom_scale[0]*geometryData[int(geom_index[0]+offset)*2], 0, 0));
-	frag_texCoord = geometryData[int(geom_index[0]+offset)*2+1];
+	frag_texcoord = geometryData[int(geom_index[0]+offset)*2+1];
 }
 
 void main() {
