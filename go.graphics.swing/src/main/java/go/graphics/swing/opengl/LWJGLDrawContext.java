@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -589,9 +590,19 @@ public class LWJGLDrawContext extends GLDrawContext {
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
+	public void clearFramebuffer() {
+		finishFrame();
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
 	@Override
 	public void startFrame() {
 		super.startFrame();
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	}
+
+	public void readFramebuffer(IntBuffer pixels, int width, int height) {
+		finishFrame();
+		glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
 	}
 }

@@ -6,6 +6,7 @@ import org.lwjgl.vulkan.VkInstance;
 
 import java.awt.Component;
 import java.awt.LayoutManager;
+import java.nio.IntBuffer;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -131,5 +132,21 @@ public abstract class ContextContainer extends JPanel implements GOEventHandlerP
 	public void swapBuffersVk() throws ContextException {
 		if(context == null) throw new ContextException();
 		((VulkanDrawContext)context).endFrame();
+	}
+
+	public void readFramebuffer(IntBuffer pixels, int width, int height) {
+		if(context instanceof VulkanDrawContext) {
+			((VulkanDrawContext)context).readFramebuffer(pixels, width, height);
+		} else {
+			((LWJGLDrawContext)context).readFramebuffer(pixels, width, height);
+		}
+	}
+
+	public void clearFramebuffer() {
+		if(context instanceof VulkanDrawContext) {
+			((VulkanDrawContext)context).clearFramebuffer();
+		} else {
+			((LWJGLDrawContext)context).clearFramebuffer();
+		}
 	}
 }

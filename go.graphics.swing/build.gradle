@@ -10,6 +10,9 @@ dependencies {
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version
     compile "org.lwjgl:lwjgl-egl:"+lwjgl_version
     compile "org.lwjgl:lwjgl-jawt:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-vma:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-vulkan:"+lwjgl_version
+    compile "org.lwjgl:lwjgl-shaderc:"+lwjgl_version
     compile "org.joml:joml:1.9.17"
 
     compile "org.lwjgl:lwjgl:"+lwjgl_version+":natives-linux"
@@ -23,6 +26,14 @@ dependencies {
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-linux"
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-macos"
     compile "org.lwjgl:lwjgl-glfw:"+lwjgl_version+":natives-windows"
+
+    compile "org.lwjgl:lwjgl-shaderc:"+lwjgl_version+":natives-linux"
+    compile "org.lwjgl:lwjgl-shaderc:"+lwjgl_version+":natives-macos"
+    compile "org.lwjgl:lwjgl-shaderc:"+lwjgl_version+":natives-windows"
+
+    compile "org.lwjgl:lwjgl-vma:"+lwjgl_version+":natives-linux"
+    compile "org.lwjgl:lwjgl-vma:"+lwjgl_version+":natives-macos"
+    compile "org.lwjgl:lwjgl-vma:"+lwjgl_version+":natives-windows"
 
 
     // macos support
