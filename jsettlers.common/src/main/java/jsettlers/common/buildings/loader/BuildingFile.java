@@ -146,7 +146,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 				flag = readRelativeTile(attributes);
 			} else if (TAG_BLOCKED.equals(tagName)) {
 				RelativePoint point = readRelativeTile(attributes);
-				if ("true".equals(attributes.getValue("block"))) {
+
+				// block should only be false or true. true is the default value but android sometimes does default to true but null.
+				if (!"false".equals(attributes.getValue("block"))) {
 					blocked.add(point);
 				}
 				protectedTiles.add(point);
