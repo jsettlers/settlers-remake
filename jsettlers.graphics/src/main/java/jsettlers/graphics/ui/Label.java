@@ -17,6 +17,7 @@ package jsettlers.graphics.ui;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+import jsettlers.common.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +150,7 @@ public class Label extends UIPanel {
 		super.drawAt(gl);
 
 		TextDrawer drawer = gl.getTextDrawer(size);
-		drawer.setColor(1, 1, 1, 1);
+		drawer.setColor(Color.WHITE);
 
 		if (Double.isNaN(spaceWidth)) {
 			spaceWidth = drawer.getWidth(" ");

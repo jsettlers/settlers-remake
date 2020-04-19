@@ -21,20 +21,20 @@ import java.io.IOException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.test.InstrumentationTestCase;
+
 import jsettlers.common.CommonConstants;
-import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.integration.replay.AutoReplaySetting;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.resources.AndroidMapListFactory;
 import jsettlers.main.android.core.resources.AndroidResourceProvider;
 import jsettlers.main.replay.ReplayUtils;
-
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.test.InstrumentationTestCase;
 
 /**
  * Created by Andreas Eberle on 29.12.2016.

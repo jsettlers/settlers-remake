@@ -17,6 +17,7 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,8 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  */
 public final class Movable implements ILogicMovable {
+	private static final long serialVersionUID = -705947810059935865L;
+
 	private static final int SHIP_PUSH_DISTANCE = 10;
 
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
@@ -846,6 +849,11 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
+	public final boolean isWounded() {
+		return health < movableType.health;
+	}
+
+	@Override
 	public final void setSelected(boolean selected) {
 		this.selected = selected;
 	}
@@ -862,7 +870,7 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public final ESelectionType getSelectionType() {
-		return movableType.getSelectionType();
+		return movableType.selectionType;
 	}
 
 	@Override

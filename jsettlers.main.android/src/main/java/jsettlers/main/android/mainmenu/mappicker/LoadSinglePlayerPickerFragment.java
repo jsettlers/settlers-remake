@@ -15,14 +15,14 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
-
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
@@ -60,7 +60,7 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 		viewModel.getShowNoMapsMessage().observe(this, showMessage -> noSavedGamesView.setVisibility(showMessage ? View.VISIBLE : View.GONE));
 
 		viewModel.getMapSelectedEvent().observe(this, mapId -> {
-			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator)getActivity();
+			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
 			mainMenuNavigator.showGame();
 		});
 	}

@@ -22,17 +22,19 @@ import go.graphics.swing.GLContainer;
 
 public abstract class ContextCreator implements ComponentListener{
 
-	public ContextCreator(GLContainer ac) {
+	public ContextCreator(GLContainer ac, boolean debug) {
 		parent = ac;
+		this.debug = debug;
 	}
 
 	protected int width = 1, height = 1;
 	protected int new_width = 1, new_height = 1;
 	protected boolean change_res = true;
-	protected Object wnd_lock = new Object();
+	protected final Object wnd_lock = new Object();
 	protected boolean first_draw = true;
 	protected Component canvas;
 	protected GLContainer parent;
+	protected boolean debug;
 
 
 	public abstract void stop();

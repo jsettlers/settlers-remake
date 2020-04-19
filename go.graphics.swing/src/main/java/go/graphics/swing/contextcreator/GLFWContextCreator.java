@@ -36,19 +36,23 @@ public class GLFWContextCreator extends AsyncContextCreator {
 
 	private final GLFWEventConverter event_converter;
 
-	public GLFWContextCreator(GLContainer container) {
-		super(container);
+	public GLFWContextCreator(GLContainer container, boolean debug) {
+		super(container, debug);
 		event_converter = new GLFWEventConverter();
 	}
 
 	private long glfw_wnd;
+	private GLFWErrorCallback ec;
 
 	public void async_init() {
-		GLFWErrorCallback ec = GLFWErrorCallback.createPrint(System.err);;
-		GLFW.glfwSetErrorCallback(ec);
+		if(debug) {
+			ec = GLFWErrorCallback.createPrint(System.err);
+			GLFW.glfwSetErrorCallback(ec);
+		}
 
 		if(!GLFW.glfwInit()) throw new Error("glfwInit() failed!");
 
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, debug ? GLFW.GLFW_TRUE : GLFW.GLFW_DONT_CARE);
 		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 1);
 		glfw_wnd = GLFW.glfwCreateWindow(width + 1, width + 1, "lwjgl-offscreen", 0, 0);
 		GLFW.glfwMakeContextCurrent(glfw_wnd);

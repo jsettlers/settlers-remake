@@ -15,12 +15,17 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection.features;
 
+import static java8.util.J8Arrays.stream;
+
+import java.util.List;
+
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+
 import java8.util.stream.Collectors;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.ChangeTradingRequestAction;
@@ -36,14 +41,10 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.navigation.BackPressedListener;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.controlsmenu.goods.TradeMaterialsAdapter;
-import jsettlers.main.android.gameplay.controlsmenu.goods.TradeMaterialState;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
-
-import java.util.List;
-
-import static java8.util.J8Arrays.stream;
+import jsettlers.main.android.gameplay.controlsmenu.goods.TradeMaterialState;
+import jsettlers.main.android.gameplay.controlsmenu.goods.TradeMaterialsAdapter;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by Rudolf Polzer

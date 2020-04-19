@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map;
+package jsettlers.common.statistics;
 
 /**
  * This class keeps track of the frames.
@@ -20,37 +20,31 @@ package jsettlers.graphics.map;
  * @author Michael Zangl
  */
 public class FramerateComputer {
-	private static final long RECOMPUTE_INTERVALL = 500;
-	private final long[] lastFrames;
-	private long lastRecompute = 0;
+	private static final long RECOMPUTE_INTERVALL = 500*1000*1000;
+	private long calcFrameStart = System.nanoTime();
+	private double timePerFrame = 0;
+	private long calcFrameEnd;
 	private int capturedFrames = 0;
-	private double rate;
-
-
-	public FramerateComputer(int lastFramesLength) {
-		lastFrames = new long[lastFramesLength];
-	}
 
 	/**
 	 * Called whenever a new frame is displayed.
 	 */
 	public void nextFrame() {
-		long time = System.currentTimeMillis();
-		lastFrames[capturedFrames] = time;
+		calcFrameEnd = System.nanoTime();
 		capturedFrames++;
-		if ((time - lastRecompute > RECOMPUTE_INTERVALL || capturedFrames >= lastFrames.length)
-				&& capturedFrames > 1) {
+		if ((calcFrameEnd - calcFrameStart > RECOMPUTE_INTERVALL) && capturedFrames > 1) {
 			recompute();
-			lastRecompute = time;
 		}
 	}
 
 	private void recompute() {
-		long time = lastFrames[capturedFrames - 1] - lastFrames[0];
-		rate = 1000.0 / time * capturedFrames;
-		lastFrames[0] = lastFrames[capturedFrames - 1];
+		double deltaT = calcFrameEnd - calcFrameStart;
+		timePerFrame = deltaT / capturedFrames;
+		calcFrameStart = calcFrameEnd;
 		capturedFrames = 1;
 	}
+
+	private static final double NS_PER_S = 1000*1000*1000.0;
 
 	/**
 	 * Gets the current frame rate.
@@ -58,6 +52,10 @@ public class FramerateComputer {
 	 * @return The rate.
 	 */
 	public double getRate() {
-		return rate;
+		return NS_PER_S / timePerFrame;
+	}
+
+	public double getTime() {
+		return timePerFrame / NS_PER_S;
 	}
 }

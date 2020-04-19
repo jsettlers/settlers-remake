@@ -20,7 +20,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.logic.buildings.Building;
 
-class BuildingCounts implements IBuildingCounts {
+public class BuildingCounts implements IBuildingCounts {
 
 	private final int[] buildingsInPartitionUnderConstruction = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 	private final int[] buildingsInPartition = new int[EBuildingType.NUMBER_OF_BUILDINGS];

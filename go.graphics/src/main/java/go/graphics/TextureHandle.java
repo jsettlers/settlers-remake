@@ -19,6 +19,9 @@ package go.graphics;
  * 
  * @author Michael Zangl
  */
-public interface TextureHandle extends GLBufferHandle {
+public class TextureHandle extends GLBufferHandle {
 
+	public TextureHandle(GLDrawContext dc, int texture) {
+		super(dc, texture);
+	}
 }

@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.goods;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
@@ -23,8 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import jsettlers.main.android.R;
 
 /**
@@ -32,99 +32,97 @@ import jsettlers.main.android.R;
  */
 
 public class TradeMaterialsAdapter extends RecyclerView.Adapter<TradeMaterialViewHolder> {
-    public interface ItemClickListener {
-        void onItemClick(View sender, TradeMaterialState tradeMaterialState);
-    }
+	public interface ItemClickListener {
+		void onItemClick(View sender, TradeMaterialState tradeMaterialState);
+	}
 
-    private final LayoutInflater inflater;
+	private final LayoutInflater inflater;
 
-    private ItemClickListener itemClickListener;
-    private List<TradeMaterialState> tradeMaterialStates;
+	private ItemClickListener itemClickListener;
+	private List<TradeMaterialState> tradeMaterialStates;
 
-    public TradeMaterialsAdapter(Activity activity) {
-        inflater = LayoutInflater.from(activity);
-    }
+	public TradeMaterialsAdapter(Activity activity) {
+		inflater = LayoutInflater.from(activity);
+	}
 
-    @Override
-    public int getItemCount() {
-        return tradeMaterialStates.size();
-    }
+	@Override
+	public int getItemCount() {
+		return tradeMaterialStates.size();
+	}
 
-    @Override
-    public TradeMaterialViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_trade_material, parent, false);
-        TradeMaterialViewHolder materialViewHolder = new TradeMaterialViewHolder(view);
-        view.setOnClickListener(v -> itemClickListener.onItemClick(view, tradeMaterialStates.get(materialViewHolder.getAdapterPosition())));
-        return materialViewHolder;
-    }
+	@Override
+	public TradeMaterialViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		View view = inflater.inflate(R.layout.item_trade_material, parent, false);
+		TradeMaterialViewHolder materialViewHolder = new TradeMaterialViewHolder(view);
+		view.setOnClickListener(v -> itemClickListener.onItemClick(view, tradeMaterialStates.get(materialViewHolder.getAdapterPosition())));
+		return materialViewHolder;
+	}
 
-    @Override
-    public void onBindViewHolder(TradeMaterialViewHolder holder, int position) {
-        TradeMaterialState tradeMaterialState = tradeMaterialStates.get(position);
-        holder.bind(tradeMaterialState);
-    }
+	@Override
+	public void onBindViewHolder(TradeMaterialViewHolder holder, int position) {
+		TradeMaterialState tradeMaterialState = tradeMaterialStates.get(position);
+		holder.bind(tradeMaterialState);
+	}
 
-    @Override
-    public void onBindViewHolder(TradeMaterialViewHolder holder, int position, List<Object> payloads) {
-        if (payloads == null || payloads.size() == 0) {
-            onBindViewHolder(holder, position);
-        } else {
-            holder.updateState(tradeMaterialStates.get(position));
-        }
-    }
+	@Override
+	public void onBindViewHolder(TradeMaterialViewHolder holder, int position, List<Object> payloads) {
+		if (payloads == null || payloads.size() == 0) {
+			onBindViewHolder(holder, position);
+		} else {
+			holder.updateState(tradeMaterialStates.get(position));
+		}
+	}
 
-    public void setMaterialStates(List<TradeMaterialState> tradeMaterialStates) {
-        if (this.tradeMaterialStates != null) {
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MaterialsDiffCallback(this.tradeMaterialStates, tradeMaterialStates));
-            diffResult.dispatchUpdatesTo(this);
-        }
+	public void setMaterialStates(List<TradeMaterialState> tradeMaterialStates) {
+		if (this.tradeMaterialStates != null) {
+			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MaterialsDiffCallback(this.tradeMaterialStates, tradeMaterialStates));
+			diffResult.dispatchUpdatesTo(this);
+		}
 
-        this.tradeMaterialStates = tradeMaterialStates;
-    }
+		this.tradeMaterialStates = tradeMaterialStates;
+	}
 
-    public void setItemClickListener(ItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
+	public void setItemClickListener(ItemClickListener itemClickListener) {
+		this.itemClickListener = itemClickListener;
+	}
 
+	/**
+	 * Diff callback
+	 */
+	private class MaterialsDiffCallback extends DiffUtil.Callback {
 
+		private final List<TradeMaterialState> oldStates;
+		private final List<TradeMaterialState> newStates;
 
-    /**
-     * Diff callback
-     */
-    private class MaterialsDiffCallback extends DiffUtil.Callback {
+		MaterialsDiffCallback(List<TradeMaterialState> oldStates, List<TradeMaterialState> newStates) {
+			this.oldStates = oldStates;
+			this.newStates = newStates;
+		}
 
-        private final List<TradeMaterialState> oldStates;
-        private final List<TradeMaterialState> newStates;
+		@Override
+		public int getOldListSize() {
+			return oldStates.size();
+		}
 
-        MaterialsDiffCallback(List<TradeMaterialState> oldStates, List<TradeMaterialState> newStates) {
-            this.oldStates = oldStates;
-            this.newStates = newStates;
-        }
+		@Override
+		public int getNewListSize() {
+			return newStates.size();
+		}
 
-        @Override
-        public int getOldListSize() {
-            return oldStates.size();
-        }
+		@Override
+		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+			return oldStates.get(oldItemPosition).getMaterialType() == newStates.get(newItemPosition).getMaterialType();
+		}
 
-        @Override
-        public int getNewListSize() {
-            return newStates.size();
-        }
+		@Override
+		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+			return oldStates.get(oldItemPosition).getCount() == newStates.get(newItemPosition).getCount();
+		}
 
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldStates.get(oldItemPosition).getMaterialType() == newStates.get(newItemPosition).getMaterialType();
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldStates.get(oldItemPosition).getCount() == newStates.get(newItemPosition).getCount();
-        }
-
-        @Nullable
-        @Override
-        public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-            return Boolean.TRUE;
-        }
-    }
+		@Nullable
+		@Override
+		public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+			return Boolean.TRUE;
+		}
+	}
 }

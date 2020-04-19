@@ -83,6 +83,11 @@ public class NetworkClientClockMock implements INetworkClientClock {
 	}
 
 	@Override
+	public float getGameSpeed() {
+		throw new UnsupportedOperationException("not mocked");
+	}
+
+	@Override
 	public boolean isPausing() {
 		throw new UnsupportedOperationException("not mocked");
 	}

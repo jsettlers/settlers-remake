@@ -17,6 +17,7 @@ package jsettlers.graphics.ui;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+import jsettlers.common.Color;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.action.Action;
@@ -54,7 +55,7 @@ public class LabeledButton extends Button {
 		super.drawAt(gl);
 
 		TextDrawer drawer = gl.getTextDrawer(size);
-		drawer.setColor(1, 1, 1, 1);
+		drawer.setColor(Color.WHITE);
 		drawer.renderCentered(getPosition().getCenterX(), getPosition().getCenterY(), text);
 	}
 

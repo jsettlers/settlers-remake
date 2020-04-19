@@ -23,13 +23,13 @@ import jsettlers.common.position.ShortPoint2D;
  */
 
 public interface PositionControls {
-    boolean isInPlayerPartition();
-    
-    IPartitionData getCurrentPartitionData();
+	boolean isInPlayerPartition();
 
-    ShortPoint2D getCurrentPosition();
+	IPartitionData getCurrentPartitionData();
 
-    void addPositionChangedListener(PositionChangedListener positionChangedListener);
+	ShortPoint2D getCurrentPosition();
 
-    void removePositionChangedListener(PositionChangedListener positionChangedListener);
+	void addPositionChangedListener(PositionChangedListener positionChangedListener);
+
+	void removePositionChangedListener(PositionChangedListener positionChangedListener);
 }

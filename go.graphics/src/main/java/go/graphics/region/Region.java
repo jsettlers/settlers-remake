@@ -59,7 +59,6 @@ public class Region implements RedrawListener {
 
 	private final int position;
 	private int size;
-	private boolean collapsed = false;
 	private RegionContent content = null;
 
 	/**
@@ -90,10 +89,7 @@ public class Region implements RedrawListener {
 	 *
 	 * @param gl2
 	 *            The gl space
-	 * @param width
-	 *            The width of the region.
-	 * @param height
-	 *            The height of the region.
+	 *
 	 */
 	public void drawRegion(GLDrawContext gl2, int width, int height) {
 		// gl2.color(.3f, .3f, .3f, 1);
@@ -131,25 +127,6 @@ public class Region implements RedrawListener {
 	 */
 	public int getSize() {
 		return size;
-	}
-
-	/**
-	 * Sets the collapsed flag of the region.
-	 *
-	 * @param collapsed
-	 *            If the region should be collapsed.
-	 */
-	public void setCollapsed(boolean collapsed) {
-		this.collapsed = collapsed;
-	}
-
-	/**
-	 * Sets whether the region is collapsed.
-	 *
-	 * @return The collapsed flag.
-	 */
-	public boolean isCollapsed() {
-		return collapsed;
 	}
 
 	/**

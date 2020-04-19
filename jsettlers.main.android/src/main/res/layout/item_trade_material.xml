@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground">
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			 android:foreground="?android:attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/imageView_material"
-        android:layout_width="@dimen/menu_button_size"
-        android:layout_height="@dimen/menu_button_size" />
+	<ImageView
+		android:id="@+id/imageView_material"
+		android:layout_width="@dimen/menu_button_size"
+		android:layout_height="@dimen/menu_button_size"/>
 
-    <TextView
-        android:id="@+id/textView_tradeMaterialCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:background="@drawable/bg_trade_material_indicator"
-        android:layout_gravity="top|left"
-        android:textColor="@android:color/white"
-        android:minWidth="14dp"
-        android:minHeight="14dp"
-        android:gravity="center"
-        android:textSize="8sp"
-        android:text="8" />
+	<TextView
+		android:id="@+id/textView_tradeMaterialCount"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="4dp"
+		android:paddingLeft="2dp"
+		android:paddingRight="2dp"
+		android:background="@drawable/bg_trade_material_indicator"
+		android:layout_gravity="top|left"
+		android:textColor="@android:color/white"
+		android:minWidth="14dp"
+		android:minHeight="14dp"
+		android:gravity="center"
+		android:textSize="8sp"
+		android:text="8"/>
 </FrameLayout>

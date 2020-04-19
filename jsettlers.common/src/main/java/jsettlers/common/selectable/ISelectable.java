@@ -46,4 +46,10 @@ public interface ISelectable extends IPlayerable{
 	 * @return {@link ESelectionType}
 	 */
 	ESelectionType getSelectionType();
+
+	/**
+	 * Returns whether this object is currently wounded.
+	 * @return If it is wounded or not.
+	 */
+	boolean isWounded();
 }

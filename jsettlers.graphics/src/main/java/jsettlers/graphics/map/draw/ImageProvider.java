@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import java8.util.function.Supplier;
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -21,7 +22,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.images.TextureMap;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.ImageIndexFile;
-import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.reader.AdvancedDatFileReader;
@@ -151,7 +152,7 @@ public final class ImageProvider {
 		} else {
 			OriginalImageLink olink = (OriginalImageLink) link;
 			if (olink.getType() == EImageLinkType.LANDSCAPE) {
-				return getLandscapeImage(olink.getFile(), olink.getSequence());
+				return getLandscapeImage(olink.getFile(), olink.getSequence(), link::getHumanName);
 			} else {
 				return getDetailedImage(olink, width, height);
 			}
@@ -190,9 +191,9 @@ public final class ImageProvider {
 	 */
 	private Image getSequencedImage(OriginalImageLink link, int sequenceNumber) {
 		if (link.getType() == EImageLinkType.SETTLER) {
-			return getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber);
+			return getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber, link::getHumanName);
 		} else {
-			return getGuiImage(link.getFile(), link.getSequence() + sequenceNumber);
+			return getGuiImage(link.getFile(), link.getSequence() + sequenceNumber, link::getHumanName);
 		}
 	}
 
@@ -214,13 +215,13 @@ public final class ImageProvider {
 	 * 		It's sequence number.
 	 * @return The image, or an empty image.
 	 */
-	private SingleImage getLandscapeImage(int file, int seqnumber) {
+	private SingleImage getLandscapeImage(int file, int seqnumber, Supplier<String> name) {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
-			Sequence<LandscapeImage> landscapes = set.getLandscapes();
+			Sequence<SingleImage> landscapes = set.getLandscapes();
 			if (seqnumber < landscapes.length()) {
-				return (SingleImage) landscapes.getImageSafe(seqnumber);
+				return (SingleImage) landscapes.getImageSafe(seqnumber, name);
 			}
 		}
 		return NullImage.getInstance();
@@ -235,11 +236,11 @@ public final class ImageProvider {
 	 * 		The image number.
 	 * @return The image.
 	 */
-	public SingleImage getGuiImage(int file, int seqnumber) {
+	public SingleImage getGuiImage(int file, int seqnumber, Supplier<String> name) {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
-			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
+			return (SingleImage) set.getGuis().getImageSafe(seqnumber, name);
 		} else {
 			return NullImage.getInstance();
 		}
@@ -290,7 +291,7 @@ public final class ImageProvider {
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
-				reader = new AdvancedDatFileReader(file, type, gfxFolderMapping.getDatFileMapping(fileIndex));
+				reader = new AdvancedDatFileReader(file, type, gfxFolderMapping.getDatFileMapping(fileIndex), "F" + fileIndex);
 				break;
 			}
 		}

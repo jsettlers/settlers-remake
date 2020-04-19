@@ -15,9 +15,6 @@
 
 package jsettlers.main.android.core.ui.dialogs;
 
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.utils.StringUtil;
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -25,6 +22,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.utils.StringUtil;
 
 public class EditTextDialog extends DialogFragment {
 	private static final String ARG_REQUEST_CODE = "request_code";

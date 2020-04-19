@@ -21,14 +21,14 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
-
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 
 @EActivity(R.layout.activity_settings)
 public class SettingsActivity extends AppCompatActivity implements SettingsView, EditTextDialog.Listener {

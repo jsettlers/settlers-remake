@@ -51,6 +51,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.IDirectGridProvider;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
@@ -65,6 +66,7 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.EWinState;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
@@ -516,6 +518,10 @@ public final class MainGrid implements Serializable {
 		partitionsGrid.initWithPlayerSettings(playerSettings);
 	}
 
+	public final void disableFogOfWar() {
+		fogOfWar.setEnabled(false);
+	}
+
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
@@ -755,7 +761,7 @@ public final class MainGrid implements Serializable {
 
 	}
 
-	final class GraphicsGrid implements IGraphicsGrid {
+	final class GraphicsGrid implements IGraphicsGrid, IDirectGridProvider {
 		private transient BitSet bordersGrid = new BitSet(width * height);
 
 		@Override
@@ -774,8 +780,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public IMovable[] getMovableArray() {
+			return movableGrid.getMovableArray();
+		}
+
+		@Override
 		public final IMapObject getMapObjectsAt(int x, int y) {
 			return objectsGrid.getObjectsAt(x, y);
+		}
+
+		public final IMapObject[] getObjectArray() {
+			return objectsGrid.getObjectArray();
 		}
 
 		@Override
@@ -836,6 +851,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public BitSet getBorderArray() {
+			return bordersGrid;
+		}
+
+		@Override
 		public final byte getPlayerIdAt(int x, int y) {
 			return partitionsGrid.getPlayerIdAt(x, y);
 		}
@@ -843,6 +863,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final byte getVisibleStatus(int x, int y) {
 			return fogOfWar.getVisibleStatus(x, y);
+		}
+
+		@Override
+		public byte[][] getVisibleStatusArray() {
+			return fogOfWar.getVisibleStatusArray();
 		}
 
 		@Override
@@ -1928,6 +1953,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isNavigable(int x, int y) {
 			return MainGrid.this.isNavigable(x, y);
+		}
+
+		@Override
+		public boolean hasLost(byte playerId) {
+			return partitionsGrid.getPlayer(playerId).getWinState() == EWinState.LOST;
 		}
 
 		@Override

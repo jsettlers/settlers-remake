@@ -15,6 +15,12 @@
 
 package jsettlers.main.android.gameplay.controlsmenu.selection;
 
+import java.util.List;
+
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewsById;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -23,6 +29,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import jsettlers.common.action.EActionType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.movable.EMovableType;
@@ -30,11 +37,6 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewsById;
-
-import java.util.List;
 
 /**
  * Created by Rudolf Polzer

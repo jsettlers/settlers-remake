@@ -19,6 +19,30 @@ package go.graphics;
  * 
  * @author Michael Zangl
  */
-public interface GeometryHandle extends GLBufferHandle {
+public class GeometryHandle extends GLBufferHandle {
+	private int vao;
+	private EGeometryFormatType format;
 
+	public GeometryHandle(GLDrawContext dc, int vbo, int vao, EGeometryFormatType format) {
+		super(dc, vbo);
+		this.vao = vao;
+		this.format = format;
+	}
+
+	public EGeometryFormatType getFormat() {
+		return format;
+	}
+
+	public int getInternalFormatId() {
+		return vao;
+	}
+
+	public void setInternalFormatId(int vao) {
+		this.vao = vao;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [index=" + id + " ,vao=" + vao + " ,format=" + format + " ]";
+	}
 }

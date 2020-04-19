@@ -137,4 +137,6 @@ public interface IGuiInputGrid {
 	FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
 
 	boolean isNavigable(int x, int y);
+
+	boolean hasLost(byte playerId);
 }

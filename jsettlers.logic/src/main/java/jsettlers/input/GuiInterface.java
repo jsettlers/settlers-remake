@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2018
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,7 +11,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
+ */
 package jsettlers.input;
 
 import java.util.EnumSet;
@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import java8.util.Optional;
 import java8.util.function.BiFunction;
 import java8.util.function.Predicate;
+import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
@@ -39,6 +40,7 @@ import jsettlers.common.action.SetDockAction;
 import jsettlers.common.action.SetMaterialDistributionSettingsAction;
 import jsettlers.common.action.SetMaterialPrioritiesAction;
 import jsettlers.common.action.SetMaterialProductionAction;
+import jsettlers.common.action.SetSpeedAction;
 import jsettlers.common.action.SetTradingWaypointAction;
 import jsettlers.common.action.ShowConstructionMarksAction;
 import jsettlers.common.action.SoldierAction;
@@ -176,16 +178,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				clock.setPausing(false);
 				break;
 
-			case SPEED_SLOW:
-				if (!multiplayer) {
-					clock.setGameSpeed(0.5f);
-				}
-				break;
-			case SPEED_FAST:
-				if (!multiplayer) {
-					clock.setGameSpeed(5.0f);
-				}
-				break;
 			case SPEED_FASTER:
 				if (!multiplayer) {
 					clock.multiplyGameSpeed(1.2f);
@@ -196,9 +188,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 					clock.multiplyGameSpeed(1 / 1.2f);
 				}
 				break;
-			case SPEED_NORMAL:
+
+			case SET_SPEED:
 				if (!multiplayer) {
-					clock.setGameSpeed(1.0f);
+					clock.setGameSpeed(((SetSpeedAction) action).getSpeed());
 				}
 				break;
 
@@ -210,6 +203,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 			case SELECT_POINT:
 				handleSelectPointAction((PointAction) action);
+				break;
+
+			case FILTER_WOUNDED:
+				filterWounded();
 				break;
 
 			case SELECT_AREA:
@@ -334,7 +331,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (selected instanceof Building) {
 					final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
 					scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
-						a.getAmount(), a.isRelative()
+																 a.getAmount(), a.isRelative()
 					));
 				}
 				break;
@@ -345,7 +342,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (selected instanceof Building) {
 					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
 					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
-						a.getWaypointType(), a.getPosition()
+															   a.getWaypointType(), a.getPosition()
 					));
 				}
 				break;
@@ -608,6 +605,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
 	}
 
+	private void filterWounded() {
+		if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+			return;
+		}
+
+		final List<ISelectable> wounded = currentSelection.stream().filter(ISelectable::isWounded).collect(Collectors.toList());
+		setSelection(new SelectionSet(wounded));
+	}
+
 	private void deselect() {
 		setSelection(new SelectionSet());
 	}
@@ -625,7 +631,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		} else {
 			setSelection(new SelectionSet());
 		}
-
 	}
 
 	private void scheduleTask(SimpleGuiTask guiTask) {

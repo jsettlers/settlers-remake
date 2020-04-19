@@ -14,6 +14,8 @@
  *******************************************************************************/
 package go.graphics.text;
 
+import go.graphics.AbstractColor;
+
 public interface TextDrawer {
 
 	/**
@@ -44,5 +46,5 @@ public interface TextDrawer {
 
 	float getHeight(String string);
 
-	void setColor(float red, float green, float blue, float alpha);
+	void setColor(AbstractColor color);
 }

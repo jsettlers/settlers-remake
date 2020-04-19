@@ -42,8 +42,8 @@ public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 	}
 
 	@Override
-	public SettlerImage createImage(ImageMetadata metadata, short[] array) {
-		return new SettlerImage(metadata, array);
+	public SettlerImage createImage(ImageMetadata metadata, short[] array, String name) {
+		return new SettlerImage(metadata, array, name);
 	}
 
 	@Override
