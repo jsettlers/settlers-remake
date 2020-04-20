@@ -819,7 +819,7 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 
 	@Override
 	public UnifiedDrawHandle createUnifiedDrawCall(int vertices, String name, TextureHandle texture, float[] data) {
-		BufferHandle vertexBuffer = createBuffer(vertices*(texture!=null?4:2)*4*4, STATIC_BUFFER);
+		BufferHandle vertexBuffer = createBuffer(vertices*(texture!=null?4:2)*4, STATIC_BUFFER);
 		if (data != null) {
 			try(MemoryStack stack = MemoryStack.stackPush()) {
 				ByteBuffer dataBfr = stack.malloc(data.length*4);

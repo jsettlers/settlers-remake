@@ -246,7 +246,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 		if(data != null) {
 			glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW);
 		} else {
-			glBufferData(GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4*4, GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4, GL_DYNAMIC_DRAW);
 		}
 
 		UnifiedDrawHandle handle = new UnifiedDrawHandle(this, vao, 0, vertices, texture, vertexBuffer);
