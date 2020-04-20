@@ -184,7 +184,11 @@ public abstract class MapSetupViewModel extends ViewModel implements PositionCha
 	}
 
 	private static void setSlotCivilisations(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting) {
-		playerSlotPresenter.setPossibleCivilisations(new Civilisation[] { new Civilisation(ECivilisation.ROMAN) });
+
+		ECivilisation[] ecivs = ECivilisation.values();
+		Civilisation[] civs = new Civilisation[ecivs.length];
+		for(int i=0; i<ecivs.length; i++) civs[i] = new Civilisation(ecivs[i]);
+		playerSlotPresenter.setPossibleCivilisations(civs);
 
 		if (playerSetting.getCivilisation() != null) {
 			playerSlotPresenter.setCivilisation(new Civilisation(playerSetting.getCivilisation()));
