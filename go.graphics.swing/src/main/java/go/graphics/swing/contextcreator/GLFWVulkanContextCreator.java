@@ -17,7 +17,13 @@ import static org.lwjgl.vulkan.KHRWin32Surface.VK_KHR_WIN32_SURFACE_EXTENSION_NA
 public class GLFWVulkanContextCreator extends GLFWContextCreator {
 	public GLFWVulkanContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
+
+		offscreen = false;
+		clear_offscreen = false;
 	}
+
+	@Override
+	public void changeDrawMode() {}
 
 	@Override
 	protected void configureWindow() {

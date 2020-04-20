@@ -15,9 +15,6 @@
 package go.graphics.swing.text;
 
 import go.graphics.GLDrawContext;
-import go.graphics.swing.opengl.LWJGLDrawContext;
-import go.graphics.swing.vulkan.VulkanDrawContext;
-import go.graphics.swing.vulkan.VulkanTextureHandle;
 import go.graphics.text.AbstractTextDrawer;
 import go.graphics.text.EFontSize;
 
@@ -28,8 +25,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-
-import static org.lwjgl.opengl.GL20C.*;
 
 public final class LWJGLTextDrawer extends AbstractTextDrawer<GLDrawContext> {
 	private static final int DEFAULT_DPI = 96;

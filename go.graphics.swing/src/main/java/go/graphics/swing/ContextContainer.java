@@ -133,20 +133,4 @@ public abstract class ContextContainer extends JPanel implements GOEventHandlerP
 		if(context == null) throw new ContextException();
 		((VulkanDrawContext)context).endFrame();
 	}
-
-	public void readFramebuffer(IntBuffer pixels, int width, int height) {
-		if(context instanceof VulkanDrawContext) {
-			((VulkanDrawContext)context).readFramebuffer(pixels, width, height);
-		} else {
-			((LWJGLDrawContext)context).readFramebuffer(pixels, width, height);
-		}
-	}
-
-	public void clearFramebuffer() {
-		if(context instanceof VulkanDrawContext) {
-			((VulkanDrawContext)context).clearFramebuffer();
-		} else {
-			((LWJGLDrawContext)context).clearFramebuffer();
-		}
-	}
 }

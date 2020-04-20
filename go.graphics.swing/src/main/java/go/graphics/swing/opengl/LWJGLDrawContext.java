@@ -13,15 +13,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import go.graphics.AbstractColor;
 import go.graphics.BackgroundDrawHandle;
-import go.graphics.GLDrawContext;
 import go.graphics.BufferHandle;
+import go.graphics.GLDrawContext;
 import go.graphics.ManagedHandle;
 import go.graphics.MultiDrawHandle;
 import go.graphics.TextureHandle;
@@ -246,7 +245,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 		if(data != null) {
 			glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW);
 		} else {
-			glBufferData(GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4*4, GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vertices*(texture!=null?4:2)*4, GL_DYNAMIC_DRAW);
 		}
 
 		UnifiedDrawHandle handle = new UnifiedDrawHandle(this, vao, 0, vertices, texture, vertexBuffer);
@@ -584,25 +583,15 @@ public class LWJGLDrawContext extends GLDrawContext {
 		}
 	}
 
-	
+
 	public void clearDepthBuffer() {
 		finishFrame();
 		glClear(GL_DEPTH_BUFFER_BIT);
-	}
-
-	public void clearFramebuffer() {
-		finishFrame();
-		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	@Override
 	public void startFrame() {
 		super.startFrame();
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	}
-
-	public void readFramebuffer(IntBuffer pixels, int width, int height) {
-		finishFrame();
-		glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
 	}
 }
