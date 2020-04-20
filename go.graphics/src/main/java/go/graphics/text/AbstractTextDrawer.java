@@ -41,7 +41,7 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 
 	static {
 		StringBuilder charsBuilder = new StringBuilder();
-		for(char i = 0;i != 128; i++) charsBuilder.append(i);
+		for(char i=' ';i<128; i++) charsBuilder.append(i);
 
 		charsBuilder.append("ÆØåæéø"); // danish
 		charsBuilder.append("ÄÖÜẞäöüß"); // german
@@ -217,7 +217,7 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 
 		private int indexOf(char c) {
 			int indexOf = CHARACTERS.indexOf(c);
-			if(indexOf == -1) return 0;
+			if(indexOf == -1) return indexOf('?');
 			return indexOf;
 		}
 

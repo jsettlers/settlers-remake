@@ -28,8 +28,6 @@ import go.graphics.FramerateComputer;
 import go.graphics.swing.ContextContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
-import static org.lwjgl.opengl.GL20C.*;
-
 public abstract class AsyncContextCreator extends ContextCreator implements Runnable,DrawmodeListener {
 
 	protected boolean offscreen = true;
@@ -126,7 +124,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 				if (offscreen) {
 					synchronized (wnd_lock) {
-						glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+						parent.readFramebuffer(pixels, width, height);
 						for (int x = 0; x != width; x++) {
 							for (int y = 0; y != height; y++) {
 								bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
@@ -136,8 +134,8 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				}
 
 				if (!offscreen || clear_offscreen) {
-					if (clear_offscreen) {
-						glClear(GL_COLOR_BUFFER_BIT);
+					if (clear_offscreen && !offscreen) {
+						parent.clearFramebuffer();
 						clear_offscreen = false;
 					}
 					async_swapbuffers();
