@@ -39,7 +39,7 @@ import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BearerSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.ShipSelectionContent;
-import jsettlers.graphics.map.controls.original.panel.selection.SoilderSelectionContent;
+import jsettlers.graphics.map.controls.original.panel.selection.SoldierSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.selection.SpecialistSelectionContent;
 import jsettlers.graphics.map.minimap.Minimap;
 import jsettlers.graphics.map.minimap.MinimapMode;
@@ -64,6 +64,7 @@ public class OriginalControls implements IControls {
 	private Minimap minimap;
 	private boolean lastSelectionWasNull = true;
 	private MapDrawContext context;
+	private final IInGamePlayer player;
 
 	/**
 	 * Creates a new {@link OriginalControls} overlay.
@@ -74,6 +75,7 @@ public class OriginalControls implements IControls {
 	 *            The player this interface should be for.
 	 */
 	public OriginalControls(ActionFireable actionFireable, IInGamePlayer player) {
+		this.player = player;
 		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(DEFAULT_LAYOUT_SIZE);
 		final MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
 		mainPanel = new MainPanel(actionFireable, player);
@@ -377,13 +379,13 @@ public class OriginalControls implements IControls {
 				mainPanel.setContent(new BearerSelectionContent(selection));
 				break;
 			case SOLDIERS:
-				mainPanel.setContent(new SoilderSelectionContent(selection));
+				mainPanel.setContent(new SoldierSelectionContent(player, selection));
 				break;
 			case SPECIALISTS:
-				mainPanel.setContent(new SpecialistSelectionContent(selection));
+				mainPanel.setContent(new SpecialistSelectionContent(player, selection));
 				break;
 			case SHIPS:
-				mainPanel.setContent(new ShipSelectionContent(selection));
+				mainPanel.setContent(new ShipSelectionContent(player, selection));
 				break;
 			case BUILDING:
 				mainPanel.setContent(new BuildingSelectionContent(selection));

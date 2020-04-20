@@ -17,6 +17,8 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
@@ -36,10 +38,10 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 
 	private final UIPanel panel;
 
-	public ShipSelectionContent(ISelectionSet selection) {
+	public ShipSelectionContent(IInGamePlayer player, ISelectionSet selection) {
 		panel = new UIPanel();
 
-		addRowsToPanel(panel, selection, shiptypes);
+		addRowsToPanel(panel, selection, player.getCivilisation(), shiptypes);
 
 		UIPanel kill = new LabeledButton(Labels.getString("kill"), new Action(EActionType.DESTROY));
 		UIPanel unload = new LabeledButton(Labels.getString("unload"), new Action(EActionType.UNLOAD_FERRIES));
@@ -48,7 +50,7 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 		panel.addChild(unload, .1f, .1f, .9f, .2f);
 	}
 
-	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection, EMovableType[] types) {
+	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection, ECivilisation civ, EMovableType[] types) {
 		float rowHeight = 1f / ROWS;
 
 		int rowi = ROWS - 1; // from bottom
@@ -57,7 +59,7 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 			int count = selection.getMovableCount(type);
 
 			if (count > 0) {
-				SelectionRow row = new SelectionRow(type, count);
+				SelectionRow row = new SelectionRow(civ, type, count);
 				panel.addChild(row, 0.1f, rowHeight * (rowi - 1), .9f,
 						rowHeight * (rowi));
 				rowi--;

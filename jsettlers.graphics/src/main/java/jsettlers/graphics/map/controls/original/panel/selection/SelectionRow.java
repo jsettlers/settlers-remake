@@ -22,6 +22,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
@@ -30,6 +31,7 @@ import jsettlers.graphics.ui.UIPanel;
 public class SelectionRow extends UIPanel {
 
 	private final EMovableType type;
+	private final ECivilisation civ;
 	private final int count;
 
 	/**
@@ -40,7 +42,8 @@ public class SelectionRow extends UIPanel {
 	 * @param count
 	 *            How many of them are selected.
 	 */
-	public SelectionRow(EMovableType type, int count) {
+	public SelectionRow(ECivilisation civ, EMovableType type, int count) {
+		this.civ = civ;
 		this.type = type;
 		this.count = count;
 	}
@@ -49,7 +52,7 @@ public class SelectionRow extends UIPanel {
 	public void drawAt(GLDrawContext gl) {
 		float width = getPosition().getWidth();
 		Image image =
-				SettlerImageMap.getInstance().getImageForSettler(type,
+				SettlerImageMap.getInstance().getImageForSettler(civ, type,
 						EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL,
 						EDirection.SOUTH_EAST, 0);
 

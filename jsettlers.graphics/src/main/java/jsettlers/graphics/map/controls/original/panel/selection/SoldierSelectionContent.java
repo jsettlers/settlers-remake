@@ -16,15 +16,17 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
-public class SoilderSelectionContent extends AbstractSelectionContent {
+public class SoldierSelectionContent extends AbstractSelectionContent {
 
-	private static final EMovableType[] soildertypes = new EMovableType[] {
+	private static final EMovableType[] soldiertypes = new EMovableType[] {
 			EMovableType.SWORDSMAN_L1,
 			EMovableType.SWORDSMAN_L2,
 			EMovableType.SWORDSMAN_L3,
@@ -43,10 +45,10 @@ public class SoilderSelectionContent extends AbstractSelectionContent {
 
 	private final UIPanel panel;
 
-	public SoilderSelectionContent(ISelectionSet selection) {
+	public SoldierSelectionContent(IInGamePlayer player, ISelectionSet selection) {
 		panel = new UIPanel();
 
-		addRowsToPanel(panel, selection, soildertypes);
+		addRowsToPanel(panel, selection, player.getCivilisation(), soldiertypes);
 
 		UIPanel kill = new LabeledButton(Labels.getString("kill"), new Action(EActionType.DESTROY));
 		UIPanel stop = new LabeledButton(Labels.getString("stop"), new Action(EActionType.STOP_WORKING));
@@ -55,7 +57,7 @@ public class SoilderSelectionContent extends AbstractSelectionContent {
 		panel.addChild(stop, .5f, .1f, .9f, .2f);
 	}
 
-	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection,
+	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection, ECivilisation civ,
 			EMovableType[] types) {
 		float rowHeight = 1f / ROWS;
 
@@ -65,7 +67,7 @@ public class SoilderSelectionContent extends AbstractSelectionContent {
 			int count = selection.getMovableCount(type);
 
 			if (count > 0) {
-				SelectionRow row = new SelectionRow(type, count);
+				SelectionRow row = new SelectionRow(civ, type, count);
 				panel.addChild(row, 0.1f, rowHeight * (rowi - 1), .9f,
 						rowHeight * (rowi));
 				rowi--;

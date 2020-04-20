@@ -16,6 +16,7 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.ConvertAction;
@@ -36,10 +37,10 @@ public class SpecialistSelectionContent extends AbstractSelectionContent {
 
 	private final UIPanel panel;
 
-	public SpecialistSelectionContent(ISelectionSet selection) {
+	public SpecialistSelectionContent(IInGamePlayer player, ISelectionSet selection) {
 		panel = new UIPanel();
 
-		SoilderSelectionContent.addRowsToPanel(panel, selection, specialists);
+		SoldierSelectionContent.addRowsToPanel(panel, selection, player.getCivilisation(), specialists);
 
 		UIPanel stop = new LabeledButton(Labels.getString("stop"),
 				new Action(EActionType.STOP_WORKING));

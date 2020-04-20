@@ -52,4 +52,8 @@ public class SettlerImageMapItem {
 	public int getDuration() {
 		return this.duration;
 	}
+
+	public SettlerImageMapItem derive(int civ) {
+		return new SettlerImageMapItem((civ+1)*10+file, sequenceIndex, start, duration);
+	}
 }
