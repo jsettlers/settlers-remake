@@ -49,6 +49,10 @@ $type, $action, $mat, SOUTH_EAST = $file, $seq, 23, -4
 ###
 SETTLER_MATERIAL(BEARER, NO_MATERIAL, c0, 0)
 SETTLER_MATERIAL(BEARER, PLANK, c0, 1)
+
+# only AMAZONs have MEAD and HONEY animations
+SETTLER_MATERIAL(BEARER, MEAD, 40, 54)
+SETTLER_MATERIAL(BEARER, HONEY, 40, 60)
 ###
 # BEARER movables end
 ###

@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw.settlerimages;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,9 +29,9 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 
 /**
- * This is a settler image map that mapps the state of a settler to the sequence that is to be played.
+ * This is a settler image map that maps the state of a settler to the sequence that is to be played.
  * <p>
- * The mapping is a function: (type, material, direction) => (file, sequence index, start, duration)
+ * The mapping is a function: (civilisation, type, material, direction) => (file, sequence index, start, duration)
  *
  * @author michael
  */
