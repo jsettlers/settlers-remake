@@ -1,0 +1,6 @@
+# this is a map:
+# type, action, material, direction = file, sequence index, start, duration
+# See
+
+SETTLER_MATERIAL(BEARER, STONE, 40, 2)
+SETTLER_MATERIAL(BEARER, PIG, 40, 3)

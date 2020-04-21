@@ -50,7 +50,7 @@ public final class SettlerImageMap {
 
 	private final Pattern linePattern = Pattern.compile("\\s*([\\w\\*]+)\\s*,"
 			+ "\\s*([\\w\\*]+)\\s*," + "\\s*([\\w\\*]+)\\s*,"
-			+ "\\s*([\\w\\*]+)\\s*" + "=\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*,"
+			+ "\\s*([\\w\\*]+)\\s*" + "=\\s*(c?\\d+)\\s*," + "\\s*(\\d+)\\s*,"
 			+ "\\s*(\\d+)\\s*," + "\\s*(-?\\d+)\\s*");
 
 	private final int civilisations;
@@ -74,14 +74,15 @@ public final class SettlerImageMap {
 		this.directions = EDirection.VALUES.length;
 		this.map = new SettlerImageMapItem[this.civilisations][this.types][this.actions][this.materials][this.directions];
 
+		MovableParser parser = new MovableParser();
 
 		int[][][][][] priorities = new int[this.civilisations][this.types][this.actions][this.materials][this.directions];
 		// add pseudo entry.
 		addEntryToMap(priorities, null, null, null, null, null, DEFAULT_ITEM, -1);
 
-		readFromFile(priorities, null, "movables.txt");
+		readFromFile(parser, priorities, null, "movables.txt");
 		for(ECivilisation civ : ECivilisation.values()) {
-			readFromFile(priorities, civ, "movables-" + civ + ".txt");
+			readFromFile(parser, priorities, civ, "movables-" + civ + ".txt");
 		}
 	}
 
@@ -91,30 +92,11 @@ public final class SettlerImageMap {
 	 * @param name
 	 * 		The file to read from.
 	 */
-	private void readFromFile(int[][][][][] priorities, ECivilisation civ, String name) {
+	private void readFromFile(MovableParser parser, int[][][][][] priorities, ECivilisation civ, String name) {
 		try {
-			InputStream file = getClass().getResourceAsStream(name);
-
-			readFromFile(file, civ, priorities);
+			parser.parseFile(name, line -> addByLine(priorities, civ, line));
 		} catch (IOException e) {
 			System.err.println("Error reading image file. Settler images might not work.");
-		}
-	}
-
-	private void readFromFile(InputStream file, ECivilisation civ, int[][][][][] priorities) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
-
-		String line = reader.readLine();
-		while (line != null) {
-			if (!line.isEmpty() && !line.startsWith("#")) {
-				try {
-					addByLine(priorities, civ, line);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				}
-			}
-
-			line = reader.readLine();
 		}
 	}
 
@@ -142,12 +124,25 @@ public final class SettlerImageMap {
 
 		int priority = calculatePriority(civ, type, action, material, direction);
 
-		final int fileIndex = Integer.parseInt(matcher.group(5));
+		final String fileString = matcher.group(5);
 		final int sequence = Integer.parseInt(matcher.group(6));
 		final int start = Integer.parseInt(matcher.group(7));
 		final int duration = Integer.parseInt(matcher.group(8));
 
-		addEntryToMap(priorities, civ, type, action, material, direction, new SettlerImageMapItem(fileIndex, sequence, start, duration), priority);
+		ECivilisation[] civs = (civ == null) ? ECivilisation.values() : new ECivilisation[] {civ};
+
+		for(ECivilisation c : civs) {
+			final int fileIndex = parseFile(fileString, c);
+			addEntryToMap(priorities, c, type, action, material, direction, new SettlerImageMapItem(fileIndex, sequence, start, duration), priority);
+		}
+	}
+
+	private int parseFile(String fileString, ECivilisation civ) {
+		if(fileString.contains("c")) {
+			fileString = fileString.replace("c", Integer.toString(civ.getFileIndex()));
+		}
+
+		return Integer.parseInt(fileString);
 	}
 
 	private EMovableType parseType(final String typeString) {
@@ -287,13 +282,12 @@ public final class SettlerImageMap {
 		}
 
 		for (int civIndex = minCiv; civIndex < maxCiv; civIndex++) {
-			SettlerImageMapItem addItem = (civ != null)?item : item.derive(civIndex);
 			for (int typeIndex = minType; typeIndex < maxType; typeIndex++) {
 				for (int actionIndex = minAction; actionIndex < maxAction; actionIndex++) {
 					for (int materialIndex = minMaterial; materialIndex < maxMaterial; materialIndex++) {
 						for (int direcitonIndex = minDirection; direcitonIndex < maxDirection; direcitonIndex++) {
 							if (priorities[civIndex][typeIndex][actionIndex][materialIndex][direcitonIndex] < priority) {
-								map[civIndex][typeIndex][actionIndex][materialIndex][direcitonIndex] = addItem;
+								map[civIndex][typeIndex][actionIndex][materialIndex][direcitonIndex] = item;
 								priorities[civIndex][typeIndex][actionIndex][materialIndex][direcitonIndex] = priority;
 							}
 						}

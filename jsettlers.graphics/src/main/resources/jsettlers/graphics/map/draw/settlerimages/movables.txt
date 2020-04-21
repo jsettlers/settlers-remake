@@ -1,0 +1,104 @@
+# this is a map:
+# type, action, material, direction = file, sequence index, start, duration
+# 'c' in "file" is just a placeholder for civilisation specific files
+# c0 => 10 (ROMAN), 20 (EGYPTIAN), 30 (ASIAN) or 40 (AMAZON)
+# See
+
+!SETTLER_ACTION type action mat file seq {
+$type, $action, $mat, SOUTH_WEST = $file, $seq,  0, 12
+$type, $action, $mat, WEST       = $file, $seq, 12, 12
+$type, $action, $mat, NORTH_WEST = $file, $seq, 24, 12
+$type, $action, $mat, NORTH_EAST = $file, $seq, 36, 12
+$type, $action, $mat, EAST       = $file, $seq, 48, 12
+$type, $action, $mat, SOUTH_EAST = $file, $seq, 60, 12
+}
+
+!SETTLER_MATERIAL type mat file seq {
+SETTLER_ACTION($type, WALKING, $mat, $file, $seq)
+
+$type, NO_ACTION, $mat, SOUTH_WEST = $file, $seq,  0, 1
+$type, NO_ACTION, $mat, WEST       = $file, $seq, 12, 1
+$type, NO_ACTION, $mat, NORTH_WEST = $file, $seq, 24, 1
+$type, NO_ACTION, $mat, NORTH_EAST = $file, $seq, 36, 1
+$type, NO_ACTION, $mat, EAST       = $file, $seq, 48, 1
+$type, NO_ACTION, $mat, SOUTH_EAST = $file, $seq, 60, 1
+}
+
+!SETTLER_BEND type mat file seq {
+$type, BEND_DOWN, $mat, SOUTH_WEST = $file, $seq,  0, 4
+$type, BEND_DOWN, $mat, WEST       = $file, $seq,  4, 4
+$type, BEND_DOWN, $mat, NORTH_WEST = $file, $seq,  8, 4
+$type, BEND_DOWN, $mat, NORTH_EAST = $file, $seq, 12, 4
+$type, BEND_DOWN, $mat, EAST       = $file, $seq, 16, 4
+$type, BEND_DOWN, $mat, SOUTH_EAST = $file, $seq, 20, 4
+}
+
+!SETTLER_MOVE type action mat file seq {
+$type, $action, $mat, SOUTH_WEST = $file, $seq,  3, -4
+$type, $action, $mat, WEST       = $file, $seq,  7, -4
+$type, $action, $mat, NORTH_WEST = $file, $seq, 11, -4
+$type, $action, $mat, NORTH_EAST = $file, $seq, 15, -4
+$type, $action, $mat, EAST       = $file, $seq, 19, -4
+$type, $action, $mat, SOUTH_EAST = $file, $seq, 23, -4
+}
+
+# common movables
+
+###
+# BEARER movables start
+###
+SETTLER_MATERIAL(BEARER, NO_MATERIAL, c0, 0)
+SETTLER_MATERIAL(BEARER, PLANK, c0, 1)
+###
+# BEARER movables end
+###
+
+###
+# DONKEY movables start
+###
+SETTLER_ACTION(DONKEY, WALKING, *, 6, 15)
+
+DONKEY, NO_ACTION, *, SOUTH_WEST = 6, 15, 72, 1
+DONKEY, NO_ACTION, *, WEST       = 6, 15, 73, 1
+DONKEY, NO_ACTION, *, NORTH_WEST = 6, 15, 74, 1
+DONKEY, NO_ACTION, *, NORTH_EAST = 6, 15, 75, 1
+DONKEY, NO_ACTION, *, EAST       = 6, 15, 76, 1
+DONKEY, NO_ACTION, *, SOUTH_EAST = 6, 15, 77, 1
+
+SETTLER_ACTION(DONKEY, WALKING, NO_MATERIAL, 6, 15)
+
+DONKEY, NO_ACTION, NO_MATERIAL, SOUTH_WEST = 6, 17, 72, 1
+DONKEY, NO_ACTION, NO_MATERIAL, WEST       = 6, 17, 73, 1
+DONKEY, NO_ACTION, NO_MATERIAL, NORTH_WEST = 6, 17, 74, 1
+DONKEY, NO_ACTION, NO_MATERIAL, NORTH_EAST = 6, 17, 75, 1
+DONKEY, NO_ACTION, NO_MATERIAL, EAST       = 6, 17, 76, 1
+DONKEY, NO_ACTION, NO_MATERIAL, SOUTH_EAST = 6, 17, 77, 1
+###
+# DONKEY movables end
+###
+
+
+
+###
+# WHITEFLAGGED_DONKEY movables start
+###
+SETTLER_ACTION(WHITEFLAGGED_DONKEY, WALKING, *, 6, 16)
+
+WHITEFLAGGED_DONKEY, NO_ACTION, *, SOUTH_WEST = 6, 16, 72, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, *, WEST       = 6, 16, 73, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, *, NORTH_WEST = 6, 16, 74, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, *, NORTH_EAST = 6, 16, 75, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, *, EAST       = 6, 16, 76, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, *, SOUTH_EAST = 6, 16, 77, 1
+
+SETTLER_ACTION(WHITEFLAGGED_DONKEY, WALKING, NO_MATERIAL, 6, 18)
+
+WHITEFLAGGED_DONKEY, NO_ACTION, NO_MATERIAL, SOUTH_WEST = 6, 18, 72, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, NO_MATERIAL, WEST       = 6, 18, 73, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, NO_MATERIAL, NORTH_WEST = 6, 18, 74, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, NO_MATERIAL, NORTH_EAST = 6, 18, 75, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, NO_MATERIAL, EAST       = 6, 18, 76, 1
+WHITEFLAGGED_DONKEY, NO_ACTION, NO_MATERIAL, SOUTH_EAST = 6, 18, 77, 1
+###
+# WHITEFLAGGED_DONKEY movables end
+###
