@@ -1358,6 +1358,7 @@ public class MapObjectDrawer {
 		}
 	}
 
+	// TODO shadow is wrong
 	private static final int DEAD_SETTLER_FILE = 12;
 	private static final int DEAD_SETTLER_INDEX = 27;
 
