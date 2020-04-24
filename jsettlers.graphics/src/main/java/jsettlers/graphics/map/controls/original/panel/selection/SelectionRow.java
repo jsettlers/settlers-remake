@@ -64,7 +64,11 @@ public class SelectionRow extends UIPanel {
 				.getMinY() + getPosition().getHeight() / 4;
 		float left = getPosition().getMinX();
 		float imagex = left + width / 20;
-		image.drawAt(gl, imagex, bottomy, 0, color, 1);
+		if(type == EMovableType.FERRY || type == EMovableType.CARGO_SHIP) {
+			image.drawImageAtRect(gl, imagex, bottomy, width/5, width/5);
+		} else {
+			image.drawAt(gl, imagex, bottomy, 0, color, 1);
+		}
 
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
 

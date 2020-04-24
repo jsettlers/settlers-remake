@@ -43,10 +43,12 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 		SoldierSelectionContent.addRowsToPanel(panel, selection, shiptypes);
 
 		UIPanel kill = new LabeledButton(Labels.getString("kill"), new Action(EActionType.DESTROY));
-		UIPanel unload = new LabeledButton(Labels.getString("unload"), new Action(EActionType.UNLOAD_FERRIES));
-
 		panel.addChild(kill, .1f, .3f, .9f, .4f);
-		panel.addChild(unload, .1f, .1f, .9f, .2f);
+
+		if(selection.getMovableCount(EMovableType.FERRY, null) > 0) {
+			UIPanel unload = new LabeledButton(Labels.getString("unload"), new Action(EActionType.UNLOAD_FERRIES));
+			panel.addChild(unload, .1f, .1f, .9f, .2f);
+		}
 	}
 
 	@Override

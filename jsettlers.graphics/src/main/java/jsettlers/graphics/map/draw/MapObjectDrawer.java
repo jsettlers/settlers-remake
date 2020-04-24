@@ -22,6 +22,7 @@ import java.util.List;
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.action.EActionType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuilding.IOccupied;
@@ -283,21 +284,14 @@ public class MapObjectDrawer {
 		}
 	}
 
-	// TODO nations
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
-		byte fogOfWarVisibleStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
-		EDirection direction = ship.getDirection();
-		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
-		EMapObjectType shipType = ship.getObjectType();
-		float shade = getColor(fogOfWarVisibleStatus);
+		EMovableType shipType = ship.getObjectType() == EMapObjectType.FERRY ? EMovableType.FERRY : EMovableType.CARGO_SHIP;
+		float shade = getColor(visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE);
 		float state = ship.getStateProgress();
-		int baseSequence = (shipType == EMapObjectType.FERRY) ? FERRY_BASE_SEQUENCE : CARGO_SHIP_BASE_SEQUENCE;
-		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, SHIP_IMAGE_FILE, baseSequence + 3, shipImageDirection.ordinal);
-		Image image = imageProvider.getImage(shipLink);
+		Image image = imageMap.getImageForSettler(ship.getPlayer().getCivilisation(), shipType, EMovableAction.NO_ACTION, EMaterialType.TREE, ship.getDirection(), 0);
 		drawWithConstructionMask(x, y, state, image, shade);
 	}
 
-	// TODO nations
 	private void drawShip(IMovable ship, int x, int y) {
 		forceSetup();
 
@@ -307,14 +301,11 @@ public class MapObjectDrawer {
 		}
 		float height = context.getMap().getHeightAt(x, y);
 		EDirection direction = ship.getDirection();
-		EDirection shipImageDirection = direction.rotateRight(3); // ship images have a different direction numbering
 		EMovableType shipType = ship.getMovableType();
 		float shade = getColor(fogOfWarVisibleStatus);
-		int baseSequence = (shipType == EMovableType.FERRY) ? FERRY_BASE_SEQUENCE : CARGO_SHIP_BASE_SEQUENCE;
 
 		GLDrawContext glDrawContext = context.getGl();
 		MapCoordinateConverter mapCoordinateConverter = context.getConverter();
-		int sailSequence = (shipType == EMovableType.FERRY) ? 29 : 28;
 
 		// get drawing position
 		Color color = MapDrawContext.getPlayerColor(ship.getPlayer().getPlayerId());
@@ -330,7 +321,7 @@ public class MapObjectDrawer {
 			viewY += mapCoordinateConverter.getViewY(x, y, height);
 		}
 		// draw ship body
-		drawShipLink(SHIP_IMAGE_FILE, baseSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
+		drawShipLink(ship, EMaterialType.IRON, glDrawContext, viewX, viewY, color, shade);
 		// prepare freight drawing
 		List<? extends IMovable> passengerList = ship.getPassengers();
 
@@ -404,7 +395,7 @@ public class MapObjectDrawer {
 			}
 		}
 		// draw sail
-		drawShipLink(SHIP_IMAGE_FILE, sailSequence, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
+		drawShipLink(ship, EMaterialType.TRUNK, glDrawContext, viewX, viewY, color, shade);
 		if (shipType == EMovableType.FERRY) {
 			// draw passengers in front of the sail
 			for (int i = 0; i < numberOfFreight; i++) {
@@ -437,7 +428,7 @@ public class MapObjectDrawer {
 			}
 		}
 		// draw ship front
-		drawShipLink(SHIP_IMAGE_FILE, baseSequence + 2, shipImageDirection, glDrawContext, viewX, viewY, color, shade);
+		drawShipLink(ship, EMaterialType.PLANK, glDrawContext, viewX, viewY, color, shade);
 		if (ship.isSelected()) {
 			drawSelectionMark(viewX, viewY, ship.getHealth() / shipType.getHealth());
 		}
@@ -450,9 +441,8 @@ public class MapObjectDrawer {
 		return shipDirection.getNeighbor(((x + seatIndex + slowerAnimationStep) / 8 + (y + seatIndex + slowerAnimationStep) / 11 + seatIndex) % 3 - 1);
 	}
 
-	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl, float viewX, float viewY, Color color, float shade) {
-		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
-		Image image = imageProvider.getImage(shipLink);
+	private void drawShipLink(IMovable ship, EMaterialType fakeMat, GLDrawContext gl, float viewX, float viewY, Color color, float shade) {
+		Image image = imageMap.getImageForSettler(ship.getPlayer().getCivilisation(), ship.getMovableType(), ship.getAction(), fakeMat, ship.getDirection(), 0);
 		image.drawAt(gl, viewX, viewY, 0, color, shade);
 	}
 
