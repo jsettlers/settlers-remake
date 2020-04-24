@@ -88,8 +88,8 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 			setCenter("settings-title", settingsPanel);
 			settingsPanel.initializeValues();
 		});
-		registerMenu("start-newmultiplayer", e -> setCenter("start-newmultiplayer-start", newMultiPlayerGamePanel));
-		registerMenu("start-joinmultiplayer", e -> setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel));
+		registerMenu("start-newmultiplayer", e -> setCenter("start-newmultiplayer", newMultiPlayerGamePanel));
+		registerMenu("start-joinmultiplayer", e -> setCenter("start-joinmultiplayer", joinMultiPlayerGamePanel));
 
 		initButtonPanel();
 		SwingUtilities.updateComponentTreeUI(this);
