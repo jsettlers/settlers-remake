@@ -46,7 +46,7 @@ public class MovableParser {
 		MovableTemplate template = templates.get(name);
 
 		if(template == null) {
-			System.err.println("movable template " + name + " is undefined!");
+			System.err.println("template " + name + " is undefined!");
 			return;
 		} else if(template == lineCons) {
 			System.err.println("template " + name + " is recursive!");

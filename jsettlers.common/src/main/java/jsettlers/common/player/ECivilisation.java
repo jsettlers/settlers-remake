@@ -24,8 +24,10 @@ public enum ECivilisation {
 	AMAZON(4);
 
 	private int fileIndex;
+	public final int ordinal;
 
 	ECivilisation(int fileIndex) {
+		ordinal = ordinal();
 		this.fileIndex = fileIndex;
 	}
 

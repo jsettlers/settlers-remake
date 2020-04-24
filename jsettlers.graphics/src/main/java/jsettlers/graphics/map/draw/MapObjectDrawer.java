@@ -97,8 +97,6 @@ public class MapObjectDrawer {
 	private static final int SOUND_SETTLER_KILLED     = 35;
 	private static final int SOUND_FALLING_TREE       = 36;
 
-	private static final OriginalImageLink INSIDE_BUILDING_RIGHT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
-	private static final OriginalImageLink INSIDE_BUILDING_LEFT  = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int OBJECTS_FILE   = 1;
 	private static final int BUILDINGS_FILE = 13;
@@ -285,6 +283,7 @@ public class MapObjectDrawer {
 		}
 	}
 
+	// TODO nations
 	private void drawShipInConstruction(int x, int y, IShipInConstruction ship) {
 		byte fogOfWarVisibleStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		EDirection direction = ship.getDirection();
@@ -298,6 +297,7 @@ public class MapObjectDrawer {
 		drawWithConstructionMask(x, y, state, image, shade);
 	}
 
+	// TODO nations
 	private void drawShip(IMovable ship, int x, int y) {
 		forceSetup();
 
@@ -317,7 +317,7 @@ public class MapObjectDrawer {
 		int sailSequence = (shipType == EMovableType.FERRY) ? 29 : 28;
 
 		// get drawing position
-		Color color = context.getPlayerColor(ship.getPlayer().getPlayerId());
+		Color color = MapDrawContext.getPlayerColor(ship.getPlayer().getPlayerId());
 		float viewX = context.getOffsetX();
 		float viewY = context.getOffsetY();
 		if (ship.getAction() == EMovableAction.WALKING) {
@@ -850,13 +850,14 @@ public class MapObjectDrawer {
 		}
 	}
 
+	// TODO pioneers are at a significant offset
 	private void drawMovableAt(IMovable movable, int x, int y) {
 		byte fogStatus = visibleGrid != null ? visibleGrid[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
 		final float moveProgress = movable.getMoveProgress();
-		Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
+		Color color = MapDrawContext.getPlayerColor(movable.getPlayer().getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogStatus);
 		Image image;
 		int offX = context.getOffsetX();
@@ -1117,7 +1118,7 @@ public class MapObjectDrawer {
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
-		Color color = context.getPlayerColor(player);
+		Color color = MapDrawContext.getPlayerColor(player);
 		draw(imageProvider.getSettlerSequence(FILE_BORDER_POST, 65).getImageSafe(0, () -> "border-indicator"), x, y, BORDER_STONE_Z, color);
 	}
 
@@ -1215,7 +1216,7 @@ public class MapObjectDrawer {
 				if (seq.length() > 0) {
 					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
-					drawOnlyImage(seq.getImageSafe(step, () -> "mill-" + step), x, y, 0, context.getPlayerColor(building.getPlayer().getPlayerId()), color);
+					drawOnlyImage(seq.getImageSafe(step, () -> "mill-" + step), x, y, 0, MapDrawContext.getPlayerColor(building.getPlayer().getPlayerId()), color);
 					ImageLink[] images = type.getImages();
 					if (images.length > 0) {
 						Image image = imageProvider.getImage(images[0]);
@@ -1298,12 +1299,12 @@ public class MapObjectDrawer {
 				OccupierPlace place = occupier.getPlace();
 
 				IMovable movable = occupier.getMovable();
-				Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
+				Color color = MapDrawContext.getPlayerColor(movable.getPlayer().getPlayerId());
 
 				Image image;
 				switch (place.getSoldierClass()) {
 					case INFANTRY:
-						OriginalImageLink imageLink = place.looksRight() ? INSIDE_BUILDING_RIGHT : INSIDE_BUILDING_LEFT;
+						ImageLink imageLink = ImageLinkMap.get(movable.getPlayer().getCivilisation(), place.looksRight() ? ECommonLinkType.GARRISON_RIGHT:ECommonLinkType.GARRISON_LEFT, movable.getMovableType());
 						image = imageProvider.getImage(imageLink);
 						((SettlerImage)image).setShadow(null);
 						break;
@@ -1372,7 +1373,7 @@ public class MapObjectDrawer {
 	private Color getColor(IMapObject object) {
 		Color color = null;
 		if (object instanceof IPlayerable) {
-			color = context.getPlayerColor(((IPlayerable) object).getPlayer().getPlayerId());
+			color = MapDrawContext.getPlayerColor(((IPlayerable) object).getPlayer().getPlayerId());
 		}
 		return color;
 	}

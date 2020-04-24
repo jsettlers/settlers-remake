@@ -22,28 +22,31 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.player.ECivilisation;
+import jsettlers.common.player.IPlayer;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.ui.UIPanel;
 
 public class SelectionRow extends UIPanel {
 
 	private final EMovableType type;
-	private final ECivilisation civ;
+	private final IPlayer player;
 	private final int count;
 
 	/**
 	 * Creates a new row in the selection view
-	 * 
+	 *
+	 * @param player
+	 * 			The player that owns the most settlers of this type in this selection
 	 * @param type
 	 *            The type of the movables
 	 * @param count
 	 *            How many of them are selected.
 	 */
-	public SelectionRow(ECivilisation civ, EMovableType type, int count) {
-		this.civ = civ;
+	public SelectionRow(IPlayer player, EMovableType type, int count) {
+		this.player = player;
 		this.type = type;
 		this.count = count;
 	}
@@ -52,7 +55,7 @@ public class SelectionRow extends UIPanel {
 	public void drawAt(GLDrawContext gl) {
 		float width = getPosition().getWidth();
 		Image image =
-				SettlerImageMap.getInstance().getImageForSettler(civ, type,
+				SettlerImageMap.getInstance().getImageForSettler(player.getCivilisation(), type,
 						EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL,
 						EDirection.SOUTH_EAST, 0);
 
@@ -71,6 +74,6 @@ public class SelectionRow extends UIPanel {
 	}
 
 	private Color getColor() {
-		return count != 0 ? Color.RED : Color.BLACK;
+		return MapDrawContext.getPlayerColor(player.getPlayerId());
 	}
 }

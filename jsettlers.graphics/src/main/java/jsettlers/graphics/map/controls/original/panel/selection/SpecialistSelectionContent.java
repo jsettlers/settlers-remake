@@ -37,10 +37,10 @@ public class SpecialistSelectionContent extends AbstractSelectionContent {
 
 	private final UIPanel panel;
 
-	public SpecialistSelectionContent(IInGamePlayer player, ISelectionSet selection) {
+	public SpecialistSelectionContent(ISelectionSet selection) {
 		panel = new UIPanel();
 
-		SoldierSelectionContent.addRowsToPanel(panel, selection, player.getCivilisation(), specialists);
+		SoldierSelectionContent.addRowsToPanel(panel, selection, specialists);
 
 		UIPanel stop = new LabeledButton(Labels.getString("stop"),
 				new Action(EActionType.STOP_WORKING));
@@ -50,7 +50,7 @@ public class SpecialistSelectionContent extends AbstractSelectionContent {
 		panel.addChild(stop, .1f, .1f, .5f, .2f);
 		panel.addChild(work, .5f, .1f, .9f, .2f);
 
-		if (selection.getMovableCount(EMovableType.PIONEER) > 0) {
+		if (selection.getMovableCount(EMovableType.PIONEER, null) > 0) {
 			UIPanel convert = new LabeledButton(Labels.getString("convert_all_to_BEARER"),
 					new ConvertAction(EMovableType.BEARER,
 							Short.MAX_VALUE));

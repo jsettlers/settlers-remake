@@ -376,16 +376,16 @@ public class OriginalControls implements IControls {
 
 			switch (selection.getSelectionType()) {
 			case PEOPLE:
-				mainPanel.setContent(new BearerSelectionContent(selection));
+				mainPanel.setContent(new BearerSelectionContent(player, selection));
 				break;
 			case SOLDIERS:
-				mainPanel.setContent(new SoldierSelectionContent(player, selection));
+				mainPanel.setContent(new SoldierSelectionContent(selection));
 				break;
 			case SPECIALISTS:
-				mainPanel.setContent(new SpecialistSelectionContent(player, selection));
+				mainPanel.setContent(new SpecialistSelectionContent(selection));
 				break;
 			case SHIPS:
-				mainPanel.setContent(new ShipSelectionContent(player, selection));
+				mainPanel.setContent(new ShipSelectionContent(selection));
 				break;
 			case BUILDING:
 				mainPanel.setContent(new BuildingSelectionContent(selection));

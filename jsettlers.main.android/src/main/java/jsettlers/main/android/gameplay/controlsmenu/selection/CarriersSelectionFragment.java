@@ -24,10 +24,12 @@ import android.widget.ImageView;
 
 import jsettlers.common.action.ConvertAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
+import jsettlers.graphics.map.draw.ECommonLinkType;
+import jsettlers.graphics.map.draw.ImageLinkMap;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.core.resources.ImageLinkFactory;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
 
 /**
@@ -51,9 +53,9 @@ public class CarriersSelectionFragment extends SelectionFragment {
 
 	@AfterViews
 	void setupImageProvider() {
-		OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.PIONEER)).setAsImage(pioneerImageView);
-		OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.GEOLOGIST)).setAsImage(geologistImageView);
-		OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.THIEF)).setAsImage(thiefImageView);
+		OriginalImageProvider.get(ImageLinkMap.get(ECivilisation.ROMAN, ECommonLinkType.SETTLER_GUI, EMovableType.PIONEER)).setAsImage(pioneerImageView);
+		OriginalImageProvider.get(ImageLinkMap.get(ECivilisation.ROMAN, ECommonLinkType.SETTLER_GUI, EMovableType.GEOLOGIST)).setAsImage(geologistImageView);
+		OriginalImageProvider.get(ImageLinkMap.get(ECivilisation.ROMAN, ECommonLinkType.SETTLER_GUI, EMovableType.THIEF)).setAsImage(thiefImageView);
 
 		actionControls = new ControlsResolver(getActivity()).getActionControls();
 	}

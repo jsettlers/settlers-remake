@@ -15,8 +15,10 @@
 package jsettlers.input;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import java8.util.function.Predicate;
 import java8.util.stream.Collectors;
@@ -24,6 +26,9 @@ import java8.util.stream.Stream;
 import java8.util.stream.StreamSupport;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.ECivilisation;
+import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.common.selectable.ISelectionSet;
@@ -114,10 +119,15 @@ public final class SelectionSet implements ISelectionSet {
 	}
 
 	@Override
-	public synchronized int getMovableCount(EMovableType type) {
+	public synchronized int getMovableCount(EMovableType type, Map<IPlayer, Integer> playerStatistic) {
 		int ctr = 0;
 		for (ISelectable curr : set) {
 			if (curr instanceof IMovable && ((IMovable) curr).getMovableType() == type) {
+				if(playerStatistic != null) {
+					IPlayer player = curr.getPlayer();
+					int count = playerStatistic.containsKey(player)?playerStatistic.get(player): 0;
+					playerStatistic.put(player, count+1);
+				}
 				ctr++;
 			}
 		}
