@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import jsettlers.algorithms.fogofwar.FogOfWar;
+import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
@@ -59,7 +59,6 @@ import jsettlers.logic.buildings.workers.ResourceBuilding;
 import jsettlers.logic.buildings.workers.SlaughterhouseBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
@@ -69,7 +68,7 @@ import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, IScheduledTimerable,
-		IDebugable, IDiggerRequester {
+		IDebugable, IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
 
 	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.2f;
@@ -84,16 +83,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
 
 	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<>();
-	private static byte fowTeam = -1;
-	private boolean occupied;
-	private boolean fow = false;
 
 	protected final EBuildingType type;
 	protected final ShortPoint2D pos;
 	protected final IBuildingsGrid grid;
 
 	private Player player;
-	private EBuildingState state = null;
+	private EBuildingState state = EBuildingState.CREATED;
 	private EPriority priority = EPriority.DEFAULT;
 
 	private float constructionProgress = 0.0f;
@@ -106,52 +102,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	protected Building(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		this.type = type;
-		setPlayer(player);
+		this.player = player;
 		this.pos = position;
 		this.grid = buildingsGrid;
 
 		allBuildings.add(this);
-		setState(EBuildingState.CREATED);
 	}
-
-	@Override
-	public final boolean isOccupied() {
-			return occupied;
-
-	}
-
-	public void setOccupied(boolean occupied) {
-		short oldVD = getVD();
-		this.occupied = occupied;
-		short newVD = getVD();
-		if(fow && oldVD != newVD) {
-			queueNewViewDistance(oldVD, newVD);
-		}
-	}
-
-	void setState(EBuildingState newState) {
-		short oldVD = getVD();
-		this.state = newState;
-		short newVD = getVD();
-		if(fow && oldVD != newVD) {
-			queueNewViewDistance(oldVD, newVD);
-		}
-	}
-
-	private void queueNewViewDistance(short oldVD, short newVD) {
-		FogOfWar.queueResizeCircle(getPosition(), oldVD, newVD);
-	}
-
-	public static void initFow(byte fow) {
-		fowTeam = fow;
-		for(Building building : allBuildings) {
-			if((building.getPlayer().getTeamId() == fowTeam || MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR) && !building.fow) {
-				building.fow = true;
-				building.queueNewViewDistance((short)0, building.getVD());
-			}
-		}
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		allBuildings.clear();
@@ -202,7 +159,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private void appearFullyConstructed() {
-		setState(EBuildingState.CONSTRUCTED);
+		this.state = EBuildingState.CONSTRUCTED;
 
 		grid.setBlocked(getBuildingArea(), true);
 		finishConstruction();
@@ -218,7 +175,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		placeAdditionalMapObjects(grid, pos, true);
 
-		setState(EBuildingState.CREATED);
+		this.state = EBuildingState.CREATED;
 		RescheduleTimer.add(this, IS_UNSTOPPED_RECHECK_PERIOD);
 	}
 
@@ -323,7 +280,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			if (priority == EPriority.STOPPED) {
 				return IS_UNSTOPPED_RECHECK_PERIOD;
 			} else {
-				setState(EBuildingState.IN_FLATTERNING);
+				state = EBuildingState.IN_FLATTERNING;
 				requestDiggers();
 			}
 
@@ -333,13 +290,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			} else {
 				placeAdditionalMapObjects(grid, pos, false);
 				grid.setBlocked(getBuildingArea(), true);
-				setState(EBuildingState.WAITING_FOR_MATERIAL);
+				this.state = EBuildingState.WAITING_FOR_MATERIAL;
 				// directly go into the next case!
 			}
 
 		case WAITING_FOR_MATERIAL:
 			if (priority != EPriority.STOPPED && (isMaterialAvailable() || remainingMaterialActions > 0)) {
-				setState(EBuildingState.BRICKLAYERS_REQUESTED);
+				state = EBuildingState.BRICKLAYERS_REQUESTED;
 				requestBricklayers();
 				return -1; // no new scheduling
 			} else {
@@ -384,13 +341,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public void setPlayer(Player player) {
-		if(player.getTeamId() == fowTeam || (fowTeam != -1 && MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR)) {
-			fow = true;
-		} else if(fow) {
-			// this building should no longer remove fog of war
-			queueNewViewDistance(getVD(), (short)0);
-		}
-
 		this.player = player;
 	}
 
@@ -419,7 +369,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				if (areAllStacksFullfilled()) {
 					finishConstruction();
 				} else {
-					setState(EBuildingState.WAITING_FOR_MATERIAL);
+					state = EBuildingState.WAITING_FOR_MATERIAL;
 					RescheduleTimer.add(this, WAITING_FOR_MATERIAL_PERIOD);
 				}
 				return false;
@@ -449,7 +399,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		constructionProgress = 1;
 		this.setPriority(EPriority.DEFAULT);
 
-		setState(EBuildingState.CONSTRUCTED);
+		this.state = EBuildingState.CONSTRUCTED;
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
 			stacks = createWorkStacks();
 		} else {
@@ -517,7 +467,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		releaseRequestStacks();
 		allBuildings.remove(this);
-		setState(EBuildingState.DESTROYED);
+		this.state = EBuildingState.DESTROYED;
 		this.selected = false;
 	}
 
@@ -629,11 +579,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public static void clearState() {
 		allBuildings.clear();
-		fowTeam = -1;
 	}
 
-	public final short getVD() {
-		if (state == EBuildingState.CONSTRUCTED) {
+	@Override
+	public final short getViewDistance() {
+		if (isConstructionFinished()) {
 			if (isOccupied()) {
 				return type.getViewDistance();
 			} else {
@@ -682,11 +632,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (newPriority == EPriority.STOPPED) {
 			switch (state) {
 			case IN_FLATTERNING:
-				setState(EBuildingState.CREATED); // we're still scheduled in this state => no rescheduling!
+				state = EBuildingState.CREATED; // we're still scheduled in this state => no rescheduling!
 				break;
 
 			case BRICKLAYERS_REQUESTED:
-				setState(EBuildingState.WAITING_FOR_MATERIAL);
+				state = EBuildingState.WAITING_FOR_MATERIAL;
 				RescheduleTimer.add(this, WAITING_FOR_MATERIAL_PERIOD); // we're not scheduled atm => reschedule!
 				break;
 			}

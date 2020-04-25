@@ -42,7 +42,6 @@ public class StockBuilding extends Building implements IBuilding.IStock {
 	public StockBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(EBuildingType.STOCK, player, position, buildingsGrid);
 		stockSettings = new StockSettings(buildingsGrid.getRequestStackGrid().getPartitionStockSettings(position));
-		setOccupied(true);
 	}
 
 	@Override
@@ -81,6 +80,11 @@ public class StockBuilding extends Building implements IBuilding.IStock {
 	@Override
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
+	}
+
+	@Override
+	public boolean isOccupied() {
+		return true;
 	}
 
 	@Override

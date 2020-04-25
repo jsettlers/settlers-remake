@@ -28,7 +28,6 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.IProtectedProvider;
 import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListener;
 
@@ -41,6 +40,18 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private static final long serialVersionUID = -751261669662036483L;
 
 	public static final short SEA_BLOCKED_PARTITION = 0;
+
+	/**
+	 * This class is used as null object to get rid of a lot of null checks
+	 *
+	 * @author Andreas Eberle
+	 */
+	private static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+		private static final long serialVersionUID = -332117701485179252L;
+
+		@Override
+		public void backgroundShapeChangedAt(int x, int y) {}
+	}
 
 	private final byte[] heightGrid;
 	private final byte[] landscapeGrid;
@@ -172,7 +183,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		if (backgroundListener != null) {
 			this.backgroundListener = backgroundListener;
 		} else {
-			this.backgroundListener = new MainGrid.NullBackgroundListener();
+			this.backgroundListener = new NullBackgroundListener();
 		}
 	}
 

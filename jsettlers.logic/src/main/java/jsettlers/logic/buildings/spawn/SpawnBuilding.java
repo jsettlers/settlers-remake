@@ -38,7 +38,6 @@ public abstract class SpawnBuilding extends Building {
 
 	protected SpawnBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(type, player, position, buildingsGrid);
-		setOccupied(true);
 	}
 
 	@Override
@@ -81,6 +80,11 @@ public abstract class SpawnBuilding extends Building {
 	protected abstract EMovableType getMovableType();
 
 	protected abstract byte getProduceLimit();
+
+	@Override
+	public final boolean isOccupied() {
+		return true;
+	}
 
 	@Override
 	public boolean cannotWork() {

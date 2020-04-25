@@ -16,6 +16,7 @@ package jsettlers.logic.movable.interfaces;
 
 import java.io.Serializable;
 
+import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.movable.EMovableType;
@@ -26,7 +27,7 @@ import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 
-public interface ILogicMovable extends IScheduledTimerable, IPathCalculatable, IDebugable, Serializable, IGuiMovable, IAttackableMovable {
+public interface ILogicMovable extends IScheduledTimerable, IPathCalculatable, IDebugable, Serializable, IViewDistancable, IGuiMovable, IAttackableMovable {
 	boolean push(ILogicMovable pushingMovable);
 
 	Path getPath();

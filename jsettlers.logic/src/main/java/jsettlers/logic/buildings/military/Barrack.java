@@ -38,7 +38,6 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	public Barrack(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(EBuildingType.BARRACK, player, position, buildingsGrid);
-		setOccupied(true);
 	}
 
 	@Override
@@ -75,6 +74,11 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 			default:
 				throw new IllegalArgumentException("MaterialType: " + materialType + " is not a tool of a soldier.");
 		}
+	}
+
+	@Override
+	public final boolean isOccupied() {
+		return true;
 	}
 
 	@Override

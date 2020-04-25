@@ -12,22 +12,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.map;
+package jsettlers.algorithms.fogofwar;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.movable.IMovable;
 
 /**
- * This interface can be used by the user of the IGraphicsGrid to get notified if the background (landscape type or height) has changed.
+ * interface specifying the methods needed by the fog of war to operate on a grid.
  * 
  * @author Andreas Eberle
  * 
  */
-public interface IGraphicsBackgroundListener {
-	/**
-	 * This method is called if the landscape type or height has changed at the given position.
-	 * 
-	 * @param x
-	 *            x coordinate
-	 * @param y
-	 *            y coordinate
-	 */
-	void backgroundShapeChangedAt(int x, int y);
+public interface IFogOfWarGrid {
+
+	IMovable getMovableAt(short x, short y);
+
+	IMapObject getMapObjectsAt(short x, short y);
+
+	ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables();
+
+	ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables();
+
 }

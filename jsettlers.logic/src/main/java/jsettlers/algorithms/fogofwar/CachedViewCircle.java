@@ -14,31 +14,32 @@
  *******************************************************************************/
 package jsettlers.algorithms.fogofwar;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleIterator;
 
 /**
  * Caches a {@link MapCircle} and the calculated view distances of the circles positions.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class CachedViewCircle {
 
 	final short[] x;
 	final short[] y;
-	final byte[] refIndex;
+	final byte[] sight;
 	final int size;
 
 	public CachedViewCircle(int radius) {
-		radius += FogOfWar.PADDING / 2; // radius+0.5p
-		MapCircle circle = new MapCircle(0, 0, radius+FogOfWar.PADDING); // *radius+1.5p*
+		radius -= FogOfWar.PADDING / 2;
+		MapCircle circle = new MapCircle(0, 0, radius + FogOfWar.PADDING);
 
 		size = countElements(circle);
 
 		x = new short[size];
 		y = new short[size];
-		refIndex = new byte[size];
+		sight = new byte[size];
 
 		MapCircleIterator iter = circle.iterator();
 		final float squaredViewDistance = radius * radius;
@@ -51,9 +52,14 @@ public final class CachedViewCircle {
 			this.y[i] = (short) y;
 
 			double squaredDistance = MapCircle.getSquaredDistance(x, y);
-			if (squaredDistance >= squaredViewDistance) {
-				refIndex[i] = (byte) (Math.sqrt(squaredDistance) - radius);
+			byte newSight;
+			if (squaredDistance < squaredViewDistance) {
+				newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
+			} else {
+				newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - radius) / FogOfWar.PADDING
+						* CommonConstants.FOG_OF_WAR_VISIBLE);
 			}
+			sight[i] = newSight;
 
 			i++;
 		}
@@ -97,8 +103,8 @@ public final class CachedViewCircle {
 			return y[idx] + yOffset;
 		}
 
-		public byte getRefIndex() {
-			return refIndex[idx];
+		public byte getCurrSight() {
+			return sight[idx];
 		}
 	}
 }

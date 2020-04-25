@@ -255,7 +255,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(soundPlayer);
-		this.background = new Background(context);
+		this.background = new Background();
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
@@ -293,7 +293,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
 			}
 
-			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(((IDirectGridProvider)map).isFoWEnabled()?((IDirectGridProvider)map).getVisibleStatusArray():null);
+			if(isVisibleGridAvailable) objectDrawer.setVisibleGrid(((IDirectGridProvider)map).getVisibleStatusArray());
 
 			if (newWidth != windowWidth || newHeight != windowHeight) {
 				resizeTo(newWidth, newHeight);

@@ -20,12 +20,15 @@ import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.algorithms.fogofwar.FogOfWar;
+import jsettlers.algorithms.fogofwar.IFogOfWarGrid;
+import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.algorithms.path.IPathCalculatable;
@@ -218,7 +221,7 @@ public final class MainGrid implements Serializable {
 	public void startThreads() {
 		bordersThread.start();
 		if (fogOfWar != null) {
-			fogOfWar.start();
+			fogOfWar.start(new FogOfWarGrid());
 		}
 	}
 
@@ -873,14 +876,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isFoWEnabled() {
-			return fogOfWar.isEnabled();
-		}
-
-		@Override
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
-			fogOfWar.setBackgroundListener(backgroundListener);
 		}
 
 		@Override
@@ -2078,18 +2075,25 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	/**
-	 * This class is used as null object to get rid of a lot of null checks
-	 *
-	 * @author Andreas Eberle
-	 */
-	public static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
-		private static final long serialVersionUID = -332117701485179252L;
+	final class FogOfWarGrid implements IFogOfWarGrid {
+		@Override
+		public final IMovable getMovableAt(short x, short y) {
+			return movableGrid.getMovableAt(x, y);
+		}
 
 		@Override
-		public void backgroundShapeChangedAt(int x, int y) {}
-		@Override
-		public void backgroundColorLineChangedAt(int x, int y, int length) {}
+		public final IMapObject getMapObjectsAt(short x, short y) {
+			return objectsGrid.getObjectsAt(x, y);
+		}
 
+		@Override
+		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
+			return Movable.getAllMovables();
+		}
+
+		@Override
+		public final ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables() {
+			return Building.getAllBuildings();
+		}
 	}
 }

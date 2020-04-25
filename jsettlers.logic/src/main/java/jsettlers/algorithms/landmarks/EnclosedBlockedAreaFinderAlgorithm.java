@@ -37,7 +37,7 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 		final byte startPlayer = grid.getPlayerIdAt(startX, startY);
 
 		for (EDirection currDir : EDirection.VALUES) {
-			ShortPoint2D currPos = new ShortPoint2D(startX + currDir.gridDeltaX, startY + currDir.gridDeltaY);
+			ShortPoint2D currPos = currDir.getNextHexPoint(startX, startY);
 
 			if (grid.isPioneerBlockedAndWithoutTowerProtection(currPos.x, currPos.y)) {
 				if (needsRelabel(grid, containingProvider, currPos, startPlayer)) {

@@ -11,5 +11,4 @@ public interface IDirectGridProvider {
 	BitSet getBorderArray();
 	byte[][] getVisibleStatusArray();
 	byte[] getHeightArray();
-	boolean isFoWEnabled();
 }

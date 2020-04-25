@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import java8.util.function.Supplier;
 
-public class UpdateBufferCache {
+public class UpdateGeometryCache {
 	private int position = 0;
 	private int cache_size = 0;
 	private int cache_start = 0;
@@ -14,7 +14,7 @@ public class UpdateBufferCache {
 	private Supplier<GLDrawContext> ctx_supp;
 	private Supplier<BufferHandle> bfr_supp;
 
-	public UpdateBufferCache(ByteBuffer buffer, int bfr_data_steps, Supplier<GLDrawContext> ctx_supp, Supplier<BufferHandle> bfr_supp) {
+	public UpdateGeometryCache(ByteBuffer buffer, int bfr_data_steps, Supplier<GLDrawContext> ctx_supp, Supplier<BufferHandle> bfr_supp) {
 		this.bfr_data_steps = bfr_data_steps;
 		this.ctx_supp = ctx_supp;
 		this.bfr_supp = bfr_supp;

@@ -131,7 +131,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 		doorHealth = 0.1f;
 		inFight = false;
-		setOccupied(false);
 
 		super.showFlag(true);
 		setAttackableTowerObject(true);
@@ -227,7 +226,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 			}
 
 			sortedOccupiers.clear();
-			if(!inFight) setOccupied(false);
 		}
 
 		if (attackableTowerObject != null && attackableTowerObject.currDefender != null) {
@@ -274,7 +272,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	}
 
 	private void addOccupier(TowerOccupier towerOccupier) {
-		if(sortedOccupiers.isEmpty()) setOccupied(true);
 		sortedOccupiers.add(towerOccupier);
 		Collections.sort(sortedOccupiers, Comparators.comparingInt(occupier -> occupier.place.getSoldierClass().ordinal));
 	}
@@ -296,7 +293,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 		// removeOne the soldier and dijkstraRequest a new one
 		sortedOccupiers.remove(occupier);
-		if(sortedOccupiers.isEmpty() && !inFight) setOccupied(false);
 		emptyPlaces.add(occupier.place);
 		requestSoldier(occupier.place.getSoldierClass());
 	}
@@ -381,9 +377,13 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	}
 
 	@Override
+	public final boolean isOccupied() {
+		return !sortedOccupiers.isEmpty() || inFight;
+	}
+
+	@Override
 	public void towerDefended(IBuildingOccupyableMovable soldier) {
 		inFight = false;
-		if(sortedOccupiers.isEmpty()) setOccupied(false);
 		if (attackableTowerObject.currDefender == null) {
 			System.err.println("ERROR: WHAT? No defender in a defended tower!");
 		} else {
@@ -537,7 +537,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 				if (occupyingBuilding.doorHealth <= 0) {
 					occupyingBuilding.doorHealth = 0;
 					occupyingBuilding.inFight = true;
-					occupyingBuilding.setOccupied(true);
 
 					occupyingBuilding.grid.getMapObjectsManager().addSelfDeletingMapObject(getPosition(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
