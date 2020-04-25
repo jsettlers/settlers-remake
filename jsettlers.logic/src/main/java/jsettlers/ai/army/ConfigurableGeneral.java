@@ -29,6 +29,7 @@ import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
@@ -233,7 +234,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 			}
 		}
 
-		taskScheduler.scheduleTask(new MoveToGuiTask(player.playerId, target, attackerIds));
+		taskScheduler.scheduleTask(new MoveToGuiTask(player.playerId, target, attackerIds, EMoveToType.DEFAULT));
 	}
 
 	private ShortPoint2D getTargetEnemyDoorToAttack(IPlayer enemyToAttack) {

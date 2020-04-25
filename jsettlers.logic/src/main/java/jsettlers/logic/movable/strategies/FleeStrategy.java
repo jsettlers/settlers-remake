@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
@@ -81,7 +82,7 @@ public class FleeStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		if (lastCheckedPathStep == step) {
 			pathStepCheckedCounter++;
 			searchesCounter++;
