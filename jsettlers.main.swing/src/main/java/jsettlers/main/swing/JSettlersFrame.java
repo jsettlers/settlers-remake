@@ -103,6 +103,7 @@ public class JSettlersFrame extends JFrame {
 	}
 
 	private void updateFullScreenMode() {
+		if(areaContainer != null) areaContainer.removeSurface();
 		dispose();
 
 		setResizable(!fullScreen);

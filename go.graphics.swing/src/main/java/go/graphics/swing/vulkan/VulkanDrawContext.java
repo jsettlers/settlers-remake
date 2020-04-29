@@ -63,6 +63,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
 import go.graphics.AbstractColor;
@@ -89,12 +90,16 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 	protected VkDevice device = null;
 	private VkPhysicalDevice physicalDevice;
 
-	private long surface;
+	private long surface = VK_NULL_HANDLE;
 	private int surfaceFormat;
 	private VkInstance instance;
 
 	private VkQueue presentQueue;
 	private VkQueue graphicsQueue;
+
+	private int universalQueueIndex;
+	private int graphicsQueueIndex;
+	private int presentQueueIndex;
 
 	protected long[] allocators = new long[] {0, 0, 0, 0};
 
@@ -125,11 +130,6 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 	private final Semaphore closeMutex = new Semaphore(1);
 
 	private final BiFunction<VkQueueFamilyProperties, Integer, Boolean> graphicsQueueCond = (queue, index) -> (queue.queueFlags()&VK_QUEUE_GRAPHICS_BIT)>0;
-	private final BiFunction<VkQueueFamilyProperties, Integer, Boolean> presentQueueCond = (queue, index) -> {
-		int[] present = new int[1];
-		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, index, surface, present);
-		return present[0]==1;
-	};
 
 	protected final List<VulkanMultiBufferHandle> multiBuffers = new ArrayList<>();
 	protected final List<VulkanTextureHandle> textures = new ArrayList<>();
@@ -140,17 +140,21 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 	public VulkanDrawContext(VkInstance instance, long surface, float guiScale) {
 		this.instance = instance;
 		this.guiScale = guiScale;
-		this.surface = surface;
 
+		BiFunction<VkQueueFamilyProperties, Integer, Boolean> presentQueueCond = (queue, index) -> {
+			int[] present = new int[1];
+			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, index, surface, present);
+			return present[0]==1;
+		};
 
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			VkPhysicalDevice[] allPhysicalDevices = VulkanUtils.listPhysicalDevices(stack, instance);
 			physicalDevice = VulkanUtils.findPhysicalDevice(allPhysicalDevices);
 
 			VkQueueFamilyProperties.Buffer allQueueFamilies = VulkanUtils.listQueueFamilies(stack, physicalDevice);
-			int universalQueueIndex = VulkanUtils.findQueue(allQueueFamilies, (queue, index) -> graphicsQueueCond.apply(queue, index)&&presentQueueCond.apply(queue, index));
-			int graphicsQueueIndex = universalQueueIndex!=-1? universalQueueIndex : VulkanUtils.findQueue(allQueueFamilies, graphicsQueueCond);
-			int presentQueueIndex = universalQueueIndex!=-1? universalQueueIndex : VulkanUtils.findQueue(allQueueFamilies, presentQueueCond);
+			universalQueueIndex = VulkanUtils.findQueue(allQueueFamilies, (queue, index) -> graphicsQueueCond.apply(queue, index)&&presentQueueCond.apply(queue, index));
+			graphicsQueueIndex = universalQueueIndex!=-1? universalQueueIndex : VulkanUtils.findQueue(allQueueFamilies, graphicsQueueCond);
+			presentQueueIndex = universalQueueIndex!=-1? universalQueueIndex : VulkanUtils.findQueue(allQueueFamilies, presentQueueCond);
 
 			if(graphicsQueueIndex == -1) throw new Error("Could not find any graphics queue.");
 			if(presentQueueIndex == -1) throw new Error("Could not find any present queue.");
@@ -169,9 +173,7 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 				presentQueue = queues.get(1);
 			}
 
-			VkSurfaceFormatKHR.Buffer allSurfaceFormats = VulkanUtils.listSurfaceFormats(stack, physicalDevice, surface);
-			VkSurfaceFormatKHR surfaceFormat = VulkanUtils.findSurfaceFormat(allSurfaceFormats);
-			this.surfaceFormat = surfaceFormat.format();
+			setSurface(surface);
 
 			for(int i = 0; i != allocators.length; i++) allocators[i] = VulkanUtils.createAllocator(stack, instance, device, physicalDevice);
 
@@ -180,17 +182,11 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 			memCommandBuffer = VulkanUtils.createCommandBuffer(stack, device, commandPool);
 			fbCommandBuffer = VulkanUtils.createCommandBuffer(stack, device, commandPool);
 
-			renderPass = VulkanUtils.createRenderPass(stack, device, surfaceFormat.format());
-			renderPassBeginInfo.renderPass(renderPass);
-
 			swapchainCreateInfo.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
 					.compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
 					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT|VK_IMAGE_USAGE_TRANSFER_SRC_BIT|VK_IMAGE_USAGE_TRANSFER_DST_BIT)
-					.imageColorSpace(surfaceFormat.colorSpace())
 					.presentMode(VK_PRESENT_MODE_FIFO_KHR) // must be supported by all drivers
-					.imageFormat(surfaceFormat.format())
 					.imageArrayLayers(1)
-					.surface(surface)
 					.clipped(false);
 
 			if(universalQueueIndex != -1) {
@@ -200,8 +196,7 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 						.pQueueFamilyIndices(stack.ints(graphicsQueueIndex, presentQueueIndex));
 			}
 			swapchainImageViewCreateInfo.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
-					.viewType(VK_IMAGE_VIEW_TYPE_2D)
-					.format(surfaceFormat.format());
+					.viewType(VK_IMAGE_VIEW_TYPE_2D);
 			swapchainImageViewCreateInfo.subresourceRange()
 					.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
 					.baseMipLevel(0)
@@ -210,7 +205,6 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 					.layerCount(1);
 
 			framebufferCreateInfo.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO)
-					.renderPass(renderPass)
 					.layers(1);
 
 			descPool = VulkanUtils.createDescriptorPool(stack, device, 5);
@@ -603,6 +597,8 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 		if(textureIndex == null) return null;
 
 		((VulkanTextureHandle)textureIndex).setDestroy();
+		if(!commandBufferRecording) return null;
+
 		TextureHandle texture = generateTexture(width, height, data, REP_TEXTURE_MARKER);
 		((VulkanTextureHandle)texture).replace(textureIndex);
 		return texture;
@@ -897,6 +893,44 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 		resizeScheduled = true;
 	}
 
+	public void removeSurface() {
+		destroyFramebuffers(-1);
+		destroySwapchainViews(-1);
+		vkDestroySwapchainKHR(device, swapchain, null);
+		vkDestroySurfaceKHR(instance, this.surface, null);
+		vkDestroyRenderPass(device, renderPass, null);
+
+		swapchain = VK_NULL_HANDLE;
+		renderPass = VK_NULL_HANDLE;
+	}
+
+	public void setSurface(long surface) {
+		this.surface = surface;
+
+		try(MemoryStack stack = MemoryStack.stackPush()) {
+			VkSurfaceFormatKHR.Buffer allSurfaceFormats = VulkanUtils.listSurfaceFormats(stack, physicalDevice, surface);
+			VkSurfaceFormatKHR surfaceFormat = VulkanUtils.findSurfaceFormat(allSurfaceFormats);
+			this.surfaceFormat = surfaceFormat.format();
+
+			IntBuffer present = stack.callocInt(1);
+			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, presentQueueIndex, surface, present);
+			if(present.get(0) == 0) {
+				System.err.println("[VULKAN] can't present anymore");
+				return;
+			}
+
+			renderPass = VulkanUtils.createRenderPass(stack, device, surfaceFormat.format());
+			renderPassBeginInfo.renderPass(renderPass);
+			framebufferCreateInfo.renderPass(renderPass);
+
+			swapchainCreateInfo.surface(surface)
+					.imageColorSpace(surfaceFormat.colorSpace())
+					.imageFormat(surfaceFormat.format());
+
+			swapchainImageViewCreateInfo.format(surfaceFormat.format());
+		}
+	}
+
 	private void doResize(int width, int height) {
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			destroyFramebuffers(-1);
@@ -1037,7 +1071,7 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 			super.startFrame();
 
-			if(swapchain == VK_NULL_HANDLE) {
+			if(swapchain == VK_NULL_HANDLE || framebuffers == null) {
 				swapchainImageIndex = -1;
 				return;
 			}

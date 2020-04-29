@@ -38,53 +38,72 @@ public class VulkanContextCreator extends JAWTContextCreator {
 		super(container, debug);
 	}
 
-	private long surface;
-	private VkInstance instance;
+	private long surface = VK_NULL_HANDLE;
+	private VkInstance instance = null;
 	private long debugCallback;
 
 	@Override
-	protected void onInit() throws ContextException {
+	protected void onNewDrawable() throws ContextException {
+		boolean wrapCtx = false;
+
 		try(MemoryStack stack = MemoryStack.stackPush()) {
 
-			// instance extensions
-			List<String> extensions = VulkanUtils.defaultExtensionArray(debug);
-			if(Platform.get() == Platform.LINUX) extensions.add(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
-			if(Platform.get() == Platform.WINDOWS) extensions.add(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+			if(instance == null) {
+				// instance extensions
+				List<String> extensions = VulkanUtils.defaultExtensionArray(debug);
+				if (Platform.get() == Platform.LINUX)
+					extensions.add(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+				if (Platform.get() == Platform.WINDOWS)
+					extensions.add(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 
-			instance = VulkanUtils.createInstance(stack, extensions, debug);
-			debugCallback = debug ? VulkanUtils.setupDebugging(instance) : 0;
+				instance = VulkanUtils.createInstance(stack, extensions, debug);
+				debugCallback = debug ? VulkanUtils.setupDebugging(instance) : 0;
+				wrapCtx = true;
+			}
 
 			LongBuffer surfacePtr = stack.mallocLong(1);
-			if(Platform.get() == Platform.WINDOWS) {
-				if(!instance.getCapabilities().VK_KHR_win32_surface) error("VK_KHR_win32_surface is missing.");
+			if (Platform.get() == Platform.WINDOWS) {
+				if (!instance.getCapabilities().VK_KHR_win32_surface)
+					error("VK_KHR_win32_surface is missing.");
 
 				VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = VkWin32SurfaceCreateInfoKHR.callocStack(stack)
 						.sType(VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR)
 						.hwnd(windowConnection)
-						.hinstance(WinBase.GetModuleHandle((String)null));
+						.hinstance(WinBase.GetModuleHandle((String) null));
 
-				if(vkCreateWin32SurfaceKHR(instance, surfaceCreateInfo, null, surfacePtr) != VK_SUCCESS) {
+				if (vkCreateWin32SurfaceKHR(instance, surfaceCreateInfo, null, surfacePtr) != VK_SUCCESS) {
 					error("Could not create a surface via VK_KHR_win32_surface.");
 				}
-			} else if(Platform.get() == Platform.LINUX) {
-				if(!instance.getCapabilities().VK_KHR_xlib_surface) error("VK_KHR_xlib_surface is missing.");
+			} else if (Platform.get() == Platform.LINUX) {
+				if (!instance.getCapabilities().VK_KHR_xlib_surface)
+					error("VK_KHR_xlib_surface is missing.");
 
 				VkXlibSurfaceCreateInfoKHR surfaceCreateInfo = VkXlibSurfaceCreateInfoKHR.callocStack(stack)
 						.sType(VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR)
 						.dpy(windowConnection)
 						.window(windowDrawable);
 
-				if(vkCreateXlibSurfaceKHR(instance, surfaceCreateInfo, null, surfacePtr) != VK_SUCCESS) {
+				if (vkCreateXlibSurfaceKHR(instance, surfaceCreateInfo, null, surfacePtr) != VK_SUCCESS) {
 					error("Could not create a surface via VK_KHR_xlib_surface.");
 				}
-			} else if(Platform.get() == Platform.MACOSX) {
+			} else if (Platform.get() == Platform.MACOSX) {
 				error("OSX support is not implemented.");
 				//if(!instance.getCapabilities().VK_MVK_macos_surface) error("VK_MVK_macos_surface is missing.");
 			}
 			surface = surfacePtr.get(0);
-
-			parent.wrapNewVkContext(instance, surface);
 		}
+
+		if(wrapCtx) {
+			parent.wrapNewVkContext(instance, surface);
+		} else {
+			parent.wrapNewVkSurface(surface);
+		}
+	}
+
+	@Override
+	protected void onNewConnection() throws ContextException {
+		// same event
+		// onNewDrawable();
 	}
 
 	@Override
