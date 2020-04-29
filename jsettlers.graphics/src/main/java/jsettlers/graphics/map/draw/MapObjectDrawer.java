@@ -1296,7 +1296,7 @@ public class MapObjectDrawer {
 					case INFANTRY:
 						ImageLink imageLink = ImageLinkMap.get(movable.getPlayer().getCivilisation(), place.looksRight() ? ECommonLinkType.GARRISON_RIGHT:ECommonLinkType.GARRISON_LEFT, movable.getMovableType());
 						image = imageProvider.getImage(imageLink);
-						((SettlerImage)image).setShadow(null);
+						if(image instanceof SettlerImage) ((SettlerImage)image).setShadow(null);
 						break;
 					case BOWMAN:
 					default:

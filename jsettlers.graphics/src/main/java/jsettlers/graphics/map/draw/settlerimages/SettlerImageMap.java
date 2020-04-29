@@ -25,6 +25,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 
@@ -341,7 +342,9 @@ public final class SettlerImageMap {
 		} else {
 			imageIndex = item.getStart() + Math.max((int) (progress * duration), duration + 1);
 		}
-		return this.imageProvider.getSettlerSequence(item.getFile(), item.getSequenceIndex()).getImageSafe(imageIndex, () -> Labels.getName(movableType) + "-" + action + "-" + Labels.getName(material, false ) + "-" + direction + "%" + progress);
+		Image image = this.imageProvider.getSettlerSequence(item.getFile(), item.getSequenceIndex()).getImageSafe(imageIndex, () -> Labels.getName(movableType) + "-" + action + "-" + Labels.getName(material, false ) + "-" + direction + "%" + progress);
+		if(image == NullImage.getInstance() && civilisation != ECivilisation.ROMAN) image = getImageForSettler(ECivilisation.ROMAN, movableType, action, material, direction, progress);
+		return image;
 	}
 
 	/**

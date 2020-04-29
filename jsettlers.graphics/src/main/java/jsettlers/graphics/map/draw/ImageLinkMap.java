@@ -8,13 +8,16 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
 
 public final class ImageLinkMap {
 	private static final Pattern BEGIN_PATTERN = Pattern.compile("\\s*([\\w\\*]+)\\s*,\\s*([\\w\\*]+)\\s*\\{\\s*");
 	private static final Pattern LINE_PATTERN = Pattern.compile("\\s*([\\w\\*]+)\\s*:\\s*([\\w\\*]+)\\s*");
+	private static final Pattern CLONE_PATTERN = Pattern.compile("\\s*clone\\s*([\\w\\*]+)\\s*,\\s*([\\w\\*]+)\\s*to\\s*([\\w\\*]+)\\s*,\\s*([\\w\\*]+)\\s*");
 
 	public static final ImageLinkMap INSTANCE = new ImageLinkMap("linkmap.txt");
 
@@ -57,6 +60,19 @@ public final class ImageLinkMap {
 
 				movable = null;
 				type = null;
+			} else if(movable == null && line.startsWith("clone ")) {
+				Matcher clone = CLONE_PATTERN.matcher(line);
+				if(!clone.matches()) throw new IllegalStateException("Illegal clone marker!");
+
+				ECommonLinkType origType = ECommonLinkType.valueOf(clone.group(1));
+				EMovableType origMovable = EMovableType.valueOf(clone.group(2));
+
+				ECommonLinkType dstType = ECommonLinkType.valueOf(clone.group(3));
+				EMovableType dstMovable = EMovableType.valueOf(clone.group(4));
+
+				for(EnumMap<ECommonLinkType, HashMap<EMovableType, ImageLink>> civMap : map.values()) {
+					civMap.get(dstType).put(dstMovable, civMap.get(origType).get(origMovable));
+				}
 			} else {
 				if(movable == null) throw new IllegalStateException("Declaration outside of section!");
 
@@ -65,6 +81,10 @@ public final class ImageLinkMap {
 
 				ECivilisation civ = ECivilisation.valueOf(declaration.group(1));
 				ImageLink link = ImageLink.fromName(declaration.group(2));
+				if(civ != ECivilisation.ROMAN && link instanceof OriginalImageLink) {
+					ImageLink fallback = map.get(ECivilisation.ROMAN).get(type).get(movable);
+					if(fallback instanceof OriginalImageLink) ((OriginalImageLink)link).setFallback((OriginalImageLink)fallback);
+				}
 
 				map.get(civ).get(type).put(movable, link);
 			}
