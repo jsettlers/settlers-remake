@@ -16,6 +16,7 @@ package jsettlers.graphics.map.controls.original.panel.content.settlers.statisti
 
 import go.graphics.text.EFontSize;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.ISettlerInformation;
 import jsettlers.graphics.action.ActionFireable;
@@ -37,7 +38,7 @@ import jsettlers.graphics.ui.layout.StatisticLayoutRomans;
  */
 public class SettlersStatisticsPanel extends AbstractContentProvider implements IUiContentReceiver<ISettlerInformation> {
 
-	private final UIPanel panel = new StatisticLayoutRomans()._root;
+	private UIPanel panel;
 	private final UiPlayerDependingContentUpdater<ISettlerInformation> uiContentUpdater = new UiPlayerDependingContentUpdater<>(IInGamePlayer::getSettlerInformation);
 
 	public SettlersStatisticsPanel() {
@@ -45,6 +46,7 @@ public class SettlersStatisticsPanel extends AbstractContentProvider implements 
 	}
 
 	public void setPlayer(IInGamePlayer player) {
+		panel = new StatisticLayoutRomans(null, player.getCivilisation())._root;
 		uiContentUpdater.updatePlayer(player);
 	}
 

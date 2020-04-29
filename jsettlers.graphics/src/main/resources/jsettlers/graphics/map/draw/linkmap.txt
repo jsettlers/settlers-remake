@@ -51,6 +51,7 @@ clone GARRISON_RIGHT, SWORDSMAN_L1 to GARRISON_RIGHT, PIKEMAN_L1
 clone GARRISON_RIGHT, SWORDSMAN_L2 to GARRISON_RIGHT, PIKEMAN_L2
 clone GARRISON_RIGHT, SWORDSMAN_L3 to GARRISON_RIGHT, PIKEMAN_L3
 
+
 SETTLER_GUI, SWORDSMAN_L1 {
     ROMAN: original_14_GUI_207
     EGYPTIAN: original_24_GUI_201
@@ -138,4 +139,37 @@ SETTLER_GUI, THIEF {
     AMAZON: original_44_GUI_186
 }
 
+SETTLER_GUI, MAGE {
+    ROMAN: original_14_GUI_201
+    EGYPTIAN: original_24_GUI_195
+    ASIAN: original_34_GUI_213
+    AMAZON: original_44_GUI_204
+}
 
+SETTLER_GUI, BEARER {
+    ROMAN: original_14_GUI_132
+    EGYPTIAN: original_24_GUI_126
+    ASIAN: original_34_GUI_138
+    AMAZON: original_44_GUI_135
+}
+
+SETTLER_GUI, DIGGER {
+    ROMAN: original_14_GUI_135
+    EGYPTIAN: original_24_GUI_129
+    ASIAN: original_34_GUI_141
+    AMAZON: original_44_GUI_138
+}
+
+SETTLER_GUI, BRICKLAYER {
+    ROMAN: original_14_GUI_138
+    EGYPTIAN: original_24_GUI_132
+    ASIAN: original_34_GUI_144
+    AMAZON: original_44_GUI_141
+}
+
+SETTLER_GUI, SMITH {
+    ROMAN: original_14_GUI_150
+    EGYPTIAN: original_24_GUI_144
+    ASIAN: original_34_GUI_156
+    AMAZON: original_44_GUI_153
+}
