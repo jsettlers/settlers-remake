@@ -46,6 +46,8 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 		charsBuilder.append("ÄÖÜẞäöüß"); // german
 		charsBuilder.append("¡¿áéíñóú–"); // spanish
 		charsBuilder.append("óąćęŁłńŚśźŻż"); // polish
+
+		// TODO russian characters are breaking some characters like + for some reason
 		charsBuilder.append("АБВГДЖЗИКЛМНОПРСТУФХШабвгдежзийклмнопрстуфхцчшщыьэюяё"); // russian
 
 
