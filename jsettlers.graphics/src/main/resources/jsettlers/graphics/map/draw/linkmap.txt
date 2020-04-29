@@ -173,3 +173,32 @@ SETTLER_GUI, SMITH {
     ASIAN: original_34_GUI_156
     AMAZON: original_44_GUI_153
 }
+
+
+SHIP_GUI_INACTIVE, FERRY {
+    ROMAN: original_14_GUI_270
+    EGYPTIAN: original_24_GUI_270
+    ASIAN: original_34_GUI_279
+    AMAZON: original_44_GUI_273
+}
+
+SHIP_GUI_ACTIVE, FERRY {
+    ROMAN: original_14_GUI_273
+    EGYPTIAN: original_24_GUI_273
+    ASIAN: original_34_GUI_282
+    AMAZON: original_44_GUI_276
+}
+
+SHIP_GUI_INACTIVE, CARGO_SHIP {
+    ROMAN: original_14_GUI_276
+    EGYPTIAN: original_24_GUI_264
+    ASIAN: original_34_GUI_285
+    AMAZON: original_44_GUI_279
+}
+
+SHIP_GUI_ACTIVE, CARGO_SHIP {
+    ROMAN: original_14_GUI_279
+    EGYPTIAN: original_24_GUI_267
+    ASIAN: original_34_GUI_288
+    AMAZON: original_44_GUI_282
+}
