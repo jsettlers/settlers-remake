@@ -163,7 +163,10 @@ public class AbstractEventConverter {
 	}
 
 	protected void updateHoverPosition(UIPoint current) {
-		if (ongoingHoverEvent != null) {
+		if (ongoingHoverEvent == null) {
+			// this only happens when the mouse already was above the component when we started listening
+			startHover(current);
+		} else {
 			ongoingHoverEvent.setMousePosition(current);
 		}
 	}
