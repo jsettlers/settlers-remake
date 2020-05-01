@@ -1474,10 +1474,8 @@ public class Background implements IGraphicsBackgroundListener {
 		} else {
 			int height1 = context.getHeight(x, y - 1);
 			int height2 = context.getHeight(x, y);
-			fColor = 0.85f + (height1 - height2) * .15f;
-			if (fColor > 1.0f) {
-				fColor = 1.0f;
-			} else if (fColor < 0.4f) {
+			fColor = 0.875f + (height1 - height2) * .125f;
+			if (fColor < 0.4f) {
 				fColor = 0.4f;
 			}
 			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
