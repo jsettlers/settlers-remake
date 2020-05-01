@@ -42,7 +42,7 @@ public class FerryStrategy extends MovableStrategy {
 
 	@Override
 	public boolean addPassenger(ILogicMovable movable) {
-		if (passengers.size() < MAX_NUMBER_OF_PASSENGERS) {
+		if (passengers.size() < MAX_NUMBER_OF_PASSENGERS && movable.getPlayer().hasSameTeam(this.movable.getPlayer())) {
 			this.passengers.add(movable);
 			return true;
 		}

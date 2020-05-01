@@ -354,6 +354,11 @@ public final class Movable implements ILogicMovable {
 		ferryToEnter = null;
 	}
 
+	@Override
+	public boolean onFerry() {
+		return state == EMovableState.ON_FERRY;
+	}
+
 	private void pushShips() {
 		HexGridArea.stream(position.x, position.y, 1, SHIP_PUSH_DISTANCE)
 				   .filterBounds(grid.getWidth(), grid.getHeight())
