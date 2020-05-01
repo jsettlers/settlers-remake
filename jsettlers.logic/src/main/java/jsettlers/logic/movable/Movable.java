@@ -955,6 +955,9 @@ public final class Movable implements ILogicMovable {
 	 * Type the movable should be converted to.
 	 */
 	public final void convertTo(EMovableType newMovableType) {
+		// settlers on ferries should not be controllable
+		if(state == EMovableState.ON_FERRY) return;
+
 		if (newMovableType == EMovableType.BEARER && !player.equals(grid.getPlayerAt(position))) {
 			return; // can't convert to bearer if the ground does not belong to the player
 		}
