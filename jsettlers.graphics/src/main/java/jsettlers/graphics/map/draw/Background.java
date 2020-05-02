@@ -963,207 +963,93 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	/**
-	 * Gets the image number of the border
-	 * 
-	 * @param outer
-	 *            The outer landscape (that has two triangle edges).
-	 * @param inner
-	 *            The inner landscape.
-	 * @param useSecond
-	 *            If it is true, the secondary texture is used.
-	 * @return The texture.
-	 */
-	private static int getBorder(ELandscapeType outer, ELandscapeType inner, boolean useSecond) {
-		int index;
+	private static class TextureIntersections {
+		public final ELandscapeType type1;
+		public final ELandscapeType type1alt;
+		public final ELandscapeType type2;
+		public final int baseIndex;
 
-		// water <=> water
-		if (outer == ELandscapeType.WATER1 && inner == ELandscapeType.WATER2) {
-			index = 84;
-		} else if (outer == ELandscapeType.WATER2 && inner == ELandscapeType.WATER1) {
-			index = 86;
-
-		} else if (outer == ELandscapeType.WATER2 && inner == ELandscapeType.WATER3) {
-			index = 88;
-		} else if (outer == ELandscapeType.WATER3 && inner == ELandscapeType.WATER2) {
-			index = 90;
-
-		} else if (outer == ELandscapeType.WATER3 && inner == ELandscapeType.WATER4) {
-			index = 92;
-		} else if (outer == ELandscapeType.WATER4 && inner == ELandscapeType.WATER3) {
-			index = 94;
-
-		} else if (outer == ELandscapeType.WATER4 && inner == ELandscapeType.WATER5) {
-			index = 96;
-		} else if (outer == ELandscapeType.WATER5 && inner == ELandscapeType.WATER4) {
-			index = 98;
-
-		} else if (outer == ELandscapeType.WATER5 && inner == ELandscapeType.WATER6) {
-			index = 100;
-		} else if (outer == ELandscapeType.WATER6 && inner == ELandscapeType.WATER5) {
-			index = 102;
-
-		} else if (outer == ELandscapeType.WATER6 && inner == ELandscapeType.WATER7) {
-			index = 104;
-		} else if (outer == ELandscapeType.WATER7 && inner == ELandscapeType.WATER6) {
-			index = 106;
-
-		} else if (outer == ELandscapeType.WATER7 && inner == ELandscapeType.WATER8) {
-			index = 108;
-		} else if (outer == ELandscapeType.WATER8 && inner == ELandscapeType.WATER7) {
-			index = 110;
-
-			// grass <=> dessert
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.DESERT) {
-			index = 181;
-		} else if (outer == ELandscapeType.DESERT && inner == ELandscapeType.GRASS) {
-			index = 183;
-
-			// water <=> sand
-		} else if (outer == ELandscapeType.WATER1 && inner == ELandscapeType.SAND) {
-			index = 39;
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.WATER1) {
-			index = 37;
-
-			// grass <=> mountain
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.MOUNTAINBORDEROUTER) {
-			index = 116;
-		} else if (outer == ELandscapeType.MOUNTAINBORDEROUTER && inner == ELandscapeType.GRASS) {
-			index = 118;
-
-		} else if (outer == ELandscapeType.MOUNTAINBORDEROUTER && inner == ELandscapeType.MOUNTAINBORDER) {
-			index = 120;
-		} else if (outer == ELandscapeType.MOUNTAINBORDER && inner == ELandscapeType.MOUNTAINBORDEROUTER) {
-			index = 122;
-
-		} else if (outer == ELandscapeType.MOUNTAINBORDER && inner == ELandscapeType.MOUNTAIN) {
-			index = 124;
-		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.MOUNTAINBORDER) {
-			index = 126;
-
-			// mountain <=> snow
-		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.SNOW) {
-			index = 156; // OLD!
-		} else if (outer == ELandscapeType.SNOW && inner == ELandscapeType.MOUNTAIN) {
-			index = 158; // OLD!
-		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.SNOWBORDER) {
-			index = 156;
-		} else if (outer == ELandscapeType.SNOWBORDER && inner == ELandscapeType.MOUNTAIN) {
-			index = 158;
-		} else if (outer == ELandscapeType.SNOWBORDER && inner == ELandscapeType.SNOW) {
-			index = 160;
-		} else if (outer == ELandscapeType.SNOW && inner == ELandscapeType.SNOWBORDER) {
-			index = 162;
-
-			// earth <=> grass
-		} else if (outer == ELandscapeType.EARTH && inner == ELandscapeType.GRASS) {
-			index = 170;
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.EARTH) {
-			index = 168;
-
-			// grass <=> dry grass
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.DRY_GRASS) {
-			index = 116;
-		} else if (outer == ELandscapeType.DRY_GRASS && inner == ELandscapeType.GRASS) {
-			index = 118;
-
-			// dry grass <=> desert
-		} else if (outer == ELandscapeType.DRY_GRASS && inner == ELandscapeType.DESERT) {
-			index = 136;
-		} else if (outer == ELandscapeType.DESERT && inner == ELandscapeType.DRY_GRASS) {
-			index = 138;
-
-			// river <=> grass
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.RIVER1) {
-			index = 52;
-		} else if (outer == ELandscapeType.RIVER1 && inner == ELandscapeType.GRASS) {
-			index = 54;
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.RIVER2) {
-			index = 56;
-		} else if (outer == ELandscapeType.RIVER2 && inner == ELandscapeType.GRASS) {
-			index = 58;
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.RIVER3) {
-			index = 60;
-		} else if (outer == ELandscapeType.RIVER3 && inner == ELandscapeType.GRASS) {
-			index = 62;
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.RIVER4) {
-			index = 64;
-		} else if (outer == ELandscapeType.RIVER4 && inner == ELandscapeType.GRASS) {
-			index = 66;
-
-			// sand <=> river
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.RIVER1) {
-			index = 68;
-		} else if (outer == ELandscapeType.RIVER1 && inner == ELandscapeType.SAND) {
-			index = 70;
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.RIVER2) {
-			index = 72;
-		} else if (outer == ELandscapeType.RIVER2 && inner == ELandscapeType.SAND) {
-			index = 74;
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.RIVER3) {
-			index = 76;
-		} else if (outer == ELandscapeType.RIVER3 && inner == ELandscapeType.SAND) {
-			index = 78;
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.RIVER4) {
-			index = 80;
-		} else if (outer == ELandscapeType.RIVER4 && inner == ELandscapeType.SAND) {
-			index = 82;
-
-			// grass <=> sand
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.SAND) {
-			index = 114;
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.GRASS) {
-			index = 112;
-
-			// grass <=> flattened
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.FLATTENED) {
-			index = 172;
-		} else if (outer == ELandscapeType.FLATTENED && inner == ELandscapeType.GRASS) {
-			index = 174;
-
-			// moor <=> grass
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.MOORBORDER) {
-			index = 201;
-		} else if (outer == ELandscapeType.MOORBORDER && inner == ELandscapeType.GRASS) {
-			index = 203;
-
-		} else if (outer == ELandscapeType.MOORBORDER && inner == ELandscapeType.MOORINNER) {
-			index = 205;
-		} else if (outer == ELandscapeType.MOORINNER && inner == ELandscapeType.MOORBORDER) {
-			index = 207;
-
-		} else if (outer == ELandscapeType.MOORINNER && inner == ELandscapeType.MOOR) {
-			index = 209;
-		} else if (outer == ELandscapeType.MOOR && inner == ELandscapeType.MOORINNER) {
-			index = 211;
-
-			// flattened desert <=> desert
-
-		} else if (outer == ELandscapeType.DESERT && inner == ELandscapeType.SHARP_FLATTENED_DESERT) {
-			index = 218;
-		} else if (outer == ELandscapeType.SHARP_FLATTENED_DESERT && inner == ELandscapeType.DESERT) {
-			index = 220;
-		} else if (outer == ELandscapeType.DESERT && inner == ELandscapeType.FLATTENED_DESERT) {
-			index = 222;
-		} else if (outer == ELandscapeType.FLATTENED_DESERT && inner == ELandscapeType.DESERT) {
-			index = 224;
-
-		} else if (outer == ELandscapeType.GRAVEL && inner == ELandscapeType.MOUNTAINBORDER) {
-			index = 231;
-		} else if (outer == ELandscapeType.MOUNTAINBORDER && inner == ELandscapeType.GRAVEL) {
-			index = 233;
-
-		} else {
-			index = outer.getImageNumber();
-			useSecond = false; // force!
+		public TextureIntersections(ELandscapeType type1, ELandscapeType type2, int baseIndex) {
+			this(type1, type1, type2, baseIndex);
 		}
 
-		if (useSecond) {
-			index += 1;
+		public TextureIntersections(ELandscapeType type1, ELandscapeType type1alt, ELandscapeType type2, int baseIndex) {
+			this.type1 = type1;
+			this.type1alt = type1alt;
+			this.type2 = type2;
+			this.baseIndex = baseIndex;
 		}
-
-		return index;
 	}
+
+	private TextureIntersections[] borderTextures = new TextureIntersections[] {
+			new TextureIntersections(ELandscapeType.SAND, ELandscapeType.WATER1, 37),
+
+			// TODO find use for 41
+			// TODO find use for 45
+			// TODO find use for 49-51 textures
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.SAND, ELandscapeType.RIVER1, 52),
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.SAND, ELandscapeType.RIVER2, 56),
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.SAND, ELandscapeType.RIVER3, 60),
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.SAND, ELandscapeType.RIVER4, 64),
+
+			new TextureIntersections(ELandscapeType.SAND, ELandscapeType.RIVER1, 68),
+			new TextureIntersections(ELandscapeType.SAND, ELandscapeType.RIVER2, 72),
+			new TextureIntersections(ELandscapeType.SAND, ELandscapeType.RIVER3, 76),
+			new TextureIntersections(ELandscapeType.SAND, ELandscapeType.RIVER4, 80),
+
+			new TextureIntersections(ELandscapeType.WATER1, ELandscapeType.WATER2, 84),
+			new TextureIntersections(ELandscapeType.WATER2, ELandscapeType.WATER3, 88),
+			new TextureIntersections(ELandscapeType.WATER3, ELandscapeType.WATER4, 92),
+			new TextureIntersections(ELandscapeType.WATER4, ELandscapeType.WATER5, 96),
+			new TextureIntersections(ELandscapeType.WATER5, ELandscapeType.WATER6, 100),
+			new TextureIntersections(ELandscapeType.WATER6, ELandscapeType.WATER7, 104),
+			new TextureIntersections(ELandscapeType.WATER7, ELandscapeType.WATER8, 108),
+
+			new TextureIntersections(ELandscapeType.SAND, ELandscapeType.GRASS, 112),
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.MOUNTAINBORDEROUTER, 116),
+			new TextureIntersections(ELandscapeType.MOUNTAINBORDEROUTER, ELandscapeType.MOUNTAINBORDER, 120),
+			new TextureIntersections(ELandscapeType.MOUNTAIN, ELandscapeType.MOUNTAINBORDER, 124),
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.DESERTBORDEROUTER, 128),
+			new TextureIntersections(ELandscapeType.DESERTBORDEROUTER, ELandscapeType.DESERTBORDER, 132),
+			new TextureIntersections(ELandscapeType.DESERT, ELandscapeType.DESERTBORDER, 136),
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.MUDBORDEROUTER, 140),
+			new TextureIntersections(ELandscapeType.MUDBORDEROUTER, ELandscapeType.MUDBORDER, 144),
+			new TextureIntersections(ELandscapeType.MUD, ELandscapeType.MUDBORDER, 148),
+
+			// TODO find use for 152
+
+			new TextureIntersections(ELandscapeType.MOUNTAIN, ELandscapeType.SNOWBORDEROUTER, 156),
+			new TextureIntersections(ELandscapeType.SNOWBORDEROUTER, ELandscapeType.SNOWBORDER, 160),
+			new TextureIntersections(ELandscapeType.SNOW, ELandscapeType.SNOWBORDER, 164),
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.EARTH, 168),
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.FLATTENED, 172),
+
+			// TODO find use for 176 landscape
+			// TODO find use for 177 border
+			// 181 is a duplicate of 172
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.ROAD, 185),
+
+			// 189 is another duplicate of 172
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.DRY_GRASS, 193),
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.DRY_EARTH, 197),
+
+			new TextureIntersections(ELandscapeType.GRASS, ELandscapeType.MOORBORDEROUTER, 201),
+			new TextureIntersections(ELandscapeType.MOORBORDEROUTER, ELandscapeType.MOORBORDER, 205),
+			new TextureIntersections(ELandscapeType.MOOR, ELandscapeType.MOORBORDER, 209),
+
+			// TODO find use for 213
+			new TextureIntersections(ELandscapeType.DESERT, ELandscapeType.SHARP_FLATTENED_DESERT, 218),
+			new TextureIntersections(ELandscapeType.DESERT, ELandscapeType.FLATTENED_DESERT, 222),
+			// TODO find use for 226
+			new TextureIntersections(ELandscapeType.MOUNTAIN, ELandscapeType.GRAVEL, 231),
+
+	};
 
 	private int draw_stride = 0;
 
@@ -1406,22 +1292,47 @@ public class Background implements IGraphicsBackgroundListener {
 		ELandscapeType aLandscape = context.getLandscape(x2, y2);
 		ELandscapeType rightLandscape = context.getLandscape(x3, y3);
 
-		boolean useSecond = (useSecondParameter&1) == 0;
 		float[] texturePos;
 		int textureIndex;
 		int orientationIndex = up?0:1;
 		if (aLandscape == leftLandscape && aLandscape == rightLandscape) {
 			textureIndex = aLandscape.getImageNumber();
 			texturePos = ETextureOrientation.CONTINUOS[orientationIndex];
-		} else if (leftLandscape == rightLandscape) {
-			texturePos = ETextureOrientation.ORIENTATION[orientationIndex];
-			textureIndex = getBorder(leftLandscape, aLandscape, useSecond);
-		} else if (leftLandscape == aLandscape) {
-			texturePos = ETextureOrientation.LEFT[orientationIndex];
-			textureIndex = getBorder(leftLandscape, rightLandscape, useSecond);
 		} else {
-			texturePos = ETextureOrientation.RIGHT[orientationIndex];
-			textureIndex = getBorder(up?aLandscape:rightLandscape, leftLandscape, useSecond);
+			textureIndex = leftLandscape.getImageNumber();
+			for(TextureIntersections intersect : borderTextures) {
+				int type1count = 0;
+				int type1acount = 0;
+				int type2count = 0;
+
+				if(leftLandscape == intersect.type1) type1count++;
+				else if(leftLandscape == intersect.type1alt) type1acount++;
+
+				if(aLandscape == intersect.type1) type1count++;
+				else if(aLandscape == intersect.type1alt) type1acount++;
+
+				if(rightLandscape == intersect.type1) type1count++;
+				else if(rightLandscape == intersect.type1alt) type1acount++;
+
+				if(leftLandscape == intersect.type2) type2count++;
+				if(aLandscape == intersect.type2) type2count++;
+				if(rightLandscape == intersect.type2) type2count++;
+
+				if(type1count + type1acount + type2count != 3 || type1acount == 2 || type2count == 0) continue;
+
+				textureIndex = intersect.baseIndex;
+				textureIndex += (type2count==2)?2:0;
+				textureIndex += useSecondParameter&1;
+				break;
+			}
+
+			if (leftLandscape == rightLandscape) {
+				texturePos = ETextureOrientation.ORIENTATION[orientationIndex];
+			} else if (leftLandscape == aLandscape) {
+				texturePos = ETextureOrientation.LEFT[orientationIndex];
+			} else {
+				texturePos = ETextureOrientation.RIGHT[orientationIndex];
+			}
 		}
 
 		int[] positions = TEXTURE_POSITIONS[textureIndex];
@@ -1430,7 +1341,7 @@ public class Background implements IGraphicsBackgroundListener {
 		int addDy = 0;
 		if (positions[2] >= 2) {
 			addDx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
-			addDy = y * DrawConstants.DISTANCE_Y;
+			addDy = y * DrawConstants.TEXTUREUNIT_Y;
 			addDx = realModulo(addDx, (positions[2] - 1) * TEXTURE_GRID);
 			addDy = realModulo(addDy, (positions[2] - 1) * TEXTURE_GRID);
 		}

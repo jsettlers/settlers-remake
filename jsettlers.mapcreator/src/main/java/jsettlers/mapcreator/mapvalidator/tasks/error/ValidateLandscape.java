@@ -16,8 +16,6 @@ package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.data.LandscapeFader;
-import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.fix.InvalidLandscapeFix;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
@@ -32,11 +30,6 @@ public class ValidateLandscape extends AbstractValidationTask {
 	 * Max height diff
 	 */
 	public static final int MAX_HEIGHT_DIFF = 3;
-
-	/**
-	 * To check landacape pairs
-	 */
-	private final LandscapeFader fader = new LandscapeFader();
 
 	/**
 	 * Fix
@@ -70,14 +63,6 @@ public class ValidateLandscape extends AbstractValidationTask {
 			ShortPoint2D p = new ShortPoint2D(x, y);
 			addErrorMessage("landscape.height", p);
 			landscapeFix.addPosition(p);
-		}
-		if (!fader.canFadeTo(l2, l1)) {
-			String landscapeName1 = EditorLabels.getLabel("landscape." + l2.name());
-			String landscapeName2 = EditorLabels.getLabel("landscape." + l1.name());
-
-			addErrorMessage("landscape.wrong-pair", new ShortPoint2D(x, y),
-					landscapeName1, landscapeName2);
-			// this cannot be automatically fixed
 		}
 
 		if (players[x][y] != players[x2][y2]) {

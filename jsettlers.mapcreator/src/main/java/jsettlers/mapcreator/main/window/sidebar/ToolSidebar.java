@@ -84,6 +84,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new SetLandscapeTool(ELandscapeType.FLATTENED, false),
 					new SetLandscapeTool(ELandscapeType.DESERT, false),
 					new SetLandscapeTool(ELandscapeType.EARTH, false),
+					new SetLandscapeTool(ELandscapeType.DRY_EARTH, false),
 					new SetLandscapeTool(ELandscapeType.WATER1, false),
 					new SetLandscapeTool(ELandscapeType.WATER2, false),
 					new SetLandscapeTool(ELandscapeType.WATER3, false),
@@ -101,7 +102,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new SetLandscapeTool(ELandscapeType.MOOR, false),
 					new SetLandscapeTool(ELandscapeType.FLATTENED_DESERT, false),
 					new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
-					new SetLandscapeTool(ELandscapeType.GRAVEL, false)
+					new SetLandscapeTool(ELandscapeType.GRAVEL, false),
+					new SetLandscapeTool(ELandscapeType.ROAD, false),
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.heigths"), new ToolNode[] {
 					new LandscapeHeightTool(),
