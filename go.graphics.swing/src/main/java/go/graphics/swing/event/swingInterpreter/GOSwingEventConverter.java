@@ -103,7 +103,8 @@ public class GOSwingEventConverter extends AbstractEventConverter
 		} catch (NoSuchFieldException exception) {
 			// if there is no Field scale then we have a scale factor of 1
 			// this is expected for Oracle JRE < 1.7.0_u40
-		} catch (Exception exception) {
+		} catch (Throwable exception) {
+			// this is an illegal reflective operation but only modern java will actually check
 			exception.printStackTrace();
 		}
 	}

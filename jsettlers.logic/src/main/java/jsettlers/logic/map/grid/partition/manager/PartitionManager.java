@@ -240,14 +240,17 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	private <T extends ILocatable> void removePositionTo(ShortPoint2D pos, LinkedList<T> fromList, LinkedList<T> toList, boolean newHasSamePlayer) {
-		Iterator<T> iter = fromList.iterator();
-		while (iter.hasNext()) {
-			T curr = iter.next();
+		int len = fromList.size();
+		for(int i = 0;i != len;) {
+			T curr = fromList.get(i);
 			if (curr.getPosition().equals(pos)) {
-				iter.remove();
 				if (newHasSamePlayer) {
 					toList.offer(curr);
 				}
+				fromList.remove(i);
+				len--;
+			} else {
+				i++;
 			}
 		}
 	}

@@ -32,11 +32,7 @@ public final class DefaultBuilding extends Building {
 
 	public DefaultBuilding(EBuildingType buildingType, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(buildingType, player, position, buildingsGrid);
-	}
-
-	@Override
-	public boolean isOccupied() {
-		return true;
+		setOccupied(true);
 	}
 
 	@Override

@@ -84,6 +84,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	public final void occupyBuilding(IManageableWorker worker) {
 		if (!super.isDestroyed()) {
 			this.worker = worker;
+			setOccupied(true);
 			super.showFlag(true);
 			super.initWorkStacks();
 		}
@@ -98,6 +99,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	public final void leaveBuilding(IManageableWorker worker) {
 		if (worker == this.worker) {
 			this.worker = null;
+			setOccupied(false);
 			super.showFlag(false);
 			super.releaseRequestStacks();
 			requestWorker();
@@ -111,6 +113,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		if (worker != null) {
 			this.worker.buildingDestroyed();
 			this.worker = null;
+			setOccupied(false);
 		}
 
 		if (cleanupPositions != null) {
@@ -119,11 +122,6 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			}
 		}
 		super.killedEvent();
-	}
-
-	@Override
-	public final boolean isOccupied() {
-		return worker != null;
 	}
 
 	@Override

@@ -40,4 +40,9 @@ public class GameTimeProvider implements IGameTimeProvider {
 	public boolean isGamePausing() {
 		return gameClock.isPausing();
 	}
+
+	@Override
+	public float getGameSpeed() {
+		return gameClock.getGameSpeed();
+	}
 }

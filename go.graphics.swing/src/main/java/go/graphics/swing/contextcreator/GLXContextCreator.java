@@ -24,80 +24,74 @@ import org.lwjgl.opengl.GLXCapabilities;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.linux.XVisualInfo;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 
 
 public class GLXContextCreator extends JAWTContextCreator {
 	private long context = 0;
 
-	public GLXContextCreator(GLContainer container, boolean debug) {
+	public GLXContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
 		// do we have xlib support ?
 		X11.getLibrary().getName();
 	}
 
-	private static final int[][] ctx_attrs = new int[][] {
-			{ // GL2.0 with debugging
-					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
-					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-					GLXARBCreateContextProfile.GLX_CONTEXT_PROFILE_MASK_ARB, GLXARBCreateContextProfile.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
-					0
+	private static final int[][][] ctx_attrs = new int[][][] {
+		{
+			{// GL3.2+ with debugging
+				GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+				GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 2,
+				GLXARBCreateContextProfile.GLX_CONTEXT_PROFILE_MASK_ARB, GLXARBCreateContextProfile.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+				GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
+				0,
 			},
-			{// GL1.5 with debugging
-					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 1,
-					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 5,
-					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
-					0
-			},
-			{// GL1.1+ with debugging
-					GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
-					0
-			},
+			{// GL3.2+
+				GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+				GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 2,
+				GLXARBCreateContextProfile.GLX_CONTEXT_PROFILE_MASK_ARB, GLXARBCreateContextProfile.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+				0,
+			}
+		},
 
-			{ // GL2.0
-					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
-					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-					GLXARBCreateContextProfile.GLX_CONTEXT_PROFILE_MASK_ARB, GLXARBCreateContextProfile.GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-					0,
-			},
-			{// GL1.5
-					GLXARBCreateContext.GLX_CONTEXT_MAJOR_VERSION_ARB, 1,
-					GLXARBCreateContext.GLX_CONTEXT_MINOR_VERSION_ARB, 5,
-					0
+		{
+			{// GL1.1+ with debugging
+				GLXARBCreateContext.GLX_CONTEXT_FLAGS_ARB, GLXARBCreateContext.GLX_CONTEXT_DEBUG_BIT_ARB,
+				0
 			},
 			{// GL1.1+
-					0
-			},
+				0
+			}
+		},
 	};
 
 	@Override
-	protected void onInit() {
+	protected void onInit() throws ContextException {
 		int screen = X11.XDefaultScreen(windowConnection);
 
 		int[] xvi_attrs = new int[]{
 				GLX.GLX_RGBA,
 				GLX.GLX_DOUBLEBUFFER,
+				GLX.GLX_DEPTH_SIZE, 32,
 				GLX.GLX_STENCIL_SIZE, 1,
 				0};
 
 		GLXCapabilities glxcaps = GL.createCapabilitiesGLX(windowConnection, screen);
 		if(glxcaps.GLX13 && glxcaps.GLX_ARB_create_context && glxcaps.GLX_ARB_create_context_profile) {
 			PointerBuffer fbc = GLX13.glXChooseFBConfig(windowConnection, screen, new int[] {0});
-			if(fbc == null || fbc.capacity() < 1) throw new Error("GLX could not find any FBConfig!");
+			if(fbc == null || fbc.capacity() < 1) error("GLX could not find any FBConfig!");
 
-			int i = debug ? 0 : 3;
+			int i = 0;
 			while(context == 0 && ctx_attrs.length > i) {
-				context = GLXARBCreateContext.glXCreateContextAttribsARB(windowConnection, fbc.get(), 0, true, ctx_attrs[i]);
+				context = GLXARBCreateContext.glXCreateContextAttribsARB(windowConnection, fbc.get(), 0, true, ctx_attrs[i++][debug?0:1]);
 			}
 		} else {
-			if(debug) throw new Error("GLX could not create a debug context!");
+			if(debug) error("GLX could not create a debug context!");
 
 			XVisualInfo xvi = GLX.glXChooseVisual(windowConnection, screen, xvi_attrs);
 			context = GLX.glXCreateContext(windowConnection, xvi, 0, true);
 		}
-		if (context == 0) throw new Error("Could not create GLX context!");
-		parent.wrapNewContext();
+		if (context == 0) error("Could not create GLX context!");
+		parent.wrapNewGLContext();
 	}
 
 	@Override

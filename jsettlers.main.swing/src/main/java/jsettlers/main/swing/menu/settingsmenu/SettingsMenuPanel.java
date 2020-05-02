@@ -45,8 +45,9 @@ public class SettingsMenuPanel extends JPanel {
 	 * Name of the player
 	 */
 	private final JTextField playerNameField = new JTextField();
-	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100);
-	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 1,240);
+	private final SettingsSlider volumeSlider = new SettingsSlider("%", 0,100, null);
+	private final SettingsSlider fpsLimitSlider = new SettingsSlider("fps", 0,240, "timerless redraw");
+	private final SettingsSlider guiScaleSlider = new SettingsSlider("%", 50,400, "system default");
 	private final BackendSelector backendSelector = new BackendSelector();
 
 	/**
@@ -77,6 +78,8 @@ public class SettingsMenuPanel extends JPanel {
 		addSetting("settings-fps-limit", fpsLimitSlider);
 		
 		addSetting("settings-backend", backendSelector);
+
+		addSetting("settings-gui-scale", guiScaleSlider);
 		
 		initButton();
 	}
@@ -111,7 +114,8 @@ public class SettingsMenuPanel extends JPanel {
 			settingsManager.setUserName(playerNameField.getText());
 			settingsManager.setVolume(volumeSlider.getValue() / 100f);
 			settingsManager.setFpsLimit(fpsLimitSlider.getValue());
-			settingsManager.setBackend(backendSelector.getSelectedItem().toString());
+			settingsManager.setBackend(backendSelector.getSelectedItem()+"");
+			settingsManager.setGuiScale(guiScaleSlider.getValue()/100f);
 			mainMenuPanel.reset();
 		});
 
@@ -128,5 +132,6 @@ public class SettingsMenuPanel extends JPanel {
 		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
 		fpsLimitSlider.setValue(settingsManager.getFpsLimit());
 		backendSelector.setSelectedItem(settingsManager.getBackend());
+		guiScaleSlider.setValue(Math.round(settingsManager.getGuiScale()*100));
 	}
 }

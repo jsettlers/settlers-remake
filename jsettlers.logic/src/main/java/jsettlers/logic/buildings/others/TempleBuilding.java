@@ -39,11 +39,7 @@ public final class TempleBuilding extends Building {
 
 	public TempleBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(EBuildingType.TEMPLE, player, position, buildingsGrid);
-	}
-
-	@Override
-	public boolean isOccupied() {
-		return true;
+		setOccupied(true);
 	}
 
 	@Override

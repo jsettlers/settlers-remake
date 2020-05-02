@@ -25,7 +25,7 @@ import org.lwjgl.system.jawt.JAWTX11DrawingSurfaceInfo;
 import java.awt.Canvas;
 import java.awt.Graphics;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public abstract class JAWTContextCreator extends ContextCreator {
@@ -37,7 +37,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	protected long windowDrawable;
 	protected Platform currentPlatform = Platform.get();
 
-	public JAWTContextCreator(GLContainer container, boolean debug) {
+	public JAWTContextCreator(ContextContainer container, boolean debug) {
 		super(container, debug);
 
 		jawt.version(JAWTFunctions.JAWT_VERSION_1_4);
@@ -48,7 +48,7 @@ public abstract class JAWTContextCreator extends ContextCreator {
 	@Override
 	public abstract void stop();
 
-	private void regenerateWindowInfo() {
+	private void regenerateWindowInfo() throws ContextException {
 		long oldWindowConnection = windowConnection;
 		long oldWindowDrawable = windowDrawable;
 		if(currentPlatform == Platform.LINUX) {
@@ -65,10 +65,10 @@ public abstract class JAWTContextCreator extends ContextCreator {
 		if(windowConnection != oldWindowConnection) onNewConnection();
 	}
 
-	protected void onNewConnection() {}
-	protected void onNewDrawable() {}
+	protected void onNewConnection() throws ContextException {}
+	protected void onNewDrawable() throws ContextException {}
 
-	protected void onInit() {}
+	protected void onInit() throws ContextException {}
 
 	@Override
 	public void initSpecific() {
@@ -79,54 +79,55 @@ public abstract class JAWTContextCreator extends ContextCreator {
 			}
 
 			public void paint(Graphics graphics) {
-				surface = JAWTFunctions.JAWT_GetDrawingSurface(jawt.GetDrawingSurface(), canvas);
+				surface = JAWTFunctions.JAWT_GetDrawingSurface(canvas, jawt.GetDrawingSurface());
+				JAWTFunctions.JAWT_DrawingSurface_Lock(surface, surface.Lock());
+				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface, surface.GetDrawingSurfaceInfo());
+				try {
+					regenerateWindowInfo();
 
-				JAWTFunctions.JAWT_DrawingSurface_Lock(surface.Lock(), surface);
-				surfaceinfo = JAWTFunctions.JAWT_DrawingSurface_GetDrawingSurfaceInfo(surface.GetDrawingSurfaceInfo(), surface);
-				regenerateWindowInfo();
+					if (first_draw) {
+						first_draw = false;
+						new GOSwingEventConverter(this, parent);
 
-				if (first_draw) {
-					first_draw = false;
-					new GOSwingEventConverter(this, parent);
-
-					onInit();
-				}
-				makeCurrent(true);
-
-				synchronized (wnd_lock) {
-					if (change_res) {
-						width = new_width;
-						height = new_height;
-
-						parent.resize_gl(width, height);
-						change_res = false;
+						onInit();
 					}
+					makeCurrent(true);
+
+					synchronized (wnd_lock) {
+						if (change_res) {
+							width = new_width;
+							height = new_height;
+
+							parent.resizeContext(width, height);
+							change_res = false;
+						}
+					}
+
+					try {
+						parent.draw();
+						parent.finishFrame();
+					} finally {
+						try {
+							swapBuffers();
+						} finally {
+							makeCurrent(false);
+						}
+					}
+				} catch(ContextException ignored) {
+				} catch (Throwable thrown) {
+					thrown.printStackTrace();
 				}
 
-				parent.draw();
+				if (fpsLimit == 0) repaint();
 
-				swapBuffers();
-				makeCurrent(false);
-				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface.Unlock(), surface);
-
-				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surface.FreeDrawingSurfaceInfo(), surfaceinfo);
-				JAWTFunctions.JAWT_FreeDrawingSurface(jawt.FreeDrawingSurface(), surface);
+				JAWTFunctions.JAWT_DrawingSurface_FreeDrawingSurfaceInfo(surfaceinfo, surface.FreeDrawingSurfaceInfo());
+				JAWTFunctions.JAWT_DrawingSurface_Unlock(surface, surface.Unlock());
+				JAWTFunctions.JAWT_FreeDrawingSurface(surface, jawt.FreeDrawingSurface());
 			}
 		};
 	}
 
-	protected abstract void swapBuffers();
+	protected abstract void swapBuffers() throws ContextException;
 
 	public abstract void makeCurrent(boolean draw);
-
-	@Override
-	public void repaint() {
-		canvas.repaint();
-	}
-
-	@Override
-	public void requestFocus() {
-		canvas.requestFocus();
-
-	}
 }

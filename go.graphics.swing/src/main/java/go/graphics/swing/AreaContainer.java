@@ -15,11 +15,14 @@
 package go.graphics.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import go.graphics.DrawmodeListener;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.swing.contextcreator.EBackendType;
+import go.graphics.swing.contextcreator.ContextException;
 
 /**
  * This class lets you embed areas into swing components.
@@ -27,7 +30,7 @@ import go.graphics.swing.contextcreator.EBackendType;
  * @author michael
  * @author paul
  */
-public class AreaContainer extends GLContainer implements RedrawListener {
+public class AreaContainer extends ContextContainer implements RedrawListener {
 
 	/**
 	 * 
@@ -42,30 +45,32 @@ public class AreaContainer extends GLContainer implements RedrawListener {
 	 *            The area to display
 	 */
 	public AreaContainer(Area area) {
-		this(area, EBackendType.DEFAULT, false);
+		this(area, EBackendType.DEFAULT, false, 0);
 	}
 
-	public AreaContainer(Area area, EBackendType backend, boolean debug) {
+	public AreaContainer(Area area, EBackendType backend, boolean debug, float guiScale) {
 		super(backend, new BorderLayout(), debug);
 		this.area = area;
+		this.guiScale = guiScale;
 
 		if(cc instanceof DrawmodeListener) {
 			area.setDrawmodeListener((DrawmodeListener) cc);
 		}
 
+		setBackground(Color.BLACK);
 
 		area.addRedrawListener(this);
 
 	}
 
-	public void resize_gl(int width, int height) {
-		super.resize_gl(width, height);
+	public void resizeContext(int width, int height) throws ContextException {
+		super.resizeContext(width, height);
 		area.setWidth(width);
 		area.setHeight(height);
 
 	}
 
-	public void draw() {
+	public void draw() throws ContextException {
 		super.draw();
 		area.drawArea(context);
 	}
@@ -73,5 +78,9 @@ public class AreaContainer extends GLContainer implements RedrawListener {
 	@Override
 	public void handleEvent(GOEvent event) {
 		area.handleEvent(event);
+	}
+
+	public void notifyResize() {
+		cc.componentResized(null);
 	}
 }

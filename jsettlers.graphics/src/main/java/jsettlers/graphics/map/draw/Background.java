@@ -19,13 +19,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 
-import go.graphics.EGeometryFormatType;
-import go.graphics.GL2DrawContext;
+import go.graphics.AdvancedUpdateBufferCache;
+import go.graphics.BackgroundDrawHandle;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
+import go.graphics.VkDrawContext;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IDirectGridProvider;
@@ -37,12 +37,13 @@ import jsettlers.graphics.image.reader.DatBitmapReader;
 import jsettlers.graphics.image.reader.DatFileReader;
 import jsettlers.graphics.image.reader.ImageArrayProvider;
 import jsettlers.graphics.image.reader.ImageMetadata;
+import go.graphics.UpdateBufferCache;
 
 /**
  * The map background.
  * <p>
  * This class draws the map background (landscape) layer. It has support for smooth FOW transitions and buffers the background to make it faster.
- * 
+ *
  * @author Michael Zangl
  */
 public class Background implements IGraphicsBackgroundListener {
@@ -68,7 +69,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 * x and y coordinates are in Grid units.
 	 * <p>
 	 * The third entry is the size of the texture. It must be 1 for border tiles and 2..5 for continuous images. Always 1 more than they are wide.
-	 * 
+	 *
 	 * <pre>
 	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 	 * |0             |1             |3             |4             |5             |7             | 5| 6|
@@ -839,24 +840,27 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
-	private final BitSet fowDimmed = new BitSet();
-
-	private static final byte DIM_MAX = 20;
+	private static boolean asyncBufferBuilding = true;
 
 	private static final Object preloadMutex = new Object();
 
-	private byte[] fogOfWarStatus = new byte[1];
-	private int bufferWidth = 1; // in map points.
-	private int bufferHeight = 1; // in map points.
+	private int bufferWidth; // in map points.
+	private int bufferHeight; // in map points.
 
 	private static TextureHandle texture = null;
 
-	private GeometryHandle shapeHandle = null;
-	private GeometryHandle colorHandle = null;
+	private BackgroundDrawHandle backgroundHandle = null;
 
-	private boolean useFloatColors;
+	private boolean hasdgp;
+	private IDirectGridProvider dgp;
+	private byte[][] dgpVisibleStatus;
+	private byte[] dgpHeightGrid;
+	private BitSet fowWritten;
+	private boolean fowEnabled;
+
 	private boolean updateGeometry = false;
-	private BitSet mapInvalid = new BitSet();
+	private BitSet mapInvalid;
+	private int mapWidth, mapHeight;
 
 	private static short[] preloadedTexture = null;
 
@@ -870,7 +874,7 @@ public class Background implements IGraphicsBackgroundListener {
 		return data;
 	}
 
-	public static void preloadTexture() {
+	static void preloadTexture() {
 		synchronized (preloadMutex) {
 			if (preloadedTexture == null) {
 				preloadedTexture = getTexture();
@@ -925,10 +929,11 @@ public class Background implements IGraphicsBackgroundListener {
 
 	/**
 	 * Generates the texture data.
-	 * 
+	 *
 	 * @param data
 	 *            The texture data buffer.
 	 * @throws IOException
+	 *            If the necessary file reader is missing
 	 */
 	private static void addTextures(short[] data) throws IOException {
 		DatFileReader reader = ImageProvider.getInstance().getFileReader(LAND_FILE);
@@ -1165,128 +1170,146 @@ public class Background implements IGraphicsBackgroundListener {
 		return index;
 	}
 
-	private int draw_stride = 0;
+	public Background(MapDrawContext context) {
+		bufferWidth = context.getMap().getWidth()-1;
+		bufferHeight = context.getMap().getHeight()-1;
+		mapWidth = context.getMap().getWidth();
+		mapHeight = context.getMap().getHeight();
+
+		dgp = context.getFow();
+		hasdgp = dgp != null;
+		if(hasdgp) {
+			dgpVisibleStatus = dgp.getVisibleStatusArray();
+			dgpHeightGrid = dgp.getHeightArray();
+		}
+
+		if(asyncBufferBuilding) {
+			color_bfr2 = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferHeight*bufferWidth).order(ByteOrder.nativeOrder());
+			color_cache2 = new AdvancedUpdateBufferCache(color_bfr2, BYTES_PER_FIELD_COLOR, context::getGl, () -> backgroundHandle.colors, bufferWidth);
+			asyncAccessContext = context;
+		} else {
+			color_bfr2 = null;
+			fowWritten = new BitSet(mapWidth*mapHeight);
+		}
+		mapInvalid = new BitSet(bufferWidth*bufferHeight);
+	}
+
+	private MapDrawContext asyncAccessContext;
 
 	/**
 	 * Draws a given map content.
-	 * 
+	 *
 	 * @param context
 	 *            The context to draw at.
 	 * @param screen
+	 *            The area to draw
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
+		GLDrawContext gl = context.getGl();
 		try {
-			if(shapeHandle == null) {
-				bufferWidth = context.getMap().getWidth()-1;
-				bufferHeight = context.getMap().getHeight()-1;
-
-				generateFogOfWarBuffer(context);
-				mapInvalid = new BitSet(bufferWidth*bufferHeight);
-				draw_stride = (2*bufferWidth)+1;
-			}
-
-			if(shapeHandle == null || !shapeHandle.isValid()) {
-				useFloatColors = (context.getGl() instanceof GL2DrawContext);
+			if(backgroundHandle == null || !backgroundHandle.isValid()) {
 				generateGeometry(context);
 				context.getGl().setHeightMatrix(context.getConverter().getMatrixWithHeight());
 			}
-
-			GLDrawContext gl = context.getGl();
-			MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-			int offset = screenArea.getMinY()*bufferWidth+screenArea.getMinX();
-
-			updateGeometry(context, screenArea);
-
-			float x = context.getOffsetX();
-			float y = context.getOffsetY();
-			gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), shapeHandle, colorHandle, offset*2, screenArea.getHeight(), screenArea.getWidth()*2, draw_stride, x, y);
-
-			resetFOWDimStatus();
 		} catch (IllegalBufferException e) {
 			// TODO: Create crash report.
 			e.printStackTrace();
 		}
-	}
 
-	private void resetFOWDimStatus() {
-		fowDimmed.clear();
+		MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
+
+		updateGeometry(context, screenArea);
+
+		backgroundHandle.offset = (screenArea.getMinY() * bufferWidth + screenArea.getMinX())*2;
+		backgroundHandle.lines = screenArea.getHeight();
+		backgroundHandle.width = screenArea.getWidth()*2;
+		gl.drawBackground(backgroundHandle);
 	}
 
 	private void generateGeometry(MapDrawContext context) throws IllegalBufferException {
 		int vertices = bufferWidth*bufferHeight*3*2;
-		shapeHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.Texture3D, false, "background-shape");
-		colorHandle = context.getGl().generateGeometry(vertices, EGeometryFormatType.ColorOnly, true, "background-color");
+		backgroundHandle = context.getGl().createBackgroundDrawCall(vertices, getTexture(context.getGl()));
+		backgroundHandle.stride = (2*bufferWidth)+1;
 
-		ByteBuffer shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
-		ByteBuffer color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
+		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE*bufferWidth).order(ByteOrder.nativeOrder());
+		color_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR*bufferWidth).order(ByteOrder.nativeOrder());
 
 		for(int y = 0;y != bufferHeight;y++) {
 			for(int x = 0; x != bufferWidth;x++) {
 				addTrianglesToGeometry(context, shape_bfr, x, y);
 			}
-			context.getGl().updateGeometryAt(shapeHandle, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 			shape_bfr.rewind();
+			context.getGl().updateBufferAt(backgroundHandle.vertices, BYTES_PER_FIELD_SHAPE*bufferWidth*y, shape_bfr);
 		}
-		for(int y = 0;y != bufferHeight;y++) {
-			int line_bfr4 = y*bufferWidth*4;
-			for(int x = 0; x != bufferWidth;x++) {
-				addColorTrianglesToGeometry(context, color_bfr, x, y, line_bfr4+x*4);
+		fowEnabled = hasdgp && dgp.isFoWEnabled();
+
+		for(int y = 0; y != bufferHeight; y++) {
+			for(int x = 0; x != bufferWidth; x++) {
+				addColorTrianglesToGeometry(context, color_bfr, x, y);
 			}
-			context.getGl().updateGeometryAt(colorHandle, BYTES_PER_FIELD_COLOR*bufferWidth*y, color_bfr);
 			color_bfr.rewind();
+			context.getGl().updateBufferAt(backgroundHandle.colors, BYTES_PER_FIELD_COLOR * bufferWidth * y, color_bfr);
 		}
+
+		shape_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
+
+		if (!asyncBufferBuilding) {
+			color_cache = new UpdateBufferCache(color_bfr, BYTES_PER_FIELD_COLOR, context::getGl, () -> backgroundHandle.colors);
+		}
+		context.getMap().setBackgroundListener(this);
 	}
 
-	private final ByteBuffer shape_update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_SHAPE).order(ByteOrder.nativeOrder());
-	private final ByteBuffer color_update_bfr = ByteBuffer.allocateDirect(BYTES_PER_FIELD_COLOR).order(ByteOrder.nativeOrder());
-
-	private void updateMapType(MapDrawContext context, int x, int y) throws IllegalBufferException {
-		int bfr_pos = y*bufferWidth+x;
-
-		if(mapInvalid.get(bfr_pos)) {
-			mapInvalid.clear(bfr_pos);
-			shape_update_bfr.rewind();
-			addTrianglesToGeometry(context, shape_update_bfr, x, y);
-			context.getGl().updateGeometryAt(shapeHandle, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_update_bfr);
-		}
-	}
+	private AdvancedUpdateBufferCache color_cache2;
+	private final ByteBuffer color_bfr2;
+	private UpdateBufferCache color_cache;
+	private ByteBuffer shape_bfr;
+	private ByteBuffer color_bfr;
 
 	private void updateGeometry(MapDrawContext context, MapRectangle screen) {
-		IDirectGridProvider vsp = context.getFow();
-		byte[][] visibleStatus = vsp != null ? vsp.getVisibleStatusArray() : null;
+		fowEnabled = hasdgp && dgp.isFoWEnabled();
 
 		try {
 			int height = screen.getHeight();
 			int width = screen.getWidth();
 			int miny = screen.getMinY();
 			int minx = screen.getMinX();
-			int maxy = miny+height;
+			int maxy = miny + height;
 
-			if(maxy > bufferHeight) maxy = bufferHeight;
-			if(miny < 0) miny = 0;
+			if (maxy > bufferHeight) maxy = bufferHeight;
+			if (miny < 0) miny = 0;
+			int linestart = minx - (miny / 2);
 
-			int linestart = minx-(miny/2);
-			for (int y = miny; y < maxy; y++) {
-				int lineStartX = linestart + (y / 2);
 
-				int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
-				int linex = lineStartX < 0 ? 0 : lineStartX;
+			if(asyncBufferBuilding && context.getGl() instanceof VkDrawContext) {
+				synchronized (color_bfr2) {
+					color_cache2.clearCache();
+				}
+			} else {
 
-				int line_bfr_pos4 = y*bufferWidth*4;
-				int line_bfr_pos = y*bufferWidth;
-				for (int x = linex; x < linewidth; x++) {
-					int bfr_pos4 = line_bfr_pos4+x*4;
-					int bfr_pos = line_bfr_pos+x;
+				for (int y = miny; y < maxy; y++) {
+					int lineStartX = linestart + (y / 2);
 
-					byte fow = visibleStatus != null ? visibleStatus[x][y] : CommonConstants.FOG_OF_WAR_VISIBLE;
-					if(fow != fogOfWarStatus[bfr_pos4]) {
-						color_update_bfr.rewind();
-						dimFogOfWarBuffer(context, bfr_pos4, x, y);
-						dimFogOfWarBuffer(context, bfr_pos4+1, x + 1, y);
-						dimFogOfWarBuffer(context, bfr_pos4+2, x, y + 1);
-						dimFogOfWarBuffer(context, bfr_pos4+3, x + 1, y + 1);
-						addColorTrianglesToGeometry(context, color_update_bfr, x, y, bfr_pos4);
-						context.getGl().updateGeometryAt(colorHandle, bfr_pos * BYTES_PER_FIELD_COLOR, color_update_bfr);
+					int linewidth = (width + lineStartX) < bufferWidth ? width + lineStartX : bufferWidth;
+					int linex = lineStartX < 0 ? 0 : lineStartX;
+					int bfr_pos = y * bufferWidth + linex;
+
+					if (asyncBufferBuilding) {
+						synchronized (color_bfr2) {
+							color_cache2.clearCacheRegion(y, linex, linewidth);
+						}
+					} else {
+						boolean changes = false;
+
+						for (int x = linex; x < linewidth; x++) {
+							if (fowWritten.get(y * mapWidth + x)) {
+								fowWritten.clear(y * mapWidth + x);
+								color_cache.gotoPos(bfr_pos);
+								changes = true;
+								addColorTrianglesToGeometry(context, color_bfr, x, y);
+							}
+							bfr_pos++;
+						}
+						if (changes) color_cache.clearCache();
 					}
 				}
 			}
@@ -1297,9 +1320,17 @@ public class Background implements IGraphicsBackgroundListener {
 
 					int linewidth = (width+lineStartX) < bufferWidth ? width+lineStartX : bufferWidth;
 					int linex = lineStartX < 0 ? 0 : lineStartX;
+					int bfr_pos = y*bufferWidth+linex;
 
 					for (int x = linex; x < linewidth; x++) {
-						updateMapType(context, x, y);
+						if(mapInvalid.get(bfr_pos)) {
+							mapInvalid.clear(bfr_pos);
+							shape_bfr.rewind();
+							addTrianglesToGeometry(context, shape_bfr, x, y);
+							shape_bfr.rewind();
+							context.getGl().updateBufferAt(backgroundHandle.vertices, bfr_pos * BYTES_PER_FIELD_SHAPE, shape_bfr);
+						}
+						bfr_pos++;
 					}
 				}
 				updateGeometry = false;
@@ -1312,90 +1343,32 @@ public class Background implements IGraphicsBackgroundListener {
 	private synchronized void invalidateShapePoint(int x, int y) {
 		if(x > bufferWidth || y > bufferHeight || x < 0 || y < 0) return;
 		updateGeometry = true;
-		mapInvalid.set(getBufferPosition(x, y));
-	}
-
-	private void generateFogOfWarBuffer(MapDrawContext context) {
-		fogOfWarStatus = new byte[bufferWidth*bufferHeight*4];
-
-		for(int y = 0;y != bufferHeight;y++) {
-			for(int x = 0; x != bufferWidth;x++) {
-				int fieldOffset = getBufferPosition(x, y);
-				fogOfWarStatus[fieldOffset*4] = context.getVisibleStatus(x, y);
-				fogOfWarStatus[(fieldOffset*4)+1] = context.getVisibleStatus(x+1, y);
-				fogOfWarStatus[(fieldOffset*4)+2] = context.getVisibleStatus(x+1, y+1);
-				fogOfWarStatus[(fieldOffset*4)+3] = context.getVisibleStatus(x, y+1);
-			}
-		}
-	}
-
-	/**
-	 * Dims the fog of war buffer
-	 * 
-	 * @param context
-	 *            The context
-	 * @param offset
-	 *            The fog of war buffer offset
-	 * @param x
-	 *            The x coordinate of the tile
-	 * @param y
-	 *            The y coordinate of the tile.
-	 * @return true if and only if the dim has finished.
-	 */
-	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x, int y) {
-		if (!fowDimmed.get(offset)) {
-			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], context.getVisibleStatus(x, y));
-			fowDimmed.set(offset);
-		}
-	}
-
-	private static byte dim(byte value, byte dimTo) {
-		if (value < dimTo - DIM_MAX) {
-			return (byte) (dimTo - DIM_MAX);
-		} else if (value > dimTo + DIM_MAX) {
-			return (byte) (dimTo + DIM_MAX);
-		} else if (value > dimTo) {
-			return (byte) (value - 1);
-		} else if (value < dimTo) {
-			return (byte) (value + 1);
-		} else {
-			return value;
-		}
-	}
-
-	private int getBufferPosition(int x, int y) {
-		return (y*bufferHeight+x);
+		mapInvalid.set(y*bufferWidth+x);
 	}
 
 	/**
 	 * Adds the two triangles for a point to the list of verteces
-	 * 
-	 * @param context
-	 * @param buffer
-	 * @param x
-	 * @param y
 	 */
 	private void addTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
 		addTriangleToGeometry(context, buffer, x, y, true,x*37 + y*17);
 		addTriangleToGeometry(context, buffer, x, y, false, x);
 	}
 
-	private void addColorTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogBase) {
-		addColorPointToGeometry(context, buffer, x, y, fogBase);
-		addColorPointToGeometry(context, buffer, x, y + 1, fogBase + 2);
-		addColorPointToGeometry(context, buffer, x + 1, y + 1, fogBase + 3);
+	private void addColorTrianglesToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
+		addColorPointToGeometry(context, buffer, x, y);
+		addColorPointToGeometry(context, buffer, x, y + 1);
+		addColorPointToGeometry(context, buffer, x + 1, y + 1);
 
-		addColorPointToGeometry(context, buffer, x, y, fogBase);
-		addColorPointToGeometry(context, buffer, x + 1, y + 1, fogBase + 3);
-		addColorPointToGeometry(context, buffer, x + 1, y, fogBase + 1);
+		addColorPointToGeometry(context, buffer, x, y);
+		addColorPointToGeometry(context, buffer, x + 1, y + 1);
+		addColorPointToGeometry(context, buffer, x + 1, y);
 	}
 
-	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, boolean up, int useSecondParameter) {
-		int x1 = x;
+	private void addTriangleToGeometry(MapDrawContext context, ByteBuffer buffer, int x1, int y, boolean up, int useSecondParameter) {
 		int y1 = y + (up?1:0);
-		int x2 = x + (up?0:1);
+		int x2 = x1 + (up?0:1);
 		int y2 = y + (up?0:1);
-		int x3 = x + 1;
+		int x3 = x1 + 1;
 		int y3 = y + (up?1:0);
 
 		ELandscapeType leftLandscape = context.getLandscape(x1, y1);
@@ -1425,7 +1398,7 @@ public class Background implements IGraphicsBackgroundListener {
 		int addDx = 0;
 		int addDy = 0;
 		if (positions[2] >= 2) {
-			addDx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
+			addDx = x1 * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
 			addDy = y * DrawConstants.DISTANCE_Y;
 			addDx = realModulo(addDx, (positions[2] - 1) * TEXTURE_GRID);
 			addDy = realModulo(addDy, (positions[2] - 1) * TEXTURE_GRID);
@@ -1458,38 +1431,32 @@ public class Background implements IGraphicsBackgroundListener {
 	private void addPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, float u, float v) {
 		buffer.putFloat(x);
 		buffer.putFloat(y);
-		buffer.putFloat(context.getHeight(x, y));
+		buffer.putFloat(hasdgp ? dgpHeightGrid[y*mapWidth+x] : context.getHeight(x, y));
 		buffer.putFloat(u);
 		buffer.putFloat(v);
 	}
 
-	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y, int fogOffset) {
+	private void addColorPointToGeometry(MapDrawContext context, ByteBuffer buffer, int x, int y) {
 		float fColor;
-		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0 || y >= context.getMap().getHeight() - 2 || context.getVisibleStatus(x, y) <= 0) {
+		if((x <= 0 || x >= mapWidth - 2 || y <= 0 || y >= mapHeight - 2 || ((hasdgp ? dgpVisibleStatus[x][y] : context.getVisibleStatus(x, y)) <= 0) && fowEnabled)) {
 			fColor = 0;
 		} else {
-			int height1 = context.getHeight(x, y - 1);
-			int height2 = context.getHeight(x, y);
-			fColor = 0.85f + (height1 - height2) * .15f;
+			int dHeight;
+			if(hasdgp) {
+				dHeight = dgpHeightGrid[(y-1)*mapWidth+x] - dgpHeightGrid[y*mapWidth+x];
+			} else {
+				dHeight = context.getHeight(x, y-1) - context.getHeight(x, y);
+			}
+			fColor = 0.85f + dHeight * .15f;
 			if (fColor > 1.0f) {
 				fColor = 1.0f;
 			} else if (fColor < 0.4f) {
 				fColor = 0.4f;
 			}
-			fColor *= (float) fogOfWarStatus[fogOffset] / CommonConstants.FOG_OF_WAR_VISIBLE;
+			if(fowEnabled) fColor *= dgpVisibleStatus[x][y] / (float)CommonConstants.FOG_OF_WAR_VISIBLE;
 		}
 
-		if(useFloatColors) {
-			buffer.putFloat(fColor);
-		} else {
-			byte color;
-			fColor *= 255f;
-			color = (byte) (int) fColor;
-			buffer.put(color);
-			buffer.put(color);
-			buffer.put(color);
-			buffer.put((byte) 255);
-		}
+		buffer.putFloat(fColor);
 	}
 
 	private static int realModulo(int number, int modulo) {
@@ -1502,16 +1469,44 @@ public class Background implements IGraphicsBackgroundListener {
 
 	@Override
 	public void backgroundShapeChangedAt(int x, int y) {
+		backgroundColorLineChangedAt(x, y, 1);
 		invalidateShapePoint(x, y);
 		invalidateShapePoint(x - 1, y);
 		invalidateShapePoint(x - 1, y - 1);
 		invalidateShapePoint(x, y - 1);
 	}
 
+	private void updateLine(int y, int x1, int x2) {
+		if(asyncBufferBuilding) {
+			synchronized (color_bfr2) {
+				color_cache2.gotoLine(y,x1, x2 - x1);
+				for (int i = x1; i != x2; i++) {
+					addColorTrianglesToGeometry(asyncAccessContext, color_bfr2, i, y);
+				}
+			}
+		} else {
+			fowWritten.set(y*mapWidth+x1, y*mapWidth+x2);
+		}
+	}
+
+	@Override
+	public void backgroundColorLineChangedAt(int x, int y, int length) {
+		if(y == bufferHeight) return;
+
+		int x2 = x + length;
+		if(x != 0) x = x-1;
+		if(x2 < bufferWidth) x2 = x2+1;
+		if(x2 > bufferWidth) x2 = bufferWidth;
+
+		updateLine(y, x, x2);
+		if(y > 0) updateLine(y-1, x, x2);
+		if(y < bufferHeight-1) updateLine(y+1, x, x2);
+	}
+
 	/**
 	 * Invalidates the background texture.
 	 */
-	public static void invalidateTexture() {
+	static void invalidateTexture() {
 		texture = null;
 	}
 }

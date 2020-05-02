@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018
+ * Copyright (c) 2018 - 2019
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,8 +15,6 @@
 package go.graphics.swing.contextcreator;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -26,22 +24,23 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import go.graphics.DrawmodeListener;
-import go.graphics.swing.GLContainer;
+import go.graphics.FramerateComputer;
+import go.graphics.swing.ContextContainer;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 
 public abstract class AsyncContextCreator extends ContextCreator implements Runnable,DrawmodeListener {
 
-	private boolean offscreen = true;
-	private boolean clear_offscreen = true;
+	protected boolean offscreen = true;
+	protected boolean async_resized = false;
+	protected boolean clear_offscreen = true;
 	private boolean continue_run = true;
 
-	protected boolean ignore_resize = false;
-	protected BufferedImage bi = null;
-	protected IntBuffer pixels;
+	private BufferedImage bi = null;
+	private IntBuffer pixels;
 
-	private Thread render_thread;
+	private Thread render_thread = new Thread(this, "AsyncRenderer");
 
-	public AsyncContextCreator(GLContainer container, boolean debug)  {
+	public AsyncContextCreator(ContextContainer container, boolean debug)  {
 		super(container, debug);
 	}
 
@@ -52,7 +51,7 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	@Override
 	public void initSpecific() {
-		JPanel panel = new JPanel() {
+		canvas = new JPanel() {
 			public void paintComponent(Graphics graphics) {
 				super.paintComponent(graphics);
 
@@ -69,24 +68,12 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 				} else {
 					graphics.drawString("Press m to enable offscreen transfer", width/3, height/2);
 				}
+
+				if(fpsLimit == 0) repaint();
 			}
 		};
 
-		canvas = panel;
-		render_thread = new Thread(this);
 		render_thread.start();
-
-
-	}
-
-	@Override
-	public void repaint() {
-		canvas.repaint();
-	}
-
-	@Override
-	public void requestFocus() {
-		canvas.requestFocus();
 	}
 
 	public abstract void async_init();
@@ -101,47 +88,62 @@ public abstract class AsyncContextCreator extends ContextCreator implements Runn
 
 	@Override
 	public void run() {
+		synchronized (wnd_lock) {
+			width = new_width;
+			height = new_height;
+		}
 		async_init();
 
-		parent.wrapNewContext();
+		FramerateComputer fpsComputer = new FramerateComputer();
 
 		while(continue_run) {
-			if (change_res) {
-				if(!ignore_resize) {
-					width = new_width;
-					height = new_height;
-					async_set_size(width, height);
+			try {
+				if (change_res) {
+					synchronized (wnd_lock) {
+						width = new_width;
+						height = new_height;
 
-					parent.resize_gl(width, height);
+						if (async_resized) {
+							async_resized = false;
+						} else {
+							async_set_size(width, height);
+						}
 
-					bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-					pixels = BufferUtils.createIntBuffer(width * height);
+						Thread.sleep(20); // we must wait a bit because X is async and our window must not be resized in time otherwise
+						parent.resizeContext(width, height);
+
+						bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+						pixels = BufferUtils.createIntBuffer(width * height);
+					}
+					change_res = false;
 				}
-				ignore_resize = false;
-				change_res = false;
-			}
+				async_refresh();
 
-			async_refresh();
+				parent.draw();
+				parent.finishFrame();
 
-			parent.draw();
-
-			if (offscreen) {
-				synchronized (wnd_lock) {
-					GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-					for (int x = 0; x != width; x++) {
-						for (int y = 0; y != height; y++) {
-							bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
+				if (offscreen) {
+					synchronized (wnd_lock) {
+						parent.readFramebuffer(pixels, width, height);
+						for (int x = 0; x != width; x++) {
+							for (int y = 0; y != height; y++) {
+								bi.setRGB(x, height - y - 1, pixels.get(y * width + x));
+							}
 						}
 					}
 				}
-			}
 
-			if(!offscreen || clear_offscreen ){
-				if(clear_offscreen) {
-					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-					clear_offscreen = false;
+				if (!offscreen || clear_offscreen) {
+					if (clear_offscreen && !offscreen) {
+						parent.clearFramebuffer();
+						clear_offscreen = false;
+					}
+					async_swapbuffers();
+					if (fpsLimit != 0) fpsComputer.nextFrame(fpsLimit);
 				}
-				async_swapbuffers();
+			} catch(ContextException ignored) {
+			} catch(Throwable thrown) {
+				thrown.printStackTrace();
 			}
 		}
 
