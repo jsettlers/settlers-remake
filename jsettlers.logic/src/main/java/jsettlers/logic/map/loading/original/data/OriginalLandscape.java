@@ -37,7 +37,7 @@ public class OriginalLandscape {
 		originalLandscapeType.put(7, ELandscapeType.WATER8);
 
 		originalLandscapeType.put(16, ELandscapeType.GRASS);
-		originalLandscapeType.put(17, ELandscapeType.MOUNTAINBORDER);
+		originalLandscapeType.put(17, ELandscapeType.MOUNTAINBORDEROUTER);
 
 		originalLandscapeType.put(20, ELandscapeType.DESERTBORDEROUTER);
 		originalLandscapeType.put(21, ELandscapeType.MOORBORDEROUTER);
