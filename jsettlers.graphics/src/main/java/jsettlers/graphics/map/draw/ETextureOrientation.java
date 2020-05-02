@@ -29,12 +29,12 @@ public class ETextureOrientation {
 	 * the right point
 	 */
 	private static final float[] CONTINUOUS_UP = new float[] {
-			DrawConstants.DISTANCE_X / 2,
+			DrawConstants.TEXTUREUNIT_X / 2,
 			0,
 			0,
-			DrawConstants.DISTANCE_Y,
-			DrawConstants.DISTANCE_X,
-			DrawConstants.DISTANCE_Y
+			DrawConstants.TEXTUREUNIT_Y,
+			DrawConstants.TEXTUREUNIT_X,
+			DrawConstants.TEXTUREUNIT_Y
 	};
 
 	private static final float[] TOPLEFT = new float[] {
@@ -74,11 +74,11 @@ public class ETextureOrientation {
 	 * right
 	 */
 	private static final float[] CONTINUOUS_DOWN = new float[] {
-			DrawConstants.DISTANCE_X / 2,
+			DrawConstants.TEXTUREUNIT_X / 2,
 			0,
-			DrawConstants.DISTANCE_X,
-			DrawConstants.DISTANCE_Y,
-			DrawConstants.DISTANCE_X * 3 / 2,
+			DrawConstants.TEXTUREUNIT_X,
+			DrawConstants.TEXTUREUNIT_Y,
+			DrawConstants.TEXTUREUNIT_X * 3 / 2,
 			0
 	};
 

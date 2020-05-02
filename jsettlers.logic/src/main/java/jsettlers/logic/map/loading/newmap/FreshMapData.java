@@ -98,6 +98,7 @@ public class FreshMapData implements FreshMapSerializer.IMapDataReceiver, IMapDa
 
 	@Override
 	public byte getLandscapeHeight(int x, int y) {
+		if(x < 0 || y < 0 || x > height || y > width) return 0;
 		return heights[x][y];
 	}
 

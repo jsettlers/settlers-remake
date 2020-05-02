@@ -16,8 +16,6 @@ package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.data.LandscapeFader;
-import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.fix.InvalidLandscapeFix;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
@@ -31,12 +29,7 @@ public class ValidateLandscape extends AbstractValidationTask {
 	/**
 	 * Max height diff
 	 */
-	private static final int MAX_HEIGHT_DIFF = 3;
-
-	/**
-	 * To check landacape pairs
-	 */
-	private final LandscapeFader fader = new LandscapeFader();
+	public static final int MAX_HEIGHT_DIFF = 3;
 
 	/**
 	 * Fix
@@ -71,14 +64,6 @@ public class ValidateLandscape extends AbstractValidationTask {
 			addErrorMessage("landscape.height", p);
 			landscapeFix.addPosition(p);
 		}
-		if (!fader.canFadeTo(l2, l1)) {
-			String landscapeName1 = EditorLabels.getLabel("landscape." + l2.name());
-			String landscapeName2 = EditorLabels.getLabel("landscape." + l1.name());
-
-			addErrorMessage("landscape.wrong-pair", new ShortPoint2D(x, y),
-					landscapeName1, landscapeName2);
-			// this cannot be automatically fixed
-		}
 
 		if (players[x][y] != players[x2][y2]) {
 			if (players[x][y] != -1) {
@@ -100,8 +85,7 @@ public class ValidateLandscape extends AbstractValidationTask {
 	 * @return diff
 	 */
 	public static int getMaxHeightDiff(ELandscapeType landscape, ELandscapeType landscape2) {
-		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.MOORINNER || landscape2.isWater()
-				|| landscape2 == ELandscapeType.MOOR || landscape2 == ELandscapeType.MOORINNER ? 0 : MAX_HEIGHT_DIFF;
+		return (landscape.isFlat() || landscape2.isFlat()) ? 0 : MAX_HEIGHT_DIFF;
 	}
 
 }

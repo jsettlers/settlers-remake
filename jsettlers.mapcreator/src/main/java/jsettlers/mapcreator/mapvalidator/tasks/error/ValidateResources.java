@@ -43,10 +43,10 @@ public class ValidateResources extends AbstractValidationTask {
 
 		for (short x = 0; x < data.getWidth(); x++) {
 			for (short y = 0; y < data.getHeight(); y++) {
-				ELandscapeType landacape = data.getLandscape(x, y);
+				ELandscapeType landscape = data.getLandscape(x, y);
 				EResourceType resource = data.getResourceType(x, y);
-				if (data.getResourceAmount(x, y) > 0 && !mayHoldResource(landacape, resource)) {
-					String landscapeName = EditorLabels.getLabel("landscape." + landacape.name());
+				if (data.getResourceAmount(x, y) > 0 && !landscape.canHoldResource(resource)) {
+					String landscapeName = EditorLabels.getLabel("landscape." + landscape.name());
 					String resourceName = Labels.getName(resource);
 					ShortPoint2D p = new ShortPoint2D(x, y);
 					addErrorMessage("resource.text", p, landscapeName, resourceName);
@@ -55,22 +55,4 @@ public class ValidateResources extends AbstractValidationTask {
 			}
 		}
 	}
-
-	/**
-	 * Check resource type on landacape
-	 * 
-	 * @param landscape
-	 *            Landacape
-	 * @param resourceType
-	 *            Resource
-	 * @return true if valid
-	 */
-	public static boolean mayHoldResource(ELandscapeType landscape, EResourceType resourceType) {
-		if (resourceType == EResourceType.FISH) {
-			return landscape.isWater();
-		} else {
-			return landscape == ELandscapeType.MOUNTAIN || landscape == ELandscapeType.MOUNTAINBORDER;
-		}
-	}
-
 }

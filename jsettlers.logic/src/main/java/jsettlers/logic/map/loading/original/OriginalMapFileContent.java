@@ -32,7 +32,7 @@ import jsettlers.logic.map.loading.original.data.EOriginalMapResources;
 import jsettlers.logic.map.loading.original.data.EOriginalMapSettlersType;
 import jsettlers.logic.map.loading.original.data.EOriginalMapStackType;
 import jsettlers.logic.map.loading.original.data.EOriginalMapObjectType;
-import jsettlers.logic.map.loading.original.data.EOriginalLandscapeType;
+import jsettlers.logic.map.loading.original.data.OriginalLandscape;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -119,9 +119,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos > dataCount))
 			return;
 
-		EOriginalLandscapeType originalType = EOriginalLandscapeType.getTypeByInt(type);
-
-		landscapeType[pos] = originalType.value;
+		landscapeType[pos] = OriginalLandscape.getTypeByInt(type);
 	}
 
 	public void setMapObject(int pos, int type) {

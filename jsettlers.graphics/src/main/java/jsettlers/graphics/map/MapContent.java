@@ -380,7 +380,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawWinStateMsg(GLDrawContext gl) {
-		if(localPlayer.getWinState() == EWinState.UNDECIDED) {
+		if(localPlayer == null || localPlayer.getWinState() == EWinState.UNDECIDED) {
 			return;
 		}
 		Color color = localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED;
