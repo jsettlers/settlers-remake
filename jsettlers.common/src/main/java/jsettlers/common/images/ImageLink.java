@@ -29,10 +29,11 @@ public abstract class ImageLink implements Serializable {
 	private static final long serialVersionUID = 1572028978425777114L;
 
 	private static final Pattern ORIGINAL_LINK = Pattern
-			.compile("original_(\\d+)_(SETTLER|GUI|LANDSCAPE)_(\\d+)");
+			.compile("original_(\\d+)_(SETTLER|GUI|LANDSCAPE)_(\\d+)(?:_(\\d+))?");
 	private static final int ORIGINAL_LINK_FILE = 1;
 	private static final int ORIGINAL_LINK_TYPE = 2;
 	private static final int ORIGINAL_LINK_SEQUENCE = 3;
+	private static final int ORIGINAL_LINK_INDEX = 4;
 
 	/**
 	 * Converts a given name to an image link.
@@ -54,6 +55,30 @@ public abstract class ImageLink implements Serializable {
 			return new OriginalImageLink(type, file, sequence, imageIndex);
 		} else {
 			return new DirectImageLink(name + "." + imageIndex);
+		}
+	}
+
+	/**
+	 * Converts a given name to an image link.
+	 * <p>
+	 * Names can either be direct names of the png files or they can have the for "original_&lt;file>_&lt;type>_&lt;sequence
+	 *
+	 * @param name
+	 *            The name.
+	 * @return The image link for that image, no matter if it exists or not.
+	 */
+	public static ImageLink fromName(String name) {
+		Matcher matcher = ORIGINAL_LINK.matcher(name);
+		if (matcher.matches()) {
+			EImageLinkType type = EImageLinkType.valueOf(matcher.group(ORIGINAL_LINK_TYPE));
+			int file = Integer.parseInt(matcher.group(ORIGINAL_LINK_FILE));
+			int sequence = Integer.parseInt(matcher.group(ORIGINAL_LINK_SEQUENCE));
+			int imageIndex = 0;
+			String indexStr = matcher.group(ORIGINAL_LINK_INDEX);
+			if(indexStr != null) imageIndex = Integer.parseInt(indexStr);
+			return new OriginalImageLink(type, file, sequence, imageIndex);
+		} else {
+			return new DirectImageLink(name);
 		}
 	}
 

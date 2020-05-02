@@ -57,20 +57,19 @@ public enum EMaterialType {
 
 	NO_MATERIAL((short) 0, 0, 0, false, -1, false),
 
-	MEAD((short) 90, 14, 126, false, -1, true),
-	HONEY((short) 89, 14, 129, false, -1, true),
-	GEMS((short) 79, 24, 120, false, -1, false),
-	SULFUR((short) 80, 34, 126, false, -1, false),
-	RICE((short) 78, 34, 129, false, -1, false),
-	KEG((short) 70, 34, 132, false, -1, false),
-	BOX((short) 82, 0, 0, false, -1, false),
+	MEAD((short) 90, 14, 126, true, -1, true),
+	HONEY((short) 89, 14, 129, true, -1, true),
+	GEMS((short) 79, 24, 120, true, -1, false),
+	SULFUR((short) 80, 34, 126, true, -1, false),
+	RICE((short) 78, 34, 129, true, -1, false),
+	KEG((short) 70, 34, 132, true, -1, false),
+	LIQUOR((short)71, 34, 132, true, -1, false),
+	GUN_POWDER((short) 82, 34, 135, true, -1, false),
 
-	// ammo for cannon (6 frames instead of 8)
-	CANNON_AMMO((short) 86, 0, 0, false, -1, false),
-	// ammo for ballista (6 frames instead of 8)
-	BALLISTA_AMMO((short) 87, 0, 0, false, -1, false),
-	// ammo for catapult (6 frames instead of 8)
-	CATAPULT_AMMO((short) 88, 0, 0, false, -1, false),
+	// ammo for siege weapons (6 frames instead of 8)
+	CANNON_AMMO((short) 86, 34, 249, false, -1, false),
+	BALLISTA_AMMO((short) 87, 24, 234, false, -1, false),
+	CATAPULT_AMMO((short) 88, 14, 240, false, -1, false),
 
 	WHITE_BREAD((short) 0, 0, 0, false, -1, false),
 	BASKET((short) 0, 0, 0, false, -1, false),

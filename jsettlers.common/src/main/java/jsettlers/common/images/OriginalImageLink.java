@@ -33,6 +33,7 @@ public final class OriginalImageLink extends ImageLink {
 	private final int image;
 	private final int length;
 	private final String humanName;
+	private OriginalImageLink fallback;
 
 	/**
 	 * Creates a new image link description.
@@ -159,5 +160,13 @@ public final class OriginalImageLink extends ImageLink {
 
 	public String getHumanName() {
 		return humanName;
+	}
+
+	public void setFallback(OriginalImageLink fallback) {
+		this.fallback = fallback;
+	}
+
+	public OriginalImageLink getFallback() {
+		return fallback;
 	}
 }

@@ -380,7 +380,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawWinStateMsg(GLDrawContext gl) {
-		if(localPlayer.getWinState() == EWinState.UNDECIDED) {
+		if(localPlayer == null || localPlayer.getWinState() == EWinState.UNDECIDED) {
 			return;
 		}
 		Color color = localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED;
@@ -400,7 +400,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			float a = messageAlpha(m);
 			if (m.getSender() >= 0) {
 				String name = getPlayername(m.getSender()) + ":";
-				Color color = context.getPlayerColor(m.getSender());
+				Color color = MapDrawContext.getPlayerColor(m.getSender());
 				float width = drawer.getWidth(name);
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
@@ -1080,16 +1080,5 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	protected UIState getUIState() {
 		ScreenPosition screen = context.getScreen();
 		return new UIState(screen.getScreenCenterX(), screen.getScreenCenterY(), screen.getZoom());
-	}
-
-	/**
-	 * Gets the color for a given player.
-	 * 
-	 * @param player
-	 *            The player to get the color for.
-	 * @return The color.
-	 */
-	public Color getPlayerColor(byte player) {
-		return context.getPlayerColor(player);
 	}
 }

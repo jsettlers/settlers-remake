@@ -14,12 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.action.ConvertAction;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.draw.ECommonLinkType;
+import jsettlers.graphics.map.draw.ImageLinkMap;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
@@ -31,39 +32,19 @@ import jsettlers.graphics.ui.UIPanel;
  */
 public class BearerSelectionContent extends AbstractSelectionContent {
 	private final UIPanel panel;
-	private final int count;
 
-	public BearerSelectionContent(ISelectionSet selection) {
+	public BearerSelectionContent(IInGamePlayer player, ISelectionSet selection) {
 		panel = new UIPanel();
-		count = selection.getMovableCount(EMovableType.BEARER);
 
-		addPioneers(.7f);
-		addGeologists(.45f);
-		addThieves(.2f);
+		drawButtongroup(.7f, player, EMovableType.PIONEER);
+		drawButtongroup(.45f, player, EMovableType.GEOLOGIST);
+		drawButtongroup( .2f, player, EMovableType.THIEF);
 	}
 
-	private void addPioneers(float bottom) {
-		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 204, 0);
-
-		drawButtongroup(bottom, imageLink, EMovableType.PIONEER);
-	}
-
-	private void addThieves(float bottom) {
-		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 183, 0);
-
-		drawButtongroup(bottom, imageLink, EMovableType.THIEF);
-	}
-
-	private void addGeologists(float bottom) {
-		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 186, 0);
-
-		drawButtongroup(bottom, imageLink, EMovableType.GEOLOGIST);
-	}
-
-	private void drawButtongroup(float bottom, OriginalImageLink imageLink,
+	private void drawButtongroup(float bottom, IInGamePlayer player,
 			EMovableType type) {
 		UIPanel icon = new UIPanel();
-		icon.setBackground(imageLink);
+		icon.setBackground(ImageLinkMap.get(player.getCivilisation(), ECommonLinkType.SETTLER_GUI, type));
 
 		LabeledButton convert1 =
 				new LabeledButton(Labels.getString("convert_1_to_" + type),

@@ -4,7 +4,7 @@
 <!ENTITY % fontsize "(SMALL | NORMAL | HEADLINE)">
 <!ENTITY % alignment "(LEFT | CENTRE | RIGHT)">
 
-<!ELEMENT element ((image|localized|null|action|material|soldierType|font-size|alignment)*, element*) >
+<!ELEMENT element ((image|localized|null|action|material|soldierType|font-size|alignment|mappedImage)*, element*) >
 
 <!ATTLIST element
    x CDATA #IMPLIED
@@ -56,4 +56,10 @@
 <!ELEMENT alignment EMPTY>
 <!ATTLIST alignment
    alignment %alignment; #REQUIRED
+>
+
+<!ELEMENT mappedImage EMPTY>
+<!ATTLIST mappedImage
+    type CDATA #REQUIRED
+    movableType CDATA #REQUIRED
 >

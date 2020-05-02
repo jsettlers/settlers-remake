@@ -31,10 +31,12 @@ import android.widget.TextView;
 
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
+import jsettlers.graphics.map.draw.ECommonLinkType;
+import jsettlers.graphics.map.draw.ImageLinkMap;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.core.resources.ImageLinkFactory;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
 
 /**
@@ -75,7 +77,7 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
 		for (EMovableType movableType : soldierTypes) {
-			int count = getSelection().getMovableCount(movableType);
+			int count = getSelection().getMovableCount(movableType, null);
 
 			if (count > 0) {
 				LinearLayout soldiersLayout = getLevelLayout(movableType);
@@ -84,7 +86,7 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 				ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
 				TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
 
-				OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
+				OriginalImageProvider.get(ImageLinkMap.get(ECivilisation.ROMAN, ECommonLinkType.SETTLER_GUI, movableType)).setAsImage(imageView);
 				textView.setText(count + "");
 
 				soldiersLayout.addView(view);

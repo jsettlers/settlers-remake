@@ -75,11 +75,11 @@ public class LayoutSourceGenerator {
 
 		writer.println();
 		writer.println("public " + name + "() {");
-		writer.println("this(null);");
+		writer.println("this(null, null);");
 		writer.println("}");
 
 		writer.println();
-		writer.println("public " + name + "(jsettlers.graphics.ui.ELayoutSize __size) {");
+		writer.println("public " + name + "(jsettlers.graphics.ui.ELayoutSize __size, jsettlers.common.player.ECivilisation __civilisation) {");
 
 		for (Entry<EGeneratedLayoutSize, LayoutPanel> s : sizes.entrySet()) {
 			writer.print("if (__size == " + s.getKey().getSymbol() + ")");

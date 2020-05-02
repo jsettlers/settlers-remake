@@ -170,7 +170,7 @@ public class PlayerSlot {
 
 	private void initializeComboBoxes() {
 		civilisationComboBox.addItem(new CivilisationUiWrapper());
-		civilisationComboBox.addItem(new CivilisationUiWrapper(ECivilisation.ROMAN));
+		for(ECivilisation civ : ECivilisation.values()) civilisationComboBox.addItem(new CivilisationUiWrapper(civ));
 	}
 
 	public void setPlayerName(String playerName) {

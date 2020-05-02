@@ -194,14 +194,18 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceStackToolbox(EMaterialType.WATER, 8),
 							new PlaceStackToolbox(EMaterialType.WINE, 8),
 							new PlaceStackToolbox(EMaterialType.HONEY, 8),
-							new PlaceStackToolbox(EMaterialType.MEAD, 8)
+							new PlaceStackToolbox(EMaterialType.MEAD, 8),
+							new PlaceStackToolbox(EMaterialType.LIQUOR, 8),
+							new PlaceStackToolbox(EMaterialType.KEG, 8)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-resources"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.COAL, 8),
 							new PlaceStackToolbox(EMaterialType.IRON, 8),
 							new PlaceStackToolbox(EMaterialType.IRONORE, 8),
 							new PlaceStackToolbox(EMaterialType.GOLD, 8),
-							new PlaceStackToolbox(EMaterialType.GOLDORE, 8)
+							new PlaceStackToolbox(EMaterialType.GOLDORE, 8),
+							new PlaceStackToolbox(EMaterialType.SULFUR, 8),
+							new PlaceStackToolbox(EMaterialType.GEMS, 8),
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-tools"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.HAMMER, 8),
@@ -215,7 +219,11 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-weapons"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.SWORD, 8),
 							new PlaceStackToolbox(EMaterialType.BOW, 8),
-							new PlaceStackToolbox(EMaterialType.SPEAR, 8)
+							new PlaceStackToolbox(EMaterialType.SPEAR, 8),
+							new PlaceStackToolbox(EMaterialType.GUN_POWDER, 8),
+							new PlaceStackToolbox(EMaterialType.BALLISTA_AMMO, 6),
+							new PlaceStackToolbox(EMaterialType.CATAPULT_AMMO, 6),
+							new PlaceStackToolbox(EMaterialType.CANNON_AMMO, 6),
 							}),
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.buildings"), new ToolNode[] {

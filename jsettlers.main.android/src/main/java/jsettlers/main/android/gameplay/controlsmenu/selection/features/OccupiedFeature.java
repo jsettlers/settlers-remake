@@ -29,14 +29,16 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
+import jsettlers.graphics.map.draw.ECommonLinkType;
+import jsettlers.graphics.map.draw.ImageLinkMap;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
-import jsettlers.main.android.core.resources.ImageLinkFactory;
 import jsettlers.main.android.core.resources.OriginalImageProvider;
 import jsettlers.main.android.gameplay.customviews.InGameButton;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
@@ -154,7 +156,7 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
 				OriginalImageProvider.get(SOILDER_COMING).setAsImage(occupierImageView);
 				occupierImageView.setLayoutParams(waitingLayoutParams);
 			} else {
-				OriginalImageProvider.get(ImageLinkFactory.get(occupierState.getMovable().getMovableType())).setAsImage(occupierImageView);
+				OriginalImageProvider.get(ImageLinkMap.get(ECivilisation.ROMAN, ECommonLinkType.SETTLER_GUI, occupierState.getMovable().getMovableType())).setAsImage(occupierImageView);
 				occupierImageView.setLayoutParams(occupiedLayoutParams);
 			}
 

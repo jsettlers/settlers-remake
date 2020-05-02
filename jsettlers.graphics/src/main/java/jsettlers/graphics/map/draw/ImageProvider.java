@@ -191,7 +191,13 @@ public final class ImageProvider {
 	 */
 	private Image getSequencedImage(OriginalImageLink link, int sequenceNumber) {
 		if (link.getType() == EImageLinkType.SETTLER) {
-			return getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber, link::getHumanName);
+			Image image = getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber, link::getHumanName);
+			if(image != NullImage.getInstance()) return image;
+
+			OriginalImageLink fallbackLink = link.getFallback();
+			if(fallbackLink == null) return image;
+
+			return getSequencedImage(fallbackLink, sequenceNumber);
 		} else {
 			return getGuiImage(link.getFile(), link.getSequence() + sequenceNumber, link::getHumanName);
 		}

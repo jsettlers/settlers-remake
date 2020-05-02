@@ -29,6 +29,8 @@ public interface IPlayer {
 
 	EWinState getWinState();
 
+	ECivilisation getCivilisation();
+
 	class DummyPlayer implements IPlayer {
 		private final byte playerAndTeamId;
 
@@ -53,6 +55,11 @@ public interface IPlayer {
 		@Override
 		public EWinState getWinState() {
 			return EWinState.UNDECIDED;
+		}
+
+		@Override
+		public ECivilisation getCivilisation() {
+			return ECivilisation.ROMAN;
 		}
 	}
 }

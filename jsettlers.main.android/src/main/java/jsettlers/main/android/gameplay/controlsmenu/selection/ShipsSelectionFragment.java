@@ -73,7 +73,7 @@ public class ShipsSelectionFragment extends SelectionFragment {
 
 		for (int i = 0; i < shipTypes.length; i++) {
 			EMovableType shipType = shipTypes[i];
-			int count = getSelection().getMovableCount(shipType);
+			int count = getSelection().getMovableCount(shipType, null);
 
 			if (count > 0) {
 				OriginalImageProvider.get(shipImageLinks[i]).setAsImage(shipImageViews.get(i));
