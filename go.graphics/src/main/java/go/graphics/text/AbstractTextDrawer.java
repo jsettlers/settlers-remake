@@ -210,6 +210,7 @@ public abstract class AbstractTextDrawer<T extends GLDrawContext> {
 			for(int i = 0;i != string.length();i++) {
 				if(string.charAt(i) == '\n') {
 					y_offset += lineHeight;
+					x_offset = 0;
 				} else {
 					drawChar(x+x_offset, y+y_offset, color, string.charAt(i));
 					x_offset += char_widths[indexOf(string.charAt(i))]*widthFactor;
