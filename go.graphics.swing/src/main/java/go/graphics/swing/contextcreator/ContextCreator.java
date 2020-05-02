@@ -67,12 +67,11 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 
 	@Override
 	public void componentResized(ComponentEvent componentEvent) {
-		Component cmp = componentEvent.getComponent();
-		if(!SwingUtilities.windowForComponent(cmp).isFocused()) return;
+		if(!SwingUtilities.windowForComponent(canvas).isFocused()) return;
 
 		synchronized (wnd_lock) {
-			new_width = cmp.getWidth();
-			new_height = cmp.getHeight();
+			new_width = canvas.getWidth();
+			new_height = canvas.getHeight();
 			change_res = true;
 
 			if(new_width == 0) new_width = 1;
@@ -91,5 +90,9 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 
 	public void updateFPSLimit(int fpsLimit) {
 		this.fpsLimit = fpsLimit;
+	}
+
+	public float getScale() {
+		return 1;
 	}
 }

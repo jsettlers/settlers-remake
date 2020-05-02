@@ -71,6 +71,7 @@ public class GLXContextCreator extends JAWTContextCreator {
 		int[] xvi_attrs = new int[]{
 				GLX.GLX_RGBA,
 				GLX.GLX_DOUBLEBUFFER,
+				GLX.GLX_DEPTH_SIZE, 32,
 				GLX.GLX_STENCIL_SIZE, 1,
 				0};
 

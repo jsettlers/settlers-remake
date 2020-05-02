@@ -86,7 +86,6 @@ import static org.lwjgl.vulkan.VK10.*;
 
 public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 
-	private float nativeScale = 0;
 	protected VkDevice device = null;
 	private VkPhysicalDevice physicalDevice;
 
@@ -346,6 +345,9 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 		if(consumedTexSlots == VulkanUtils.MAX_TEXTURE_COUNT) {
 			throw new Error("Out of texture slots: increase VulkanUtils.MAX_TEXTURE_COUNT");
 		}
+
+		if(width == 0) width = 1;
+		if(height == 0) height = 1;
 
 		VulkanTextureHandle vkTexHandle = createTexture(width, height, VK_FORMAT_R4G4B4A4_UNORM_PACK16, VK_IMAGE_USAGE_SAMPLED_BIT|VK_IMAGE_USAGE_TRANSFER_DST_BIT, true, name);
 		changeLayout(vkTexHandle, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, true);
@@ -940,16 +942,8 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 				return;
 			}
 
-			if (nativeScale == 0) {
-				if (surfaceCapabilities.currentExtent().height() != -1) {
-					nativeScale = ((float) surfaceCapabilities.currentExtent().height()) / height;
-				} else {
-					nativeScale = 1;
-				}
-			}
-
-			fbWidth = (int) (width * nativeScale);
-			fbHeight = (int) (height * nativeScale);
+			fbWidth = width;
+			fbHeight = height;
 			int imageCount = surfaceCapabilities.minImageCount() + 1;
 
 			VkExtent2D minDim = surfaceCapabilities.maxImageExtent();
@@ -1098,6 +1092,7 @@ public class VulkanDrawContext extends GLDrawContext implements VkDrawContext {
 
 			IntBuffer swapchainImageIndexBfr = stack.callocInt(1);
 			int err = vkAcquireNextImageKHR(device, swapchain, -1L, fetchFramebufferSemaphore, VK_NULL_HANDLE, swapchainImageIndexBfr);
+			if(err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR) resizeScheduled = true;
 			if(err != VK_SUBOPTIMAL_KHR && err != VK_SUCCESS) {
 				swapchainImageIndex = -1;
 				return;

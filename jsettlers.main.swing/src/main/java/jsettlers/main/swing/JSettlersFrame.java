@@ -115,6 +115,7 @@ public class JSettlersFrame extends JFrame {
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 		graphicsDevice.setFullScreenWindow(fullScreen ? this : null);
+		if(areaContainer != null) areaContainer.notifyResize();
 	}
 
 	private void abortRedrawTimerIfPresent() {

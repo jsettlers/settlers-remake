@@ -163,7 +163,8 @@ public final class MainGrid implements Serializable {
 
 		this.flagsGrid = new FlagsGrid(width, height);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
-		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
+		MapObjectsManagerGrid grid = new MapObjectsManagerGrid();
+		this.mapObjectsManager = new MapObjectsManager(grid);
 
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.landscapeGrid = new LandscapeGrid(width, height, flagsGrid);
