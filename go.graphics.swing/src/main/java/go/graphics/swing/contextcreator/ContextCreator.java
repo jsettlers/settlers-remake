@@ -18,6 +18,8 @@ import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import javax.swing.SwingUtilities;
+
 import go.graphics.swing.GLContainer;
 
 public abstract class ContextCreator<T extends Component> implements ComponentListener{
@@ -65,10 +67,10 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 
 	@Override
 	public void componentResized(ComponentEvent componentEvent) {
-		Component cmp = componentEvent.getComponent();
+		if(!SwingUtilities.windowForComponent(canvas).isFocused()) return;
 		synchronized (wnd_lock) {
-			new_width = cmp.getWidth();
-			new_height = cmp.getHeight();
+			new_width = canvas.getWidth();
+			new_height = canvas.getHeight();
 			change_res = true;
 
 			if(new_width == 0) new_width = 1;
@@ -87,5 +89,9 @@ public abstract class ContextCreator<T extends Component> implements ComponentLi
 
 	public void updateFPSLimit(int fpsLimit) {
 		this.fpsLimit = fpsLimit;
+	}
+
+	public float getScale() {
+		return 1;
 	}
 }

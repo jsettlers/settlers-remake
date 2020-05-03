@@ -32,6 +32,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.IntBuffer;
 
 import go.graphics.swing.GLContainer;
+import javax.swing.SwingUtilities;
 
 public class EGLContextCreator extends JAWTContextCreator {
 
@@ -165,5 +166,14 @@ public class EGLContextCreator extends JAWTContextCreator {
 	protected void onNewDrawable() throws GLContextException {
 		egl_surface = EGL10.eglCreateWindowSurface(egl_display, egl_config, windowDrawable, (IntBuffer)null);
 		if(EGL10.eglGetError() != EGL10.EGL_SUCCESS) error("could not create new drawable");
+	}
+
+	@Override
+	public float getScale() {
+		int[] re = new int[1];
+		EGL10.eglQuerySurface(egl_display, egl_surface, EGL10.EGL_WIDTH, re);
+		int surfaceWidth = re[0];
+
+		return surfaceWidth/(float)SwingUtilities.windowForComponent(canvas).getWidth();
 	}
 }

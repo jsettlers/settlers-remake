@@ -16,6 +16,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java8.util.function.Supplier;
 
 import go.graphics.AbstractColor;
 import go.graphics.BackgroundDrawHandle;
@@ -33,7 +34,11 @@ import static org.lwjgl.opengl.ARBUniformBufferObject.*;
 import static org.lwjgl.opengl.GL20C.*;
 
 public class LWJGLDrawContext extends GLDrawContext {
-	public LWJGLDrawContext(GLCapabilities glcaps, boolean debug, float guiScale) {
+
+	private Supplier<Float> nativeScale;
+
+	public LWJGLDrawContext(GLCapabilities glcaps, Supplier<Float> nativeScale, boolean debug, float guiScale) {
+		this.nativeScale = nativeScale;
 		this.glcaps = glcaps;
 		shaders = new ArrayList<>();
 
@@ -170,16 +175,10 @@ public class LWJGLDrawContext extends GLDrawContext {
 		}
 	}
 
-	private float nativeScale = 0;
-
 	public void resize(int width, int height) {
-		if(nativeScale == 0) {
-			int[] vp = new int[4];
-			glGetIntegerv(GL_VIEWPORT, vp);
-			nativeScale = vp[2] / (float)width;
-		}
+		float scale = nativeScale.get();
 
-		glViewport(0, 0, (int)(width*nativeScale), (int)(height*nativeScale));
+		glViewport(0, 0, (int)(width*scale), (int)(height*scale));
 		mat.setOrtho(0, width, 0, height, -1, 1);
 		mat.get(matBfr);
 
@@ -189,7 +188,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 		}
 	}
 
-	
+
 	public void setShadowDepthOffset(float depth) {
 		for(ShaderProgram shader : shaders) {
 			if(shader.shadow_depth != -1) {

@@ -64,7 +64,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 		try {
 			if(caps.OpenGL20) {
-				context = new LWJGLDrawContext(caps, debug, guiScale);
+				context = new LWJGLDrawContext(caps, cc::getScale, debug, guiScale);
 			} else {
 				errorGLVersion();
 			}
@@ -74,7 +74,7 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	}
 
 	private void errorGLVersion() {
-		fatal("JSettlers needs at least OpenGL 1.5 with GL_ARB_texture_non_power_of_two");
+		fatal("JSettlers needs at least OpenGL 2.0");
 	}
 
 	/**

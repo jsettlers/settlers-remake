@@ -79,4 +79,8 @@ public class AreaContainer extends GLContainer implements RedrawListener {
 	public void handleEvent(GOEvent event) {
 		area.handleEvent(event);
 	}
+
+	public void notifyResize() {
+		cc.componentResized(null);
+	}
 }
