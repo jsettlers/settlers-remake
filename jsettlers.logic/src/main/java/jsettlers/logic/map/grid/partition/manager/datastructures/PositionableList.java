@@ -132,6 +132,8 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 	}
 
 	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, Consumer<T> movedVisitor) {
+		if(data.isEmpty()) return;
+
 		Iterator<T> iterator = data.iterator();
 		while (iterator.hasNext()) {
 			T curr = iterator.next();

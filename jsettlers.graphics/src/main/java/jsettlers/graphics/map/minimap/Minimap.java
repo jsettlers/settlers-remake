@@ -14,10 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
-import go.graphics.EGeometryFormatType;
-import go.graphics.EGeometryType;
+import go.graphics.EPrimitiveType;
 import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 import java.nio.ByteBuffer;
@@ -25,6 +23,7 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.LinkedList;
 
+import go.graphics.UnifiedDrawHandle;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -91,52 +90,34 @@ public final class Minimap implements IMinimapData {
 	}
 
 	private boolean updateGeometry = true;
-	private GeometryHandle geometry = null;
-	private GeometryHandle lineGeometry = null;
+	private UnifiedDrawHandle geometry = null;
+	private UnifiedDrawHandle lineGeometry = null;
 	private static final ByteBuffer lineBfr = ByteBuffer.allocateDirect(12*4).order(ByteOrder.nativeOrder());
 
 	private ByteBuffer bfr = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder());
 
-	private void replaceGeometryValue(GLDrawContext context, int pos, float value) throws IllegalBufferException {
-		bfr.rewind();
-		bfr.putFloat(value);
-		context.updateGeometryAt(geometry, pos*4, bfr);
+	private void replaceBufferValue(GLDrawContext context, int pos, float value) throws IllegalBufferException {
+		bfr.putFloat(0, value);
+		context.updateBufferAt(geometry.vertices, pos*4, bfr);
 	}
 
 	public void draw(GLDrawContext context, float x, float y) {
 		boolean imageWasCreatedJustNow = false;
 		try {
-			if(geometry == null || !geometry.isValid()) {
-				geometry = context.storeGeometry( new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1,}, EGeometryFormatType.Texture2D, false, "minimap");
-				lineGeometry = context.generateGeometry(6, EGeometryFormatType.VertexOnly2D, true, "minimap-frame");
-			}
-
-			if(updateGeometry) {
-				lineBfr.asFloatBuffer().put(miniMapShapeCalculator.getMiniMapShapeNodes(), 0, 12);
-				context.updateGeometryAt(lineGeometry, 0, lineBfr);
-
-				replaceGeometryValue(context, 4, width);
-				replaceGeometryValue(context, 8, (stride + 1) * width);
-				replaceGeometryValue(context, 9, height);
-				replaceGeometryValue(context, 12, stride * width);
-				replaceGeometryValue(context, 13, height);
-				updateGeometry = false;
-			}
-
 			synchronized (updateMutex) {
 				if (!imageIsValid || texture == null || !texture.isValid()) {
 					imageWasCreatedJustNow = true;
-					if (texture != null && texture.isValid()) {
-						context.deleteTexture(texture);
-						texture = null;
-					}
 					ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2)
 												 .order(ByteOrder.nativeOrder()).asShortBuffer();
 					for (int i = 0; i < width * height; i++) {
 						data.put(LineLoader.BLACK);
 					}
 					data.position(0);
-					texture = context.generateTexture(width, height, data, "minimap");
+					if(texture != null && texture.isValid()) {
+						context.resizeTexture(texture, width, height, data);
+					} else {
+						texture = context.generateTexture(width, height, data, "minimap");
+					}
 					updatedLines.clear();
 					imageIsValid = true;
 				}
@@ -158,9 +139,25 @@ public final class Minimap implements IMinimapData {
 				updateMutex.notifyAll();
 			}
 
-			context.draw2D(geometry, texture, EGeometryType.Quad, 0, 4, x, y, 0, 1, 1, 1, null, 1);
+			if(geometry == null || !geometry.isValid()) {
+				geometry = context.createUnifiedDrawCall(4, "minimap", texture, new float[] {0, 0, 0, 0, width, 0, 1, 0,(stride + 1) * width, height, 1, 1, stride * width, height, 0, 1});
+				lineGeometry = context.createUnifiedDrawCall(6, "minimap-frame", null, null);
+			}
 
-			drawViewMark(context, x, y);
+			if(updateGeometry) {
+				lineBfr.asFloatBuffer().put(miniMapShapeCalculator.getMiniMapShapeNodes(), 0, 12);
+				context.updateBufferAt(lineGeometry.vertices, 0, lineBfr);
+
+				replaceBufferValue(context, 4, width);
+				replaceBufferValue(context, 8, (stride + 1) * width);
+				replaceBufferValue(context, 9, height);
+				replaceBufferValue(context, 12, stride * width);
+				replaceBufferValue(context, 13, height);
+				updateGeometry = false;
+			}
+
+			geometry.drawSimple(EPrimitiveType.Quad, x, y, 0, 1, 1, null, 1);
+			lineGeometry.drawSimple(EPrimitiveType.LineLoop, x, y, 0, 1, 1, null, 1);
 		} catch (IllegalBufferException e) {
 			if (imageWasCreatedJustNow) {
 				// TODO: Error reporting
@@ -172,14 +169,6 @@ public final class Minimap implements IMinimapData {
 				}
 				draw(context, x, y);
 			}
-		}
-	}
-
-	private void drawViewMark(GLDrawContext context, float x, float y) {
-		try {
-			context.draw2D(lineGeometry, null, EGeometryType.LineLoop, 0, 6, x, y, 0, 1, 1, 1, null, 1);
-		} catch (IllegalBufferException e) {
-			e.printStackTrace();
 		}
 	}
 

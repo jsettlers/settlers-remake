@@ -62,6 +62,9 @@ subprojects {
             into sourceSets.test.output.classesDir
         }
         processTestResources.dependsOn copyTestResources
+
+        compileJava.options.encoding = "UTF-8"
+        compileTestJava.options.encoding = "UTF-8"
     }
     plugins.withType(ApplicationPlugin).whenPluginAdded {
         startScripts {

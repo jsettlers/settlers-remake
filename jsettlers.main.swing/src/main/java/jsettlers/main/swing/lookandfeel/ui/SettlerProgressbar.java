@@ -46,6 +46,7 @@ public class SettlerProgressbar extends BasicProgressBarUI {
 
 		c.setOpaque(false);
 		c.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+		c.setFont(UIDefaults.FONT_SMALL);
 
 		JProgressBar pg = (JProgressBar) c;
 		pg.setForeground(FOREGROUND_COLOR);

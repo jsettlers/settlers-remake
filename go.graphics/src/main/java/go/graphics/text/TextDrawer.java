@@ -28,23 +28,34 @@ public interface TextDrawer {
 	 * @param text
 	 *            The text to render.
 	 */
-	void renderCentered(float cx, float cy, String text);
+	default void renderCentered(float cx, float cy, String text) {
+		drawString(cx-(getWidth(text)/2), cy-(getHeight(text)/2), text);
+	}
 
 	/**
 	 * Draws a string
-	 * 
-	 * @param x
+	 *  @param x
 	 *            Left bound.
 	 * @param y
 	 *            Bottom line.
 	 * @param string
-	 *            The string to render
 	 */
-	void drawString(float x, float y, String string);
+	default void drawString(float x, float y, String string) {
+		drawString(x, y, null, string);
+	}
+
+	/**
+	 * Draws a string
+	 *  @param x
+	 *            Left bound.
+	 * @param y
+	 *            Bottom line.
+	 * @param color
+	 * @param string
+	 */
+	void drawString(float x, float y, AbstractColor color, String string);
 
 	float getWidth(String string);
 
 	float getHeight(String string);
-
-	void setColor(AbstractColor color);
 }

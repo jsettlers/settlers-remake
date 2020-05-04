@@ -1,7 +1,6 @@
 package go.graphics.swing;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.awt.Component;
@@ -16,15 +15,16 @@ import go.graphics.swing.contextcreator.BackendSelector;
 import go.graphics.swing.contextcreator.ContextCreator;
 import go.graphics.swing.contextcreator.EBackendType;
 import go.graphics.swing.contextcreator.JAWTContextCreator;
-import go.graphics.swing.opengl.LWJGL15DrawContext;
-import go.graphics.swing.opengl.LWJGL20DrawContext;
+import go.graphics.swing.contextcreator.GLContextException;
+import go.graphics.swing.opengl.LWJGLDrawContext;
 
 public abstract class GLContainer extends JPanel implements GOEventHandlerProvider {
 
 
 	protected ContextCreator cc;
-	protected LWJGL15DrawContext context;
+	protected LWJGLDrawContext context;
 	private boolean debug;
+	protected float guiScale = 0;
 
 	public GLContainer(EBackendType backend, LayoutManager layout, boolean debug) {
 		setLayout(layout);
@@ -35,36 +35,46 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 			cc.init();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Could not create opengl context through " + backend.cc_name + "\nPress ok to exit");
-			System.exit(1);
+			fatal("Could not create opengl context through " + backend.cc_name);
 		}
 	}
 
-	public void resize_gl(int width, int height) {
+	public void fatal(String message) {
+		SwingUtilities.invokeLater(() -> {
+			JOptionPane.showMessageDialog(null, message+ "\nPress ok to exit", "Error", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		});
+		System.err.println(message);
+	}
+
+	public void resizeContext(int width, int height) throws GLContextException {
+		if(context == null) throw new GLContextException();
 		context.resize(width, height);
+	}
+
+	public void finishFrame() {
+		context.finishFrame();
 	}
 
 	public void wrapNewContext() {
 		if(cc instanceof JAWTContextCreator) ((JAWTContextCreator)cc).makeCurrent(true);
-		if(context != null) context.disposeAll();
+		if(context != null) context.invalidate();
 
 		GLCapabilities caps = GL.createCapabilities();
 
-		if(caps.OpenGL20) {
-			context = new LWJGL20DrawContext(caps, debug);
-		} else if(caps.OpenGL15 && caps.GL_ARB_texture_non_power_of_two) {
-			context = new LWJGL15DrawContext(caps, debug);
-		} else {
-			context = null;
-			errorGLVersion();
+		try {
+			if(caps.OpenGL20) {
+				context = new LWJGLDrawContext(caps, cc::getScale, debug, guiScale);
+			} else {
+				errorGLVersion();
+			}
+		} catch(Throwable thrown) {
+			fatal(thrown.getLocalizedMessage());
 		}
 	}
 
 	private void errorGLVersion() {
-		SwingUtilities.invokeLater(() -> {
-			JOptionPane.showMessageDialog(null, "JSettlers needs at least OpenGL 1.5 with GL_ARB_texture_non_power_of_two\nPress ok to exit");
-			System.exit(1);
-		});
+		fatal("JSettlers needs at least OpenGL 2.0");
 	}
 
 	/**
@@ -73,17 +83,18 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 	public void disposeAll() {
 		cc.stop();
 		if (context != null) {
-			context.disposeAll();
+			context.invalidate();
 		}
 		context = null;
 	}
 
-	public void draw() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+	public void draw() throws GLContextException {
+		if(context == null) throw new GLContextException();
+		context.startFrame();
 	}
 
 	public void requestRedraw() {
-		cc.repaint();
+		if(cc != null) cc.repaint();
 	}
 
 	/**
@@ -96,5 +107,9 @@ public abstract class GLContainer extends JPanel implements GOEventHandlerProvid
 
 	public void addCanvas(Component canvas) {
 		add(canvas);
+	}
+
+	public void updateFPSLimit(int fpsLimit) {
+		if(cc != null) cc.updateFPSLimit(fpsLimit);
 	}
 }

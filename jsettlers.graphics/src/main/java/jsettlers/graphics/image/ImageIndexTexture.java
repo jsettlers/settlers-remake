@@ -87,11 +87,4 @@ public final class ImageIndexTexture {
 		}
 		return i;
 	}
-
-	/**
-	 * Informs this texture that it should be recreated.
-	 */
-	public void recreateTexture() {
-		textureIndex = null;
-	}
 }

@@ -23,7 +23,7 @@ import go.graphics.AbstractColor;
  * 
  * @author Michael Zangl
  */
-public final class Color extends AbstractColor{
+public final class Color extends AbstractColor {
 	/**
 	 * Constant to quickly access black.
 	 */

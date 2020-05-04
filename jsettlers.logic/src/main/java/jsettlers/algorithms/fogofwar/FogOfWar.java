@@ -29,7 +29,7 @@ import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This class holds the fog of war for a given map and team.
- * 
+ *
  * @author Andreas Eberle
  */
 public final class FogOfWar implements Serializable {
@@ -70,7 +70,7 @@ public final class FogOfWar implements Serializable {
 
 	/**
 	 * Gets the visible status of a map pint
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate of the point in 0..(mapWidth - 1)
 	 * @param y

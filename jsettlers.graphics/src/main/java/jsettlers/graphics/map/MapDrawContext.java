@@ -148,10 +148,10 @@ public final class MapDrawContext implements IGLProvider {
 		// beginTime = System.nanoTime();
 
 		float zoom = screen.getZoom();
-		gl2.setGlobalAttributes(0, 0, 0, zoom, zoom, 1);
 
 		offsetX = (int) (-screen.getLeft()+.5f);
 		offsetY = (int) (-screen.getBottom()+.5f);
+		gl2.setGlobalAttributes(offsetX, offsetY, 0, zoom, zoom, 1);
 	}
 
 	private int offsetX, offsetY;
