@@ -244,8 +244,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 			if(major >= 2) {
 				try {
-					boolean gles32 = major == 3 && minor >= 1 && gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_EXT_geometry_shader");
-					return new GLESDrawContext(ctx, major == 3, gles32);
+					return new GLESDrawContext(ctx, major == 3);
 				} catch(Throwable thrown) {thrown.printStackTrace();};
 			}
 

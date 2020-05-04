@@ -2,8 +2,8 @@ package go.graphics.swing.opengl;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBInstancedArrays;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.KHRDebug;
 
@@ -52,7 +52,9 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		if(glcaps.OpenGL32) prog_unified_multi = new ShaderProgram("unified-multi");
+		if(glcaps.GL_ARB_instanced_arrays && glcaps.GL_ARB_uniform_buffer_object) {
+			prog_unified_multi = new ShaderProgram("unified-multi");
+		}
 		if(glcaps.GL_EXT_draw_instanced) prog_unified_array = new ShaderProgram("unified-array");
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("unified");
@@ -317,6 +319,11 @@ public class LWJGLDrawContext extends GLDrawContext {
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 
+		ARBInstancedArrays.glVertexAttribDivisorARB(0, 1);
+		ARBInstancedArrays.glVertexAttribDivisorARB(1, 1);
+		ARBInstancedArrays.glVertexAttribDivisorARB(2, 1);
+		ARBInstancedArrays.glVertexAttribDivisorARB(3, 1);
+
 		bindGeometry(mh.drawCalls);
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 12*4, 0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 12*4, 3*4);
@@ -354,7 +361,7 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, call.sourceQuads.vertices.getBufferId());
 
-		glDrawArrays(GL_POINTS, 0, call.used);
+		glDrawArraysInstancedARB(GL_TRIANGLE_FAN, 0, 4, call.used);
 	}
 
 	public void drawUnifiedArray(UnifiedDrawHandle call, int primitive, int vertexCount, float[] trans, float[] colors, int array_len) {
@@ -477,19 +484,16 @@ public class LWJGLDrawContext extends GLDrawContext {
 
 		protected ShaderProgram(String name) {
 			int vertexShader = -1;
-			int geometryShader = -1;
 			int fragmentShader;
 
 
 			try {
 				vertexShader = createShader(name+".vert", GL_VERTEX_SHADER);
-				geometryShader = createShader(name+".geom", GL32.GL_GEOMETRY_SHADER);
 				fragmentShader = createShader(name+".frag", GL_FRAGMENT_SHADER);
 			} catch (IOException e) {
 				e.printStackTrace();
 
 				if(vertexShader != -1) glDeleteShader(vertexShader);
-				if(geometryShader != -1) glDeleteShader(geometryShader);
 				throw new Error("could not read shader files", e);
 			}
 
@@ -497,7 +501,6 @@ public class LWJGLDrawContext extends GLDrawContext {
 			setObjectLabel(KHRDebug.GL_PROGRAM, program, name);
 
 			glAttachShader(program, vertexShader);
-			if(geometryShader != -1) glAttachShader(program, geometryShader);
 			glAttachShader(program, fragmentShader);
 
 			for(int i = 0; i != attributes.size(); i++) {
@@ -508,10 +511,8 @@ public class LWJGLDrawContext extends GLDrawContext {
 			glValidateProgram(program);
 
 			glDetachShader(program, vertexShader);
-			if(geometryShader != -1) glDetachShader(program, geometryShader);
 			glDetachShader(program, fragmentShader);
 			glDeleteShader(vertexShader);
-			if(geometryShader != -1) glDeleteShader(geometryShader);
 			glDeleteShader(fragmentShader);
 
 			String log = glGetProgramInfoLog(program);

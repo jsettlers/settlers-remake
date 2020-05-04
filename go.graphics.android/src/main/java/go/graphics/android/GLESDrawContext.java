@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public class GLESDrawContext extends GLDrawContext {
 	private BufferHandle lastGeometry = null;
 	private TextureHandle lastTexture = null;
 
-	GLESDrawContext(Context ctx, boolean gles3, boolean gles32) {
+	GLESDrawContext(Context ctx, boolean gles3) {
 		this.context = ctx;
 		this.gles3 = gles3;
 		shaders = new ArrayList<>();
@@ -57,8 +58,10 @@ public class GLESDrawContext extends GLDrawContext {
 		glDepthFunc(GL_LEQUAL);
 		glEnable(GL_DEPTH_TEST);
 
-		if(gles32) prog_unified_multi = new ShaderProgram("unified-multi");
-		if(gles3) prog_unified_array = new ShaderProgram("unified-array");
+		if(gles3) {
+			prog_unified_multi = new ShaderProgram("unified-multi");
+			prog_unified_array = new ShaderProgram("unified-array");
+		}
 		prog_background = new ShaderProgram("background");
 		prog_unified = new ShaderProgram("unified");
 		Matrix.setIdentityM(global, 0);
@@ -271,9 +274,7 @@ public class GLESDrawContext extends GLDrawContext {
 	@Override
 	protected MultiDrawHandle createMultiDrawCall(String name, ManagedHandle source) {
 		if(prog_unified_multi == null) return null;
-		int vao = -1;
-
-		if(gles3) vao = genVertexArray();
+		int vao = genVertexArray();
 
 		BufferHandle drawCalls = new BufferHandle(this, genBuffer());
 
@@ -282,10 +283,8 @@ public class GLESDrawContext extends GLDrawContext {
 
 		MultiDrawHandle handle = new MultiDrawHandle(this, vao, MultiDrawHandle.MAX_CACHE_ENTRIES, source, drawCalls);
 
-		if(gles3) {
-			bindFormat(vao);
-			fillMultiFormat(handle);
-		}
+		bindFormat(vao);
+		fillMultiFormat(handle);
 
 		return handle;
 	}
@@ -323,6 +322,11 @@ public class GLESDrawContext extends GLDrawContext {
 		glEnableVertexAttribArray(2);
 		glEnableVertexAttribArray(3);
 
+		GLES30.glVertexAttribDivisor(0, 1);
+		GLES30.glVertexAttribDivisor(1, 1);
+		GLES30.glVertexAttribDivisor(2, 1);
+		GLES30.glVertexAttribDivisor(3, 1);
+
 		bindGeometry(mh.drawCalls);
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 12*4, 0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 12*4, 3*4);
@@ -347,19 +351,13 @@ public class GLESDrawContext extends GLDrawContext {
 	}
 	protected void drawMulti(MultiDrawHandle call) {
 		bindTexture(call.sourceQuads.texture);
-
-		if(call.getVertexArrayId() != -1) {
-			bindFormat(call.getVertexArrayId());
-		} else {
-			enableVertArrays(true, true, true, true);
-			fillMultiFormat(call);
-		}
+		bindFormat(call.getVertexArrayId());
 
 		useProgram(prog_unified_multi);
 
 		GLES30.glBindBufferBase(GLES30.GL_UNIFORM_BUFFER, 0, call.sourceQuads.vertices.getBufferId());
 
-		GLES30.glDrawArrays(GLES30.GL_POINTS, 0, call.used);
+		GLES30.glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, call.used);
 	}
 
 	public void drawUnifiedArray(UnifiedDrawHandle call, int primitive, int vertexCount, float[] trans, float[] colors, int array_len) {
@@ -482,25 +480,21 @@ public class GLESDrawContext extends GLDrawContext {
 
 		ShaderProgram(String name) {
 			int vertexShader = -1;
-			int geometryShader = -1;
 			int fragmentShader;
 
 			try {
 				vertexShader = createShader(name+".vert", GL_VERTEX_SHADER);
-				geometryShader = createShader(name+".geom", 36313 /*GL_GEOMETRY_SHADER*/);
 				fragmentShader = createShader(name+".frag", GL_FRAGMENT_SHADER);
 			} catch (IOException e) {
 				e.printStackTrace();
 
 				if(vertexShader != -1) glDeleteShader(vertexShader);
-				if(geometryShader != -1) glDeleteShader(geometryShader);
 				throw new Error("could not read shader files", e);
 			}
 
 			program = glCreateProgram();
 
 			glAttachShader(program, vertexShader);
-			if(geometryShader != -1) glAttachShader(program, geometryShader);
 			glAttachShader(program, fragmentShader);
 
 			for(int i = 0; i != attributes.size(); i++) {
@@ -511,10 +505,8 @@ public class GLESDrawContext extends GLDrawContext {
 			glValidateProgram(program);
 
 			glDetachShader(program, vertexShader);
-			if(geometryShader != -1) glDetachShader(program, geometryShader);
 			glDetachShader(program, fragmentShader);
 			glDeleteShader(vertexShader);
-			if(geometryShader != -1) glDeleteShader(geometryShader);
 			glDeleteShader(fragmentShader);
 
 			String log = glGetProgramInfoLog(program);
