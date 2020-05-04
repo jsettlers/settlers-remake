@@ -16,6 +16,7 @@
 package jsettlers.main.android.gameplay.gamemenu;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +28,7 @@ import android.widget.SeekBar;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.databinding.DialogGameMenuBinding;
-import jsettlers.main.android.mainmenu.MainActivity_;
+import jsettlers.main.android.mainmenu.MainActivity;
 
 public class GameMenuDialog extends DialogFragment {
 
@@ -43,7 +44,9 @@ public class GameMenuDialog extends DialogFragment {
 		GameMenuViewModelFactory gameMenuViewModelFactory = new GameMenuViewModelFactory(requireActivity().getApplication());
 		viewModel = gameMenuViewModelFactory.get(this);
 
-		viewModel.getGameQuitted().observe(this, x -> MainActivity_.intent(this).start());
+		viewModel.getGameQuitted().observe(this, x -> {
+			startActivity(new Intent(requireContext(), MainActivity.class));
+		});
 	}
 
 	@NonNull

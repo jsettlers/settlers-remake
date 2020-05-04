@@ -18,13 +18,16 @@ package jsettlers.main.android.mainmenu;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.GameActivity_;
+import jsettlers.main.android.gameplay.GameActivity;
 import jsettlers.main.android.mainmenu.gamesetup.JoinMultiPlayerSetupFragment;
 import jsettlers.main.android.mainmenu.gamesetup.NewMultiPlayerSetupFragment;
 import jsettlers.main.android.mainmenu.gamesetup.NewSinglePlayerSetupFragment;
@@ -36,12 +39,13 @@ import jsettlers.main.android.mainmenu.mappicker.NewSinglePlayerPickerFragment;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
-@EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
 		getSupportFragmentManager().addOnBackStackChangedListener(this::setUpButton);
 
 		if (savedInstanceState != null)
@@ -58,9 +62,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		setUpButton();
 	}
 
-	@OptionsItem(android.R.id.home)
-	void homeSelected() {
-		getSupportFragmentManager().popBackStack();
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			getSupportFragmentManager().popBackStack();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	/**
@@ -124,13 +132,16 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public void resumeGame() {
-		GameActivity_.intent(this).action(Actions.ACTION_RESUME_GAME).start();
+		Intent intent = new Intent(this, GameActivity.class);
+		intent.setAction(Actions.ACTION_RESUME_GAME);
+		startActivity(intent);
 		finish();
 	}
 
 	@Override
 	public void showGame() {
-		GameActivity_.intent(this).start();
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivity(intent);
 		finish();
 	}
 

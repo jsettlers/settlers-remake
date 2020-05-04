@@ -18,6 +18,7 @@ package jsettlers.main.android;
 import org.androidannotations.annotations.EApplication;
 
 import android.app.Application;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -35,7 +36,7 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameManager;
-import jsettlers.main.android.core.GameService_;
+import jsettlers.main.android.core.GameService;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.controls.GameMenu;
@@ -127,7 +128,8 @@ public class MainApplication extends Application implements GameStarter, GameMan
 
 		new Handler(Looper.getMainLooper()).post(() -> controlsAdapter.getGameMenu().getGameState().observeForever(gameStateObserver));
 
-		GameService_.intent(this).start();
+		Intent intent = new Intent(this, GameService.class);
+		startService(intent);
 
 		return controlsAdapter.getMapContent().getInterfaceConnector();
 	}

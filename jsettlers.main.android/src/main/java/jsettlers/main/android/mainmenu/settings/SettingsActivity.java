@@ -15,61 +15,51 @@
 
 package jsettlers.main.android.mainmenu.settings;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.ViewById;
-
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.widget.TextView;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 
-@EActivity(R.layout.activity_settings)
 public class SettingsActivity extends AppCompatActivity implements SettingsView, EditTextDialog.Listener {
 	private static final int REQUEST_CODE_PLAYER_NAME = 10;
 
-	@ViewById(R.id.text_view_player_name)
-	TextView textViewPlayerName;
-
-	@ViewById(R.id.toolbar)
-	Toolbar toolbar;
+	private TextView textViewPlayerName;
 
 	private SettingsPresenter presenter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_settings);
 		presenter = PresenterFactory.createSettingsPresenter(this, this);
-	}
 
-	@AfterViews
-	void configureToolbar() {
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-	}
 
-	@AfterViews
-	void bindPresenter() {
+		textViewPlayerName = findViewById(R.id.text_view_player_name);
+
+		findViewById(R.id.layout_player_name).setOnClickListener(v -> onClickPlayerNameLayout());
+
 		presenter.bindView();
 	}
 
-	@Click(R.id.layout_player_name)
-	void onClickPlayerNameLayout() {
-		EditTextDialog.create(REQUEST_CODE_PLAYER_NAME, R.string.settings_player_name, R.string.settings_name, textViewPlayerName.getText()).show(getSupportFragmentManager(), null);
-	}
-
-	@OptionsItem(android.R.id.home)
-	void homeSelected() {
-		finish();
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -84,5 +74,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
 			presenter.playerNameEdited(text);
 			break;
 		}
+	}
+
+	private void onClickPlayerNameLayout() {
+		EditTextDialog.create(REQUEST_CODE_PLAYER_NAME, R.string.settings_player_name, R.string.settings_name, textViewPlayerName.getText()).show(getSupportFragmentManager(), null);
 	}
 }

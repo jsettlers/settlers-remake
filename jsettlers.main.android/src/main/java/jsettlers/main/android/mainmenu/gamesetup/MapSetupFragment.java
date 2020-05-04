@@ -23,6 +23,8 @@ import org.androidannotations.annotations.ItemSelect;
 import org.androidannotations.annotations.ViewById;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,27 +49,21 @@ import jsettlers.main.android.mainmenu.gamesetup.playeritem.StartPosition;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.Team;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
-/**
- * Created by tompr on 21/01/2017.
- */
-@EFragment(R.layout.fragment_new_single_player_setup)
 public abstract class MapSetupFragment extends Fragment {
 
 	@ViewById(R.id.recycler_view)
 	RecyclerView recyclerView;
 	@ViewById(R.id.image_view_map_preview)
 	ImageView mapPreviewImageView;
-	@ViewById(R.id.toolbar)
-	Toolbar toolbar;
 
-	@ViewById(R.id.spinner_number_of_players)
+
 	protected Spinner numberOfPlayersSpinner;
 	@ViewById(R.id.spinner_start_resources)
 	protected Spinner startResourcesSpinner;
 	@ViewById(R.id.spinner_peacetime)
 	protected Spinner peacetimeSpinner;
+	protected Toolbar toolbar;
 
-	@FragmentArg("mapid")
 	protected String mapId;
 
 	private MapSetupViewModel viewModel;
@@ -83,6 +79,7 @@ public abstract class MapSetupFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
+			mapId = getArguments().getString("mapid");
 			viewModel = createViewModel();
 		} catch (MultiPlayerConnectorUnavailableException e) {
 			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
@@ -90,14 +87,34 @@ public abstract class MapSetupFragment extends Fragment {
 		}
 	}
 
-	@AfterViews
-	void setupView() {
-		recyclerView.setHasFixedSize(true);
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_new_single_player_setup, container, false);
+
+		toolbar = view.findViewById(R.id.toolbar);
 		FragmentUtil.setActionBar(this, toolbar);
+
+		recyclerView.setHasFixedSize(true);
 
 		// Disable these for now, as these features are not implemented yet.
 		startResourcesSpinner.setEnabled(false);
 		peacetimeSpinner.setEnabled(false);
+
+		numberOfPlayersSpinner = view.findViewById(R.id.spinner_number_of_players);
+		numberOfPlayersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+
+		return view;
 	}
 
 	@Override
@@ -148,9 +165,6 @@ public abstract class MapSetupFragment extends Fragment {
 	@Click(R.id.button_start_game)
 	protected void onStartGameClicked() {
 		viewModel.startGame();
-		// if (!presenter.startGame()) {
-		// Toast.makeText(this.getContext(), R.string.multiplayer_not_all_players_ready, Toast.LENGTH_LONG).show();
-		// }
 	}
 
 	@ItemSelect(R.id.spinner_number_of_players)

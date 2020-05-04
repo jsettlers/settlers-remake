@@ -27,7 +27,7 @@ import androidx.core.app.NotificationCompat;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameService;
-import jsettlers.main.android.gameplay.GameActivity_;
+import jsettlers.main.android.gameplay.GameActivity;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
 /**
@@ -57,7 +57,8 @@ public class NotificationBuilder {
 
 	@AfterInject
 	void setupBuilder() {
-		Intent gameActivityIntent = GameActivity_.intent(context).action(Actions.ACTION_RESUME_GAME).get();
+		Intent gameActivityIntent = new Intent(context, GameActivity.class);
+		gameActivityIntent.setAction(Actions.ACTION_RESUME_GAME);
 		PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(context, 0, gameActivityIntent, 0);
 
 		builder = new NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))

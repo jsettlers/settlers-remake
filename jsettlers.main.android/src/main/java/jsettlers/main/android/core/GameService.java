@@ -15,13 +15,10 @@
 
 package jsettlers.main.android.core;
 
-import org.androidannotations.annotations.EService;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import androidx.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,12 +26,13 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 
+import androidx.lifecycle.Observer;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.controls.NotificationBuilder;
 import jsettlers.main.android.core.controls.NotificationBuilder_;
 
-@EService
 public class GameService extends Service {
 	public static final String ACTION_PAUSE = "com.jsettlers.pause";
 	public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";

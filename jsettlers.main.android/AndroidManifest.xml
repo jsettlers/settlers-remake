@@ -22,7 +22,7 @@
 		android:theme="@style/SettlersTheme"
 		tools:ignore="GoogleAppIndexingWarning">
 
-		<activity android:name=".mainmenu.MainActivity_">
+		<activity android:name=".mainmenu.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
@@ -30,18 +30,18 @@
 		</activity>
 
 		<activity
-			android:name=".gameplay.GameActivity_"
+			android:name=".gameplay.GameActivity"
 			android:launchMode="singleTask"
 			android:theme="@style/InGameTheme"/>
 
 		<service
-			android:name=".core.GameService_"
+			android:name=".core.GameService"
 			android:enabled="true"
 			android:exported="false"
 			android:description="@string/service_description"/>
 
 		<activity
-			android:name=".mainmenu.settings.SettingsActivity_"
+			android:name=".mainmenu.settings.SettingsActivity"
 			android:label="@string/settings"/>
 	</application>
 

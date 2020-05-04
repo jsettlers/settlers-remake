@@ -15,12 +15,11 @@
 
 package jsettlers.main.android.gameplay;
 
-import java.util.List;
-
-import org.androidannotations.annotations.EActivity;
-
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
+
+import java.util.List;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
@@ -30,7 +29,6 @@ import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
-@EActivity(R.layout.activity_game)
 public class GameActivity extends FullScreenAppCompatActivity implements GameNavigator, MenuNavigatorProvider {
 	private static final String TAG_FRAGMENT_MAP = "map_fragment";
 	private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
@@ -40,6 +38,7 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_game);
 		gameStarter = (GameStarter) getApplication();
 
 		if (savedInstanceState != null) {

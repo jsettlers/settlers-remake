@@ -15,68 +15,67 @@
 
 package jsettlers.main.android.mainmenu.home;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.ViewById;
-
 import android.Manifest;
-import androidx.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.settings.SettingsActivity_;
+import jsettlers.main.android.mainmenu.settings.SettingsActivity;
 
-@EFragment(R.layout.fragment_main_menu)
-@OptionsMenu(R.menu.fragment_mainmenu)
 public class MainMenuFragment extends Fragment {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private MainMenuViewModel viewModel;
 	private MainMenuNavigator mainMenuNavigator;
 	private HomeAdapter homeAdapter;
-
-	@ViewById(R.id.toolbar)
-	Toolbar toolbar;
-	@ViewById(R.id.recyclerView)
-	RecyclerView recyclerView;
+	private RecyclerView recyclerView;
 
 	public static MainMenuFragment create() {
-		return new MainMenuFragment_();
+		return new MainMenuFragment();
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 		mainMenuNavigator = (MainMenuNavigator) getActivity();
-		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(getActivity().getApplication())).get(MainMenuViewModel.class);
+		viewModel = ViewModelProviders.of(this, new MainMenuViewModel.Factory(requireActivity().getApplication())).get(MainMenuViewModel.class);
 	}
 
-	@AfterViews
-	public void afterViews() {
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
+
+		Toolbar toolbar = view.findViewById(R.id.toolbar);
 		FragmentUtil.setActionBar(this, toolbar);
 		toolbar.setTitle(R.string.app_name);
 
+		recyclerView = view.findViewById(R.id.recyclerView);
 		homeAdapter = new HomeAdapter(LayoutInflater.from(getActivity()), this, mainMenuNavigator);
 		homeAdapter.setHasStableIds(true);
 		recyclerView.setAdapter(homeAdapter);
+
+		return view;
 	}
 
 	@Override
@@ -89,13 +88,12 @@ public class MainMenuFragment extends Fragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_item_settings:
-			SettingsActivity_.intent(this).start();
-			break;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.menu_item_settings:
+				startActivity(new Intent(requireContext(), SettingsActivity.class));
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
-		return true;
 	}
 
 	@Override
@@ -110,7 +108,7 @@ public class MainMenuFragment extends Fragment {
 		}
 	}
 
-	private class HomeAdapter extends RecyclerView.Adapter {
+	private class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 		private final LayoutInflater layoutInflater;
 		private final Fragment viewModelOwner;
 		private final MainMenuNavigator mainMenuNavigator;
