@@ -88,11 +88,11 @@ subprojects {
     // Add streamsupport dependency
     def addGlobalDependencies = {
         dependencies {
-            implementation 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
 
             testImplementation 'junit:junit:4.12'
         }
