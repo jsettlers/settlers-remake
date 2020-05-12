@@ -7,8 +7,19 @@ startScripts {
 }
 
 jar {
+    baseName = 'jsettlers.network'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+task releaseJar(type: Jar) {
     baseName = 'DedicatedJSettlersServer'
     manifest {
         attributes 'Main-Class': mainClassName
     }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
 }
