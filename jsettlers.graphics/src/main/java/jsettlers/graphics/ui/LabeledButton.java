@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.ui;
 
+import java8.util.Optional;
+
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -58,10 +60,10 @@ public class LabeledButton extends Button {
 		drawer.setColor(Color.WHITE);
 		drawer.renderCentered(getPosition().getCenterX(), getPosition().getCenterY(), text);
 	}
-
+	
 	@Override
-	public Action getAction(float relativex, float relativey) {
-		return enabled ? action : null;
+	public Optional<Action> getAction(float relativex, float relativey) {
+		return enabled ? super.getAction(relativex, relativey) : Optional.empty();
 	}
 
 	/**

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.RelativePoint;
@@ -142,7 +143,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		if (requester == null || requester.isDiggerRequestActive()) {
 			return true;
 		} else {

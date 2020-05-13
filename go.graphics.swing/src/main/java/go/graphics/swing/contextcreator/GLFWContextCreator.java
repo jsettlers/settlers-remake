@@ -24,11 +24,14 @@ import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 import java.awt.Dimension;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
 import go.graphics.UIPoint;
+import go.graphics.event.command.EModifier;
 import go.graphics.event.interpreter.AbstractEventConverter;
 import go.graphics.swing.GLContainer;
 
@@ -80,6 +83,7 @@ public class GLFWContextCreator extends AsyncContextCreator {
 	}
 
 	private static final HashMap<Integer, String> keys = new HashMap<>();
+	private static final HashMap<Integer, EModifier> mods = new HashMap<>();
 
 	static {
 		keys.put(GLFW.GLFW_KEY_LEFT, "LEFT");
@@ -105,18 +109,41 @@ public class GLFWContextCreator extends AsyncContextCreator {
 		keys.put(GLFW.GLFW_KEY_ESCAPE, "ESCAPE");
 		keys.put(GLFW.GLFW_KEY_BACKSPACE, "BACK_SPACE");
 		keys.put(GLFW.GLFW_KEY_SPACE, " ");
+
+		mods.put(GLFW.GLFW_KEY_LEFT_SHIFT, EModifier.SHIFT);
+		mods.put(GLFW.GLFW_KEY_RIGHT_SHIFT, EModifier.SHIFT);
+
+		mods.put(GLFW.GLFW_KEY_LEFT_ALT, EModifier.ALT);
+		mods.put(GLFW.GLFW_KEY_RIGHT_ALT, EModifier.ALT);
+
+		mods.put(GLFW.GLFW_KEY_LEFT_CONTROL, EModifier.CTRL);
+		mods.put(GLFW.GLFW_KEY_RIGHT_CONTROL, EModifier.CTRL);
 	}
 
 	private class GLFWEventConverter extends  AbstractEventConverter {
 
 		private UIPoint last_point = new UIPoint(0, 0);
 
+		private final EnumSet<EModifier> activeMods = EnumSet.noneOf(EModifier.class);
+
 		private GLFWKeyCallback key_callback = new GLFWKeyCallback() {
 			@Override
-			public void invoke(long window, int key, int scancode, int action, int mods) {
+			public void invoke(long window, int key, int scancode, int action, int modsUnusued) {
 				String name = GLFW.glfwGetKeyName(key, scancode);
 				if(name == null) {
 					name = keys.get(key);
+				}
+
+				EModifier mod = mods.get(key);
+
+				if (mod != null) {
+					synchronized (activeMods) {
+						if (action == GLFW.GLFW_PRESS) {
+							activeMods.add(mod);
+						} else {
+							activeMods.remove(mod);
+						}
+					}
 				}
 
 				if(action == GLFW.GLFW_PRESS) {
@@ -209,6 +236,13 @@ public class GLFWContextCreator extends AsyncContextCreator {
 
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, 5, 10));
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, 5, 10));
+		}
+
+		@Override
+		protected Set<EModifier> getCurrentModifiers() {
+			synchronized(activeMods) {
+				return activeMods.clone();
+			}
 		}
 
 		private void registerCallbacks() {

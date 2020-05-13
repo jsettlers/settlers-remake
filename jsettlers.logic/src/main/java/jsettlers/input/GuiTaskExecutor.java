@@ -23,6 +23,7 @@ import java8.util.Optional;
 import java8.util.function.Consumer;
 import java8.util.stream.Collectors;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.movable.EMovableType;
@@ -107,7 +108,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 
 			case MOVE_TO: {
 				MoveToGuiTask task = (MoveToGuiTask) guiTask;
-				moveSelectedTo(task.getPosition(), task.getSelection());
+				moveSelectedTo(task.getPosition(), task.getSelection(), task.getMoveToType());
 				break;
 			}
 
@@ -312,8 +313,10 @@ class GuiTaskExecutor implements ITaskExecutor {
 	 *            position to move to
 	 * @param movableIds
 	 *            A list of the id's of the movables.
+	 * @param moveToType 
+	 *            How to move there.
 	 */
-	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
+	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds, EMoveToType moveToType) {
 		List<ILogicMovable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
 
 		if (movables.isEmpty()) {
@@ -330,11 +333,11 @@ class GuiTaskExecutor implements ITaskExecutor {
 		if (ferryEntrance != null) { // enter a ferry
 			stream(movables).forEach(movable -> movable.moveToFerry(ferryEntrance.ferry, ferryEntrance.entrance));
 		} else {
-			sendManyMovables(targetPosition, movables);
+			sendManyMovables(targetPosition, movables, moveToType);
 		}
 	}
 
-	private void sendManyMovables(ShortPoint2D targetPosition, List<ILogicMovable> movables) {
+	private void sendManyMovables(ShortPoint2D targetPosition, List<ILogicMovable> movables, EMoveToType moveToType) {
 		for (int radius = 0, ringsWithoutSuccessCtr = 0; ringsWithoutSuccessCtr <= Math.max(5, 15 - radius + ringsWithoutSuccessCtr) && !movables.isEmpty(); radius++) {
 			MutableInt numberOfSendMovables = new MutableInt(0);
 
@@ -346,7 +349,7 @@ class GuiTaskExecutor implements ITaskExecutor {
 					Optional<ILogicMovable> movableOptional = removeMovableThatCanMoveTo(movables, x, y);
 
 					movableOptional.ifPresent(movable -> {
-						movable.moveTo(new ShortPoint2D(x, y));
+						movable.moveTo(new ShortPoint2D(x, y), moveToType);
 						numberOfSendMovables.value++;
 					});
 				});

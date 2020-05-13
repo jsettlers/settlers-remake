@@ -15,6 +15,7 @@
 package jsettlers.graphics.map.controls.original.panel.selection;
 
 import java.util.List;
+import java8.util.Optional;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
@@ -201,9 +202,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		@Override
-		public Action getAction(float relativeX, float relativeY) {
+		public Optional<Action> getAction(float relativeX, float relativeY) {
 			int step = (int) (relativeX * NUMBER_OF_BUTTONS);
-			return getActionForStep(step);
+			return Optional.of(getActionForStep(step));
 		}
 	}
 
@@ -227,12 +228,12 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		@Override
-		public Action getAction(float relativeX, float relativeY) {
+		public Optional<Action> getAction(float relativeX, float relativeY) {
 			int step = (int) (relativeX * NUMBER_OF_BUTTONS) - 1;
 			if (step >= 0) {
-				return getActionForStep(step);
+				return Optional.of(getActionForStep(step));
 			} else {
-				return new Action(EActionType.ASK_SET_DOCK);
+				return Optional.of(new Action(EActionType.ASK_SET_DOCK));
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.IGuiMovable;
@@ -52,7 +53,7 @@ public interface ILogicMovable extends IScheduledTimerable, IPathCalculatable, I
 
 	IBuildingOccupyableMovable setOccupyableBuilding(IOccupyableBuilding building);
 
-	void moveTo(ShortPoint2D targetPosition);
+	void moveTo(ShortPoint2D targetPosition, EMoveToType moveToType);
 
 	void unloadFerry();
 

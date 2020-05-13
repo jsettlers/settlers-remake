@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls;
 
+import java8.util.Optional;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
@@ -23,6 +25,7 @@ import jsettlers.common.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.action.Action;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.map.MapDrawContext;
 
@@ -82,11 +85,19 @@ public interface IControls extends IMapInterfaceListener {
 	 *
 	 * @param position
 	 *            The positon.
-	 * @param selecting
-	 *            If the event is a select event.
 	 * @return The action for the position.
 	 */
-	Action getActionFor(UIPoint position, boolean selecting);
+	Optional<Action> getActionForSelect(UIPoint position);
+	/**
+	 * Gets the action for the given ui position, that should be executed if the user right clicked it.
+	 *
+	 * @param position
+	 *            The positon.
+	 * @param moveToType
+	 *            Move to modifiers
+	 * @return The action for the position.
+	 */
+	Optional<Action> getActionForMoveTo(UIPoint position, EMoveToType moveToType);
 
 	/**
 	 * Handles a draw event. The event may be fired even if it is outside the interface.

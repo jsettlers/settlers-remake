@@ -16,6 +16,7 @@ package jsettlers.graphics.action;
 
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
+import java8.util.Optional;
 import jsettlers.common.action.Action;
 
 /**
@@ -25,7 +26,7 @@ import jsettlers.common.action.Action;
  */
 public class ActionHandler implements GOEventHandler {
 
-	private final Action action;
+	private final Optional<Action> action;
 	private final ActionFireable connector;
 
 	/**
@@ -36,7 +37,7 @@ public class ActionHandler implements GOEventHandler {
 	 * @param connector
 	 *            The event to fire the action for.
 	 */
-	public ActionHandler(Action action, ActionFireable connector) {
+	public ActionHandler(Optional<Action> action, ActionFireable connector) {
 		this.action = action;
 		this.connector = connector;
 	}
@@ -47,9 +48,7 @@ public class ActionHandler implements GOEventHandler {
 
 	@Override
 	public void finished(GOEvent event) {
-		if (action != null) {
-			this.connector.fireAction(this.action);
-		}
+		action.ifPresent(this.connector::fireAction);
 	}
 
 	@Override

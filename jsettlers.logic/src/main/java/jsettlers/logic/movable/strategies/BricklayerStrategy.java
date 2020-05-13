@@ -15,6 +15,7 @@
 package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.movable.EMovableAction;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
@@ -96,7 +97,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		if (constructionSite == null || constructionSite.isBricklayerRequestActive()) {
 			return true;
 		} else {

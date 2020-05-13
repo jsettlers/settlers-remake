@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original;
 
+import java8.util.Optional;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
@@ -21,7 +23,9 @@ import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.action.EActionType;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.IAction;
+import jsettlers.common.action.MoveToAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -196,20 +200,34 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position, boolean selecting) {
+	public Optional<Action> getActionForMoveTo(UIPoint position, EMoveToType moveToType) {
+		return getActionFor(position, (relativex, relativey) -> getMoveToForMinimap(relativex, relativey, moveToType));
+	}
+	
+	@Override
+	public Optional<Action> getActionForSelect(UIPoint position) {
+		return getActionFor(position, this::getScrollForMinimap);
+	}
+	
+	@FunctionalInterface
+	private interface PositionToAction {
+		Optional<Action> positionToAction(float relativex, float relativey);
+	}
+	
+	private Optional<Action> getActionFor(UIPoint position, PositionToAction minimapPositionToAction) {
 		float relativex = (float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey = (float) position.getY() / this.uiBase.getPosition().getHeight();
-		Action action;
+		Optional<Action> action;
 		if (minimap != null && relativey > layoutProperties.MAIN_PANEL_TOP && getMinimapOffset(position.getY()) < position.getX()) {
-			action = getForMinimap(relativex, relativey, selecting);
+			action = minimapPositionToAction.positionToAction(relativex, relativey);
 			startMapPosition = null; // to prevent it from jumping back.
 		} else {
 			action = uiBase.getAction(relativex, relativey);
 		}
-		if (action != null
-				&& action.getActionType() == EActionType.CHANGE_PANEL) {
-			mainPanel.setContent(((ChangePanelAction) action).getContent());
-			return null;
+		if (action.isPresent()
+				&& action.get().getActionType() == EActionType.CHANGE_PANEL) {
+			mainPanel.setContent(((ChangePanelAction) action.get()).getContent());
+			return Optional.empty();
 		} else {
 			return action;
 		}
@@ -222,27 +240,23 @@ public class OriginalControls implements IControls {
 	 *            The position on the minimap.
 	 * @param relativey
 	 *            The position on the minimap.
-	 * @param selecting
-	 *            <code>true</code> if it was a selection click and the view should move there.
 	 * @return the action for that point or <code>null</code> for no action.
 	 */
-	private Action getForMinimap(float relativex, float relativey,
-			boolean selecting) {
+	private Optional<Action> getScrollForMinimap(float relativex, float relativey) {
+		return computeClickPosition(relativex, relativey).map(clickPosition -> new PointAction(EActionType.PAN_TO, clickPosition));
+	}
+	
+	private Optional<Action> getMoveToForMinimap(float relativex, float relativey, EMoveToType moveTo) {
+		return computeClickPosition(relativex, relativey).map(clickPosition -> new MoveToAction(moveTo, clickPosition));
+	}
+
+	private Optional<ShortPoint2D> computeClickPosition(float relativex, float relativey) {
 		float minimapx = (relativex - layoutProperties.miniMap.MAP_LEFT)
 				/ layoutProperties.miniMap.MAP_WIDTH;
 		float minimapy = ((relativey - layoutProperties.MAIN_PANEL_TOP)
 				/ (1 - layoutProperties.MAIN_PANEL_TOP) - layoutProperties.miniMap.MAP_BOTTOM)
 				/ layoutProperties.miniMap.MAP_HEIGHT;
-		ShortPoint2D clickPosition = minimap.getClickPositionIfOnMap(minimapx, minimapy);
-		if (clickPosition != null) {
-			if (selecting) {
-				return new PointAction(EActionType.PAN_TO, clickPosition);
-			} else {
-				return new PointAction(EActionType.MOVE_TO, clickPosition);
-			}
-		} else {
-			return null;
-		}
+		return Optional.ofNullable(minimap.getClickPositionIfOnMap(minimapx, minimapy));
 	}
 
 	@Override
@@ -274,8 +288,8 @@ public class OriginalControls implements IControls {
 			return false;
 		}
 
-		Action action = getActionForDraw(event);
-		if (action != null && context != null && minimap != null) {
+		Optional<Action> action = getActionForDraw(event);
+		if (action.isPresent() && context != null && minimap != null) {
 			float y = context.getScreen().getHeight() / 2;
 			float x = context.getScreen().getWidth() / 2;
 			startMapPosition = context.getPositionOnScreen(x, y);
@@ -286,7 +300,7 @@ public class OriginalControls implements IControls {
 		}
 	}
 
-	private Action getActionForDraw(GODrawEvent event) {
+	private Optional<Action> getActionForDraw(GODrawEvent event) {
 		UIPoint position = event.getDrawPosition();
 
 		float width = this.uiBase.getPosition().getWidth();
@@ -294,7 +308,7 @@ public class OriginalControls implements IControls {
 		float height = this.uiBase.getPosition().getHeight();
 		float relativey = (float) position.getY() / height;
 
-		return getForMinimap(relativex, relativey, true);
+		return getScrollForMinimap(relativex, relativey);
 	}
 
 	/**
@@ -351,11 +365,10 @@ public class OriginalControls implements IControls {
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			Action action = getActionForDraw((GODrawEvent) event);
-			if (action != null && action.getActionType() == EActionType.PAN_TO) {
-				minimap.getContext().scrollTo(
-						((PointAction) action).getPosition());
-			}
+			getActionForDraw((GODrawEvent) event)
+					.filter(action -> action.getActionType() == EActionType.PAN_TO)
+					.ifPresent(action -> minimap.getContext().scrollTo(
+							((PointAction) action).getPosition()));
 		}
 
 	}

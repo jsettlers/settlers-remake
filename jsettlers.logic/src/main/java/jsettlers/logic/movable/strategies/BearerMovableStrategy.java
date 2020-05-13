@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -227,7 +228,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step, EMoveToType moveToType) {
 		if (request != null && !request.isActive()) {
 			return false;
 		}

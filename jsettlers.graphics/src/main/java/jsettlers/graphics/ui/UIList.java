@@ -17,6 +17,7 @@ package jsettlers.graphics.ui;
 import go.graphics.GLDrawContext;
 
 import java.util.List;
+import java8.util.Optional;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
@@ -44,6 +45,19 @@ public class UIList<T> implements UIElement {
 	private final Object itemsMutex = new Object();
 	private T activeItem;
 	private final ListItemGenerator<T> generator;
+
+	private final class ScrollToExecutableAction extends ExecutableAction {
+		private final int destinationOffset;
+
+		private ScrollToExecutableAction(int destinationOffset) {
+			this.destinationOffset = destinationOffset;
+		}
+
+		@Override
+		public void execute() {
+			scrollBy(destinationOffset);
+		}
+	}
 
 	public interface ListItemGenerator<T> {
 		UIListItem getItem(T item);
@@ -137,27 +151,22 @@ public class UIList<T> implements UIElement {
 	}
 
 	@Override
-	public Action getAction(float relativex, float relativey) {
+	public Optional<Action> getAction(float relativex, float relativey) {
 		synchronized (itemsMutex) {
 			if (relativex < RIGHTBORDER) {
 				float listy = 1 - relativey + listoffset;
 				int itemIndex = (int) (listy / itemheight);
 				if (itemIndex >= 0 && itemIndex < items.size()) {
-					return new SelectAction(items.get(itemIndex));
+					return Optional.of(new SelectAction(items.get(itemIndex)));
 				} else {
-					return null;
+					return Optional.empty();
 				}
 			} else {
 				final float halfNumberOfDisplayedItems = (int) (0.5f / itemheight);
 				final int destinationOffset = (int) ((1 - relativey) * items.size()
 						- halfNumberOfDisplayedItems); // subtract this to get the center of the scrollbar where the player klicked.
 
-				return new ExecutableAction() {
-					@Override
-					public void execute() {
-						scrollBy(destinationOffset);
-					}
-				};
+				return Optional.of(new ScrollToExecutableAction(destinationOffset));
 			}
 		}
 	}

@@ -18,9 +18,11 @@ package jsettlers.main.android.core.controls;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
+import java8.util.Optional;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.EActionType;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.IAction;
 import jsettlers.common.action.PointAction;
 import jsettlers.common.action.SetDockAction;
@@ -164,8 +166,13 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position, boolean selecting) {
-		return null;
+	public Optional<Action> getActionForMoveTo(UIPoint position, EMoveToType moveToType) {
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Action> getActionForSelect(UIPoint position) {
+		return Optional.empty();
 	}
 
 	@Override

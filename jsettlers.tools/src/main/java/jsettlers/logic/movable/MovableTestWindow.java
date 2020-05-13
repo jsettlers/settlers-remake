@@ -17,6 +17,7 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 
 import jsettlers.TestToolUtils;
+import jsettlers.common.action.MoveToAction;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.IMapInterfaceConnector;
@@ -33,6 +34,7 @@ import jsettlers.logic.player.Team;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.network.synchronic.timer.NetworkTimer;
+import jsettlers.common.action.EMoveToType;
 
 public class MovableTestWindow {
 	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1, EPlayerType.HUMAN, ECivilisation.ROMAN);
@@ -57,7 +59,7 @@ public class MovableTestWindow {
 		connector.addListener(action -> {
 			switch (action.getActionType()) {
 			case MOVE_TO:
-				movable.moveTo(((PointAction) action).getPosition());
+				movable.moveTo(((MoveToAction) action).getPosition(), ((MoveToAction) action).getMoveToType());
 				break;
 			case SPEED_FASTER:
 				MatchConstants.clock().multiplyGameSpeed(1.2f);
@@ -98,9 +100,9 @@ public class MovableTestWindow {
 			ILogicMovable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);
 			ILogicMovable m3 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), PLAYER_0);
 
-			m1.moveTo(new ShortPoint2D(52, 65));
-			m2.moveTo(new ShortPoint2D(49, 63));
-			m3.moveTo(new ShortPoint2D(50, 66));
+			m1.moveTo(new ShortPoint2D(52, 65), EMoveToType.DEFAULT);
+			m2.moveTo(new ShortPoint2D(49, 63), EMoveToType.DEFAULT);
+			m3.moveTo(new ShortPoint2D(50, 66), EMoveToType.DEFAULT);
 		}
 	}
 }

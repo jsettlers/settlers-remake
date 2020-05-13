@@ -19,6 +19,8 @@ import java.nio.ByteOrder;
 
 import go.graphics.EGeometryFormatType;
 import go.graphics.EGeometryType;
+import java8.util.Optional;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -87,9 +89,9 @@ public class BarFill extends UIPanel {
 	}
 
 	@Override
-	public Action getAction(final float relativeX, float relativeY) {
+	public Optional<Action> getAction(final float relativeX, float relativeY) {
 		final float relativeFill = getFillForClick(relativeX);
-		return new ExecutableAction() {
+		return Optional.of(new ExecutableAction() {
 			@Override
 			public void execute() {
 				setBarFill(relativeFill, relativeFill);
@@ -97,7 +99,7 @@ public class BarFill extends UIPanel {
 					listener.execute();
 				}
 			}
-		};
+		});
 	}
 
 	protected float getFillForClick(final float relativeX) {

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.specialists;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
@@ -117,7 +118,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToType moveToType) {
 		this.state = EPioneerState.GOING_TO_POS;
 		centerPos = null;
 	}

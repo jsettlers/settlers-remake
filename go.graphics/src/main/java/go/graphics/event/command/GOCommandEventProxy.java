@@ -14,6 +14,8 @@
  *******************************************************************************/
 package go.graphics.event.command;
 
+import java.util.Set;
+
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GOEventProxy;
 
@@ -47,5 +49,10 @@ public class GOCommandEventProxy extends GOEventProxy<GOCommandEvent> implements
 	@Override
 	public boolean isSelecting() {
 		return baseEvent.isSelecting();
+	}
+
+	@Override
+	public Set<EModifier> getModifiers() {
+		return baseEvent.getModifiers();
 	}
 }
