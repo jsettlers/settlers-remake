@@ -317,17 +317,6 @@ class GuiTaskExecutor implements ITaskExecutor {
 	 *            How to move there.
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds, EMoveToType moveToType) {
-		if (movableIds.size() == 1) {
-			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
-			if (currMovable != null) {
-				currMovable.moveTo(targetPosition, moveToType);
-			}
-		} else if (!movableIds.isEmpty()) {
-			sendMovablesNew(targetPosition, movableIds, moveToType);
-		}
-	}
-
-	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds, EMoveToType moveToType) {
 		List<ILogicMovable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
 
 		if (movables.isEmpty()) {

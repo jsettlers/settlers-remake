@@ -204,7 +204,7 @@ class WhatToDoAi implements IWhatToDoAi {
 					aiStatistics.getPositionOfPartition(playerId), resourceType, Integer.MAX_VALUE, geologistFilters[resourceType.ordinal]);
 		}
 		if (resourcePoint != null) {
-			sendMovableTo(geologist, resourcePoint);
+			sendMovableTo(geologist, resourcePoint, EMoveToType.WORK);
 		}
 	}
 
@@ -222,7 +222,7 @@ class WhatToDoAi implements IWhatToDoAi {
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
 				if (soldier != null && militaryBuilding.getPosition().getOnGridDistTo(soldier.getPosition()) > TOWER_SEARCH_SOLDIERS_RADIUS) {
 					soldiersWithOrders.add(soldier.getID());
-					sendMovableTo(soldier, door);
+					sendMovableTo(soldier, door, EMoveToType.FORCED);
 				}
 			}
 		}
@@ -230,9 +230,9 @@ class WhatToDoAi implements IWhatToDoAi {
 		return soldiersWithOrders;
 	}
 
-	private void sendMovableTo(IMovable movable, ShortPoint2D target) {
+	private void sendMovableTo(IMovable movable, ShortPoint2D target, EMoveToType moveToType) {
 		if (movable != null) {
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, Collections.singletonList(movable.getID()), EMoveToType.DEFAULT));
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, Collections.singletonList(movable.getID()), moveToType));
 		}
 	}
 
@@ -352,7 +352,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private void sendSwordsmenToTower(ShortPoint2D position) {
 		IMovable soldier = aiStatistics.getNearestSwordsmanOf(position, playerId);
 		if (soldier != null) {
-			sendMovableTo(soldier, position);
+			sendMovableTo(soldier, position, EMoveToType.DEFAULT);
 		}
 	}
 
