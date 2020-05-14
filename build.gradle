@@ -88,11 +88,11 @@ subprojects {
     // Add streamsupport dependency
     def addGlobalDependencies = {
         dependencies {
-            implementation 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
-            implementation 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
 
             testImplementation 'junit:junit:4.12'
         }
@@ -153,6 +153,7 @@ task releaseJSettlers(type: Zip) {
         from { project.getRootProject().file('LICENSE.txt') }
         from tasks.getByPath(':jsettlers.main.swing:releaseJar')
         from tasks.getByPath(':jsettlers.mapcreator:releaseJar')
+        from tasks.getByPath(':jsettlers.network:releaseJar')
 
         into('maps') {
             from project.getRootProject().file('maps/release')
@@ -165,7 +166,7 @@ task releaseJSettlers(type: Zip) {
 
 
 task releaseDedicatedServer(type: Copy) {
-    from tasks.getByPath(':jsettlers.network:jar')
+    from tasks.getByPath(':jsettlers.network:releaseJar')
     into releaseDir
 }
 
@@ -184,7 +185,7 @@ if (findProject(':jsettlers.main.android')) {
 }
 
 
-task release(dependsOn: ['releaseJSettlers', 'releaseDedicatedServer', 'releaseAndroid'])
+task release(dependsOn: ['releaseJSettlers', 'releaseAndroid'])
 
 
 task deployToGithub(type: Exec, dependsOn: 'release') {
