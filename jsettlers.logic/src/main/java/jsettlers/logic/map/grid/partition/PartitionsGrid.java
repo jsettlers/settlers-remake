@@ -158,6 +158,10 @@ public final class PartitionsGrid implements Serializable {
 		return partitions[x + y * width];
 	}
 
+	public Partition[] getAllPartitions() {
+		return partitionObjects;
+	}
+
 	public Partition getPartitionAt(int x, int y) {
 		return partitionObjects[partitions[x + y * width]];
 	}
