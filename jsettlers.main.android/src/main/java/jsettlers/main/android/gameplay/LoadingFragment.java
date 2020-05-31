@@ -15,17 +15,17 @@
 
 package jsettlers.main.android.gameplay;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
-
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
@@ -38,18 +38,15 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.gameplay.navigation.GameNavigator;
 
-@EFragment(R.layout.fragment_loading)
 public class LoadingFragment extends Fragment implements IStartingGameListener {
-	@ViewById(R.id.progress_bar)
-	ProgressBar progressBar;
-	@ViewById(R.id.text_view_status)
-	TextView statusTextView;
+	private ProgressBar progressBar;
+	private TextView statusTextView;
 
-	GameStarter gameStarter;
-	GameNavigator navigator;
+	private GameStarter gameStarter;
+	private GameNavigator navigator;
 
 	public static LoadingFragment newInstance() {
-		return new LoadingFragment_();
+		return new LoadingFragment();
 	}
 
 	@Override
@@ -57,6 +54,15 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 		super.onCreate(savedInstanceState);
 		gameStarter = (GameStarter) getActivity().getApplication();
 		navigator = (GameNavigator) getActivity();
+	}
+
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_loading, container, false);
+		progressBar = view.findViewById(R.id.progress_bar);
+		statusTextView = view.findViewById(R.id.text_view_status);
+		return view;
 	}
 
 	@Override
@@ -80,12 +86,14 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	 * IStartingGameListener implementation
 	 */
 	@Override
-	@UiThread
 	public void startProgressChanged(final EProgressState state, final float progress) {
-		String stateString = Labels.getProgress(state);
-		int progressPercentage = (int) (progress * 100);
-		statusTextView.setText(stateString);
-		progressBar.setProgress(progressPercentage);
+		requireActivity().runOnUiThread(() -> {
+			String stateString = Labels.getProgress(state);
+			int progressPercentage = (int) (progress * 100);
+			statusTextView.setText(stateString);
+			progressBar.setProgress(progressPercentage);
+
+		});
 	}
 
 	@Override
@@ -94,11 +102,12 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	}
 
 	@Override
-	@UiThread
 	public void startFailed(final EGameError errorType, Exception exception) {
-		gameStarter.getStartingGame().setListener(null);
-		Toast.makeText(getActivity(), errorType.toString(), Toast.LENGTH_LONG).show();
-		getActivity().finish();
+		requireActivity().runOnUiThread(() -> {
+			gameStarter.getStartingGame().setListener(null);
+			Toast.makeText(getActivity(), errorType.toString(), Toast.LENGTH_LONG).show();
+			getActivity().finish();
+		});
 	}
 
 	@Override

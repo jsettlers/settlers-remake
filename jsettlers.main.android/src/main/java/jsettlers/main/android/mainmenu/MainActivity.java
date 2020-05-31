@@ -15,16 +15,13 @@
 
 package jsettlers.main.android.mainmenu;
 
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.OptionsItem;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.GameActivity;

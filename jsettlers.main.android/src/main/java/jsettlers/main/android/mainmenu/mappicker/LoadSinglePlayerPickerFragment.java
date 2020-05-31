@@ -15,14 +15,12 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.view.View;
+import androidx.lifecycle.ViewModelProviders;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
@@ -30,16 +28,12 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 /**
  * Created by tompr on 19/01/2017.
  */
-@EFragment(R.layout.fragment_map_picker_load_singleplayer)
 public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 	public static Fragment newInstance() {
-		return new LoadSinglePlayerPickerFragment_();
+		return new LoadSinglePlayerPickerFragment();
 	}
 
 	private LoadSinglePlayerPickerViewModel viewModel;
-
-	@ViewById(R.id.layout_no_saved_games)
-	View noSavedGamesView;
 
 	@Override
 	protected MapPickerViewModel createViewModel() {
@@ -57,12 +51,18 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		View noSavedGamesView = getView().findViewById(R.id.layout_no_saved_games);
 		viewModel.getShowNoMapsMessage().observe(this, showMessage -> noSavedGamesView.setVisibility(showMessage ? View.VISIBLE : View.GONE));
 
 		viewModel.getMapSelectedEvent().observe(this, mapId -> {
 			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
 			mainMenuNavigator.showGame();
 		});
+	}
+
+	@Override
+	protected int getLayoutId() {
+		return R.layout.fragment_map_picker_load_singleplayer;
 	}
 
 	@Override

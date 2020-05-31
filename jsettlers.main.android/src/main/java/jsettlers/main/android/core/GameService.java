@@ -31,7 +31,6 @@ import androidx.lifecycle.Observer;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.controls.NotificationBuilder;
-import jsettlers.main.android.core.controls.NotificationBuilder_;
 
 public class GameService extends Service {
 	public static final String ACTION_PAUSE = "com.jsettlers.pause";
@@ -101,7 +100,7 @@ public class GameService extends Service {
 	}
 
 	private Notification createNotification() {
-		NotificationBuilder notificationBuilder = NotificationBuilder_.getInstance_(getApplicationContext());
+		NotificationBuilder notificationBuilder = new NotificationBuilder(getApplicationContext());
 
 		if (gameMenu.getGameState().getValue() == GameMenu.GameState.CONFIRM_QUIT) {
 			notificationBuilder.addQuitConfirmButton();

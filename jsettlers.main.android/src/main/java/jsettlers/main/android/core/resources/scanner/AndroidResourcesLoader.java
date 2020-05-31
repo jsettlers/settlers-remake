@@ -15,14 +15,12 @@
 
 package jsettlers.main.android.core.resources.scanner;
 
-import java.io.File;
-
-import org.androidannotations.annotations.EBean;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+
+import java.io.File;
 
 import io.reactivex.Completable;
 import jsettlers.common.resources.ResourceManager;
@@ -35,7 +33,6 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.resources.AndroidMapListFactory;
 import jsettlers.main.android.core.resources.AndroidResourceProvider;
 
-@EBean
 public class AndroidResourcesLoader {
 	private static final String ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY = "external-files-path";
 	private static final String ORIGINAL_SETTLERS_FILES_VERSION_ID = "external-files-version-id";

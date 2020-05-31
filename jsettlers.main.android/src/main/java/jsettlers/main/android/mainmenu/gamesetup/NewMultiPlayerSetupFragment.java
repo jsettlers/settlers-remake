@@ -15,24 +15,29 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
+import android.os.Bundle;
+import android.view.View;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import jsettlers.main.android.R;
 
 /**
  * Created by tompr on 21/01/2017.
  */
-@EFragment(R.layout.fragment_new_single_player_setup)
 public class NewMultiPlayerSetupFragment extends MapSetupFragment {
 
 	private NewMultiPlayerSetupViewModel viewModel;
 
 	public static Fragment create(String mapId) {
-		return NewMultiPlayerSetupFragment_.builder().mapId(mapId).build();
+		Bundle arguments = new Bundle();
+		arguments.putString(ARG_MAP_ID, mapId);
+		Fragment fragment = new NewMultiPlayerSetupFragment();
+		fragment.setArguments(arguments);
+		return fragment;
 	}
 
 	@Override
@@ -41,8 +46,9 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment {
 		return viewModel;
 	}
 
-	@AfterViews
-	void disableUnavailableSpinners() {
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 		numberOfPlayersSpinner.setEnabled(false);
 		startResourcesSpinner.setEnabled(false);
 		peacetimeSpinner.setEnabled(false);

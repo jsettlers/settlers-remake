@@ -15,26 +15,25 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
-import java.util.concurrent.Semaphore;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import java.util.concurrent.Semaphore;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -51,23 +50,15 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 /**
  * Created by tompr on 21/01/2017.
  */
-@EFragment(R.layout.fragment_map_picker_join_multiplayer)
 public class JoinMultiPlayerPickerFragment extends Fragment {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
 	public static JoinMultiPlayerPickerFragment create() {
-		return new JoinMultiPlayerPickerFragment_();
+		return new JoinMultiPlayerPickerFragment();
 	}
 
-	@ViewById(R.id.recycler_view)
-	RecyclerView recyclerView;
-	@ViewById(R.id.layout_searching_for_games)
-	View searchingForGamesView;
-	@ViewById(R.id.toolbar)
-	Toolbar toolbar;
-
-	JoinMultiPlayerPickerViewModel viewModel;
-	JoinableGamesAdapter adapter;
+	private JoinMultiPlayerPickerViewModel viewModel;
+	private JoinableGamesAdapter adapter;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,15 +66,23 @@ public class JoinMultiPlayerPickerFragment extends Fragment {
 		viewModel = ViewModelProviders.of(this, new JoinMultiPlayerPickerViewModel.Factory(getActivity())).get(JoinMultiPlayerPickerViewModel.class);
 	}
 
-	@AfterViews
-	void setupToolbar() {
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_map_picker_join_multiplayer, container, false);
+
+		Toolbar toolbar = view.findViewById(R.id.toolbar);
 		FragmentUtil.setActionBar(this, toolbar);
 		toolbar.setTitle(R.string.join_multi_player_game);
+
+		return view;
 	}
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		View searchingForGamesView = getView().findViewById(R.id.layout_searching_for_games);
 		viewModel.getShowNoGamesMessage().observe(this, showMessage -> searchingForGamesView.setVisibility(showMessage ? View.VISIBLE : View.GONE));
 
 		viewModel.getMapSelectedEvent().observe(this, mapId -> {
@@ -91,6 +90,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment {
 			mainMenuNavigator.showJoinMultiPlayerSetup(mapId);
 		});
 
+		RecyclerView recyclerView = getView().findViewById(R.id.recycler_view);
 		viewModel.getJoinableGames().observe(this, joinableGames -> {
 			if (adapter == null) {
 				adapter = new JoinableGamesAdapter(joinableGames);

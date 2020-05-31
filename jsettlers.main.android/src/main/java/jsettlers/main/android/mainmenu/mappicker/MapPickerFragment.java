@@ -69,7 +69,7 @@ public abstract class MapPickerFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
+		View view = inflater.inflate(getLayoutId(), container, false);
 
 		toolbar = view.findViewById(R.id.toolbar);
 		setupToolbar();
@@ -107,6 +107,10 @@ public abstract class MapPickerFragment extends Fragment {
 	/**
 	 * Subclass related methods
 	 */
+	protected int getLayoutId() {
+		return R.layout.fragment_map_picker;
+	}
+
 	protected boolean showMapDates() {
 		return false;
 	}

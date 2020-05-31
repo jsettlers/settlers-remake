@@ -15,21 +15,7 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ItemSelect;
-import org.androidannotations.annotations.ViewById;
-
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,9 +25,17 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.resources.PreviewImageConverter;
 import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.OnItemSelectedListener;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.Civilisation;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.gamesetup.playeritem.PlayerType;
@@ -50,19 +44,14 @@ import jsettlers.main.android.mainmenu.gamesetup.playeritem.Team;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 public abstract class MapSetupFragment extends Fragment {
-
-	@ViewById(R.id.recycler_view)
-	RecyclerView recyclerView;
-	@ViewById(R.id.image_view_map_preview)
-	ImageView mapPreviewImageView;
-
+	protected static final String ARG_MAP_ID = "mapid";
 
 	protected Spinner numberOfPlayersSpinner;
-	@ViewById(R.id.spinner_start_resources)
 	protected Spinner startResourcesSpinner;
-	@ViewById(R.id.spinner_peacetime)
 	protected Spinner peacetimeSpinner;
 	protected Toolbar toolbar;
+
+	private RecyclerView recyclerView;
 
 	protected String mapId;
 
@@ -79,7 +68,7 @@ public abstract class MapSetupFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
-			mapId = getArguments().getString("mapid");
+			mapId = getArguments().getString(ARG_MAP_ID);
 			viewModel = createViewModel();
 		} catch (MultiPlayerConnectorUnavailableException e) {
 			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
@@ -95,22 +84,36 @@ public abstract class MapSetupFragment extends Fragment {
 		toolbar = view.findViewById(R.id.toolbar);
 		FragmentUtil.setActionBar(this, toolbar);
 
+		recyclerView = view.findViewById(R.id.recycler_view);
 		recyclerView.setHasFixedSize(true);
 
-		// Disable these for now, as these features are not implemented yet.
-		startResourcesSpinner.setEnabled(false);
-		peacetimeSpinner.setEnabled(false);
+		view.findViewById(R.id.button_start_game).setOnClickListener(v -> viewModel.startGame());
 
-		numberOfPlayersSpinner = view.findViewById(R.id.spinner_number_of_players);
-		numberOfPlayersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		// Disable this for now, as these features are not implemented yet.
+		startResourcesSpinner = view.findViewById(R.id.spinner_start_resources);
+		startResourcesSpinner.setEnabled(false);
+		startResourcesSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				
+				viewModel.startResourcesSelected(startResourcesAdapter.getItem(position));
 			}
+		});
 
+		// Disable this for now, as these features are not implemented yet.
+		peacetimeSpinner = view.findViewById(R.id.spinner_peacetime);
+		peacetimeSpinner.setEnabled(false);
+		peacetimeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				viewModel.peaceTimeSelected(peaceTimesAdapter.getItem(position));
+			}
+		});
 
+		numberOfPlayersSpinner = view.findViewById(R.id.spinner_number_of_players);
+		numberOfPlayersSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				viewModel.playerCountSelected(playerCountsAdapter.getItem(position));
 			}
 		});
 
@@ -142,6 +145,7 @@ public abstract class MapSetupFragment extends Fragment {
 		});
 		viewModel.getPeaceTime().observe(this, peacetime -> peacetimeSpinner.setSelection(peaceTimesAdapter.getPosition(peacetime)));
 
+		ImageView mapPreviewImageView = getView().findViewById(R.id.image_view_map_preview);
 		viewModel.getImage().observe(this, image -> mapPreviewImageView.setImageBitmap(PreviewImageConverter.convert(image)));
 		viewModel.getTitle().observe(this, title -> toolbar.setTitle(title));
 		viewModel.getPlayerSlots().observe(this, playerSlotPresenters -> {
@@ -160,26 +164,6 @@ public abstract class MapSetupFragment extends Fragment {
 			MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) getActivity();
 			mainMenuNavigator.showGame();
 		});
-	}
-
-	@Click(R.id.button_start_game)
-	protected void onStartGameClicked() {
-		viewModel.startGame();
-	}
-
-	@ItemSelect(R.id.spinner_number_of_players)
-	void playerSelected(boolean selected, int position) {
-		viewModel.playerCountSelected(playerCountsAdapter.getItem(position));
-	}
-
-	@ItemSelect(R.id.spinner_start_resources)
-	void startResourcesSelected(boolean selected, int position) {
-		viewModel.startResourcesSelected(startResourcesAdapter.getItem(position));
-	}
-
-	@ItemSelect(R.id.spinner_peacetime)
-	void peacetimeSelected(boolean selected, int position) {
-		viewModel.peaceTimeSelected(peaceTimesAdapter.getItem(position));
 	}
 
 	private <T> ArrayAdapter<T> getSpinnerAdapter(T[] items) {

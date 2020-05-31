@@ -15,30 +15,28 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.UiThread;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 /**
  * Created by tompr on 22/01/2017.
  */
-@EFragment
 public class JoiningGameProgressDialog extends DialogFragment {
+	private static final String ARG_STATE = "state";
+	private static final String ARG_PROGRESS = "progress";
 
 	public static DialogFragment create(String stateString, int progressPercentage) {
-		return JoiningGameProgressDialog_.builder().state(stateString).progress(progressPercentage).build();
+		Bundle arguments = new Bundle();
+		arguments.putString(ARG_STATE, stateString);
+		arguments.putInt(ARG_PROGRESS, progressPercentage);
+		DialogFragment fragment = new JoiningGameProgressDialog();
+		fragment.setArguments(arguments);
+		return fragment;
 	}
-
-	@FragmentArg("state")
-	String state;
-	@FragmentArg("progress")
-	int progress;
 
 	private ProgressDialog progressDialog;
 
@@ -46,13 +44,14 @@ public class JoiningGameProgressDialog extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		progressDialog = new ProgressDialog(getActivity());
-		setProgress(state, progress);
+		setProgress(getArguments().getString(ARG_STATE), getArguments().getInt(ARG_PROGRESS));
 		return progressDialog;
 	}
 
-	@UiThread
 	public void setProgress(String state, int progress) {
-		progressDialog.setMessage(state);
-		progressDialog.setProgress(progress);
+		requireActivity().runOnUiThread(() -> {
+			progressDialog.setMessage(state);
+			progressDialog.setProgress(progress);
+		});
 	}
 }

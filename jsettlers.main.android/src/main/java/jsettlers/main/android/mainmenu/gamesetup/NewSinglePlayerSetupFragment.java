@@ -15,20 +15,21 @@
 
 package jsettlers.main.android.mainmenu.gamesetup;
 
-import org.androidannotations.annotations.EFragment;
+import android.os.Bundle;
 
-import androidx.lifecycle.ViewModelProviders;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
-import jsettlers.main.android.R;
-
-@EFragment(R.layout.fragment_new_single_player_setup)
 public class NewSinglePlayerSetupFragment extends MapSetupFragment {
 
 	private NewSinglePlayerSetupViewModel viewModel;
 
 	public static Fragment create(String mapId) {
-		return NewSinglePlayerSetupFragment_.builder().mapId(mapId).build();
+		Bundle arguments = new Bundle();
+		arguments.putString(ARG_MAP_ID, mapId);
+		Fragment fragment = new NewSinglePlayerSetupFragment();
+		fragment.setArguments(arguments);
+		return fragment;
 	}
 
 	@Override

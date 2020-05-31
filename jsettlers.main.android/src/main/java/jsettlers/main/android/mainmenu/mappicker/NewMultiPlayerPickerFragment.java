@@ -15,12 +15,11 @@
 
 package jsettlers.main.android.mainmenu.mappicker;
 
-import org.androidannotations.annotations.EFragment;
-
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
@@ -28,12 +27,11 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 /**
  * Created by tompr on 21/01/2017.
  */
-@EFragment(R.layout.fragment_map_picker)
 public class NewMultiPlayerPickerFragment extends MapPickerFragment {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
 	public static Fragment newInstance() {
-		return new NewMultiPlayerPickerFragment_();
+		return new NewMultiPlayerPickerFragment();
 	}
 
 	private NewMultiPlayerPickerViewModel viewModel;
