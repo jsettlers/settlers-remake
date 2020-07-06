@@ -3,5 +3,9 @@ package jsettlers.logic.movable.simplebehaviortree;
 public enum NodeStatus {
 	SUCCESS,
 	FAILURE,
-	RUNNING
+	RUNNING;
+
+	public static NodeStatus of(boolean value) {
+		return value ? SUCCESS : FAILURE;
+	}
 }

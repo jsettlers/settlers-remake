@@ -108,7 +108,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 								action(c->{c.entity.steeringComponent().setTarget(c.entity.bearerComponent().materialOffer.getPosition());}),
 								waitForTargetReachedAndFailIfNotReachable(),
 								debug("can take material", condition(BearerBehaviorComponent::canTakeMaterial)),
-								startAndWaitForAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION, true),
+								startAndWaitForAnimation(EMovableAction.BEND_DOWN, c->Constants.MOVABLE_BEND_DURATION, true),
 								tryTakeMaterialFromMap(),
 								startAndWaitForAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION)
 							),
@@ -126,16 +126,16 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
 								}),
 								waitForTargetReachedAndFailIfNotReachable(),
 								condition(c -> c.entity.bearerComponent().materialType.isDroppable()),
-								startAndWaitForAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION, true),
+								startAndWaitForAnimation(EMovableAction.BEND_DOWN, c->Constants.MOVABLE_BEND_DURATION, true),
 								guard(BearerBehaviorComponent::canFulfillRequest, sequence(
-									dropMaterial(),
+									dropMaterial(c->c.entity.materialComponent().getMaterial()),
 									action(BearerBehaviorComponent::deliveryFulfilled)
 								)),
 								startAndWaitForAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION),
 								action(BearerBehaviorComponent::resetJob)
 							),
 							sequence("handle failure",
-								debug("reoffer the material", dropMaterial()),
+								debug("reoffer the material", dropMaterial(c->c.entity.materialComponent().getMaterial())),
 								action(BearerBehaviorComponent::deliveryAborted),
 								action(BearerBehaviorComponent::resetJob),
 								alwaysFail()

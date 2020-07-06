@@ -10,8 +10,11 @@ import jsettlers.logic.movable.components.GameFieldComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
+import jsettlers.logic.movable.simplebehaviortree.IEMaterialTypeSupplier;
+import jsettlers.logic.movable.simplebehaviortree.IIntegerSupplier;
 import jsettlers.logic.movable.simplebehaviortree.INodeStatusActionConsumer;
 import jsettlers.logic.movable.simplebehaviortree.INodeStatusActionFunction;
+import jsettlers.logic.movable.simplebehaviortree.IShortSupplier;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
@@ -205,19 +208,19 @@ public final class BehaviorTreeHelper {
 		return new Guard<>(entity -> entity.component.hasNotificationOfType(type), true, child);
 	}
 
-	public static Action<Context> startAnimation(EMovableAction animation, short duration, boolean isChained) {
+	public static Action<Context> startAnimation(EMovableAction animation, IShortSupplier<Context> durationSupplier, boolean isChained) {
 		return new Action<>(context -> {
-			context.entity.getAnimationComponent().startAnimation(animation, duration, isChained);
+			context.entity.getAnimationComponent().startAnimation(animation, durationSupplier.apply(context), isChained);
 		});
 	}
 
 	public static Node<Context> startAndWaitForAnimation(EMovableAction animation, short duration) {
-		return startAndWaitForAnimation(animation, duration, false);
+		return startAndWaitForAnimation(animation, c->duration, false);
 	}
 
-	public static Node<Context> startAndWaitForAnimation(EMovableAction animation, short duration, boolean isChained) {
-		return memSequence("startAndWaitForAnimation with " + animation + " for " + duration + "ms",
-			debug("start animation", startAnimation(animation, duration, isChained)),
+	public static Node<Context> startAndWaitForAnimation(EMovableAction animation, IShortSupplier<Context> durationSupplier, boolean isChained) {
+		return memSequence("startAndWaitForAnimation with " + animation,
+			debug("start animation", startAnimation(animation, durationSupplier, isChained)),
 			debug("wait for animation to finish", waitForNotification(AnimationComponent.AnimationFinishedNotification.class, n -> n.type == animation, true))
 		);
 	}
@@ -231,18 +234,22 @@ public final class BehaviorTreeHelper {
 		return new Selector<>(child, new AlwaysSucceed<>());
 	}
 
-	public static Sleep sleep(int milliseconds) {
-		return new Sleep(milliseconds);
+	public static Sleep sleep(IIntegerSupplier<Context> delaySupplier) {
+		return new Sleep(delaySupplier);
+	}
+
+	public static Sleep sleep(int delay) {
+		return new Sleep(c->delay);
 	}
 
 	public static class Sleep extends Node<Context> {
 		private static final long serialVersionUID = 8774557186392581042L;
-		final                int  delay;
 		int endTime;
+		final IIntegerSupplier<Context> delaySupplier;
 
-		public Sleep(int milliseconds) {
+		public Sleep(IIntegerSupplier<Context> delaySupplier) {
 			super();
-			delay = milliseconds;
+			this.delaySupplier = delaySupplier;
 		}
 
 		@Override
@@ -255,7 +262,7 @@ public final class BehaviorTreeHelper {
 
 		@Override
 		public void onOpen(Tick<Context> tick) {
-			endTime = MatchConstants.clock().getTime() + delay;
+			endTime = MatchConstants.clock().getTime() + delaySupplier.apply(tick.target);
 		}
 	}
 
@@ -275,10 +282,11 @@ public final class BehaviorTreeHelper {
 		return new Debug(msg);
 	}
 
-	public static Action<Context> dropMaterial() {
+	public static Action<Context> dropMaterial(IEMaterialTypeSupplier<Context> materialTypeSupplier) {
 		return new Action<>(c -> {
-			if (c.entity.materialComponent().getMaterial().isDroppable()) {
-				c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPosition(), c.entity.materialComponent().getMaterial(), true, false);
+			EMaterialType material = materialTypeSupplier.apply(c);
+			if (material.isDroppable()) {
+				c.entity.gameFieldComponent().movableGrid.dropMaterial(c.entity.movableComponent().getPosition(), material, true, false);
 			}
 			c.entity.materialComponent().setMaterial(EMaterialType.NO_MATERIAL);
 		});
