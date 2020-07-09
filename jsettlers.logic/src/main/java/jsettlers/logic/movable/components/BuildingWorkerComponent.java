@@ -90,11 +90,6 @@ public class BuildingWorkerComponent extends Component {
 		poppedMaterial = material;
 	}
 
-	public DockyardBuilding getDockyard() {
-		assert building instanceof DockyardBuilding;
-		return (DockyardBuilding) building;
-	}
-
 	public Path getPreSearchedPath() {
 		return preSearchedPath;
 	}
@@ -152,6 +147,10 @@ public class BuildingWorkerComponent extends Component {
 		} else {
 			return null;
 		}
+	}
+
+	public IWorkerRequestBuilding getBuilding() {
+		return building;
 	}
 
 	public void setWorkerJob(IWorkerRequestBuilding building) {

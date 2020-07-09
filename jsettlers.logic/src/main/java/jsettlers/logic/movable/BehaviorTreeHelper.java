@@ -98,6 +98,11 @@ public final class BehaviorTreeHelper {
 	}
 
 	@SafeVarargs
+	public static Node<Context> memSelector(String debugMessage, Node<Context>... children) {
+		return debug(debugMessage, memSelector(children));
+	}
+
+	@SafeVarargs
 	public static MemSequence<Context> memSequence(Node<Context>... children) {
 		return new MemSequence<>(children);
 	}

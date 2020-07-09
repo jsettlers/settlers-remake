@@ -1,5 +1,6 @@
 package jsettlers.logic.movable;
 
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -9,6 +10,8 @@ import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.BearerBehaviorComponent;
 import jsettlers.logic.movable.components.BearerComponent;
+import jsettlers.logic.movable.components.BuildingWorkerBehaviorComponent;
+import jsettlers.logic.movable.components.BuildingWorkerComponent;
 import jsettlers.logic.movable.components.DonkeyBehaviorComponent;
 import jsettlers.logic.movable.components.DonkeyComponent;
 import jsettlers.logic.movable.components.GameFieldComponent;
@@ -35,6 +38,25 @@ public final class EntityFactory {
 		switch (movableType) {
 			//case BEARER:
 			case GEOLOGIST:
+			case SMITH:
+			case LUMBERJACK:
+			case STONECUTTER:
+			case SAWMILLER:
+			case FORESTER:
+			case MELTER:
+			case MINER:
+			case FISHERMAN:
+			case FARMER:
+			case MILLER:
+			case BAKER:
+			case PIG_FARMER:
+			case DONKEY_FARMER:
+			case SLAUGHTERER:
+			case CHARCOAL_BURNER:
+			case WATERWORKER:
+			case WINEGROWER:
+			case HEALER:
+			case DOCKWORKER:
 			case DONKEY:
 				return new MovableWrapper(createActiveEntity(grid, movableType, position, player));
 			default:
@@ -54,6 +76,27 @@ public final class EntityFactory {
 			case BEARER:
 				entity = createBearer(grid, movableType, position, player);
 				break;
+			case SMITH:
+			case LUMBERJACK:
+			case STONECUTTER:
+			case SAWMILLER:
+			case FORESTER:
+			case MELTER:
+			case MINER:
+			case FISHERMAN:
+			case FARMER:
+			case MILLER:
+			case BAKER:
+			case PIG_FARMER:
+			case DONKEY_FARMER:
+			case SLAUGHTERER:
+			case CHARCOAL_BURNER:
+			case WATERWORKER:
+			case WINEGROWER:
+			case HEALER:
+			case DOCKWORKER:
+				entity = createBuildingWorker(grid, movableType, position, player);
+				break;
 			case GEOLOGIST:
 				entity = createGeologist(grid, movableType, position, player);
 				break;
@@ -63,6 +106,22 @@ public final class EntityFactory {
 		}
 		assert entity != null : "Type not found by EntityFactory";
 		assert entity.checkComponentDependencies() : "Not all Component dependencies are resolved.";
+		return entity;
+	}
+
+	private static Entity createBuildingWorker(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = new Entity();
+		entity.add(new MaterialComponent());
+		entity.add(new BuildingWorkerComponent());
+		entity.add(new BuildingWorkerBehaviorComponent());
+		entity.add(new AnimationComponent());
+		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+		entity.add(new MovableComponent(movableType, player, position, dir));
+		entity.add(new SteeringComponent());
+		entity.add(new GameFieldComponent(grid));
+		entity.add(new SelectableComponent(ESelectionType.PEOPLE));
+		entity.add(new MarkedPositonComponent());
+		entity.toggleDebug();
 		return entity;
 	}
 
