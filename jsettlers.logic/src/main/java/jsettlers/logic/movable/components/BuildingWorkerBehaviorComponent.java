@@ -294,7 +294,7 @@ public class BuildingWorkerBehaviorComponent extends BehaviorComponent {
 						),
 						guard(isCurrentJobType(EBuildingJobType.PLAY_ACTION3),
 							sequence("play action 3",
-								startAndWaitForAnimation(EMovableAction.ACTION2, c->(short) (1000 * c.entity.buildingWorkerComponent().getCurrentJob().getTime()), false),
+								startAndWaitForAnimation(EMovableAction.ACTION3, c->(short) (1000 * c.entity.buildingWorkerComponent().getCurrentJob().getTime()), false),
 								jobFinished()
 							)
 						),

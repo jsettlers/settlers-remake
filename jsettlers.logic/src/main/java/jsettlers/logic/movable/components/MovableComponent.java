@@ -98,9 +98,11 @@ public class MovableComponent extends Component implements IPathCalculatable {
 	}
 
 	public void setPos(ShortPoint2D position) {
-		gameComponent.movableGrid.leavePosition(this.position, movableWrapper);
+		if (visible) {
+			gameComponent.movableGrid.leavePosition(this.position, movableWrapper);
+			gameComponent.movableGrid.enterPosition(position, movableWrapper, false);
+		}
 		this.position = position;
-		gameComponent.movableGrid.enterPosition(this.position, movableWrapper, false);
 	}
 
 	public void setPlayer(Player player) {
