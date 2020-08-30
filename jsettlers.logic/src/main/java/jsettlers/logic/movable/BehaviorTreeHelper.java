@@ -117,6 +117,10 @@ public final class BehaviorTreeHelper {
 		return new Parallel<>(successPolicy, preemptive, children);
 	}
 
+	public static Node<Context> repeat(String debugMessage, Repeat.Policy policy, Node<Context> condition, Node<Context> child) {
+		return debug(debugMessage, new Repeat<>(policy, condition, child));
+	}
+
 	public static Repeat<Context> repeat(Repeat.Policy policy, Node<Context> condition, Node<Context> child) {
 		return new Repeat<>(policy, condition, child);
 	}
@@ -235,8 +239,8 @@ public final class BehaviorTreeHelper {
 		entity.convertTo(blueprint);
 	}
 
-	public static <T> Node<T> alwaysSucceed(Node<T> child) {
-		return new Selector<>(child, new AlwaysSucceed<>());
+	public static <T> Node alwaysSucceed(Node<T> child) {
+		return new Selector(child, new AlwaysSucceed());
 	}
 
 	public static Sleep sleep(IIntegerSupplier<Context> delaySupplier) {

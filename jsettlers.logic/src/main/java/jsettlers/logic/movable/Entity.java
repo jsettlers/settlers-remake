@@ -14,6 +14,7 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.BearerComponent;
+import jsettlers.logic.movable.components.BricklayerComponent;
 import jsettlers.logic.movable.components.BuildingWorkerComponent;
 import jsettlers.logic.movable.components.Component;
 import jsettlers.logic.movable.components.DonkeyComponent;
@@ -316,4 +317,6 @@ public class Entity implements Serializable, IScheduledTimerable {
 	public final MarkedPositonComponent markedPositonComponent() { return getComponent(MarkedPositonComponent.class); }
 
 	public final BuildingWorkerComponent buildingWorkerComponent() { return getComponent(BuildingWorkerComponent.class); }
+
+	public final BricklayerComponent bricklayerComponent() { return getComponent(BricklayerComponent.class); }
 }

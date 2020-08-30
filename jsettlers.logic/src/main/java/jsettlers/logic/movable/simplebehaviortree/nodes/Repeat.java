@@ -8,7 +8,8 @@ import jsettlers.logic.movable.simplebehaviortree.Tick;
 public class Repeat<T> extends Decorator<T> {
     /*
         Run the child if condition=SUCCESS
-        As long as the child is running the condition is not checked
+        Preemptive = check condition every tick before executing the child
+        NonPreemptive = as long as the child is running the condition is not checked
 
         Return RUNNING if child=RUNNING || condition=RUNNING
         Return SUCCESS if condition=FAILURE

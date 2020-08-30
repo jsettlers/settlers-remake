@@ -11,9 +11,6 @@ import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
-import jsettlers.logic.movable.simplebehaviortree.nodes.AlwaysSucceed;
-import jsettlers.logic.movable.simplebehaviortree.nodes.DynamicGuardSelector;
-import jsettlers.logic.movable.simplebehaviortree.nodes.NotificationCondition;
 
 import static jsettlers.logic.movable.BehaviorTreeHelper.action;
 import static jsettlers.logic.movable.BehaviorTreeHelper.alwaysFail;
@@ -24,15 +21,12 @@ import static jsettlers.logic.movable.BehaviorTreeHelper.debug;
 import static jsettlers.logic.movable.BehaviorTreeHelper.dropMaterial;
 import static jsettlers.logic.movable.BehaviorTreeHelper.guard;
 import static jsettlers.logic.movable.BehaviorTreeHelper.memSequence;
-import static jsettlers.logic.movable.BehaviorTreeHelper.notificationCondition;
 import static jsettlers.logic.movable.BehaviorTreeHelper.selector;
 import static jsettlers.logic.movable.BehaviorTreeHelper.sequence;
 import static jsettlers.logic.movable.BehaviorTreeHelper.setIdleBehaviorActiveWhile;
 import static jsettlers.logic.movable.BehaviorTreeHelper.sleep;
 import static jsettlers.logic.movable.BehaviorTreeHelper.startAndWaitForAnimation;
-import static jsettlers.logic.movable.BehaviorTreeHelper.startAnimation;
 import static jsettlers.logic.movable.BehaviorTreeHelper.triggerGuard;
-import static jsettlers.logic.movable.BehaviorTreeHelper.waitForNotification;
 import static jsettlers.logic.movable.BehaviorTreeHelper.waitForTargetReachedAndFailIfNotReachable;
 
 /**

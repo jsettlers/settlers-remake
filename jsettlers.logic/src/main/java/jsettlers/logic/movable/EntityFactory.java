@@ -10,6 +10,8 @@ import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.BearerBehaviorComponent;
 import jsettlers.logic.movable.components.BearerComponent;
+import jsettlers.logic.movable.components.BricklayerBehaviorComponent;
+import jsettlers.logic.movable.components.BricklayerComponent;
 import jsettlers.logic.movable.components.BuildingWorkerBehaviorComponent;
 import jsettlers.logic.movable.components.BuildingWorkerComponent;
 import jsettlers.logic.movable.components.DonkeyBehaviorComponent;
@@ -37,6 +39,7 @@ public final class EntityFactory {
 	public static ILogicMovable createMovable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		switch (movableType) {
 			//case BEARER:
+			case BRICKLAYER:
 			case GEOLOGIST:
 			case SMITH:
 			case LUMBERJACK:
@@ -103,9 +106,25 @@ public final class EntityFactory {
 			case DONKEY:
 				entity = createDonkey(grid, movableType, position, player);
 				break;
+			case BRICKLAYER:
+				entity = createBricklayer(grid, movableType, position, player);
+				break;
 		}
 		assert entity != null : "Type not found by EntityFactory";
 		assert entity.checkComponentDependencies() : "Not all Component dependencies are resolved.";
+		return entity;
+	}
+
+	private static Entity createBricklayer(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+		Entity entity = new Entity();
+		entity.add(new BricklayerComponent());
+		entity.add(new BricklayerBehaviorComponent());
+		entity.add(new AnimationComponent());
+		EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+		entity.add(new MovableComponent(movableType, player, position, dir));
+		entity.add(new SteeringComponent());
+		entity.add(new GameFieldComponent(grid));
+		entity.add(new SelectableComponent(ESelectionType.PEOPLE));
 		return entity;
 	}
 
@@ -121,7 +140,6 @@ public final class EntityFactory {
 		entity.add(new GameFieldComponent(grid));
 		entity.add(new SelectableComponent(ESelectionType.PEOPLE));
 		entity.add(new MarkedPositonComponent());
-		entity.toggleDebug();
 		return entity;
 	}
 

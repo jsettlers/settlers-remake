@@ -106,7 +106,7 @@ public class SteeringComponent extends Component {
 			guard(c -> path != null, true,
 				debug("follow path", action(c -> { followPath(); }))
 			),
-			BehaviorTreeHelper.guard(c -> ((SteeringComponent)c.component).isIdleBehaviorActive,
+			guard(c -> ((SteeringComponent)c.component).isIdleBehaviorActive,
 				selector(
 					guard(c -> gameFieldComponent.movableGrid.isBlockedOrProtected(movableComponent.getPosition().x, movableComponent.getPosition().y), true,
 						action(c -> {

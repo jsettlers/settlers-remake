@@ -71,11 +71,6 @@ public class BuildingWorkerBehaviorComponent extends BehaviorComponent {
 					dropMaterial(c->c.entity.materialComponent().getMaterial()),
 					action(c->{ c.entity.markedPositonComponent().clearMark();})
 				)),
-				action(c->{
-					IBuildingJob job = c.entity.buildingWorkerComponent().getCurrentJob();
-					System.out.println(job);
-					return NodeStatus.FAILURE;
-				}),
 				guard("has a job", c->c.entity.buildingWorkerComponent().hasJob(),
 					memSelector("try execute job",
 						guard(isCurrentJobType(EBuildingJobType.GO_TO),
