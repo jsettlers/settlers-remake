@@ -94,6 +94,17 @@ subprojects {
             implementation 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
             implementation 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
 
+            /*add music dependencies
+             * ogg libraries: vorbisspi1.0.2.jar, tritonus_share.jar, jorbis-0.0.15.jar, jogg-0.0.7.jar
+             * mp3 libraries: jl1.0.1.jar, tritonus_share.jar, mp3spi1.9.5.jar
+             */
+            implementation group: 'javazoom', name: 'jlayer', version: '1.0.1'
+            implementation group: 'com.googlecode.soundlibs', name: 'tritonus-share', version: '0.3.7.4'
+            implementation group: 'com.googlecode.soundlibs', name: 'mp3spi', version: '1.9.5.4'
+            implementation group: 'com.googlecode.soundlibs', name: 'vorbisspi', version: '1.0.3.3'
+            implementation group: 'org.jcraft', name: 'jorbis', version: '0.0.17'
+            implementation group: 'de.jarnbjo', name: 'j-ogg-all', version: '1.0.0'
+
             testImplementation 'junit:junit:4.12'
         }
     }

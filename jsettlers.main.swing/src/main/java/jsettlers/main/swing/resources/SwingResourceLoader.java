@@ -16,6 +16,7 @@ package jsettlers.main.swing.resources;
 
 import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
+import jsettlers.common.music.MusicManager;
 import jsettlers.graphics.image.reader.DatFileUtils;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
@@ -54,6 +55,7 @@ public class SwingResourceLoader {
 		// setup image and sound provider
 		ImageProvider.setLookupPath(settlersFolders.gfxFolder, settlersVersionId);
 		SoundManager.setLookupPath(settlersFolders.sndFolder);
+		MusicManager.setLookupPath(settlersFolders.musicFolder);
 
 		// Setup map load paths
 		setupMapListFactory(SettingsManager.getInstance().getAdditionalMapsDirectory(), settlersFolders.mapsFolder);
