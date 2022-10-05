@@ -8,27 +8,27 @@
 	<ground groundtype="EARTH"/>
 	<ground groundtype="FLATTENED"/>
 
-	<blocked dx="1" dy="2" block="true" />
-	<blocked dx="2" dy="1" block="true" />
-	<blocked dx="2" dy="0" block="true" />
-	<blocked dx="1" dy="1" block="true" />
-	<blocked dx="1" dy="0" block="true" />
-	<blocked dx="1" dy="-1" block="true" />
-	<blocked dx="0" dy="-2" block="true" />
-	<blocked dx="0" dy="-1" block="true" />
-	<blocked dx="0" dy="0" block="true" />
-	<blocked dx="0" dy="1" block="true" />
-	<blocked dx="-2" dy="0" block="true" />
-	<blocked dx="-1" dy="0" block="true" />
-	<blocked dx="-2" dy="-1" block="true" />
-	<blocked dx="-2" dy="-3" block="true" />
-	<blocked dx="-2" dy="-2" block="true" />
-	<blocked dx="-1" dy="-1" block="true" />
-	<blocked dx="-1" dy="-2" block="true" />
-	<blocked dx="-1" dy="-3" block="true" />
-	<blocked dx="0" dy="2" block="true" />
-	<blocked dx="0" dy="3" block="true" />
-	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="1" dy="2" />
+	<blocked dx="2" dy="1" />
+	<blocked dx="2" dy="0" />
+	<blocked dx="1" dy="1" />
+	<blocked dx="1" dy="0" />
+	<blocked dx="1" dy="-1" />
+	<blocked dx="0" dy="-2" />
+	<blocked dx="0" dy="-1" />
+	<blocked dx="0" dy="0" />
+	<blocked dx="0" dy="1" />
+	<blocked dx="-2" dy="0" />
+	<blocked dx="-1" dy="0" />
+	<blocked dx="-2" dy="-1" />
+	<blocked dx="-2" dy="-3" />
+	<blocked dx="-2" dy="-2" />
+	<blocked dx="-1" dy="-1" />
+	<blocked dx="-1" dy="-2" />
+	<blocked dx="-1" dy="-3" />
+	<blocked dx="0" dy="2" />
+	<blocked dx="0" dy="3" />
+	<blocked dx="-2" dy="1" />
 
 	<blocked dx="-1" dy="1" block="false" />
 	<blocked dx="-1" dy="2" block="false" />

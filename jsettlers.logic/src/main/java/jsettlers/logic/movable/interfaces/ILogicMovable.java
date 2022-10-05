@@ -61,4 +61,6 @@ public interface ILogicMovable extends IScheduledTimerable, IPathCalculatable, I
 	void moveToFerry(ILogicMovable ferry, ShortPoint2D entrancePosition);
 
 	void leaveFerryAt(ShortPoint2D position);
+
+	boolean onFerry();
 }

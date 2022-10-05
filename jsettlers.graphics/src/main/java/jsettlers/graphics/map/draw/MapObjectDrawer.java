@@ -383,7 +383,8 @@ public class MapObjectDrawer {
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
 						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
 					);
-					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, 0, color, shade);
+					Color passengerColor = context.getPlayerColor(passenger.getPlayer().getPlayerId());
+					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, 0, passengerColor, shade);
 				}
 			}
 		} else {
@@ -416,7 +417,8 @@ public class MapObjectDrawer {
 					Image image = this.imageMap.getImageForSettler(passenger.getMovableType(), EMovableAction.NO_ACTION,
 						EMaterialType.NO_MATERIAL, getPassengerDirection(direction, shipPosition, i), 0
 					);
-					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, 0, color, shade);
+					Color passengerColor = context.getPlayerColor(passenger.getPlayer().getPlayerId());
+					image.drawAt(glDrawContext, viewX + xShift, viewY + yShift + PASSENGER_DECK_HEIGHT, 0, passengerColor, shade);
 				}
 			}
 		} else {

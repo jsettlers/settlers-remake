@@ -26,6 +26,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
  * This class holds the fog of war for a given map and team.
@@ -161,6 +162,7 @@ public final class FogOfWar implements Serializable {
 
 		private void applyViewDistances(ConcurrentLinkedQueue<? extends IViewDistancable> objects) {
 			for (IViewDistancable curr : objects) {
+				if(curr instanceof ILogicMovable && ((ILogicMovable)curr).onFerry()) continue;
 				if (isPlayerOK(curr)) {
 					short distance = curr.getViewDistance();
 					if (distance > 0) {

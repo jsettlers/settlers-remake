@@ -215,9 +215,18 @@ public class LWJGL20DrawContext extends LWJGL15DrawContext implements GL2DrawCon
 		}
 	}
 
+	protected float nativeScale = 0;
+
 	@Override
 	public void resize(int width, int height) {
-		GL11.glViewport(0, 0, width, height);
+		if(nativeScale == 0) {
+			int[] vp = new int[4];
+			GL11.glGetIntegerv(GL11.GL_VIEWPORT, vp);
+			nativeScale = vp[2] / (float)width;
+
+			if(nativeScale < 0.1f) nativeScale = 1;
+		}
+		GL11.glViewport(0, 0, (int)(width*nativeScale), (int)(height*nativeScale));
 
 		mat.identity();
 		mat.ortho(0, width, 0, height, -1, 1);
