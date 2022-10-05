@@ -17,9 +17,7 @@ package jsettlers.graphics.map.geometry;
 import java.awt.geom.AffineTransform;
 
 import go.graphics.UIPoint;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.Parallelogram;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 

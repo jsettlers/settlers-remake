@@ -37,6 +37,7 @@ import jsettlers.common.action.SetBuildingPriorityAction;
 import jsettlers.common.action.SetTradingWaypointAction;
 import jsettlers.common.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.common.action.SoldierAction;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
@@ -654,6 +655,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 			for (ImageLink link : links) {
 				ImageProvider.getInstance().getImage(link).drawAt(gl, cx, cy, 0, null, 1);
+				// TODO implement depth sorting in UI
+				gl.finishFrame();
 			}
 		}
 

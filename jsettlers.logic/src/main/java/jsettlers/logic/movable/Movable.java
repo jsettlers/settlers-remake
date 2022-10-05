@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.algorithms.fogofwar.FoWTask;
+import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.HexGridArea;
@@ -53,7 +55,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  *
  * @author Andreas Eberle
  */
-public final class Movable implements ILogicMovable {
+public final class Movable implements ILogicMovable, FoWTask {
 	private static final long serialVersionUID = -705947810059935865L;
 
 	private static final int SHIP_PUSH_DISTANCE = 10;
@@ -61,6 +63,7 @@ public final class Movable implements ILogicMovable {
 	private static final HashMap<Integer, ILogicMovable>      movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables  = new ConcurrentLinkedQueue<>();
 	private static       int                                  nextID       = Integer.MIN_VALUE;
+	private static byte fowTeam = -1;
 
 	protected final AbstractMovableGrid grid;
 	private final   int                 id;
@@ -78,6 +81,7 @@ public final class Movable implements ILogicMovable {
 	private int   animationStartTime;
 	private short animationDuration;
 
+	public ShortPoint2D fowPosition = null;
 	private ShortPoint2D position;
 
 	private ShortPoint2D requestedTargetPosition = null;
@@ -115,13 +119,34 @@ public final class Movable implements ILogicMovable {
 		movablesByID.put(this.id, this);
 		allMovables.offer(this);
 
+		if((fowTeam != -1 && MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR) || fowTeam == player.getTeamId()) {
+			synchronized (FogOfWar.instance.refThread.nextTasks) {
+					FogOfWar.instance.refThread.nextTasks.offer(this);
+			}
+		}
+
 		grid.enterPosition(position, this, true);
+	}
+
+	public static void initFow(byte fow) {
+		fowTeam = fow;
+		for(ILogicMovable lm : allMovables) {
+			if(lm instanceof Movable) {
+				Movable mv = (Movable) lm;
+				if(MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || lm.getPlayer().getTeamId() == fowTeam) {
+					synchronized (FogOfWar.instance.refThread.nextTasks) {
+						FogOfWar.instance.refThread.nextTasks.offer(mv);
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public static void readStaticState(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		nextID = ois.readInt();
 		allMovables.clear();
+		fowTeam = -1;
 		allMovables.addAll((Collection<? extends ILogicMovable>) ois.readObject());
 		movablesByID.putAll((Map<? extends Integer, ? extends ILogicMovable>) ois.readObject());
 	}
@@ -808,6 +833,7 @@ public final class Movable implements ILogicMovable {
 		allMovables.clear();
 		movablesByID.clear();
 		nextID = Integer.MIN_VALUE;
+		fowTeam = -1;
 	}
 
 	/**
@@ -832,6 +858,7 @@ public final class Movable implements ILogicMovable {
 
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);
+		position = null;
 	}
 
 	/**
@@ -926,11 +953,6 @@ public final class Movable implements ILogicMovable {
 	@Override
 	public final boolean needsPlayersGround() {
 		return movableType.needsPlayersGround();
-	}
-
-	@Override
-	public final short getViewDistance() {
-		return Constants.MOVABLE_VIEW_DISTANCE;
 	}
 
 	@Override

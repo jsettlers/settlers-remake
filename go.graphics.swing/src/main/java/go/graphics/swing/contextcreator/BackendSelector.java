@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-import go.graphics.swing.GLContainer;
+import go.graphics.swing.ContextContainer;
 
 public class BackendSelector extends JComboBox<EBackendType> {
 
@@ -35,8 +35,14 @@ public class BackendSelector extends JComboBox<EBackendType> {
 	public void actionPerformed(ActionEvent actionEvent) {
 		super.actionPerformed(actionEvent);
 
-		if(actionEvent.getActionCommand() == "comboBoxChanged") {
-			EBackendType bi = (EBackendType) getSelectedItem();
+		if(actionEvent.getActionCommand().equals("comboBoxChanged")) {
+			Object item = getSelectedItem();
+			if(item == null || item instanceof String) {
+				setSelectedItem(current_item);
+				return;
+			}
+
+			EBackendType bi = (EBackendType) item;
 			if (bi.platform != null && bi.platform != Platform.get()) {
 				setSelectedItem(current_item);
 				BackendSelector.this.hidePopup();
@@ -49,11 +55,10 @@ public class BackendSelector extends JComboBox<EBackendType> {
 	}
 
 	public BackendSelector() {
+		super(availableBackends().toArray(EBackendType[]::new));
 		setEditable(false);
 
 		addActionListener(this);
-
-		availableBackends().forEach(backend -> addItem(backend));
 	}
 
 	private static Stream<EBackendType> availableBackends() {
@@ -61,11 +66,10 @@ public class BackendSelector extends JComboBox<EBackendType> {
 	}
 
 	public static EBackendType getBackendByName(String name) {
-		// matching and matching and suitable backends
 		return availableBackends().filter(backend -> backend.cc_name.equalsIgnoreCase(name)).findFirst().orElse(EBackendType.DEFAULT);
 	}
 
-	public static ContextCreator createBackend(GLContainer container, EBackendType backend, boolean debug) throws Exception {
+	public static ContextCreator createBackend(ContextContainer container, EBackendType backend, boolean debug) throws Exception {
 		EBackendType real_backend = backend;
 
 		if(backend == null || backend.cc_class == null) {
@@ -73,7 +77,7 @@ public class BackendSelector extends JComboBox<EBackendType> {
 			real_backend = availableBackends().filter(current_backend -> current_backend.default_for == Platform.get()).sorted().findFirst().orElse(FALLBACK_BACKEND);
 		}
 
-		return real_backend.cc_class.getConstructor(GLContainer.class, Boolean.TYPE).newInstance(container, debug);
+		return real_backend.cc_class.getConstructor(ContextContainer.class, Boolean.TYPE).newInstance(container, debug);
 	}
 
 }

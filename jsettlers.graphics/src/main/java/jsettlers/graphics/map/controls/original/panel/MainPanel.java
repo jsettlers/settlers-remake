@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel;
 
+import go.graphics.GLDrawContext;
+import go.graphics.text.EFontSize;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.IAction;
@@ -25,7 +27,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
@@ -37,6 +39,8 @@ import jsettlers.graphics.map.controls.original.panel.content.ContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.CountArrows;
+import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
@@ -47,6 +51,8 @@ import jsettlers.graphics.ui.UIPanel;
  */
 public class MainPanel extends UIPanel {
 	public static final int BUTTONS_FILE = 3;
+
+	private IStartedGame game;
 
 	private final UIPanel tabpanel = new UIPanel();
 
@@ -77,6 +83,22 @@ public class MainPanel extends UIPanel {
 
 	private final UIPanel gamePanel = new UIPanel();
 
+	private final CountArrows changeSpeedArrows = new CountArrows(() -> new Action(EActionType.SPEED_FASTER), () -> new Action(EActionType.SPEED_SLOWER));
+	private final Label speedLabel = new Label("", EFontSize.NORMAL) {
+		@Override
+		public synchronized void drawAt(GLDrawContext gl) {
+			setText(((int)(game.getGameTimeProvider().getGameSpeed()*10))/10f + "x");
+			super.drawAt(gl);
+		}
+	};
+
+	private final LabeledButton pausedButton = new LabeledButton(Labels.getString("game-menu-pause"), new Action(EActionType.SPEED_TOGGLE_PAUSE)) {
+		@Override
+		public boolean isActive() {
+			return game.getGameTimeProvider().isGamePausing();
+		}
+	};
+
 	private final LabeledButton exitButton = new LabeledButton(Labels.getString("game-menu-quit"), new Action(EActionType.EXIT));
 	private final LabeledButton saveButton = new LabeledButton(Labels.getString("game-menu-save"), new Action(EActionType.SAVE));
 	private final LabeledButton cancelButton = new LabeledButton(Labels.getString("game-menu-cancel"), new ExecutableAction() {
@@ -87,8 +109,12 @@ public class MainPanel extends UIPanel {
 	});
 
 	{
-		gamePanel.addChild(saveButton, .1f, .4f, .9f, .5f);
-		gamePanel.addChild(exitButton, .1f, .25f, .9f, .35f);
+		gamePanel.addChild(changeSpeedArrows, .1f, .9f, .25f, 1f);
+		gamePanel.addChild(pausedButton, .25f, .9f, .60f, 1f);
+		gamePanel.addChild(speedLabel, .60f, .9f, .9f, 1f);
+
+		gamePanel.addChild(saveButton, .1f, .34f, .9f, .44f);
+		gamePanel.addChild(exitButton, .1f, .22f, .9f, .32f);
 		gamePanel.addChild(cancelButton, .1f, .1f, .9f, .2f);
 	}
 
@@ -129,10 +155,11 @@ public class MainPanel extends UIPanel {
 	 */
 	private final ActionFireable actionFireable;
 
-	public MainPanel(ActionFireable actionFireable, IInGamePlayer player) {
+	public MainPanel(ActionFireable actionFireable, IStartedGame game) {
 		this.actionFireable = actionFireable;
-		ContentType.WARRIORS.setPlayer(player);
-		ContentType.SETTLER_STATISTIC.setPlayer(player);
+		this.game = game;
+		ContentType.WARRIORS.setPlayer(game.getInGamePlayer());
+		ContentType.SETTLER_STATISTIC.setPlayer(game.getInGamePlayer());
 
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}

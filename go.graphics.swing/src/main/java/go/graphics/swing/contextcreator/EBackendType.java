@@ -17,6 +17,7 @@ package go.graphics.swing.contextcreator;
 import org.lwjgl.system.Platform;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.windows.GDI32;
+import org.lwjgl.vulkan.VK;
 
 
 public enum EBackendType implements Comparable<EBackendType> {
@@ -27,8 +28,10 @@ public enum EBackendType implements Comparable<EBackendType> {
 	EGL(EGLContextCreator.class, "egl", null, null, org.lwjgl.egl.EGL.class, "getFunctionProvider"),
 	WGL(WGLContextCreator.class, "wgl", null, Platform.WINDOWS, GDI32.class, null),
 	JOGL(JOGLContextCreator.class, "jogl", Platform.MACOSX, Platform.MACOSX, null, null),
+	VULKAN(VulkanContextCreator.class, "vulkan", null, null, VK.class, "getFunctionProvider"),
 
-	GLFW(GLFWContextCreator.class, "glfw", null, null, org.lwjgl.glfw.GLFW.class, null);
+	GLFW(GLFWContextCreator.class, "glfw", null, null, org.lwjgl.glfw.GLFW.class, null),
+	GLFW_VULKAN(GLFWVulkanContextCreator.class, "glfw-vulkan", null, null, VK.class, "getFunctionProvider");
 
 	EBackendType(Class<? extends ContextCreator> cc_class, String cc_name, Platform platform, Platform default_for, Class<?> probe_class, String probe_method) {
 		this.cc_class = cc_class;

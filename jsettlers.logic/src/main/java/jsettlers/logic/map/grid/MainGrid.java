@@ -20,15 +20,12 @@ import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.algorithms.fogofwar.FogOfWar;
-import jsettlers.algorithms.fogofwar.IFogOfWarGrid;
-import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.algorithms.path.IPathCalculatable;
@@ -166,7 +163,8 @@ public final class MainGrid implements Serializable {
 
 		this.flagsGrid = new FlagsGrid(width, height);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
-		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
+		MapObjectsManagerGrid grid = new MapObjectsManagerGrid();
+		this.mapObjectsManager = new MapObjectsManager(grid);
 
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.landscapeGrid = new LandscapeGrid(width, height, flagsGrid);
@@ -221,7 +219,7 @@ public final class MainGrid implements Serializable {
 	public void startThreads() {
 		bordersThread.start();
 		if (fogOfWar != null) {
-			fogOfWar.start(new FogOfWarGrid());
+			fogOfWar.start();
 		}
 	}
 
@@ -799,6 +797,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public byte[] getHeightArray() {
+			return landscapeGrid.getHeightArray();
+		}
+
+		@Override
 		public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 			return landscapeGrid.getLandscapeTypeAt(x, y);
 		}
@@ -871,8 +874,14 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public boolean isFoWEnabled() {
+			return fogOfWar.isEnabled();
+		}
+
+		@Override
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
+			fogOfWar.setBackgroundListener(backgroundListener);
 		}
 
 		@Override
@@ -2070,25 +2079,18 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class FogOfWarGrid implements IFogOfWarGrid {
-		@Override
-		public final IMovable getMovableAt(short x, short y) {
-			return movableGrid.getMovableAt(x, y);
-		}
+	/**
+	 * This class is used as null object to get rid of a lot of null checks
+	 *
+	 * @author Andreas Eberle
+	 */
+	public static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+		private static final long serialVersionUID = -332117701485179252L;
 
 		@Override
-		public final IMapObject getMapObjectsAt(short x, short y) {
-			return objectsGrid.getObjectsAt(x, y);
-		}
-
+		public void backgroundShapeChangedAt(int x, int y) {}
 		@Override
-		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
-			return Movable.getAllMovables();
-		}
+		public void backgroundColorLineChangedAt(int x, int y, int length) {}
 
-		@Override
-		public final ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables() {
-			return Building.getAllBuildings();
-		}
 	}
 }

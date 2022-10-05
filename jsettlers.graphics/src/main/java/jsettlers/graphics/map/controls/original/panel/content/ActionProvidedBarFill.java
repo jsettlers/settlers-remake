@@ -27,8 +27,8 @@ public class ActionProvidedBarFill extends BarFill {
 
 	private IBarFillActionProvider actionProvider;
 
-	public ActionProvidedBarFill(IBarFillActionProvider actionProvider, String name) {
-		super(name);
+	public ActionProvidedBarFill(IBarFillActionProvider actionProvider) {
+		super();
 		this.actionProvider = actionProvider;
 	}
 

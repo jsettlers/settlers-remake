@@ -41,6 +41,7 @@ import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
+import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
 
 /**
  * Render to open an existing map
@@ -159,6 +160,11 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		mapIdLabel.setForeground(FOREGROUND);
 		descriptionLabel.setForeground(FOREGROUND);
 		playerCountLabel.setForeground(Color.BLUE);
+
+		mapNameLabel.setFont(UIDefaults.FONT_SMALL);
+		mapIdLabel.setFont(UIDefaults.FONT_SMALL);
+		descriptionLabel.setFont(UIDefaults.FONT_SMALL);
+		playerCountLabel.setFont(UIDefaults.FONT_SMALL);
 
 		contentsPanel.setLayout(new BorderLayout());
 		contentsPanel.add(rightPanelPart, BorderLayout.CENTER);

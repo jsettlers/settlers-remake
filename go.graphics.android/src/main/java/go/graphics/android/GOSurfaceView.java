@@ -17,7 +17,6 @@ package go.graphics.android;
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
-import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
 import android.util.Log;
@@ -47,7 +46,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 	private final ActionAdapter actionAdapter = new ActionAdapter(getContext(), this);
 
-	private GLES11DrawContext drawcontext;
+	private GLESDrawContext drawcontext;
 
 	private IContextDestroyedListener contextDestroyedListener = null;
 
@@ -226,26 +225,36 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 		@Override
 		public void onDrawFrame(GL10 gl) {
-			GLES10.glClear(GLES10.GL_DEPTH_BUFFER_BIT | GLES10.GL_COLOR_BUFFER_BIT);
+			drawcontext.startFrame();
 			area.drawArea(drawcontext);
+			drawcontext.finishFrame();
 		}
 
 		@Override
 		public void onSurfaceChanged(GL10 gl, int width, int height) {
 			area.setWidth(width);
 			area.setHeight(height);
-			drawcontext.reinit(width, height);
+			drawcontext.resize(width, height);
+		}
+
+		private GLESDrawContext createContext(GL10 gl) {
+			String version = gl.glGetString(GL10.GL_VERSION).split(" ")[2];
+			int major = version.charAt(0)-'0';
+			int minor = version.charAt(2)-'0';
+
+			if(major >= 2) {
+				try {
+					boolean gles32 = major == 3 && minor >= 1 && gl.glGetString(GL10.GL_EXTENSIONS).contains("GL_EXT_geometry_shader");
+					return new GLESDrawContext(ctx, major == 3, gles32);
+				} catch(Throwable thrown) {thrown.printStackTrace();};
+			}
+
+			return null;
 		}
 
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-			String version = gl.glGetString(GL10.GL_VERSION);
-			int major = version.split(" ")[2].charAt(0)-'0';
-			if(major == 1) {
-				drawcontext = new GLES11DrawContext(ctx);
-			} else {
-				drawcontext = new GLES20DrawContext(ctx, major >= 3);
-			}
+			drawcontext = createContext(gl);
 		}
 	}
 
@@ -260,9 +269,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL10.EGL_NONE}, //3.1
 					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 3, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 0, EGL10.EGL_NONE}, //3.0
 					{EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE}, // highest available version
-					{EGLExt.EGL_CONTEXT_MAJOR_VERSION_KHR, 1, EGLExt.EGL_CONTEXT_MINOR_VERSION_KHR, 1, EGL10.EGL_NONE}, // 1.1
-					{EGL14.EGL_CONTEXT_CLIENT_VERSION, 1, EGL10.EGL_NONE}, // 1.x
-					{EGL10.EGL_NONE}, // lowest available version
 			};
 
 			while(newCtx == null && attrs.length >= i) {
@@ -279,8 +285,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		@Override
 		public void destroyContext(EGL10 arg0, EGLDisplay arg1, EGLContext arg2) {
 			Log.w("gl", "Invalidating texture context");
-			if(drawcontext != null) drawcontext.invalidateContext();
-			AndroidTextDrawer.invalidateTextures();
+			if(drawcontext != null) drawcontext.invalidate();
 			IContextDestroyedListener listener = contextDestroyedListener;
 			if (listener != null) {
 				listener.glContextDestroyed();

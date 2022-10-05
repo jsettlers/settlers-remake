@@ -50,6 +50,7 @@ public class SettlersComboboxUi extends BasicComboBoxUI {
 
 		((JComboBox<?>) c).setRenderer(new SettlersListCellRenderer());
 		c.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		c.setFont(UIDefaults.FONT_SMALL);
 	}
 
 	@Override

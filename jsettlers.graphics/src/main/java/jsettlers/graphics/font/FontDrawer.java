@@ -18,7 +18,6 @@ import go.graphics.AbstractColor;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import jsettlers.common.Color;
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -52,17 +51,12 @@ public class FontDrawer implements TextDrawer {
 		this.size = size;
 	}
 
-	@Override
-	public void renderCentered(float cx, float cy, String text) {
-		drawString(cx - getWidth(text) / 2, cy - getHeight(text) / 2, text);
-	}
-
 	private int getCharIndex(char c) {
 		return CHARACTERS.indexOf(Character.toUpperCase(c));
 	}
 
 	@Override
-	public void drawString(float x, float y, String string) {
+	public void drawString(float x, float y, AbstractColor color, String string) {
 		float cursorX = 0;
 		float top = y + size.getSize();
 
@@ -110,8 +104,4 @@ public class FontDrawer implements TextDrawer {
 		return size.getSize();
 	}
 
-	@Override
-	public void setColor(AbstractColor color) {
-		// TODO Support color changes.
-	}
 }

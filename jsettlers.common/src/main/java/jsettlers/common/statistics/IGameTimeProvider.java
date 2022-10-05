@@ -28,6 +28,11 @@ public interface IGameTimeProvider {
 		}
 
 		@Override
+		public float getGameSpeed() {
+			return 0;
+		}
+
+		@Override
 		public boolean isGamePausing() {
 			return false;
 		}
@@ -39,6 +44,13 @@ public interface IGameTimeProvider {
 	 * @return The current game time in milliseconds.
 	 */
 	int getGameTime();
+
+	/**
+	 * Get the current game time factor
+	 *
+	 * @return The current game speed in multiples of 1
+	 */
+	float getGameSpeed();
 
 	/**
 	 * Gets if the game is pausing.

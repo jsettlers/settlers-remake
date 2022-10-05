@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.common;
 
-import jsettlers.common.ai.EPlayerType;
-
 public abstract class CommonConstants {
 	/**
 	 * A byte value indicating that the given position is visible.
@@ -25,6 +23,14 @@ public abstract class CommonConstants {
 	 * A byte value indicating explored for FOW values.
 	 */
 	public static final int FOG_OF_WAR_EXPLORED = 50;
+
+	/**
+	 * How much the current fog of war status can be changed per second
+	 */
+	public static final int FOG_OF_WAR_DIM = 30;
+
+	public static final int FOG_OF_WAR_DIM_FRAMERATE = 15;
+	public static final int FOG_OF_WAR_REF_UPDATE_FRAMERATE = 1;
 
 	/**
 	 * Radius of the area occupied by towers.

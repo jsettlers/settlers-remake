@@ -21,7 +21,8 @@ import jsettlers.main.swing.menu.general.SettlersSlider;
  * Slider to select volume in settings
  * <p />
  * This slider is technically based on a progress bar, but looks and works like the production sliders in the original game. (blue bars) The slider
- * lets the user select a value from 0 to 100%, the value is also displayed as string
+ * lets the user select a value from {@link SettingsSlider#getMinimum()} to {@link SettingsSlider#getMaximum()}, the value is also displayed as string.<br/>
+ * {@link SettingsSlider#minString} is shown if {@link SettingsSlider#getValue()}  == {@link SettingsSlider#getMinimum()} && {@link SettingsSlider#minString} != null
  * 
  * @author Andreas Butti
  */
@@ -29,11 +30,15 @@ public class SettingsSlider extends SettlersSlider {
 	private static final long serialVersionUID = 1L;
 
 	private String unit;
+	private String minString;
+	private int minValue;
 
-	public SettingsSlider(String unit, int min_value, int max_value) {
+	public SettingsSlider(String unit, int min_value, int max_value, String minString) {
 		setStringPainted(true);
 		this.unit = unit;
+		this.minString = minString;
 
+		minValue = min_value;
 		setMinimum(min_value);
 		setMaximum(max_value);
 		setValue(50);
@@ -45,6 +50,10 @@ public class SettingsSlider extends SettlersSlider {
 	@Override
 	public void setValue(int n) {
 		super.setValue(n);
-		setString(n + unit);
+		if(n == minValue && minString != null) {
+			setString(minString);
+		} else {
+			setString(n + unit);
+		}
 	}
 }
