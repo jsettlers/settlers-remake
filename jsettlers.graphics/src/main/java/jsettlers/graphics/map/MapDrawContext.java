@@ -250,7 +250,7 @@ public final class MapDrawContext implements IGLProvider {
 	 *            The player to get the color for.
 	 * @return The color.
 	 */
-	public Color getPlayerColor(byte player) {
+	public static Color getPlayerColor(byte player) {
 		if (player >= 0) {
 			return PLAYER_COLORS[player % PLAYER_COLORS.length];
 		} else {

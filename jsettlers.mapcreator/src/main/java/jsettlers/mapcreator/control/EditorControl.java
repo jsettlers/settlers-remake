@@ -47,6 +47,7 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.FakeMapGame;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -196,7 +197,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 				Integer player = (Integer) value;
-				setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
+				setIcon(new RectIcon(22, new Color(MapDrawContext.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
 				setText(String.format(Locale.ENGLISH, EditorLabels.getLabel("general.player_x"), player));
 
 				return this;

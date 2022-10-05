@@ -17,6 +17,7 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 import jsettlers.common.action.Action;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
@@ -39,31 +40,15 @@ public class ShipSelectionContent extends AbstractSelectionContent {
 	public ShipSelectionContent(ISelectionSet selection) {
 		panel = new UIPanel();
 
-		addRowsToPanel(panel, selection, shiptypes);
+		SoldierSelectionContent.addRowsToPanel(panel, selection, shiptypes);
 
 		UIPanel kill = new LabeledButton(Labels.getString("kill"), new Action(EActionType.DESTROY));
-		UIPanel unload = new LabeledButton(Labels.getString("unload"), new Action(EActionType.UNLOAD_FERRIES));
-
 		panel.addChild(kill, .1f, .3f, .9f, .4f);
-		panel.addChild(unload, .1f, .1f, .9f, .2f);
-	}
 
-	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection, EMovableType[] types) {
-		float rowHeight = 1f / ROWS;
-
-		int rowi = ROWS - 1; // from bottom
-		for (int i = 0; i < types.length; i++) {
-			EMovableType type = types[i];
-			int count = selection.getMovableCount(type);
-
-			if (count > 0) {
-				SelectionRow row = new SelectionRow(type, count);
-				panel.addChild(row, 0.1f, rowHeight * (rowi - 1), .9f,
-						rowHeight * (rowi));
-				rowi--;
-			}
+		if(selection.getMovableCount(EMovableType.FERRY, null) > 0) {
+			UIPanel unload = new LabeledButton(Labels.getString("unload"), new Action(EActionType.UNLOAD_FERRIES));
+			panel.addChild(unload, .1f, .1f, .9f, .2f);
 		}
-
 	}
 
 	@Override

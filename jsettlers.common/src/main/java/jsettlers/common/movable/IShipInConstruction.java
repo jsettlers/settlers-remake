@@ -16,6 +16,7 @@
 package jsettlers.common.movable;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.player.IPlayer;
 
 /**
  * Created by Andreas Eberle on 07.09.2017.
@@ -27,4 +28,6 @@ public interface IShipInConstruction {
 	EDirection getDirection();
 
 	EMapObjectType getObjectType();
+
+	IPlayer getPlayer();
 }

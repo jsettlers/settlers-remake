@@ -1,0 +1,204 @@
+#this is a map ECommonLinkType, EMovableType, ECivilisation -> OriginalImageLink
+
+GARRISON_LEFT, SWORDSMAN_L1 {
+    ROMAN: original_12_SETTLER_31_0
+    EGYPTIAN: original_22_SETTLER_37_0
+    ASIAN: original_32_SETTLER_31_0
+    AMAZON: original_42_SETTLER_29_0
+}
+
+GARRISON_RIGHT, SWORDSMAN_L1 {
+    ROMAN: original_12_SETTLER_31_1
+    EGYPTIAN: original_22_SETTLER_37_1
+    ASIAN: original_32_SETTLER_31_1
+    AMAZON: original_42_SETTLER_29_1
+}
+
+GARRISON_LEFT, SWORDSMAN_L2 {
+    ROMAN: original_12_SETTLER_31_0
+    EGYPTIAN: original_22_SETTLER_35_0
+    ASIAN: original_32_SETTLER_31_0
+    AMAZON: original_42_SETTLER_29_0
+}
+
+GARRISON_RIGHT, SWORDSMAN_L2 {
+    ROMAN: original_12_SETTLER_31_1
+    EGYPTIAN: original_22_SETTLER_35_1
+    ASIAN: original_32_SETTLER_31_1
+    AMAZON: original_42_SETTLER_29_1
+}
+
+
+GARRISON_LEFT, SWORDSMAN_L3 {
+    ROMAN: original_12_SETTLER_28_0
+    EGYPTIAN: original_22_SETTLER_33_0
+    ASIAN: original_32_SETTLER_28_0
+    AMAZON: original_42_SETTLER_27_0
+}
+
+GARRISON_RIGHT, SWORDSMAN_L3 {
+    ROMAN: original_12_SETTLER_28_1
+    EGYPTIAN: original_22_SETTLER_33_1
+    ASIAN: original_32_SETTLER_28_1
+    AMAZON: original_42_SETTLER_27_1
+}
+
+clone GARRISON_LEFT, SWORDSMAN_L1 to GARRISON_LEFT, PIKEMAN_L1
+clone GARRISON_LEFT, SWORDSMAN_L2 to GARRISON_LEFT, PIKEMAN_L2
+clone GARRISON_LEFT, SWORDSMAN_L3 to GARRISON_LEFT, PIKEMAN_L3
+
+clone GARRISON_RIGHT, SWORDSMAN_L1 to GARRISON_RIGHT, PIKEMAN_L1
+clone GARRISON_RIGHT, SWORDSMAN_L2 to GARRISON_RIGHT, PIKEMAN_L2
+clone GARRISON_RIGHT, SWORDSMAN_L3 to GARRISON_RIGHT, PIKEMAN_L3
+
+
+SETTLER_GUI, SWORDSMAN_L1 {
+    ROMAN: original_14_GUI_207
+    EGYPTIAN: original_24_GUI_201
+    ASIAN: original_34_GUI_216
+    AMAZON: original_44_GUI_210
+}
+
+SETTLER_GUI, SWORDSMAN_L2 {
+    ROMAN: original_14_GUI_216
+    EGYPTIAN: original_24_GUI_210
+    ASIAN: original_34_GUI_225
+    AMAZON: original_44_GUI_219
+}
+
+SETTLER_GUI, SWORDSMAN_L3 {
+    ROMAN: original_14_GUI_225
+    EGYPTIAN: original_24_GUI_219
+    ASIAN: original_34_GUI_234
+    AMAZON: original_44_GUI_228
+}
+
+
+SETTLER_GUI, PIKEMAN_L1 {
+    ROMAN: original_14_GUI_210
+    EGYPTIAN: original_24_GUI_204
+    ASIAN: original_34_GUI_219
+    AMAZON: original_44_GUI_213
+}
+
+SETTLER_GUI, PIKEMAN_L2 {
+    ROMAN: original_14_GUI_219
+    EGYPTIAN: original_24_GUI_213
+    ASIAN: original_34_GUI_228
+    AMAZON: original_44_GUI_222
+}
+
+SETTLER_GUI, PIKEMAN_L3 {
+    ROMAN: original_14_GUI_228
+    EGYPTIAN: original_24_GUI_222
+    ASIAN: original_34_GUI_237
+    AMAZON: original_44_GUI_231
+}
+
+
+SETTLER_GUI, BOWMAN_L1 {
+    ROMAN: original_14_GUI_213
+    EGYPTIAN: original_24_GUI_207
+    ASIAN: original_34_GUI_222
+    AMAZON: original_44_GUI_216
+}
+
+SETTLER_GUI, BOWMAN_L2 {
+    ROMAN: original_14_GUI_222
+    EGYPTIAN: original_24_GUI_216
+    ASIAN: original_34_GUI_231
+    AMAZON: original_44_GUI_225
+}
+
+SETTLER_GUI, BOWMAN_L3 {
+    ROMAN: original_14_GUI_231
+    EGYPTIAN: original_24_GUI_225
+    ASIAN: original_34_GUI_240
+    AMAZON: original_44_GUI_234
+}
+
+
+SETTLER_GUI, PIONEER {
+    ROMAN: original_14_GUI_204
+    EGYPTIAN: original_24_GUI_198
+    ASIAN: original_34_GUI_210
+    AMAZON: original_44_GUI_207
+}
+
+SETTLER_GUI, GEOLOGIST {
+    ROMAN: original_14_GUI_186
+    EGYPTIAN: original_24_GUI_180
+    ASIAN: original_34_GUI_192
+    AMAZON: original_44_GUI_189
+}
+
+SETTLER_GUI, THIEF {
+    ROMAN: original_14_GUI_183
+    EGYPTIAN: original_24_GUI_177
+    ASIAN: original_34_GUI_189
+    AMAZON: original_44_GUI_186
+}
+
+SETTLER_GUI, MAGE {
+    ROMAN: original_14_GUI_201
+    EGYPTIAN: original_24_GUI_195
+    ASIAN: original_34_GUI_213
+    AMAZON: original_44_GUI_204
+}
+
+SETTLER_GUI, BEARER {
+    ROMAN: original_14_GUI_132
+    EGYPTIAN: original_24_GUI_126
+    ASIAN: original_34_GUI_138
+    AMAZON: original_44_GUI_135
+}
+
+SETTLER_GUI, DIGGER {
+    ROMAN: original_14_GUI_135
+    EGYPTIAN: original_24_GUI_129
+    ASIAN: original_34_GUI_141
+    AMAZON: original_44_GUI_138
+}
+
+SETTLER_GUI, BRICKLAYER {
+    ROMAN: original_14_GUI_138
+    EGYPTIAN: original_24_GUI_132
+    ASIAN: original_34_GUI_144
+    AMAZON: original_44_GUI_141
+}
+
+SETTLER_GUI, SMITH {
+    ROMAN: original_14_GUI_150
+    EGYPTIAN: original_24_GUI_144
+    ASIAN: original_34_GUI_156
+    AMAZON: original_44_GUI_153
+}
+
+
+SHIP_GUI_INACTIVE, FERRY {
+    ROMAN: original_14_GUI_270
+    EGYPTIAN: original_24_GUI_270
+    ASIAN: original_34_GUI_279
+    AMAZON: original_44_GUI_273
+}
+
+SHIP_GUI_ACTIVE, FERRY {
+    ROMAN: original_14_GUI_273
+    EGYPTIAN: original_24_GUI_273
+    ASIAN: original_34_GUI_282
+    AMAZON: original_44_GUI_276
+}
+
+SHIP_GUI_INACTIVE, CARGO_SHIP {
+    ROMAN: original_14_GUI_276
+    EGYPTIAN: original_24_GUI_264
+    ASIAN: original_34_GUI_285
+    AMAZON: original_44_GUI_279
+}
+
+SHIP_GUI_ACTIVE, CARGO_SHIP {
+    ROMAN: original_14_GUI_279
+    EGYPTIAN: original_24_GUI_267
+    ASIAN: original_34_GUI_288
+    AMAZON: original_44_GUI_282
+}

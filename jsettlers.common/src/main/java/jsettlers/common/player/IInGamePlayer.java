@@ -48,5 +48,5 @@ public interface IInGamePlayer extends IPlayer {
 	 * Get win/lose state for the player
 	 * @return The win/lose state the player is in
 	 */
-	public EWinState getWinState();
+	EWinState getWinState();
 }

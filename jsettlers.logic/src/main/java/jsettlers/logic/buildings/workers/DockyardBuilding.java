@@ -72,7 +72,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 
 			// make new ship
 			EDirection direction = dockPosition.getDirection().getNeighbor(-1);
-			ship = new ShipInConstructionMapObject(orderedShipType, direction);
+			ship = new ShipInConstructionMapObject(getPlayer(), orderedShipType, direction);
 			grid.getMapObjectsManager().addMapObject(getShipPosition(), ship);
 		}
 

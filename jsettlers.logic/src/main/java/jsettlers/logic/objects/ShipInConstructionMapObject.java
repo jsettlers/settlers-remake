@@ -20,13 +20,16 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EShipType;
 import jsettlers.common.movable.IShipInConstruction;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
+import jsettlers.logic.player.Player;
 
 public class ShipInConstructionMapObject extends AbstractHexMapObject implements IShipInConstruction{
+	private final Player player;
 	private final EShipType shipType;
 	private final EDirection direction;
 	private int works = 0;
 
-	public ShipInConstructionMapObject(EShipType shipType, EDirection direction) {
+	public ShipInConstructionMapObject(Player player, EShipType shipType, EDirection direction) {
+		this.player = player;
 		this.shipType = shipType;
 		this.direction = direction;
 	}
@@ -43,6 +46,11 @@ public class ShipInConstructionMapObject extends AbstractHexMapObject implements
 
 	public void workOnShip() {
 		works++;
+	}
+
+	@Override
+	public Player getPlayer() {
+		return player;
 	}
 
 	@Override

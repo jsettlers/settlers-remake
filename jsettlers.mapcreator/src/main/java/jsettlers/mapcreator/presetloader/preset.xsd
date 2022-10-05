@@ -116,7 +116,8 @@
       <xs:enumeration value="SULFUR"/>
       <xs:enumeration value="RICE"/>
       <xs:enumeration value="KEG"/>
-      <xs:enumeration value="BOX"/>
+      <xs:enumeration value="LIQUOR"/>
+      <xs:enumeration value="GUN_POWDER"/>
       <xs:enumeration value="CANNON_AMMO"/>
       <xs:enumeration value="BALLISTA_AMMO"/>
       <xs:enumeration value="CATAPULT_AMMO"/>
