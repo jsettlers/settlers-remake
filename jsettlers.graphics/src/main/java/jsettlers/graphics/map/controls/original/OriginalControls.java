@@ -22,7 +22,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.action.EActionType;
 import jsettlers.common.action.IAction;
-import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
@@ -67,16 +67,14 @@ public class OriginalControls implements IControls {
 
 	/**
 	 * Creates a new {@link OriginalControls} overlay.
-	 * 
-	 * @param actionFireable
+	 *  @param actionFireable
 	 *            The {@link ActionFireable} to send actions from the user to.
-	 * @param player
-	 *            The player this interface should be for.
+	 * @param game
 	 */
-	public OriginalControls(ActionFireable actionFireable, IInGamePlayer player) {
+	public OriginalControls(ActionFireable actionFireable, IStartedGame game) {
 		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(DEFAULT_LAYOUT_SIZE);
 		final MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
-		mainPanel = new MainPanel(actionFireable, player);
+		mainPanel = new MainPanel(actionFireable, game);
 
 		chatButton = new Button(
 				new ShowChatAction(), miniMap.IMAGELINK_BUTTON_CHAT_ACTIVE, miniMap.IMAGELINK_BUTTON_CHAT_INACTIVE, "");

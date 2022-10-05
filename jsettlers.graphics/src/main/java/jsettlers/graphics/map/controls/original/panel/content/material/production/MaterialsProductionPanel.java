@@ -16,25 +16,20 @@ package jsettlers.graphics.map.controls.original.panel.content.material.producti
 
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.IMaterialProductionSettings;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.common.action.SetMaterialProductionAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.ui.CountArrows;
 import jsettlers.graphics.map.controls.original.panel.content.BarFill;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.ActionProvidedBarFill;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
-import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
-import jsettlers.graphics.ui.SetMaterialProductionButton;
 import jsettlers.graphics.ui.UIPanel;
 
 import java.util.Arrays;
@@ -61,7 +56,6 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 	private static final float weaponsTitleMarginBottom = weaponsTitleMarginBottom_px / contentHeight_px;
 
 	private static class Row extends UIPanel implements UiContentUpdater.IUiContentReceiver<IMaterialProductionSettings> {
-		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
 		private static final float quantityTextMarginV = 5f / iconSize_px;
@@ -85,16 +79,10 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 
 			lblQuantity = new Label(Labels.getString(Integer.toString(quantity)), EFontSize.NORMAL);
 
-			IPositionSupplier positionSupplier = () -> position;
-			Button upButton = new SetMaterialProductionButton(positionSupplier, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE);
-			Button downButton = new SetMaterialProductionButton(positionSupplier, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE);
+			arrows = new CountArrows(() -> new SetMaterialProductionAction(position, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE, 0),
+									() -> new SetMaterialProductionAction(position, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE, 0));
 
-			arrows = new UIPanel();
-			arrows.setBackground(arrowsImageLink);
-			arrows.addChild(upButton, 0f, 0.5f, 1f, 1f);
-			arrows.addChild(downButton, 0f, 0f, 1f, 0.5f);
-
-			barFill = new ActionProvidedBarFill(fillForClick -> new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick), Labels.getName(materialType, false) + "-production-barfill");
+			barFill = new ActionProvidedBarFill(fillForClick -> new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick));
 
 			float left = 0;
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);

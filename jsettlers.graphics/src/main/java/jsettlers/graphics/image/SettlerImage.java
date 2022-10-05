@@ -14,13 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
-import java.nio.ShortBuffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-import go.graphics.EGeometryType;
-import go.graphics.GL2DrawContext;
+import go.graphics.EUnifiedMode;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
-import go.graphics.SharedGeometry;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.reader.ImageMetadata;
 
@@ -33,9 +32,9 @@ import jsettlers.graphics.image.reader.ImageMetadata;
  */
 public class SettlerImage extends SingleImage {
 
+	public static float shadow_offset = 0;
 	private SingleImage torso = null;
 	private SingleImage shadow = null;
-	private boolean gl2 = false;
 
 	/**
 	 * Creates a new settler image.
@@ -50,69 +49,29 @@ public class SettlerImage extends SingleImage {
 	}
 
 	@Override
-	protected void checkHandles(GLDrawContext gl) throws IllegalBufferException {
-		if ((texture == null || !texture.isValid())) {
-			gl2 = gl instanceof GL2DrawContext && (this.torso != null || this.shadow != null);
-			if(gl2) generateUData();
+	protected void checkHandles(GLDrawContext gl) {
+		if (geometryIndex == null || !geometryIndex.isValid()) {
+			generateUData();
 		}
-
 		super.checkHandles(gl);
-		if(!gl2) {
-			if (torso != null && torso.getWidth() == getWidth()
-					&& torso.getHeight() == getHeight()
-					&& torso.getOffsetX() == getOffsetX()
-					&& torso.getOffsetY() == getOffsetY()) {
-				torso.setGeometry(geometryIndex);
-			}
-		}
-	}
-
-	private boolean gl2Draw(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow, boolean settler, boolean shadow) {
-		try {
-			checkHandles(gl);
-			if(!gl2) return false;
-			((GL2DrawContext)gl).drawUnified2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, settler, shadow, x, y, z, 1, 1, 1, torsoColor, fow);
-		} catch(IllegalBufferException e) {
-			e.printStackTrace();
-		}
-
-		return true;
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		if(gl2Draw(gl, x, y, z, torsoColor, fow, true, true)) return;
-		drawOnlyImageAt(gl, x, y, z, torsoColor, fow);
-		drawOnlyShadowAt(gl, x, y, z);
+		checkHandles(gl);
+		geometryIndex.drawComplexQuad(EUnifiedMode.SETTLER_SHADOW, x, y, z, 1, 1, torsoColor, fow);
 	}
 
 	@Override
 	public void drawOnlyImageAt(GLDrawContext gl, float x, float y, float z, Color torsoColor, float fow) {
-		if(gl2Draw(gl, x, y, z, torsoColor, fow, true, false)) return;
-		try {
-			checkHandles(gl);
-			gl.draw2D(geometryIndex.geometry, texture, EGeometryType.Quad, geometryIndex.index, 4, x, y, z, 1, 1, 1, null, fow);
-
-			if(torso != null && torsoColor != null) {
-				torso.checkHandles(gl);
-				gl.draw2D(torso.geometryIndex.geometry, torso.texture, EGeometryType.Quad, torso.geometryIndex.index, 4, x, y, z, 1, 1, 1, torsoColor, fow);
-			}
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+		checkHandles(gl);
+		geometryIndex.drawComplexQuad(EUnifiedMode.SETTLER, x, y, z, 1, 1, torsoColor, fow);
 	}
 
 	@Override
 	public void drawOnlyShadowAt(GLDrawContext gl, float x, float y, float z) {
-		if(gl2Draw(gl, x, y, z, null, 0, false, true)) return;
-		if(shadow != null) {
-			try {
-				shadow.checkHandles(gl);
-				gl.draw2D(shadow.geometryIndex.geometry, shadow.texture, EGeometryType.Quad, shadow.geometryIndex.index, 4, x, y, z, 1, 1, 1, null, 1);
-			} catch (IllegalBufferException e) {
-				handleIllegalBufferException(e);
-			}
-		}
+		checkHandles(gl);
+		geometryIndex.drawComplexQuad(EUnifiedMode.SHADOW_ONLY, x, y, z, 1, 1, Color.TRANSPARENT, 1);
 	}
 
 	/**
@@ -162,7 +121,7 @@ public class SettlerImage extends SingleImage {
 		twidth = tx-toffsetX;
 		theight = ty-toffsetY;
 
-		tdata = ShortBuffer.allocate(twidth * theight);
+		tdata = ByteBuffer.allocateDirect(twidth * theight * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
 
 		short[] temp = new short[0];
 

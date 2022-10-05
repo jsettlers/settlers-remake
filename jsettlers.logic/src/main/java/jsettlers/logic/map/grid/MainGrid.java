@@ -166,7 +166,8 @@ public final class MainGrid implements Serializable {
 
 		this.flagsGrid = new FlagsGrid(width, height);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
-		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
+		MapObjectsManagerGrid grid = new MapObjectsManagerGrid();
+		this.mapObjectsManager = new MapObjectsManager(grid);
 
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.landscapeGrid = new LandscapeGrid(width, height, flagsGrid);
@@ -796,6 +797,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final byte getHeightAt(int x, int y) {
 			return landscapeGrid.getHeightAt(x, y);
+		}
+
+		@Override
+		public byte[] getHeightArray() {
+			return landscapeGrid.getHeightArray();
 		}
 
 		@Override

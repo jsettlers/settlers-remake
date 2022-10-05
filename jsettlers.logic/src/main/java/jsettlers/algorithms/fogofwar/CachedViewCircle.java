@@ -20,9 +20,9 @@ import jsettlers.common.map.shapes.MapCircleIterator;
 
 /**
  * Caches a {@link MapCircle} and the calculated view distances of the circles positions.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class CachedViewCircle {
 

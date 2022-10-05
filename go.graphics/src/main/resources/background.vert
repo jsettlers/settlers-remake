@@ -7,7 +7,6 @@ attribute vec2 texcoord;
 attribute float color;
 
 uniform mat4 globalTransform;
-uniform vec2 transform;
 uniform mat4 projection;
 uniform mat4 height;
 
@@ -16,7 +15,6 @@ varying vec2 frag_texcoord;
 
 void main() {
 	vec4 transformed = height * vec4(vertex, 1);
-	transformed.xy += transform;
 	transformed.z = -.1;
 	gl_Position = projection * globalTransform * transformed;
 

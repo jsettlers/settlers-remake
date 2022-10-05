@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,50 +12,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.statistics;
+package go.graphics;
 
 /**
- * This class keeps track of the frames.
+ * This class represents an abstract resource handle.
  * 
  * @author Michael Zangl
  */
-public class FramerateComputer {
-	private static final long RECOMPUTE_INTERVALL = 500*1000*1000;
-	private long calcFrameStart = System.nanoTime();
-	private double timePerFrame = 0;
-	private long calcFrameEnd;
-	private int capturedFrames = 0;
+public abstract class GLResourceIndex {
+	protected GLDrawContext dc;
+	protected int id;
 
-	/**
-	 * Called whenever a new frame is displayed.
-	 */
-	public void nextFrame() {
-		calcFrameEnd = System.nanoTime();
-		capturedFrames++;
-		if ((calcFrameEnd - calcFrameStart > RECOMPUTE_INTERVALL) && capturedFrames > 1) {
-			recompute();
-		}
+	public GLResourceIndex(GLDrawContext dc, int id) {
+		this.dc = dc;
+		this.id = id;
 	}
-
-	private void recompute() {
-		double deltaT = calcFrameEnd - calcFrameStart;
-		timePerFrame = deltaT / capturedFrames;
-		calcFrameStart = calcFrameEnd;
-		capturedFrames = 1;
-	}
-
-	private static final double NS_PER_S = 1000*1000*1000.0;
-
 	/**
-	 * Gets the current frame rate.
+	 * Checks if this resource is valid.
 	 * 
-	 * @return The rate.
+	 * @return <code>true</code> if the resource is valid and can be used.
 	 */
-	public double getRate() {
-		return NS_PER_S / timePerFrame;
+	public boolean isValid() {
+		return dc.isValid();
 	}
 
-	public double getTime() {
-		return timePerFrame / NS_PER_S;
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[index=" + id + " ]";
 	}
 }

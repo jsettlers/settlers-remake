@@ -114,6 +114,7 @@ public class JSettlersFrame extends JFrame {
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 		graphicsDevice.setFullScreenWindow(fullScreen ? this : null);
+		if(areaContainer != null) areaContainer.notifyResize();
 	}
 
 	private void abortRedrawTimerIfPresent() {
@@ -160,16 +161,20 @@ public class JSettlersFrame extends JFrame {
 		Area area = new Area();
 		area.set(region);
 
-		redrawTimer = new Timer("opengl-redraw");
-		redrawTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				region.requestRedraw();
-			}
-		}, 100, 1000/SettingsManager.getInstance().getFpsLimit());
+		int fpsLimit = SettingsManager.getInstance().getFpsLimit();
+		if(fpsLimit != 0) {
+			redrawTimer = new Timer("opengl-redraw");
+			redrawTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					region.requestRedraw();
+				}
+			}, 100, (long) (1000.0 / fpsLimit));
+		}
 
 		SwingUtilities.invokeLater(() -> {
-			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend(), SettingsManager.getInstance().isGraphicsDebug()));
+			setContentPane(areaContainer = new AreaContainer(area, SettingsManager.getInstance().getBackend(), SettingsManager.getInstance().isGraphicsDebug(), SettingsManager.getInstance().getGuiScale()));
+			areaContainer.updateFPSLimit(fpsLimit);
 			revalidate();
 			repaint();
 		});
@@ -195,7 +200,7 @@ public class JSettlersFrame extends JFrame {
 	}
 
 	public IMapInterfaceConnector showStartedGame(IStartedGame startedGame) {
-		MapContent content = new MapContent(startedGame, soundPlayer, SettingsManager.getInstance().getFpsLimit(), ETextDrawPosition.TOP_RIGHT);
+		MapContent content = new MapContent(startedGame, soundPlayer, ETextDrawPosition.TOP_RIGHT);
 		SwingUtilities.invokeLater(() -> setContent(content));
 		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(this::showMainMenu));
 		return content.getInterfaceConnector();

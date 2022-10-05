@@ -18,9 +18,11 @@ import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import javax.swing.SwingUtilities;
+
 import go.graphics.swing.GLContainer;
 
-public abstract class ContextCreator implements ComponentListener{
+public abstract class ContextCreator<T extends Component> implements ComponentListener{
 
 	public ContextCreator(GLContainer ac, boolean debug) {
 		parent = ac;
@@ -32,7 +34,8 @@ public abstract class ContextCreator implements ComponentListener{
 	protected boolean change_res = true;
 	protected final Object wnd_lock = new Object();
 	protected boolean first_draw = true;
-	protected Component canvas;
+	protected int fpsLimit = 0;
+	protected T canvas;
 	protected GLContainer parent;
 	protected boolean debug;
 
@@ -40,10 +43,19 @@ public abstract class ContextCreator implements ComponentListener{
 	public abstract void stop();
 	public abstract void initSpecific();
 
-	public abstract void repaint();
+	public void repaint() {
+		canvas.repaint();
+	}
 
-	public abstract void requestFocus();
+	public void requestFocus() {
+		canvas.requestFocus();
+	}
 
+
+	protected void error(String message) throws GLContextException {
+		parent.fatal(message);
+		throw new GLContextException();
+	}
 
 	public void init() {
 		initSpecific();
@@ -55,10 +67,10 @@ public abstract class ContextCreator implements ComponentListener{
 
 	@Override
 	public void componentResized(ComponentEvent componentEvent) {
-		Component cmp = componentEvent.getComponent();
+		if(!SwingUtilities.windowForComponent(canvas).isFocused()) return;
 		synchronized (wnd_lock) {
-			new_width = cmp.getWidth();
-			new_height = cmp.getHeight();
+			new_width = canvas.getWidth();
+			new_height = canvas.getHeight();
 			change_res = true;
 
 			if(new_width == 0) new_width = 1;
@@ -74,4 +86,12 @@ public abstract class ContextCreator implements ComponentListener{
 
 	@Override
 	public void componentShown(ComponentEvent componentEvent) {}
+
+	public void updateFPSLimit(int fpsLimit) {
+		this.fpsLimit = fpsLimit;
+	}
+
+	public float getScale() {
+		return 1;
+	}
 }

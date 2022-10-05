@@ -61,10 +61,4 @@ public class EmptyDatFile implements DatFileReader {
 	public ByteReader getReaderForLandscape(int index) throws IOException {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public void generateImageMap(int width, int height, int[] sequences, String id, String name) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
 }
