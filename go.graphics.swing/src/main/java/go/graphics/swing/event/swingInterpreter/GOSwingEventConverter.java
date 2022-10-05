@@ -22,6 +22,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -30,9 +31,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.lang.reflect.Field;
+import java.util.EnumSet;
+import java.util.Set;
 
 import go.graphics.UIPoint;
 import go.graphics.event.GOEventHandlerProvider;
+import go.graphics.event.command.EModifier;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 /**
@@ -53,6 +57,8 @@ public class GOSwingEventConverter extends AbstractEventConverter
 	private boolean panWithButton3;
 
 	private int scaleFactor = 1;
+
+	private int modifiers;
 
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
@@ -110,25 +116,30 @@ public class GOSwingEventConverter extends AbstractEventConverter
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		updateModifiers(e);
 		startHover(convertToLocal(e));
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		updateModifiers(e);
 		updateHoverPosition(convertToLocal(e));
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		updateModifiers(e);
 		endHover(convertToLocal(e));
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		updateModifiers(e);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		updateModifiers(e);
 		int mouseButton = e.getButton();
 		UIPoint local = convertToLocal(e);
 		if (mouseButton == MouseEvent.BUTTON1) {
@@ -144,6 +155,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		updateModifiers(e);
 		UIPoint local = convertToLocal(e);
 		updateDrawPosition(local);
 		updatePanPosition(local);
@@ -152,6 +164,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		updateModifiers(e);
 		UIPoint local = convertToLocal(e);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			endDraw(local);
@@ -166,6 +179,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		updateModifiers(e);
 		String text = getKeyName(e);
 		startKeyEvent(text);
 		/*
@@ -266,6 +280,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		updateModifiers(e);
 		endKeyEvent(getKeyName(e));
 	}
 
@@ -275,6 +290,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		updateModifiers(e);
 		float factor = (float) Math.exp(-e.getUnitsToScroll() / 20.0);
 		startZoom();
 		endZoomEvent(factor, convertToLocal(e));
@@ -314,5 +330,24 @@ public class GOSwingEventConverter extends AbstractEventConverter
 		} else {
 			privateRegisterComponentListenerToParentWindowOf(component.getParent(), childComponent);
 		}
+	}
+
+	private void updateModifiers(InputEvent e) {
+		modifiers = e.getModifiers();
+	}
+	
+	@Override
+	protected Set<EModifier> getCurrentModifiers() {
+		EnumSet<EModifier> set = EnumSet.noneOf(EModifier.class);
+		if ((modifiers & (InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK)) != 0) {
+			set.add(EModifier.CTRL);
+		}
+		if ((modifiers & (InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK)) != 0) {
+			set.add(EModifier.ALT);
+		}
+		if ((modifiers & (InputEvent.SHIFT_DOWN_MASK | InputEvent.SHIFT_MASK)) != 0) {
+			set.add(EModifier.SHIFT);
+		}
+		return set;
 	}
 }

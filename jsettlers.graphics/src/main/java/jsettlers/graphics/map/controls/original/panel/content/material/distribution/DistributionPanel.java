@@ -41,6 +41,7 @@ import jsettlers.graphics.ui.Label.EHorizontalAlignment;
 import jsettlers.graphics.ui.UIPanel;
 
 import java8.util.J8Arrays;
+import java8.util.Optional;
 import java8.util.stream.Collectors;
 
 public class DistributionPanel extends AbstractContentProvider implements IUiContentReceiver<IMaterialDistributionSettings> {
@@ -95,9 +96,9 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 			barFill = new ActionProvidedBarFill(ratio -> {
 				ShortPoint2D position = positionSupplier.getPosition();
 				if (position != null) {
-					return new SetMaterialDistributionSettingsAction(position, materialType, buildingType, ratio);
+					return Optional.of(new SetMaterialDistributionSettingsAction(position, materialType, buildingType, ratio));
 				} else {
-					return null;
+					return Optional.empty();
 				}
 			}, Labels.getName(buildingType) + "-distribution-barfill");
 			Label rowTitle = new Label(Labels.getName(buildingType), EFontSize.SMALL, EHorizontalAlignment.LEFT);

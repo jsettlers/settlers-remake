@@ -18,7 +18,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -28,29 +30,37 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class MoveToGuiTask extends MovableGuiTask {
 	private ShortPoint2D position;
+	private EMoveToType moveToType;
 
 	public MoveToGuiTask() {
 	}
 
-	public MoveToGuiTask(byte playerId, ShortPoint2D pos, List<Integer> selection) {
+	public MoveToGuiTask(byte playerId, ShortPoint2D pos, List<Integer> selection, EMoveToType moveToType) {
 		super(EGuiAction.MOVE_TO, playerId, selection);
 		this.position = pos;
+		this.moveToType = moveToType;
 	}
 
 	public ShortPoint2D getPosition() {
 		return position;
+	}
+	
+	public EMoveToType getMoveToType() {
+		return moveToType;
 	}
 
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		super.serializeTask(dos);
 		SimpleGuiTask.serializePosition(dos, position);
+		dos.writeByte(moveToType.ordinal());
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
 		position = SimpleGuiTask.deserializePosition(dis);
+		moveToType = EMoveToType.VALUES[dis.readByte()];
 	}
 
 	@Override
@@ -58,6 +68,7 @@ public class MoveToGuiTask extends MovableGuiTask {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((position == null) ? 0 : position.hashCode());
+		result = prime * result + ((moveToType == null) ? 0 : moveToType.hashCode());
 		return result;
 	}
 
@@ -70,11 +81,12 @@ public class MoveToGuiTask extends MovableGuiTask {
 		if (getClass() != obj.getClass())
 			return false;
 		MoveToGuiTask other = (MoveToGuiTask) obj;
-		if (position == null) {
-			if (other.position != null)
-				return false;
-		} else if (!position.equals(other.position))
+		if (!Objects.equals(position, other.position)) {
 			return false;
+		}
+		if (!Objects.equals(moveToType, other.moveToType)) {
+			return false;
+		}
 		return true;
 	}
 }

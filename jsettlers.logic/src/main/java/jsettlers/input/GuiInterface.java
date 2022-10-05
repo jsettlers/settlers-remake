@@ -30,7 +30,9 @@ import jsettlers.common.action.BuildAction;
 import jsettlers.common.action.ChangeTradingRequestAction;
 import jsettlers.common.action.ConvertAction;
 import jsettlers.common.action.EActionType;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.action.IAction;
+import jsettlers.common.action.MoveToAction;
 import jsettlers.common.action.PointAction;
 import jsettlers.common.action.ScreenChangeAction;
 import jsettlers.common.action.SelectAreaAction;
@@ -222,7 +224,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				break;
 
 			case MOVE_TO: {
-				final PointAction moveToAction = (PointAction) action;
+				final MoveToAction moveToAction = (MoveToAction) action;
 
 				if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
 					Building building = (Building) currentSelection.getSingle();
@@ -236,7 +238,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 						setBuildingWorkArea(moveToAction.getPosition());
 					}
 				} else {
-					moveTo(moveToAction.getPosition());
+					moveTo(moveToAction.getPosition(), moveToAction.getMoveToType());
 				}
 				break;
 			}
@@ -551,9 +553,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, playerId, getIDsOfSelected()));
 	}
 
-	private void moveTo(ShortPoint2D pos) {
+	private void moveTo(ShortPoint2D pos, EMoveToType moveToType) {
 		final List<Integer> selectedIds = getIDsOfSelected();
-		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
+		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds, moveToType));
 	}
 
 	private void orderShip(EShipType shipType) {

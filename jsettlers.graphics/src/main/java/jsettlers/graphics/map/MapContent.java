@@ -20,6 +20,9 @@ import java.util.BitSet;
 
 import go.graphics.EGeometryFormatType;
 import go.graphics.EGeometryType;
+import java8.util.Optional;
+
+import java.util.Set;
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
@@ -28,6 +31,7 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
+import go.graphics.event.command.EModifier;
 import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOHoverEvent;
@@ -64,6 +68,8 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.UIState;
+import jsettlers.common.action.EMoveToType;
+import jsettlers.common.action.MoveToAction;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
@@ -380,7 +386,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawWinStateMsg(GLDrawContext gl) {
-		if(localPlayer.getWinState() == EWinState.UNDECIDED) {
+		if(localPlayer == null || localPlayer.getWinState() == EWinState.UNDECIDED) {
 			return;
 		}
 		Color color = localPlayer.getWinState() == EWinState.WON ? Color.GREEN : Color.RED;
@@ -682,14 +688,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 		} else if (event instanceof GOCommandEvent) {
 			GOCommandEvent commandEvent = (GOCommandEvent) event;
-			Action action = getActionForCommand(commandEvent);
+			Optional<Action> action = getActionForCommand(commandEvent);
 			// also set when action was null, to abort drawing.
 			fireActionEvent(event, action);
 		} else if (event instanceof GOKeyEvent) {
-			Action actionForKeyboard = getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
-			if (actionForKeyboard != null) {
-				fireActionEvent(event, actionForKeyboard);
-			}
+			Optional<Action> actionForKeyboard = Optional.ofNullable(getActionForKeyboard(((GOKeyEvent) event).getKeyCode()));
+			actionForKeyboard.ifPresent(action -> 
+				fireActionEvent(event, actionForKeyboard)
+			);
 		} else if (event instanceof GODrawEvent) {
 			GODrawEvent drawEvent = (GODrawEvent) event;
 			if (!controls.handleDrawEvent(drawEvent)) {
@@ -737,7 +743,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private void fireActionEvent(GOEvent event, Action action) {
+	private void fireActionEvent(GOEvent event, Optional<Action> action) {
 		event.setHandler(new ActionHandler(action, this));
 	}
 
@@ -749,7 +755,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @return The action that corresponds to the key
 	 */
 	private static Action getActionForKeyboard(String keyCode) {
-		System.out.println(keyCode);
 		if ("F12".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FAST_FORWARD);
 		} else if ("P".equalsIgnoreCase(keyCode)
@@ -843,10 +848,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private Action getActionForCommand(GOCommandEvent commandEvent) {
+	private Optional<Action> getActionForCommand(GOCommandEvent commandEvent) {
 		UIPoint position = commandEvent.getCommandPosition();
 		if (controls.containsPoint(position)) {
-			return controls.getActionFor(position, commandEvent.isSelecting());
+			if (commandEvent.isSelecting()) {
+				return controls.getActionForSelect(position);
+			} else {
+				return controls.getActionForMoveTo(position, moveToForCommand(commandEvent));
+			}
 		} else {
 			// handle map click
 			return handleCommandOnMap(commandEvent, position);
@@ -884,8 +893,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	};
 
-	private Action handleCommandOnMap(GOCommandEvent commandEvent, UIPoint position) {
-
+	private Optional<Action> handleCommandOnMap(GOCommandEvent commandEvent, UIPoint position) {
 		float x = (float) position.getX();
 		float y = (float) position.getY();
 		ShortPoint2D onMap = this.context.getPositionOnScreen(x, y);
@@ -894,11 +902,23 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			if (commandEvent.isSelecting()) {
 				action = handleSelectCommand(onMap);
 			} else {
-				action = new PointAction(EActionType.MOVE_TO, onMap);
+				action = new MoveToAction(moveToForCommand(commandEvent), onMap);
 			}
-			return action;
+			return Optional.of(action);
 		}
-		return null;
+		return Optional.empty();
+	}
+
+	private static EMoveToType moveToForCommand(GOCommandEvent commandEvent) {
+		Set<EModifier> modifiers = commandEvent.getModifiers();
+		if (modifiers.contains(EModifier.CTRL)) {
+			return EMoveToType.FORCED;
+		} else if (modifiers.contains(EModifier.ALT)) {
+			return EMoveToType.WORK;
+		} else {
+			return EMoveToType.DEFAULT;
+		}
+		// TODO: Add waypoint with SHIFT
 	}
 
 	private Action handleSelectCommand(ShortPoint2D onMap) {
@@ -999,7 +1019,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 			break;
 		case MOVE_TO:
-			moveToMarker = ((PointAction) action).getPosition();
+			moveToMarker = ((MoveToAction) action).getPosition();
 			moveToMarkerTime = System.currentTimeMillis();
 			break;
 		case SHOW_MESSAGE:

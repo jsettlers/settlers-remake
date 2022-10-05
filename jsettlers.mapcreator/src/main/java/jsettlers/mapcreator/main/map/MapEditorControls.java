@@ -19,6 +19,8 @@ import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
+import java8.util.Optional;
+import jsettlers.common.action.EMoveToType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
@@ -106,8 +108,13 @@ public class MapEditorControls implements IControls {
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position, boolean select) {
-		return null;
+	public Optional<Action> getActionForSelect(UIPoint position) {
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Action> getActionForMoveTo(UIPoint position, EMoveToType moveToType) {
+		return Optional.empty();
 	}
 
 	@Override
