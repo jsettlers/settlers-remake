@@ -168,6 +168,24 @@ public final class Movable implements ILogicMovable {
 		}
 	}
 
+	public void leavePosition(int direction) {
+		if (state != EMovableState.DOING_NOTHING || !enableNothingToDo) {
+			return;
+		}
+
+		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+			EDirection currDir = EDirection.VALUES[(i + direction) % EDirection.NUMBER_OF_DIRECTIONS];
+			if (goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
+				break;
+			} else {
+				ILogicMovable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
+				if (movableAtPos != null) {
+					movableAtPos.push(this);
+				}
+			}
+		}
+	}
+
 	@Override
 	public int timerEvent() {
 		if (state == EMovableState.DEAD) {
