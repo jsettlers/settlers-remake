@@ -49,7 +49,6 @@ public class FixHeightsTool extends AbstractTool {
 		for (int x = 0; x < map.getWidth() - 1; x++) {
 			for (int y = 0; y < map.getWidth() - 1; y++) {
 				if (influences[x][y] > 0) {
-					fixResources(map, x, y);
 					fix(map, x, y, x + 1, y);
 					fix(map, x, y, x + 1, y + 1);
 					fix(map, x, y, x, y + 1);
@@ -64,14 +63,6 @@ public class FixHeightsTool extends AbstractTool {
 					fix(map, x, y, x + 1, y + 1);
 					fix(map, x, y, x, y + 1);
 				}
-			}
-		}
-	}
-
-	private static void fixResources(MapData map, int x, int y) {
-		if (map.getResourceAmount((short) x, (short) y) > 0) {
-			if (!ValidateResources.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
-				map.decreaseResourceTo(x, y, (byte) 0);
 			}
 		}
 	}

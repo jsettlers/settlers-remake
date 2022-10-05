@@ -30,6 +30,15 @@ public interface IMapData {
 
 	MapDataObject getMapObject(int x, int y);
 
+	/**
+	 *
+	 * @param x
+	 * 		The x-coordinate
+	 * @param y
+	 * 		The y-coordinate
+	 * @return
+	 * 		the height of this map tile or 0 if x or y are out of bounds
+	 */
 	byte getLandscapeHeight(int x, int y);
 
 	/**

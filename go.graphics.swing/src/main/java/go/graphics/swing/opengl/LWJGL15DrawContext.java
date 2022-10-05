@@ -333,7 +333,15 @@ public class LWJGL15DrawContext implements GLDrawContext {
 		return contextValid;
 	}
 
+	protected float nativeScale = 0;
+
 	public void resize(int width, int height) {
+		if(nativeScale == 0) {
+			int[] vp = new int[4];
+			GL11.glGetIntegerv(GL11.GL_VIEWPORT, vp);
+			nativeScale = vp[2] / (float)width;
+		}
+
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		// coordinate system origin at lower left with width and height same as
@@ -342,6 +350,6 @@ public class LWJGL15DrawContext implements GLDrawContext {
 
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		GL11.glViewport(0, 0, width, height);
+		GL11.glViewport(0, 0, (int)(width*nativeScale), (int)(height*nativeScale));
 	}
 }
