@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.player;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.IEndgameStatistic;
 
 import java.io.Serializable;
@@ -22,14 +23,14 @@ import java.io.Serializable;
  * @author codingberlin
  */
 public class EndgameStatistic implements IEndgameStatistic, Serializable {
-	private static final long serialVersionUID = -1352905249487671842L;
+	private static final long serialVersionUID = -1352905249487671843L;
 
-	private MannaInformation mannaInformation;
+	private Player player;
 	private short amountOfProducedSoldiers = 0;
 	private short amountOfProducedGold = 0;
 
-	public EndgameStatistic(MannaInformation mannaInformation) {
-		this.mannaInformation = mannaInformation;
+	public EndgameStatistic(Player player) {
+		this.player = player;
 	}
 
 	@Override
@@ -39,12 +40,22 @@ public class EndgameStatistic implements IEndgameStatistic, Serializable {
 
 	@Override
 	public short getAmountOfProducedMana() {
-		return mannaInformation.getAmountOfManna();
+		return player.getMannaInformation().getAmountOfManna();
 	}
 
 	@Override
 	public short getAmountOfProducedGold() {
 		return amountOfProducedGold;
+	}
+
+	@Override
+	public String getName() {
+		return player.getPlayerType().toString();
+	}
+
+	@Override
+	public byte getTeam() {
+		return player.getTeamId();
 	}
 
 	public void incrementAmountOfProducedSoldiers() {

@@ -47,6 +47,7 @@ import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.swing.menu.joinpanel.JoinGamePanel;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
 import jsettlers.main.swing.menu.startinggamemenu.StartingGamePanel;
+import jsettlers.main.swing.menu.statspanel.EndgameStatsPanel;
 import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.main.swing.settings.UiPlayer;
 
@@ -58,6 +59,7 @@ public class JSettlersFrame extends JFrame {
 
 	private final IMultiplayerConnector multiPlayerConnector;
 	private final MainMenuPanel mainPanel;
+	private final EndgameStatsPanel endgameStatsPanel = new EndgameStatsPanel(this);
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
 	private final SoundPlayer soundPlayer = new SwingSoundPlayer(SettingsManager.getInstance());
@@ -194,10 +196,15 @@ public class JSettlersFrame extends JFrame {
 		setNewContentPane(joinGamePanel);
 	}
 
+	public void showEndgameStatistics(IStartedGame game) {
+		endgameStatsPanel.setGame(game);
+		setNewContentPane(endgameStatsPanel);
+	}
+
 	public IMapInterfaceConnector showStartedGame(IStartedGame startedGame) {
 		MapContent content = new MapContent(startedGame, soundPlayer, SettingsManager.getInstance().getFpsLimit(), ETextDrawPosition.TOP_RIGHT);
 		SwingUtilities.invokeLater(() -> setContent(content));
-		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(this::showMainMenu));
+		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(() -> showEndgameStatistics(exitGame)));
 		return content.getInterfaceConnector();
 	}
 }
